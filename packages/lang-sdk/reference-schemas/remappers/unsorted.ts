@@ -258,7 +258,10 @@ For example:
 
 For example:
 
-${schemaExample('xml.parse', { result: 'pretty' })}`,
+${schemaExample('xml.parse', { result: 'pretty' })}
+
+The tag and attribute names \`__proto__\`, \`constructor\` and \`prototype\` appear in the output
+as \`#__proto__\`, \`#constructor\` and \`#prototype\`.`,
       $ref: '#/components/schemas/RemapperDefinition',
     },
     maths: {

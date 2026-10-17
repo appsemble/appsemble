@@ -1,0 +1,18 @@
+{
+  "app": {
+    "description": "",
+    "name": "",
+    "pages.litter-details": "",
+    "pages.litter-list": "",
+    "pages.litter-overview": "",
+    "pages.report-litter": ""
+  },
+  "messageIds": {
+    "date": "",
+    "location": "",
+    "notes": "",
+    "notesExample": "",
+    "photos": "",
+    "process": ""
+  }
+}

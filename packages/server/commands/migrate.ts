@@ -1,12 +1,13 @@
 import { AppsembleError, initS3Client, logger, version } from '@appsemble/node-utils';
 import semver from 'semver';
-import { QueryTypes } from 'sequelize';
+import { QueryTypes, type Sequelize } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
 import { migrations } from '../migrations/main/index.js';
 import { App, closeAppDB, getAppDB, initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
+import { getDirectPostgresConnection } from '../utils/database.js';
 import { syncAppDefinitionIndexes } from '../utils/appDefinitionIndexes.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
@@ -21,41 +22,13 @@ export function builder(yargs: Argv): Argv {
   });
 }
 
-export async function handler(): Promise<void> {
-  const { migrateTo } = argv;
-  if (migrateTo !== 'next' && !semver.valid(migrateTo)) {
-    throw new AppsembleError(`A valid semver is required. Got ${migrateTo}`);
-  }
-  let db;
-  try {
-    db = initDB({
-      host: argv.databaseHost,
-      port: argv.databasePort,
-      username: argv.databaseUser,
-      password: argv.databasePassword,
-      database: argv.databaseName,
-      ssl: argv.databaseSsl,
-      uri: argv.databaseUrl,
-    });
-  } catch (error: unknown) {
-    handleDBError(error as Error);
-  }
-
-  try {
-    initS3Client({
-      endPoint: argv.s3Host,
-      port: argv.s3Port,
-      useSSL: argv.s3Secure,
-      accessKey: argv.s3AccessKey,
-      secretKey: argv.s3SecretKey,
-    });
-  } catch (error: unknown) {
-    logger.warn(`S3Error: ${error}`);
-    logger.warn('Features related to file uploads will not work correctly!');
-  }
-
-  await migrate(db, migrateTo, migrations);
-  const apps = await App.findAll({ attributes: ['definition', 'id'] });
+/**
+ * Migrate every app database, including those of soft-deleted apps, so they can still be restored.
+ *
+ * @param db The main database.
+ */
+export async function migrateAppDatabases(db: Sequelize): Promise<void> {
+  const apps = await App.findAll({ attributes: ['definition', 'id'], paranoid: false });
   for (const app of apps) {
     const { sequelize: appDB } = await getAppDB(app.id, db);
     const [{ relkind }] = await appDB.query<{ relkind: string }>(
@@ -73,6 +46,50 @@ export async function handler(): Promise<void> {
     }
     await closeAppDB(app.id);
   }
+}
+
+export async function handler(): Promise<void> {
+  const { migrateTo } = argv;
+  if (migrateTo !== 'next' && !semver.valid(migrateTo)) {
+    throw new AppsembleError(`A valid semver is required. Got ${migrateTo}`);
+  }
+  const { dbHost, dbPort } = getDirectPostgresConnection({
+    dbHost: argv.databaseHost,
+    dbPort: argv.databasePort,
+  });
+  let db;
+  try {
+    db = initDB({
+      host: dbHost,
+      port: dbPort,
+      username: argv.databaseUser,
+      password: argv.databasePassword,
+      database: argv.databaseName,
+      ssl: argv.databaseSsl,
+      uri: argv.databaseUrl,
+    });
+  } catch (error: unknown) {
+    handleDBError(error as Error);
+  }
+
+  try {
+    initS3Client({
+      endPoint: argv.s3Host,
+      port: argv.s3Port,
+      useSSL: argv.s3Secure,
+      accessKey: argv.s3AccessKey,
+      secretKey: argv.s3SecretKey,
+      region: argv.s3Region,
+      pathStyle: argv.s3PathStyle,
+      bucket: argv.s3Bucket,
+    });
+  } catch (error: unknown) {
+    logger.warn(`S3Error: ${error}`);
+    logger.warn('Features related to file uploads will not work correctly!');
+  }
+
+  await migrate(db, migrateTo, migrations);
+  await migrateAppDatabases(db);
   await db.close();
   process.exit();
 }

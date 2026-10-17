@@ -32,6 +32,8 @@ export async function getAppServiceSecrets(ctx: Context): Promise<void> {
       'tokenUrl',
       'scope',
       'ca',
+      'lastTokenError',
+      'lastTokenErrorAt',
     ],
   });
 

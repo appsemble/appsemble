@@ -1,0 +1,22 @@
+{
+  "app": {
+    "app.roles.User": "",
+    "app.roles.User.description": "",
+    "description": "",
+    "name": "",
+    "pages.arrays": "",
+    "pages.conditionals": "",
+    "pages.data": "",
+    "pages.dates": "",
+    "pages.history": "",
+    "pages.introduction": "",
+    "pages.objects": "",
+    "pages.other": "",
+    "pages.randomness": "",
+    "pages.strings": ""
+  },
+  "messageIds": {
+    "weatherBody": "",
+    "weatherTitle": ""
+  }
+}

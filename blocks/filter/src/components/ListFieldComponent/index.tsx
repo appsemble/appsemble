@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Button, Form, useToggle } from '@appsemble/preact-components';
+import { Button, Form, Icon, useToggle } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
@@ -132,7 +132,7 @@ export function ListFieldComponent({
                 onClick={removeFilter}
                 type="button"
               >
-                <i className={utils.fa('xmark')} />
+                <Icon icon="xmark" size="small" />
               </button>
             </div>
           );

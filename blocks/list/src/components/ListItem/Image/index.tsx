@@ -35,7 +35,7 @@ export function Image({
   item,
 }: ImageComponentProps): VNode {
   const {
-    utils: { asset, remap },
+    utils: { asset, formatMessage, remap },
   } = useBlock();
 
   const alternate = remap(alt, item, { index }) as string;
@@ -91,6 +91,8 @@ export function Image({
     <ImageComponent
       alt={alternate}
       aspectRatio={aspectRatio}
+      closeButtonLabel={formatMessage('closeImage')}
+      downloadLabel={formatMessage('downloadImage')}
       id={index}
       openPreview={openPreview}
       rounded={rounded}

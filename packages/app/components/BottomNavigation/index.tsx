@@ -1,34 +1,42 @@
 import {
   getPageDisplayName,
   getPagePathSegment,
-  type PageDefinition,
+  getRouteSegment,
   remap,
   type RemapperContext,
 } from '@appsemble/lang-sdk';
 import { Button, Icon } from '@appsemble/react-components';
+import classNames from 'classnames';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { NavLink, useLocation, useParams } from 'react-router-dom';
+import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
 import { usePWAInstall } from 'react-use-pwa-install';
 
 import './index.css';
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { shouldShowMenu } from '../../utils/layout.js';
+import { getNavPages, shouldShowMenu } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
+import { useActiveNavigation } from '../../utils/useActiveNavigation.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
+import { usePage } from '../MenuProvider/index.js';
 
 interface BottomNavigationProps {
-  readonly pages: PageDefinition[];
+  /**
+   * Whether the navigation sits in the `bottom-navigation` area of a page grid.
+   *
+   * In a grid it flows with the page, and renders nothing unless the app navigation is `bottom`.
+   */
+  readonly inGrid?: boolean;
 }
 
 /**
  * The app navigation that is displayed at the bottom of the app.
  */
-export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
+export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
   const { pathname } = useLocation();
@@ -39,15 +47,27 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { definition } = useAppDefinition();
   const { formatMessage } = useIntl();
   const install = usePWAInstall();
+  const { hasBottomNavigation } = usePage();
+
+  const pages = useMemo(
+    () => getNavPages(definition, appMemberRoles, appMemberSelectedGroup),
+    [definition, appMemberRoles, appMemberSelectedGroup],
+  );
+  const getCurrent = useActiveNavigation(pages, false);
 
   const showMenu = useMemo(
-    () => shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname),
-    [definition, appMemberRoles, appMemberSelectedGroup, pathname],
+    () =>
+      shouldShowMenu(definition, appMemberRoles, appMemberSelectedGroup, pathname, getAppMessage),
+    [definition, appMemberRoles, appMemberSelectedGroup, pathname, getAppMessage],
   );
+
+  if (inGrid && !hasBottomNavigation) {
+    return null;
+  }
 
   return (
     showMenu && (
-      <nav className="bottom-nav mb-0">
+      <nav className={classNames('bottom-nav mb-0', { [styles.inGrid]: inGrid })}>
         <ul className={`${styles.list} is-flex`}>
           {pages.map((page) => {
             const name = getPageDisplayName(page, getAppMessage);
@@ -69,17 +89,15 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
             // @ts-expect-error 2345 argument of type is not assignable to parameter of type
             // (strictNullChecks)
             const count = remap(page.badgeCount, null, remapperContext) as number;
+            const current = getCurrent(page);
 
             return (
               <li className="bottom-nav-item" key={page.name}>
-                <NavLink
-                  className={({ isActive }) =>
-                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
-                      isActive && 'is-active'
-                    }`
-                  }
+                <Link
+                  aria-current={current}
+                  className={`bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${current ? 'is-active' : ''}`}
                   title={navName as string}
-                  to={`${url}/${getPagePathSegment(page)}`}
+                  to={`${url}/${getPagePathSegment(page, getAppMessage)}`}
                 >
                   {page.icon ? (
                     <div>
@@ -97,7 +115,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                       <span className="tag is-rounded ml-1 is-success">{count}</span>
                     ) : null}
                   </div>
-                </NavLink>
+                </Link>
               </li>
             );
           })}
@@ -111,7 +129,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                   }`
                 }
                 title={formatMessage(messages.settings)}
-                to={`${url}/Settings`}
+                to={`${url}/${getRouteSegment('Settings', getAppMessage)}`}
               >
                 <Icon className="mb-1" icon="wrench" iconSize="3x" size="large" />
                 <span>
@@ -129,7 +147,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                   }`
                 }
                 title={formatMessage(messages.feedback)}
-                to={`${url}/Feedback`}
+                to={`${url}/${getRouteSegment('Feedback', getAppMessage)}`}
               >
                 <Icon className="mb-1" icon="comment" iconSize="3x" size="large" />
                 <span>
@@ -175,7 +193,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
                     }`
                   }
                   title={formatMessage(messages.login)}
-                  to={`${url}/Login`}
+                  to={`${url}/${getRouteSegment('Login', getAppMessage)}`}
                 >
                   <Icon className="mb-1" icon="sign-in-alt" iconSize="3x" size="large" />
                   <span>

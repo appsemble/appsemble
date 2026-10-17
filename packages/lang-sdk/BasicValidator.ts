@@ -7,6 +7,7 @@ import {
 } from 'jsonschema';
 import { type JsonObject } from 'type-fest';
 
+import { isValidIconReference } from './icons.js';
 import { schemas as allSchemas, type BlockDefinition } from './index.js';
 import { escapeJsonPointer } from './jsonPointer.js';
 import { has } from './miscellaneous.js';
@@ -30,6 +31,7 @@ export class BaseValidatorFactory {
     byte: () => true,
     binary: () => true,
     password: () => true,
+    icon: isValidIconReference,
   };
 
   private schemas;
@@ -44,7 +46,10 @@ export class BaseValidatorFactory {
   build(): Validator {
     const validator = new Validator();
 
-    for (const [key, format] of Object.entries(this.customFormats ?? {})) {
+    for (const [key, format] of Object.entries({
+      ...BaseValidatorFactory.defaultCustomFormats,
+      ...this.customFormats,
+    })) {
       validator.customFormats[key] = format;
     }
 
@@ -64,7 +69,6 @@ export class BlockExampleValidator {
     this.validator = new BaseValidatorFactory({
       schemas: allSchemas,
       customFormats: {
-        ...BaseValidatorFactory.defaultCustomFormats,
         fontawesome: () => true,
         remapper: () => true,
         action: () => true,
@@ -158,7 +162,6 @@ export class BlockParamInstanceValidator {
     this.validator = new BaseValidatorFactory({
       schemas: {},
       customFormats: {
-        ...BaseValidatorFactory.defaultCustomFormats,
         // TODO: validate more
         fontawesome: () => true,
         // TODO: validate more
@@ -200,7 +203,6 @@ export class BlockParamSchemaValidator {
     this.validator = new BaseValidatorFactory({
       schemas: allSchemas,
       customFormats: {
-        ...BaseValidatorFactory.defaultCustomFormats,
         fontawesome: () => true,
         remapper: () => true,
         action: () => true,
@@ -225,9 +227,6 @@ export class AppValidator {
   constructor() {
     this.validator = new BaseValidatorFactory({
       schemas: allSchemas,
-      customFormats: {
-        ...BaseValidatorFactory.defaultCustomFormats,
-      },
     }).build();
   }
 
@@ -246,9 +245,6 @@ export class RemapperValidator {
   constructor() {
     this.validator = new BaseValidatorFactory({
       schemas: allSchemas,
-      customFormats: {
-        ...BaseValidatorFactory.defaultCustomFormats,
-      },
     }).build();
   }
 

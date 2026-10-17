@@ -40,3 +40,5 @@ export interface ResponsiveNavbarGridLayoutDefinition {
 export type NavbarLayoutDefinition = RequireAtLeastOne<ResponsiveNavbarGridLayoutDefinition>;
 
 export type PageLayoutDefinition = RequireAtLeastOne<ResponsiveGridLayoutDefinition>;
+
+export type BuiltinPagesLayoutDefinition = RequireAtLeastOne<ResponsiveGridLayoutDefinition>;

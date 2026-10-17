@@ -1,4 +1,11 @@
-import { type AppDefinition, type AppRole, type PageDefinition } from '@appsemble/lang-sdk';
+import {
+  type AppDefinition,
+  type AppRole,
+  getRouteSegment,
+  type MessageGetter,
+  type PageDefinition,
+  translatableRoutes,
+} from '@appsemble/lang-sdk';
 import { type AppMemberGroup } from '@appsemble/types';
 
 import { checkPagePermissions } from './authorization.js';
@@ -36,24 +43,15 @@ export function shouldShowPage(
   return true;
 }
 
-const builtInPages = new Set([
-  'Settings',
-  'debug',
-  'Login',
-  'Register',
-  'Group-Invite',
-  'App-Invite',
-  'Reset-Password',
-  'Edit-Password',
-  'Verify',
-  'Callback',
-  'Feedback',
-]);
+const fixedRoutes = new Set(['debug', 'Callback']);
 
-function isBuiltInPage(pathname: string): boolean {
+function isBuiltInPage(pathname: string, getAppMessage: MessageGetter): boolean {
   const segments = pathname.split('/').filter(Boolean);
   const lastSegment = segments.at(-1)!;
-  return builtInPages.has(lastSegment);
+  return (
+    fixedRoutes.has(lastSegment) ||
+    translatableRoutes.some((name) => getRouteSegment(name, getAppMessage) === lastSegment)
+  );
 }
 
 export function shouldHideGroupDropdown(
@@ -96,13 +94,27 @@ export function getNavPages(
   });
 }
 
+/**
+ * Check whether the app menu should be shown.
+ *
+ * The menu is shown on every built-in route, and on app pages when the navigation has more than
+ * one entry.
+ *
+ * @param appDefinition The app definition to read the pages and layout from.
+ * @param appMemberRoles The roles of the current app member.
+ * @param appMemberSelectedGroup The group the current app member has selected.
+ * @param pathname The current pathname, used to recognize built-in routes.
+ * @param getAppMessage The getter that resolves the translated URL segments of built-in routes.
+ * @returns Whether the menu should be shown.
+ */
 export function shouldShowMenu(
   appDefinition: AppDefinition,
   appMemberRoles: AppRole[],
   appMemberSelectedGroup: AppMemberGroup,
-  pathname?: string,
+  pathname: string,
+  getAppMessage: MessageGetter,
 ): boolean {
-  if (pathname && isBuiltInPage(pathname)) {
+  if (isBuiltInPage(pathname, getAppMessage)) {
     return true;
   }
 

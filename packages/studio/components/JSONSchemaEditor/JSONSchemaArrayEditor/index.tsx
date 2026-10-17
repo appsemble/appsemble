@@ -1,5 +1,5 @@
 import { generateDataFromSchema } from '@appsemble/lang-sdk';
-import { Button, CardFooterButton, ModalCard } from '@appsemble/react-components';
+import { Button, CardFooterButton, FieldError, ModalCard } from '@appsemble/react-components';
 import { type OpenAPIV3 } from 'openapi-types';
 import { type MouseEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -154,7 +154,7 @@ export function JSONSchemaArrayEditor({
           );
         })}
       </Collapsible>
-      {error ? <div className="help is-danger">{error}</div> : null}
+      {error ? <FieldError>{error}</FieldError> : null}
       <ModalCard
         footer={
           <>

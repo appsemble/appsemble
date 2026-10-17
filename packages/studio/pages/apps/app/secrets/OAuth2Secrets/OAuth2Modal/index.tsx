@@ -5,6 +5,7 @@ import {
   ModalCard,
   PasswordField,
   SimpleForm,
+  SimpleFormError,
   SimpleFormField,
   SimpleModalFooter,
   TagsField,
@@ -100,6 +101,17 @@ export function OAuth2Modal({
       onSubmit={onSubmit}
       title={<FormattedMessage {...messages.modalTitle} />}
     >
+      <SimpleFormError>
+        {({ error }) =>
+          axios.isAxiosError<{ message?: string }>(error) &&
+          error.response?.status === 400 &&
+          error.response.data?.message ? (
+            error.response.data.message
+          ) : (
+            <FormattedMessage {...messages.submitError} />
+          )
+        }
+      </SimpleFormError>
       <SimpleFormField
         disabled={locked !== 'unlocked'}
         help={<FormattedMessage {...messages.nameHelp} />}

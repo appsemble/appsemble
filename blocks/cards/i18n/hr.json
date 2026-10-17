@@ -1,4 +1,6 @@
 {
   "error": "Došlo je do pogreške pri dohvaćanju podataka.",
-  "noData": "Nema dostupnih podataka."
+  "loading": "",
+  "noData": "Nema dostupnih podataka.",
+  "openCard": ""
 }

@@ -11,6 +11,7 @@ import { type AppRole, type ViewRole } from './roles.js';
 import { type Security } from './security.js';
 import { type Theme } from './theme.js';
 import {
+  type BuiltinPagesLayoutDefinition,
   type GridBreakpointsDefinition,
   type NavbarLayoutDefinition,
   type PageLayoutDefinition,
@@ -19,6 +20,31 @@ import {
 export type SettingName = 'email' | 'languages' | 'name' | 'password' | 'phoneNumber' | 'picture';
 
 export type AppContentSecurityPolicy = Record<string, string[]>;
+
+/**
+ * A reference to an icon.
+ *
+ * A bare name refers to a Font Awesome icon. A name prefixed with `icon:` refers to a key in the
+ * app’s `icons` registry, which maps it to an uploaded SVG asset.
+ */
+export type IconReference = IconName | `icon:${string}`;
+
+export interface IconRegistryEntry {
+  /**
+   * The name of the app-level asset holding the icon’s SVG artwork.
+   */
+  asset: string;
+
+  /**
+   * Font Awesome icons this entry replaces throughout the app.
+   */
+  overrides?: IconName[];
+}
+
+/**
+ * A mapping of semantic icon keys to the assets holding their artwork.
+ */
+export type IconRegistry = Record<string, IconRegistryEntry>;
 
 export interface AppDefinition {
   /**
@@ -160,6 +186,19 @@ export interface AppDefinition {
     navbar?: NavbarLayoutDefinition;
 
     /**
+     * Responsive grid layout for the built-in pages of the app.
+     *
+     * Applies unchanged to every built-in page and every state of it. Without this, no built-in
+     * page becomes a grid or gains a heading.
+     *
+     * The available template areas are `resend-banner`, `title`, `content`, and
+     * `bottom-navigation`. Every rendered breakpoint places `content`, and each of the others is
+     * either placed by every breakpoint or by none. Their first visual occurrence must follow that
+     * order.
+     */
+    builtinPages?: BuiltinPagesLayoutDefinition;
+
+    /**
      * Minimum viewport widths in pixels at which the tablet and desktop grid layouts apply.
      *
      * Applies to every responsive grid layout in the app, including pages and the navbar. The
@@ -205,6 +244,13 @@ export interface AppDefinition {
    * The global theme for the app.
    */
   theme?: Partial<Theme>;
+
+  /**
+   * Custom icons that may be referenced as `icon:<key>` from pages, blocks, and login buttons.
+   *
+   * Each key maps to an app-level SVG asset by name.
+   */
+  icons?: IconRegistry;
 
   /**
    * Extra content security policy source expressions for the published app page.
@@ -303,11 +349,12 @@ export interface BasePageDefinition {
   roles?: ViewRole[];
 
   /**
-   * An optional icon from the fontawesome icon set
+   * An optional icon from the Font Awesome icon set, or an `icon:<key>` reference to the app’s
+   * `icons` registry.
    *
-   * This will be displayed in the navigation menu.
+   * This will be displayed in the navigation menu and the breadcrumb trail.
    */
-  icon?: IconName;
+  icon?: IconReference;
 
   /**
    * Page parameters can be used for linking to a page that should display a single resource.

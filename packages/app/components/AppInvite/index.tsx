@@ -1,8 +1,6 @@
 import {
   AsyncButton,
   Button,
-  Content,
-  Loader,
   Message,
   PasswordField,
   PasswordStrengthIndicator,
@@ -25,7 +23,7 @@ import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
-import { AppBar } from '../TitleBar/index.js';
+import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
 
 interface AppInviteFormProps {
   readonly password: string;
@@ -81,13 +79,16 @@ export function AppInvite(): ReactNode {
   );
 
   if (loading) {
-    return <Loader />;
+    return (
+      <BuiltinPage page="app-invite" state="loading" title={messages.title}>
+        <BuiltinPageLoader />
+      </BuiltinPage>
+    );
   }
 
   if (inviteError) {
     return (
-      <Content padding>
-        <AppBar />
+      <BuiltinPage narrow page="app-invite" state="error" title={messages.title}>
         <Message color="danger">
           {inviteError.response?.status === 404 ? (
             <FormattedMessage {...messages.notFound} />
@@ -95,28 +96,31 @@ export function AppInvite(): ReactNode {
             <FormattedMessage {...messages.inviteLoadingError} />
           )}
         </Message>
-      </Content>
+      </BuiltinPage>
     );
   }
 
   if (accepted || declined) {
     return (
-      <Content padding>
-        <AppBar />
+      <BuiltinPage
+        narrow
+        page="app-invite"
+        state={accepted ? 'accepted' : 'declined'}
+        title={messages.title}
+      >
         <Message color="success">
           <FormattedMessage
             {...(accepted ? messages.accepted : messages.declined)}
             values={{ appName: <strong>{appName}</strong> }}
           />
         </Message>
-      </Content>
+      </BuiltinPage>
     );
   }
 
   if (appMemberInfo) {
     return (
-      <Content padding>
-        <AppBar />
+      <BuiltinPage narrow page="app-invite" state="member" title={messages.title}>
         <Message color="danger">
           <FormattedMessage
             {...messages.alreadyMember}
@@ -126,13 +130,12 @@ export function AppInvite(): ReactNode {
         <Button color="primary" onClick={() => logout()}>
           <FormattedMessage {...messages.logout} />
         </Button>
-      </Content>
+      </BuiltinPage>
     );
   }
 
   return (
-    <Content padding>
-      <AppBar />
+    <BuiltinPage narrow page="app-invite" state="form" title={messages.title}>
       <p className="content has-text-centered">
         <FormattedMessage
           {...messages.description}
@@ -171,6 +174,6 @@ export function AppInvite(): ReactNode {
           }
         </SimpleFormError>
       </SimpleForm>
-    </Content>
+    </BuiltinPage>
   );
 }
