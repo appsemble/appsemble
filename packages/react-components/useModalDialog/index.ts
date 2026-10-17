@@ -11,6 +11,13 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
+import {
+  closeModalDialog,
+  getActiveElement,
+  modalDialogCloseEvent,
+  modalDialogShowEvent,
+  showDialogAsModal,
+} from '@appsemble/web-utils';
 
 import styles from './index.module.css';
 
@@ -93,10 +100,10 @@ function removeModalDialog(dialog: HTMLDialogElement): void {
 /**
  * Track the modal dialogs inside the shadow root of an element.
  *
- * A dialog inside the shadow root dispatches a composed `AppsembleModalDialogShow` event when it is
- * shown as a modal dialog, and a composed `AppsembleModalDialogClose` event when it stops being shown
- * as a modal dialog. The detail of the show event contains the name of a slot in the dialog, so
- * content can be rendered inside the dialog by the shadow host.
+ * A dialog inside the shadow root dispatches a composed show event when it is shown as a modal
+ * dialog, and a composed close event when it stops being shown as a modal dialog. The detail of the
+ * show event contains the name of a slot in the dialog, so content can be rendered inside the dialog
+ * by the shadow host.
  *
  * @param host The shadow host whose modal dialogs to track.
  * @returns A function that stops tracking the modal dialogs, and removes the ones that are shown.
@@ -117,12 +124,12 @@ export function trackShadowModalDialogs(host: Element): () => void {
     removeModalDialog(dialog);
   };
 
-  host.addEventListener('AppsembleModalDialogShow', onShow);
-  host.addEventListener('AppsembleModalDialogClose', onClose);
+  host.addEventListener(modalDialogShowEvent, onShow);
+  host.addEventListener(modalDialogCloseEvent, onClose);
 
   return () => {
-    host.removeEventListener('AppsembleModalDialogShow', onShow);
-    host.removeEventListener('AppsembleModalDialogClose', onClose);
+    host.removeEventListener(modalDialogShowEvent, onShow);
+    host.removeEventListener(modalDialogCloseEvent, onClose);
     for (const dialog of dialogs) {
       removeModalDialog(dialog);
     }
@@ -131,53 +138,22 @@ export function trackShadowModalDialogs(host: Element): () => void {
 }
 
 /**
- * Find the focused element, including focused elements inside shadow roots.
- *
- * @returns The element that has focus.
- */
-function getActiveElement(): Element | null {
-  let active = document.activeElement;
-  while (active?.shadowRoot?.activeElement) {
-    active = active.shadowRoot.activeElement;
-  }
-  return active;
-}
-
-/**
  * Show an open dialog as a modal dialog.
- *
- * Focus stays on an element inside the dialog that claimed focus using autoFocus.
  *
  * @param dialog The dialog to show.
  */
 function showModalDialog(dialog: HTMLDialogElement): void {
-  const focused = dialog.contains(document.activeElement) ? getActiveElement() : null;
-  if (dialog.hasAttribute('popover')) {
-    dialog.hidePopover();
-    dialog.removeAttribute('popover');
-  }
-  dialog.close();
-  dialog.showModal();
-  if (focused instanceof HTMLElement) {
-    focused.focus();
-  }
+  showDialogAsModal(dialog);
   setModalDialogs([...modalDialogs, { dialog }]);
 }
 
 /**
  * Stop showing a dialog as a modal dialog.
  *
- * The dialog stays open as a manual popover, so it remains rendered on top of the page while it
- * transitions out, without blocking the page.
- *
  * @param dialog The dialog to stop showing as a modal dialog.
  */
-function closeModalDialog(dialog: HTMLDialogElement): void {
-  dialog.close();
-  // eslint-disable-next-line no-param-reassign
-  dialog.open = true;
-  dialog.setAttribute('popover', 'manual');
-  dialog.showPopover();
+function stopShowingModalDialog(dialog: HTMLDialogElement): void {
+  closeModalDialog(dialog, true);
   removeModalDialog(dialog);
 }
 
@@ -268,7 +244,7 @@ export function useModalDialog({
       if (isDisplayed && !isModalDialog(dialog)) {
         showModalDialog(dialog);
       } else if (!isDisplayed && isModalDialog(dialog)) {
-        closeModalDialog(dialog);
+        stopShowingModalDialog(dialog);
       }
     };
 
@@ -278,7 +254,7 @@ export function useModalDialog({
     return () => {
       window.removeEventListener('resize', update);
       if (isModalDialog(dialog)) {
-        closeModalDialog(dialog);
+        stopShowingModalDialog(dialog);
       }
     };
   }, [isActive]);
@@ -336,7 +312,7 @@ export function useModalDialog({
         return;
       }
 
-      closeModalDialog(dialog);
+      stopShowingModalDialog(dialog);
       if (closable) {
         onClose?.(event);
       } else {

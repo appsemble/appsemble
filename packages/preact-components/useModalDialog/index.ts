@@ -1,20 +1,14 @@
+import {
+  closeModalDialog,
+  getActiveElement,
+  modalDialogCloseEvent,
+  modalDialogShowEvent,
+  showDialogAsModal,
+} from '@appsemble/web-utils';
 import { type RefObject } from 'preact';
 import { useCallback, useId, useLayoutEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
-
-/**
- * Find the focused element, including focused elements inside shadow roots.
- *
- * @returns The element that has focus.
- */
-function getActiveElement(): Element | null {
-  let active = document.activeElement;
-  while (active?.shadowRoot?.activeElement) {
-    active = active.shadowRoot.activeElement;
-  }
-  return active;
-}
 
 interface UseModalDialogOptions {
   /**
@@ -75,10 +69,10 @@ interface UseModalDialogResult {
  * A dialog hidden using CSS, for example by a media query, isn't shown as a modal dialog, so it
  * doesn't block the page.
  *
- * The dialog dispatches a composed `AppsembleModalDialogShow` event when it is shown as a modal
- * dialog, and a composed `AppsembleModalDialogClose` event when it stops being shown as a modal
- * dialog. This lets the app render content, such as messages, inside the topmost dialog. The detail
- * of the show event contains the name of the slot that renders this content.
+ * The dialog dispatches a composed show event when it is shown as a modal dialog, and a composed
+ * close event when it stops being shown as a modal dialog. This lets the app render content, such
+ * as messages, inside the topmost dialog. The detail of the show event contains the name of the
+ * slot that renders this content.
  *
  * @param options The options for the modal dialog.
  * @returns The class name, ref, slot name, and event handlers to apply on the dialog element.
@@ -105,19 +99,10 @@ export function useModalDialog({
 
   const show = useCallback(
     (dialog: HTMLDialogElement) => {
-      const focused = getActiveElement();
-      if (dialog.hasAttribute('popover')) {
-        dialog.hidePopover();
-        dialog.removeAttribute('popover');
-      }
-      dialog.close();
-      dialog.showModal();
+      showDialogAsModal(dialog);
       isModal.current = true;
-      if (dialog.contains(focused) && focused instanceof HTMLElement) {
-        focused.focus();
-      }
       dialog.dispatchEvent(
-        new CustomEvent('AppsembleModalDialogShow', {
+        new CustomEvent(modalDialogShowEvent, {
           bubbles: true,
           composed: true,
           detail: { slot },
@@ -127,18 +112,10 @@ export function useModalDialog({
     [slot],
   );
 
-  // The dialog stays open as a manual popover, so it remains rendered on top of the page while it
-  // transitions out, without blocking the page.
   const close = useCallback((dialog: HTMLDialogElement) => {
     isModal.current = false;
-    dialog.close();
-    // eslint-disable-next-line no-param-reassign
-    dialog.open = true;
-    dialog.setAttribute('popover', 'manual');
-    dialog.showPopover();
-    dialog.dispatchEvent(
-      new CustomEvent('AppsembleModalDialogClose', { bubbles: true, composed: true }),
-    );
+    closeModalDialog(dialog, true);
+    dialog.dispatchEvent(new CustomEvent(modalDialogCloseEvent, { bubbles: true, composed: true }));
   }, []);
 
   useLayoutEffect(() => {
