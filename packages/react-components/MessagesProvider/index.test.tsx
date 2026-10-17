@@ -148,6 +148,59 @@ describe('modal dialogs', () => {
     expect(pageRegion?.textContent).toBe('Deleted');
   });
 
+  it('should show a message that is shown as the dialog closes on top of the dialog', () => {
+    function DeletePage(): ReactNode {
+      const [isActive, setIsActive] = useState(true);
+      const push = useMessages();
+
+      return (
+        <Modal isActive={isActive} onClose={() => setIsActive(false)}>
+          <button
+            onClick={() => {
+              push({ body: 'Deleted', color: 'success' });
+              setIsActive(false);
+            }}
+            type="button"
+          >
+            Delete
+          </button>
+        </Modal>
+      );
+    }
+
+    render(
+      <MessagesProvider>
+        <DeletePage />
+      </MessagesProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+
+    // The dialog stays rendered on top of the page while it transitions out.
+    expect(document.elementsFromPoint(0, 0)[0].textContent).toBe('Deleted');
+  });
+
+  it('should keep showing messages in a dialog that the browser closes if it is not closable', async () => {
+    render(
+      <MessagesProvider>
+        <Modal closable={false} isActive>
+          <ShowMessageButton message="Saving failed" />
+        </Modal>
+      </MessagesProvider>,
+    );
+    const dialog = screen.getByRole('dialog') as HTMLDialogElement;
+    // A polite live region only announces content added after it is rendered.
+    const politeRegion = dialog.querySelector('[aria-live="polite"]');
+
+    // The browser closes a modal dialog on a close request that can't be canceled.
+    act(() => dialog.close());
+    await waitFor(() => expect(dialog.open).toBe(true));
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Show' }));
+
+    expect(politeRegion?.textContent).toBe('Saving failed');
+    expect(document.elementsFromPoint(0, 0)[0]).toBe(politeRegion);
+  });
+
   it('should show messages on the page after the dialog is closed', async () => {
     render(<Page />);
     fireEvent.click(screen.getByRole('button', { name: 'Close' }));
@@ -234,6 +287,19 @@ describe('modal dialogs in a shadow root', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Show' }));
 
     expect(host.contains(screen.getByRole('alert'))).toBe(false);
+  });
+
+  it('should keep the live region of a dialog that is shown again', () => {
+    const { dialog, host } = renderShadowDialog();
+    showModal(dialog);
+    const politeRegion = host.querySelector('[aria-live="polite"]');
+
+    // A dialog that isn't closable is shown again after the browser closes it.
+    dialog.close();
+    showModal(dialog);
+    fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+    expect(politeRegion?.textContent).toBe('Saving failed');
   });
 
   it('should only let the topmost dialog stay on top while it transitions out', () => {

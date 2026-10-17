@@ -115,8 +115,12 @@ export function trackShadowModalDialogs(host: Element): () => void {
   const onShow = (event: Event): void => {
     const [dialog] = event.composedPath() as HTMLDialogElement[];
     const { slot } = (event as CustomEvent<{ slot: string }>).detail;
+    const shown = modalDialogs.find((modalDialog) => modalDialog.dialog === dialog) ?? {
+      dialog,
+      slot,
+    };
     dialogs.add(dialog);
-    setModalDialogs([...modalDialogs, { dialog, slot }]);
+    setModalDialogs([...modalDialogs.filter((modalDialog) => modalDialog !== shown), shown]);
   };
 
   const onClose = (event: Event): void => {
@@ -144,26 +148,27 @@ export function trackShadowModalDialogs(host: Element): () => void {
 /**
  * Show an open dialog as a modal dialog.
  *
- * The modal dialogs inside the dialog were opened on top of it, so they are shown on top of it
- * again.
+ * A dialog that is already tracked stays tracked, so content rendered inside it stays mounted. The
+ * modal dialogs inside the dialog were opened on top of it, so they are shown on top of it again.
  *
  * @param dialog The dialog to show.
  */
 function showModalDialog(dialog: HTMLDialogElement): void {
+  const shown = modalDialogs.find((modalDialog) => modalDialog.dialog === dialog) ?? { dialog };
   const nested = modalDialogs.filter((modalDialog) => {
     let node: Node | null = modalDialog.dialog;
     while (node && node !== dialog) {
       node = node instanceof ShadowRoot ? node.host : node.parentNode;
     }
-    return node === dialog;
+    return node === dialog && modalDialog !== shown;
   });
   showDialogAsModal(dialog);
   for (const modalDialog of nested) {
     showDialogAsModal(modalDialog.dialog);
   }
   setModalDialogs([
-    ...modalDialogs.filter((modalDialog) => !nested.includes(modalDialog)),
-    { dialog },
+    ...modalDialogs.filter((modalDialog) => modalDialog !== shown && !nested.includes(modalDialog)),
+    shown,
     ...nested,
   ]);
 }
@@ -333,8 +338,8 @@ export function useModalDialog({
         return;
       }
 
-      stopShowingModalDialog(dialog);
       if (closable) {
+        stopShowingModalDialog(dialog);
         onClose?.(event);
       } else {
         showModalDialog(dialog);

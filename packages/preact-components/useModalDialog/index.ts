@@ -188,10 +188,11 @@ export function useModalDialog({
         return;
       }
 
-      close(dialog);
       if (closable) {
+        close(dialog);
         onClose?.(event);
       } else {
+        // The app isn't told the dialog closed, so content it renders inside it stays mounted.
         show(dialog);
       }
     },
