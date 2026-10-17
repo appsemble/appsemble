@@ -1,7 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { type ReactNode, useState } from 'react';
-import { describe, expect, it, onTestFinished, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Modal } from './index.js';
 
@@ -138,10 +138,6 @@ describe('modal dialog behavior', () => {
 });
 
 describe('stacked modal dialogs', () => {
-  function getTopElement(): Element {
-    return document.elementsFromPoint(0, 0)[0];
-  }
-
   it('should keep a dialog that closes below the dialog on top of it', () => {
     const { rerender } = render(
       <>
@@ -157,40 +153,6 @@ describe('stacked modal dialogs', () => {
       </>,
     );
 
-    expect(getTopElement()).toBe(screen.getByText('Upper').closest('dialog'));
-  });
-
-  it('should show a dialog inside another dialog on top of it', () => {
-    render(
-      <Modal isActive>
-        Outer
-        <Modal isActive>Inner</Modal>
-      </Modal>,
-    );
-
-    expect(getTopElement()).toBe(screen.getByText('Inner').closest('dialog'));
-  });
-
-  it('should keep a dialog inside another dialog on top of it when the other dialog is shown again', () => {
-    const mediaQuery = document.createElement('style');
-    mediaQuery.textContent = '.is-hidden-desktop { display: none !important; }';
-    document.head.append(mediaQuery);
-    onTestFinished(() => mediaQuery.remove());
-    const { rerender } = render(
-      <Modal extraClassName="is-hidden-desktop" isActive>
-        Outer
-        <Modal isActive>Inner</Modal>
-      </Modal>,
-    );
-
-    rerender(
-      <Modal isActive>
-        Outer
-        <Modal isActive>Inner</Modal>
-      </Modal>,
-    );
-    fireEvent(window, new Event('resize'));
-
-    expect(getTopElement()).toBe(screen.getByText('Inner').closest('dialog'));
+    expect(document.elementsFromPoint(0, 0)[0]).toBe(screen.getByText('Upper').closest('dialog'));
   });
 });

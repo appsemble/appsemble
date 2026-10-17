@@ -148,29 +148,14 @@ export function trackShadowModalDialogs(host: Element): () => void {
 /**
  * Show an open dialog as a modal dialog.
  *
- * A dialog that is already tracked stays tracked, so content rendered inside it stays mounted. The
- * modal dialogs inside the dialog were opened on top of it, so they are shown on top of it again.
+ * A dialog that is already tracked stays tracked, so content rendered inside it stays mounted.
  *
  * @param dialog The dialog to show.
  */
 function showModalDialog(dialog: HTMLDialogElement): void {
   const shown = modalDialogs.find((modalDialog) => modalDialog.dialog === dialog) ?? { dialog };
-  const nested = modalDialogs.filter((modalDialog) => {
-    let node: Node | null = modalDialog.dialog;
-    while (node && node !== dialog) {
-      node = node instanceof ShadowRoot ? node.host : node.parentNode;
-    }
-    return node === dialog && modalDialog !== shown;
-  });
   showDialogAsModal(dialog);
-  for (const modalDialog of nested) {
-    showDialogAsModal(modalDialog.dialog);
-  }
-  setModalDialogs([
-    ...modalDialogs.filter((modalDialog) => modalDialog !== shown && !nested.includes(modalDialog)),
-    shown,
-    ...nested,
-  ]);
+  setModalDialogs([...modalDialogs.filter((modalDialog) => modalDialog !== shown), shown]);
 }
 
 /**
