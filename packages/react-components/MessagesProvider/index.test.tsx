@@ -236,6 +236,32 @@ describe('modal dialogs in a shadow root', () => {
     expect(host.contains(screen.getByRole('alert'))).toBe(false);
   });
 
+  it('should only let the topmost dialog stay on top while it transitions out', () => {
+    const { dialog: lower, host } = renderShadowDialog();
+    const upper = document.createElement('dialog');
+    host.shadowRoot!.append(upper);
+    showModal(lower);
+    showModal(upper);
+
+    const closeLower = new CustomEvent('AppsembleModalDialogClose', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    const closeUpper = new CustomEvent('AppsembleModalDialogClose', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    act(() => {
+      lower.dispatchEvent(closeLower);
+      upper.dispatchEvent(closeUpper);
+    });
+
+    expect(closeLower.defaultPrevented).toBe(true);
+    expect(closeUpper.defaultPrevented).toBe(false);
+  });
+
   it('should show messages on the page after the shadow host stops being tracked', () => {
     const { dialog, host, stopTracking } = renderShadowDialog();
     showModal(dialog);

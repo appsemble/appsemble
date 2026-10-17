@@ -204,3 +204,40 @@ it('should tell the shadow host when it stops being shown as a modal dialog', ()
 
   expect(closeEvents).toHaveLength(1);
 });
+
+it('should stay on top while it transitions out', () => {
+  const { container } = createShadowContainer();
+  const { rerender } = render(
+    <ModalCard closeButtonLabel="Close" isActive>
+      test
+    </ModalCard>,
+    { container },
+  );
+
+  rerender(
+    <ModalCard closeButtonLabel="Close" isActive={false}>
+      test
+    </ModalCard>,
+  );
+
+  expect(document.elementsFromPoint(0, 0)[0]).toBe(within(container).getByRole('dialog'));
+});
+
+it('should not stay on top while it transitions out if the app says it is not the topmost dialog', () => {
+  const { container, host } = createShadowContainer();
+  host.addEventListener('AppsembleModalDialogClose', (event) => event.preventDefault());
+  const { rerender } = render(
+    <ModalCard closeButtonLabel="Close" isActive>
+      test
+    </ModalCard>,
+    { container },
+  );
+
+  rerender(
+    <ModalCard closeButtonLabel="Close" isActive={false}>
+      test
+    </ModalCard>,
+  );
+
+  expect(document.elementsFromPoint(0, 0)).not.toContain(within(container).getByRole('dialog'));
+});

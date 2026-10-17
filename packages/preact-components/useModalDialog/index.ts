@@ -69,10 +69,11 @@ interface UseModalDialogResult {
  * A dialog hidden using CSS, for example by a media query, isn't shown as a modal dialog, so it
  * doesn't block the page.
  *
- * The dialog dispatches a composed show event when it is shown as a modal dialog, and a composed
- * close event when it stops being shown as a modal dialog. This lets the app render content, such
- * as messages, inside the topmost dialog. The detail of the show event contains the name of the
- * slot that renders this content.
+ * The dialog dispatches a composed show event when it is shown as a modal dialog, and a cancelable
+ * composed close event when it stops being shown as a modal dialog. This lets the app render
+ * content, such as messages, inside the topmost dialog. The detail of the show event contains the
+ * name of the slot that renders this content. The app cancels the close event if the dialog isn't
+ * the topmost modal dialog.
  *
  * @param options The options for the modal dialog.
  * @returns The class name, ref, slot name, and event handlers to apply on the dialog element.
@@ -114,8 +115,10 @@ export function useModalDialog({
 
   const close = useCallback((dialog: HTMLDialogElement) => {
     isModal.current = false;
-    closeModalDialog(dialog, true);
-    dialog.dispatchEvent(new CustomEvent(modalDialogCloseEvent, { bubbles: true, composed: true }));
+    const onTop = dialog.dispatchEvent(
+      new CustomEvent(modalDialogCloseEvent, { bubbles: true, cancelable: true, composed: true }),
+    );
+    closeModalDialog(dialog, onTop);
   }, []);
 
   useLayoutEffect(() => {

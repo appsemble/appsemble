@@ -8,8 +8,11 @@
 export const modalDialogShowEvent = 'AppsembleModalDialogShow';
 
 /**
- * The name of the composed event a dialog inside a shadow root dispatches when it stops being shown
- * as a modal dialog.
+ * The name of the cancelable composed event a dialog inside a shadow root dispatches when it stops
+ * being shown as a modal dialog.
+ *
+ * The event is canceled if the dialog isn't the topmost modal dialog, so it isn't rendered on top
+ * of the modal dialogs above it while it transitions out.
  */
 export const modalDialogCloseEvent = 'AppsembleModalDialogClose';
 

@@ -101,9 +101,10 @@ function removeModalDialog(dialog: HTMLDialogElement): void {
  * Track the modal dialogs inside the shadow root of an element.
  *
  * A dialog inside the shadow root dispatches a composed show event when it is shown as a modal
- * dialog, and a composed close event when it stops being shown as a modal dialog. The detail of the
- * show event contains the name of a slot in the dialog, so content can be rendered inside the dialog
- * by the shadow host.
+ * dialog, and a cancelable composed close event when it stops being shown as a modal dialog. The
+ * detail of the show event contains the name of a slot in the dialog, so content can be rendered
+ * inside the dialog by the shadow host. The close event is canceled if the dialog isn't the topmost
+ * modal dialog.
  *
  * @param host The shadow host whose modal dialogs to track.
  * @returns A function that stops tracking the modal dialogs, and removes the ones that are shown.
@@ -120,6 +121,9 @@ export function trackShadowModalDialogs(host: Element): () => void {
 
   const onClose = (event: Event): void => {
     const [dialog] = event.composedPath() as HTMLDialogElement[];
+    if (modalDialogs.at(-1)?.dialog !== dialog) {
+      event.preventDefault();
+    }
     dialogs.delete(dialog);
     removeModalDialog(dialog);
   };
@@ -140,11 +144,28 @@ export function trackShadowModalDialogs(host: Element): () => void {
 /**
  * Show an open dialog as a modal dialog.
  *
+ * The modal dialogs inside the dialog were opened on top of it, so they are shown on top of it
+ * again.
+ *
  * @param dialog The dialog to show.
  */
 function showModalDialog(dialog: HTMLDialogElement): void {
+  const nested = modalDialogs.filter((modalDialog) => {
+    let node: Node | null = modalDialog.dialog;
+    while (node && node !== dialog) {
+      node = node instanceof ShadowRoot ? node.host : node.parentNode;
+    }
+    return node === dialog;
+  });
   showDialogAsModal(dialog);
-  setModalDialogs([...modalDialogs, { dialog }]);
+  for (const modalDialog of nested) {
+    showDialogAsModal(modalDialog.dialog);
+  }
+  setModalDialogs([
+    ...modalDialogs.filter((modalDialog) => !nested.includes(modalDialog)),
+    { dialog },
+    ...nested,
+  ]);
 }
 
 /**
@@ -153,7 +174,7 @@ function showModalDialog(dialog: HTMLDialogElement): void {
  * @param dialog The dialog to stop showing as a modal dialog.
  */
 function stopShowingModalDialog(dialog: HTMLDialogElement): void {
-  closeModalDialog(dialog, true);
+  closeModalDialog(dialog, modalDialogs.at(-1)?.dialog === dialog);
   removeModalDialog(dialog);
 }
 
