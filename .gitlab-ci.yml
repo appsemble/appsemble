@@ -610,6 +610,8 @@ test node single bucket:
     - files=$(grep -rlw -E "$exports" --include='*.test.ts' --exclude-dir=node_modules packages/cli packages/server | grep -vxF packages/server/commands/backupProductionData.test.ts)
     - test -n "$files"
     - echo "$files"
+    # The service health check passes on any port SeaweedFS exposes, and those open before S3 does.
+    - until (echo > "/dev/tcp/$S3_HOST/$S3_PORT") 2>/dev/null; do sleep 1; done
     - npm test -- --no-file-parallelism $files
   artifacts:
     reports:
