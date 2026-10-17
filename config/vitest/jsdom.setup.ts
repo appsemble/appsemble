@@ -27,19 +27,45 @@ if (typeof document !== 'undefined') {
     return isDisplayed(this);
   };
 
+  // Jsdom has no top layer, so the elements shown in it are tracked, ordered from bottom to top.
+  const topLayer: Element[] = [];
+
+  const removeFromTopLayer = (element: Element): void => {
+    const index = topLayer.indexOf(element);
+    if (index !== -1) {
+      topLayer.splice(index, 1);
+    }
+  };
+
+  // Jsdom implements no layout, so an element in the top layer is treated as if it covers the whole
+  // viewport. This lets tests check which element is rendered on top.
+  document.elementsFromPoint = function elementsFromPoint() {
+    return [
+      ...topLayer.filter((element) => element.isConnected).toReversed(),
+      document.body,
+      document.documentElement,
+    ];
+  };
+
   // Jsdom has no top layer, so it doesn't implement popovers. A popover requires the popover
-  // attribute, and a dialog can't be shown as a modal dialog while it is shown as a popover.
+  // attribute, and a dialog can't be shown as a modal dialog while it is shown as a popover. Showing
+  // an element adds it on top of the top layer.
   const shownPopovers = new WeakSet<HTMLElement>();
 
   HTMLElement.prototype.showPopover = function showPopover() {
     if (!this.hasAttribute('popover')) {
       throw new DOMException('The element is not a popover.', 'NotSupportedError');
     }
+    if (shownPopovers.has(this)) {
+      return;
+    }
     shownPopovers.add(this);
+    topLayer.push(this);
   };
 
   HTMLElement.prototype.hidePopover = function hidePopover() {
     shownPopovers.delete(this);
+    removeFromTopLayer(this);
   };
 
   // Jsdom has no top layer, so it doesn't implement the methods of a dialog. Opening a dialog sets
@@ -57,6 +83,7 @@ if (typeof document !== 'undefined') {
       throw new DOMException('The dialog is shown as a popover.', 'InvalidStateError');
     }
     this.show();
+    topLayer.push(this);
     const delegate = this.querySelector<HTMLElement>(
       'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
     );
@@ -68,6 +95,7 @@ if (typeof document !== 'undefined') {
       return;
     }
     this.open = false;
+    removeFromTopLayer(this);
     setTimeout(() => this.dispatchEvent(new Event('close')));
   };
 }
