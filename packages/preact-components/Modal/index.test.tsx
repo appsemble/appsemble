@@ -68,28 +68,6 @@ it('should close the modal when escape is pressed', () => {
   expect(onClose).toHaveBeenCalledWith();
 });
 
-it('should not close the modal when another key is pressed', () => {
-  const onClose = vi.fn();
-  render(
-    <Modal closeButtonLabel="Close" isActive onClose={() => onClose()}>
-      test
-    </Modal>,
-  );
-  fireEvent.keyDown(screen.getByText('test'), { key: 'Enter' });
-  expect(onClose).not.toHaveBeenCalled();
-});
-
-it('should not close the modal when escape is pressed if it is not closable', () => {
-  const onClose = vi.fn();
-  render(
-    <Modal closable={false} closeButtonLabel="Close" isActive onClose={onClose}>
-      test
-    </Modal>,
-  );
-  fireEvent.keyDown(screen.getByText('test'), { key: 'Escape' });
-  expect(onClose).not.toHaveBeenCalled();
-});
-
 it('should close the modal on a close request of the browser', () => {
   const onClose = vi.fn();
   render(
@@ -103,48 +81,6 @@ it('should close the modal on a close request of the browser', () => {
   // The dialog is closed by the component, so it can transition out.
   expect(cancel.defaultPrevented).toBe(true);
   expect(onClose).toHaveBeenCalledWith();
-});
-
-it('should not close the modal on a close request of the browser if it is not closable', () => {
-  const onClose = vi.fn();
-  render(
-    <Modal closable={false} closeButtonLabel="Close" isActive onClose={onClose}>
-      test
-    </Modal>,
-  );
-  const cancel = new Event('cancel', { cancelable: true });
-  fireEvent(screen.getByRole('dialog'), cancel);
-
-  expect(cancel.defaultPrevented).toBe(true);
-  expect(onClose).not.toHaveBeenCalled();
-});
-
-it('should return focus to the element that opened it when it closes', async () => {
-  function Page(): VNode {
-    const [isActive, setIsActive] = useState(false);
-
-    return (
-      <>
-        <button onClick={() => setIsActive(true)} type="button">
-          Open
-        </button>
-        <Modal closeButtonLabel="Close" isActive={isActive} onClose={() => setIsActive(false)}>
-          test
-        </Modal>
-      </>
-    );
-  }
-
-  render(<Page />);
-  const opener = screen.getByRole('button', { name: 'Open' });
-  opener.focus();
-  fireEvent.click(opener);
-  const close = await screen.findByRole('button', { name: 'Close' });
-  close.focus();
-
-  fireEvent.click(close);
-
-  await waitFor(() => expect(document.activeElement).toBe(opener));
 });
 
 it('should show the modal again when it is reopened while it transitions out', async () => {

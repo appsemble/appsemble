@@ -93,6 +93,25 @@ describe('modal dialogs', () => {
     );
   }
 
+  function DeletePage(): ReactNode {
+    const [isActive, setIsActive] = useState(true);
+    const push = useMessages();
+
+    return (
+      <Modal isActive={isActive} onClose={() => setIsActive(false)}>
+        <button
+          onClick={() => {
+            push({ body: 'Deleted', color: 'success' });
+            setIsActive(false);
+          }}
+          type="button"
+        >
+          Delete
+        </button>
+      </Modal>
+    );
+  }
+
   it('should show messages inside the open dialog', () => {
     render(<Page />);
     const dialog = screen.getByRole('dialog');
@@ -114,25 +133,6 @@ describe('modal dialogs', () => {
   });
 
   it('should announce a message that is shown as the dialog closes', () => {
-    function DeletePage(): ReactNode {
-      const [isActive, setIsActive] = useState(true);
-      const push = useMessages();
-
-      return (
-        <Modal isActive={isActive} onClose={() => setIsActive(false)}>
-          <button
-            onClick={() => {
-              push({ body: 'Deleted', color: 'success' });
-              setIsActive(false);
-            }}
-            type="button"
-          >
-            Delete
-          </button>
-        </Modal>
-      );
-    }
-
     const { container } = render(
       <MessagesProvider>
         <DeletePage />
@@ -149,25 +149,6 @@ describe('modal dialogs', () => {
   });
 
   it('should show a message that is shown as the dialog closes on top of the dialog', () => {
-    function DeletePage(): ReactNode {
-      const [isActive, setIsActive] = useState(true);
-      const push = useMessages();
-
-      return (
-        <Modal isActive={isActive} onClose={() => setIsActive(false)}>
-          <button
-            onClick={() => {
-              push({ body: 'Deleted', color: 'success' });
-              setIsActive(false);
-            }}
-            type="button"
-          >
-            Delete
-          </button>
-        </Modal>
-      );
-    }
-
     render(
       <MessagesProvider>
         <DeletePage />

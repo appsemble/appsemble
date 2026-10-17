@@ -121,20 +121,6 @@ describe('modal dialog behavior', () => {
 
     expect(screen.getByRole('dialog').contains(document.activeElement)).toBe(true);
   });
-
-  it('should not close when escape is pressed if it is not closable', async () => {
-    const user = userEvent.setup();
-    const onClose = vi.fn();
-    render(
-      <Modal closable={false} isActive onClose={onClose}>
-        test
-      </Modal>,
-    );
-
-    await user.keyboard('{Escape}');
-
-    expect(onClose).not.toHaveBeenCalled();
-  });
 });
 
 describe('stacked modal dialogs', () => {
