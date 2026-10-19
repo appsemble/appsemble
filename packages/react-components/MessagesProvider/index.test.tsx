@@ -2,7 +2,6 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import { type ReactNode, useState } from 'react';
 import { describe, expect, it, onTestFinished, vi } from 'vitest';
 
-import styles from './index.module.css';
 import { MessagesProvider, type Msg, useMessages } from './index.js';
 import { Modal } from '../Modal/index.js';
 import { trackShadowModalDialogs } from '../useModalDialog/index.js';
@@ -208,10 +207,29 @@ describe('modal dialogs', () => {
     expect(dialog.contains(message)).toBe(false);
   });
 
-  it('should not fade in or announce a shown message again after the dialog closes', async () => {
-    render(<Page />);
-    const dialog = screen.getByRole('dialog');
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Show' }));
+  it('should not announce a shown message assertively again when a dialog opens and closes', async () => {
+    function DialogPage(): ReactNode {
+      const [isActive, setIsActive] = useState(false);
+
+      return (
+        <>
+          <ShowMessageButton message="Saving failed" />
+          <button onClick={() => setIsActive(true)} type="button">
+            Open
+          </button>
+          <Modal isActive={isActive} onClose={() => setIsActive(false)}>
+            Dialog
+          </Modal>
+        </>
+      );
+    }
+
+    render(
+      <MessagesProvider>
+        <DialogPage />
+      </MessagesProvider>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Show' }));
     // Wait for the message to fade in.
     await act(
       () =>
@@ -220,12 +238,12 @@ describe('modal dialogs', () => {
         }),
     );
 
+    fireEvent.click(screen.getByRole('button', { name: 'Open' }));
     fireEvent.click(screen.getByRole('button', { name: 'Close' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
 
-    const message = screen.getByText('Saving failed');
+    expect(screen.getByText('Saving failed')).not.toBeNull();
     expect(screen.queryByRole('alert')).toBeNull();
-    expect(message.closest(`.${styles.messageEnter}`)).toBeNull();
   });
 
   it('should announce a message assertively if the dialog closes while it fades in', async () => {

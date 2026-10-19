@@ -42,15 +42,14 @@ interface UniqueMessage extends Msg {
 }
 
 /**
- * The keys of the live regions messages finished transitioning in.
+ * The messages that finished transitioning in.
  */
-const messageRegions = new WeakMap<UniqueMessage, string>();
+const shownMessages = new WeakSet<UniqueMessage>();
 
 /**
  * The keys of the live regions rendered inside modal dialogs.
  */
 const regionKeys = new WeakMap<ModalDialog, string>();
-const pageRegionKey = 'page';
 let regionCount = 0;
 
 function getRegionKey(modalDialog: ModalDialog): string {
@@ -153,14 +152,14 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
     [forceUpdate],
   );
 
-  const renderRegion = (key: string, active: boolean, slot?: string): ReactNode => (
+  const renderRegion = (active: boolean, slot?: string): ReactNode => (
     <LiveRegion active={active} modalDialogs={modalDialogs} slot={slot}>
       <TransitionGroup>
         {(active ? msgs.current : []).map((message) => {
-          // A message that was shown in another live region before a modal dialog opened or closed
-          // is not transitioned in or announced assertively again.
-          const region = messageRegions.get(message);
-          const moved = region != null && region !== key;
+          // A message is rendered in another live region when a modal dialog opens or closes. A
+          // message that finished transitioning in isn't transitioned in or announced assertively
+          // again.
+          const shown = shownMessages.has(message);
           return (
             <CSSTransition
               classNames={{
@@ -169,13 +168,9 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
                 exit: styles.messageExit,
                 exitActive: styles.messageExitActive,
               }}
-              enter={!moved}
+              enter={!shown}
               key={message.id}
-              onEntered={() => {
-                if (!messageRegions.has(message)) {
-                  messageRegions.set(message, key);
-                }
-              }}
+              onEntered={() => shownMessages.add(message)}
               timeout={300}
             >
               <Message
@@ -184,7 +179,7 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
               >
                 <span
                   className={styles.body}
-                  role={(message.color || 'danger') === 'danger' && !moved ? 'alert' : undefined}
+                  role={(message.color || 'danger') === 'danger' && !shown ? 'alert' : undefined}
                 >
                   {message.body}
                 </span>
@@ -207,16 +202,12 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
   return (
     <Context.Provider value={push}>
       {children}
-      {renderRegion(pageRegionKey, !modalDialogs.length)}
+      {renderRegion(!modalDialogs.length)}
       {modalDialogs.map((modalDialog, index) => {
         const root = modalDialog.dialog.getRootNode();
         // The shadow host renders content inside a dialog in its shadow root using a slot.
         return createPortal(
-          renderRegion(
-            getRegionKey(modalDialog),
-            index === modalDialogs.length - 1,
-            modalDialog.slot,
-          ),
+          renderRegion(index === modalDialogs.length - 1, modalDialog.slot),
           root instanceof ShadowRoot ? root.host : modalDialog.dialog,
           getRegionKey(modalDialog),
         );
