@@ -34,6 +34,9 @@
   inset-inline: 10px;
   min-height: 64px;
   position: fixed;
+
+  /* Browsers without popover support render the live region on the page in place. */
+  z-index: 6001;
 }
 
 .deleteButton {

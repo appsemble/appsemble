@@ -14,6 +14,7 @@ import {
 import {
   closeModalDialog,
   getActiveElement,
+  isDisplayed,
   modalDialogCloseEvent,
   modalDialogShowEvent,
   showDialogAsModal,
@@ -251,10 +252,10 @@ export function useModalDialog({
     }
 
     const update = (): void => {
-      const isDisplayed = dialog.checkVisibility();
-      if (isDisplayed && !isModalDialog(dialog)) {
+      const displayed = isDisplayed(dialog);
+      if (displayed && !isModalDialog(dialog)) {
         showModalDialog(dialog);
-      } else if (!isDisplayed && isModalDialog(dialog)) {
+      } else if (!displayed && isModalDialog(dialog)) {
         stopShowingModalDialog(dialog);
       }
     };

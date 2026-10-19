@@ -206,6 +206,24 @@ describe('modal dialogs', () => {
     expect(message.textContent).toBe('Saving failed');
     expect(dialog.contains(message)).toBe(false);
   });
+
+  it('should show messages in browsers that do not support popovers', async () => {
+    const { hidePopover, showPopover } = HTMLElement.prototype;
+    // @ts-expect-error The popover API is removed to simulate an older browser.
+    delete HTMLElement.prototype.hidePopover;
+    // @ts-expect-error The popover API is removed to simulate an older browser.
+    delete HTMLElement.prototype.showPopover;
+    onTestFinished(() => {
+      Object.assign(HTMLElement.prototype, { hidePopover, showPopover });
+    });
+    render(<Page />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+    expect(screen.getByRole('alert').textContent).toBe('Saving failed');
+  });
 });
 
 describe('modal dialogs in a shadow root', () => {

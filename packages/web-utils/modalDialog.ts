@@ -17,6 +17,16 @@ export const modalDialogShowEvent = 'AppsembleModalDialogShow';
 export const modalDialogCloseEvent = 'AppsembleModalDialogClose';
 
 /**
+ * Check whether an element is displayed, for example because a media query doesn't hide it.
+ *
+ * @param element The element to check.
+ * @returns Whether the element generates a box.
+ */
+export function isDisplayed(element: Element): boolean {
+  return element.checkVisibility?.() ?? element.getClientRects().length > 0;
+}
+
+/**
  * Find the focused element, including focused elements inside shadow roots.
  *
  * @returns The element that has focus.
@@ -64,7 +74,7 @@ export function closeModalDialog(dialog: HTMLDialogElement, onTop: boolean): voi
   dialog.close();
   // eslint-disable-next-line no-param-reassign
   dialog.open = true;
-  if (onTop) {
+  if (onTop && 'showPopover' in dialog) {
     dialog.setAttribute('popover', 'manual');
     dialog.showPopover();
   }

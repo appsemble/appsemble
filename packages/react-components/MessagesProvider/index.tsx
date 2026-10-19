@@ -85,6 +85,9 @@ function LiveRegion({ active, children, modalDialogs, slot }: LiveRegionProps): 
 
   useLayoutEffect(() => {
     const region = ref.current!;
+    if (!('showPopover' in region)) {
+      return;
+    }
     region.setAttribute('popover', 'manual');
     if (active) {
       region.hidePopover();
