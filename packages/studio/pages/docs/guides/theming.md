@@ -33,11 +33,36 @@ These change the styling for some of the most common elements of an app.
 | -------------- | ---------------------------------------------------------------------------------------------------- |
 | `primaryColor` | The color that is most commonly used in your app in order to create a distinct identity for your app |
 | `linkColor`    | Color of links. This sets the (background) color for any element with the `<a>` tag                  |
-| `font`         | Which font family to use in the app.                                                                 |
+| `font`         | The body font family, used for regular text                                                          |
+| `displayFont`  | A second font family, exposed as `--font-family-display`. It falls back to `font`                    |
 
 Any font family from [Google Fonts][google-fonts] may be used. Additionally any custom font can be
 used by specifying the source to be `custom` and uploading the font file(s) as asset(s), then
 applying it in the App’s CSS using the [`@font-face`][font-face] at-rule.
+
+```yaml
+theme:
+  font:
+    family: Open Sans
+  displayFont:
+    family: Baloo 2
+```
+
+The body font is applied to the app by Bulma. Both families are also exposed as custom properties on
+`:root`, so they can be used in the app's CSS and in block styles:
+
+| Custom property         | Value                   |
+| ----------------------- | ----------------------- |
+| `--font-family`         | The body font family    |
+| `--font-family-display` | The display font family |
+
+```css
+h1,
+h2,
+h3 {
+  font-family: var(--font-family-display);
+}
+```
 
 ### Semantics
 

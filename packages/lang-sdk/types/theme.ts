@@ -62,4 +62,12 @@ export interface Theme {
    * The name of a font available on Google fonts.
    */
   font: FontDefinition;
+
+  /**
+   * A second font family the app loads, exposed as the `--font-family-display` custom property for
+   * the CSS of the app and its blocks.
+   *
+   * This falls back to the body font.
+   */
+  displayFont?: FontDefinition;
 }

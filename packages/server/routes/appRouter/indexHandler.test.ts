@@ -1,7 +1,7 @@
 // eslint-disable-next-line unicorn/import-style
 import crypto from 'node:crypto';
 
-import { type AppDefinition } from '@appsemble/lang-sdk';
+import { type AppDefinition, type Theme } from '@appsemble/lang-sdk';
 import {
   errorMiddleware,
   logger,
@@ -1094,7 +1094,25 @@ describe('indexHandler', () => {
     });
   });
 
-  it('should render a stricter published app CSP when contentSecurityPolicy is configured', async () => {
+  it.each([
+    {},
+    {
+      theme: { font: { family: 'body', source: 'custom' }, displayFont: { family: 'Baloo 2' } },
+    },
+    {
+      theme: { font: { family: 'body', source: 'custom' } },
+      pageTheme: { displayFont: { family: 'Baloo 2' } },
+    },
+    {
+      theme: { font: { family: 'body', source: 'custom' } },
+      blockTheme: { font: { family: 'Lato' } },
+    },
+  ] as {
+    theme?: Partial<Theme>;
+    pageTheme?: Partial<Theme>;
+    blockTheme?: Partial<Theme>;
+  }[])('should render a stricter published app CSP for %j', async (themes) => {
+    const { theme, pageTheme, blockTheme } = themes;
     setArgv({
       blockAssetsBaseUrl: 'https://static.appsemble.example/minio',
       host: 'http://host.example',
@@ -1107,10 +1125,12 @@ describe('indexHandler', () => {
         contentSecurityPolicy: {
           'connect-src': ['https://api.example.com'],
         },
+        theme,
         pages: [
           {
             name: 'Test Page',
-            blocks: [],
+            theme: pageTheme,
+            blocks: [{ type: 'a', version: '0.1.0', theme: blockTheme }],
           },
         ],
       },
@@ -1157,7 +1177,7 @@ describe('indexHandler', () => {
       expect.arrayContaining(['https://static.appsemble.example']),
     );
     expect(csp['style-src']).toStrictEqual(
-      expect.arrayContaining(['https://static.appsemble.example']),
+      expect.arrayContaining(['https://static.appsemble.example', 'https://fonts.googleapis.com']),
     );
     expect(csp['media-src']).toStrictEqual(
       expect.arrayContaining([
@@ -1170,6 +1190,39 @@ describe('indexHandler', () => {
     );
     expect(csp['media-src']).not.toContain('*');
     expect(csp['object-src']).toStrictEqual(["'none'"]);
+  });
+
+  it('should not allow google fonts when every theme uses custom fonts', async () => {
+    await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        theme: { font: { family: 'body', source: 'custom' } },
+        pages: [
+          {
+            name: 'Test Page',
+            theme: { displayFont: { family: 'heading', source: 'custom' } },
+            blocks: [
+              {
+                type: 'a',
+                version: '0.1.0',
+                theme: { font: { family: 'block', source: 'custom' } },
+              },
+            ],
+          },
+        ],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const response = await request.get('/');
+    const csp = parseCsp(response.headers['content-security-policy'] as string);
+
+    expect(csp['style-src']).not.toContain('https://fonts.googleapis.com');
   });
 
   it('should render a 404 page if no app is found', async () => {
