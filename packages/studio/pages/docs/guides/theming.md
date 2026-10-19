@@ -48,8 +48,8 @@ theme:
     family: Baloo 2
 ```
 
-Bulma applies the body font to the app and the display font to titles. Both families are also
-exposed as custom properties on `:root`, so they can be used in the app's CSS and in block styles:
+The body font is applied to the app by Bulma. Both families are also exposed as custom properties on
+`:root`, so they can be used in the app's CSS and in block styles:
 
 | Custom property         | Value                   |
 | ----------------------- | ----------------------- |

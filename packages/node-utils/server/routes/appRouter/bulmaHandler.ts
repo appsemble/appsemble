@@ -58,7 +58,6 @@ function processStyle(theme: QueryParamTheme): string {
     @charset "utf-8";
     ${googleFontsImports}
     $family-sans-serif: '${fontFamily}', sans-serif !default;
-    $title-family: '${displayFontFamily}', sans-serif;
     $primary: ${theme.primaryColor || baseTheme.primaryColor};
     $link: ${theme.linkColor || baseTheme.linkColor};
     $info: ${theme.infoColor || baseTheme.infoColor};
