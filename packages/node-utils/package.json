@@ -118,7 +118,7 @@
     "@types/type-is": "1.6.7",
     "axios-mock-adapter": "1.22.0",
     "axios-test-instance": "8.0.0",
-    "vitest": "4.1.11"
+    "vitest": "4.1.12"
   },
   "peerDependencies": {
     "prettier": "^3"

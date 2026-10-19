@@ -28,6 +28,6 @@
   "devDependencies": {
     "@appsemble/lang-sdk": "0.40.5",
     "@testing-library/preact": "3.2.4",
-    "vitest": "4.1.11"
+    "vitest": "4.1.12"
   }
 }
