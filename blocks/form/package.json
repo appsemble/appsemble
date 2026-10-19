@@ -49,7 +49,7 @@
   "devDependencies": {
     "@appsemble/block-interaction-tests": "0.40.5",
     "@testing-library/preact": "3.2.4",
-    "@testing-library/user-event": "14.6.7",
+    "@testing-library/user-event": "14.6.8",
     "intl-messageformat": "11.2.15",
     "vitest": "4.1.11"
   }
