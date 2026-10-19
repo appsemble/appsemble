@@ -42,9 +42,15 @@ interface UniqueMessage extends Msg {
 }
 
 /**
+ * The keys of the live regions messages finished transitioning in.
+ */
+const messageRegions = new WeakMap<UniqueMessage, string>();
+
+/**
  * The keys of the live regions rendered inside modal dialogs.
  */
 const regionKeys = new WeakMap<ModalDialog, string>();
+const pageRegionKey = 'page';
 let regionCount = 0;
 
 function getRegionKey(modalDialog: ModalDialog): string {
@@ -147,41 +153,53 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
     [forceUpdate],
   );
 
-  const renderRegion = (active: boolean, slot?: string): ReactNode => (
+  const renderRegion = (key: string, active: boolean, slot?: string): ReactNode => (
     <LiveRegion active={active} modalDialogs={modalDialogs} slot={slot}>
       <TransitionGroup>
-        {(active ? msgs.current : []).map((message) => (
-          <CSSTransition
-            classNames={{
-              enter: styles.messageEnter,
-              enterActive: styles.messageEnterActive,
-              exit: styles.messageExit,
-              exitActive: styles.messageExitActive,
-            }}
-            key={message.id}
-            timeout={300}
-          >
-            <Message
-              className={`${styles.content} ${styles[message.layout || 'bottom']}`}
-              color={message.color || 'danger'}
+        {(active ? msgs.current : []).map((message) => {
+          // A message that was shown in another live region before a modal dialog opened or closed
+          // is not transitioned in or announced assertively again.
+          const region = messageRegions.get(message);
+          const moved = region != null && region !== key;
+          return (
+            <CSSTransition
+              classNames={{
+                enter: styles.messageEnter,
+                enterActive: styles.messageEnterActive,
+                exit: styles.messageExit,
+                exitActive: styles.messageExitActive,
+              }}
+              enter={!moved}
+              key={message.id}
+              onEntered={() => {
+                if (!messageRegions.has(message)) {
+                  messageRegions.set(message, key);
+                }
+              }}
+              timeout={300}
             >
-              <span
-                className={styles.body}
-                role={(message.color || 'danger') === 'danger' ? 'alert' : undefined}
+              <Message
+                className={`${styles.content} ${styles[message.layout || 'bottom']}`}
+                color={message.color || 'danger'}
               >
-                {message.body}
-              </span>
-              {message.dismissable ? (
-                <button
-                  aria-label={formatMessage(messages.dismiss)}
-                  className={`delete ${styles.deleteButton}`}
-                  onClick={message.dismiss}
-                  type="button"
-                />
-              ) : null}
-            </Message>
-          </CSSTransition>
-        ))}
+                <span
+                  className={styles.body}
+                  role={(message.color || 'danger') === 'danger' && !moved ? 'alert' : undefined}
+                >
+                  {message.body}
+                </span>
+                {message.dismissable ? (
+                  <button
+                    aria-label={formatMessage(messages.dismiss)}
+                    className={`delete ${styles.deleteButton}`}
+                    onClick={message.dismiss}
+                    type="button"
+                  />
+                ) : null}
+              </Message>
+            </CSSTransition>
+          );
+        })}
       </TransitionGroup>
     </LiveRegion>
   );
@@ -189,12 +207,16 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
   return (
     <Context.Provider value={push}>
       {children}
-      {renderRegion(!modalDialogs.length)}
+      {renderRegion(pageRegionKey, !modalDialogs.length)}
       {modalDialogs.map((modalDialog, index) => {
         const root = modalDialog.dialog.getRootNode();
         // The shadow host renders content inside a dialog in its shadow root using a slot.
         return createPortal(
-          renderRegion(index === modalDialogs.length - 1, modalDialog.slot),
+          renderRegion(
+            getRegionKey(modalDialog),
+            index === modalDialogs.length - 1,
+            modalDialog.slot,
+          ),
           root instanceof ShadowRoot ? root.host : modalDialog.dialog,
           getRegionKey(modalDialog),
         );
