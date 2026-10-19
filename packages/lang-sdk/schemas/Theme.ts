@@ -85,7 +85,8 @@ This is the font used for regular text.
     displayFont: {
       description: `The display font of the app.
 
-This is the font used for headings and other display text. It falls back to the body font.
+A second font family the app loads, exposed as the \`--font-family-display\` custom property for
+the CSS of the app and its blocks. It falls back to the body font.
 `,
       anyOf: [
         { $ref: '#/components/schemas/CustomFontDefinition' },

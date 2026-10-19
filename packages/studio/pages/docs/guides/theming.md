@@ -34,7 +34,7 @@ These change the styling for some of the most common elements of an app.
 | `primaryColor` | The color that is most commonly used in your app in order to create a distinct identity for your app |
 | `linkColor`    | Color of links. This sets the (background) color for any element with the `<a>` tag                  |
 | `font`         | The body font family, used for regular text                                                          |
-| `displayFont`  | The display font family, used for headings. It falls back to `font`                                  |
+| `displayFont`  | A second font family, exposed as `--font-family-display`. It falls back to `font`                    |
 
 Any font family from [Google Fonts][google-fonts] may be used. Additionally any custom font can be
 used by specifying the source to be `custom` and uploading the font file(s) as asset(s), then

@@ -64,7 +64,8 @@ export interface Theme {
   font: FontDefinition;
 
   /**
-   * The font used for headings and other display text.
+   * A second font family the app loads, exposed as the `--font-family-display` custom property for
+   * the CSS of the app and its blocks.
    *
    * This falls back to the body font.
    */
