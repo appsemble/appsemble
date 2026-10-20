@@ -34,6 +34,8 @@ export const baseTest = mergeTests(
   trainingFixtures,
 );
 
+const mailpitURL = process.env.MAILPIT_URL ?? 'http://localhost:8025';
+
 /**
  * Test object with the worker's storage state saved
  *
@@ -92,7 +94,7 @@ export const authenticatedTest = baseTest.extend<
 
   mailpit: [
     async ({}, use, testInfo) => {
-      const mailpit = new MailpitClient('http://localhost:8025');
+      const mailpit = new MailpitClient(mailpitURL);
       const queryEmailsToThisWorker = `to:worker-${testInfo.parallelIndex}@appsemble.com`;
 
       await mailpit.deleteMessagesBySearch({ query: queryEmailsToThisWorker });
