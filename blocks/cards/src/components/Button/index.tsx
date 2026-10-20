@@ -66,6 +66,7 @@ export function ButtonComponent({
     'is-outlined': outlined,
   });
   const remappedTitle = remap(title, item, { index }) as string;
+  const remappedLabel = remap(label, item, { index }) as string;
   if (hide) {
     return null;
   }
@@ -73,7 +74,7 @@ export function ButtonComponent({
   const content = (
     <Fragment>
       {icon ? <Icon icon={icon} size={isMobile ? 'small' : size} /> : null}
-      {label && !isMobile ? <span>{remap(label, item, { index }) as string}</span> : null}
+      {label && !isMobile ? <span>{remappedLabel}</span> : null}
     </Fragment>
   );
 
@@ -93,6 +94,7 @@ export function ButtonComponent({
   return (
     <div className="card-footer-item">
       <button
+        aria-label={isMobile ? remappedLabel : undefined}
         className={className}
         disabled={disabled}
         onClick={onClick}

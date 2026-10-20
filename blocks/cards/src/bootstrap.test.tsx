@@ -25,6 +25,11 @@ interface SetupOptions {
   hideOnNoData?: boolean;
 
   /**
+   * Whether the app renders on a mobile screen.
+   */
+  isMobile?: boolean;
+
+  /**
    * The action triggered when a card is clicked.
    */
   onClick?: BlockProps['actions']['onClick'];
@@ -75,6 +80,7 @@ interface Setup {
 function setup({
   card = { content: 'Content', title: { prop: 'title' } },
   hideOnNoData = false,
+  isMobile = false,
   onClick = Object.assign(() => Promise.resolve(), {
     type: 'noop',
   }) as BlockProps['actions']['onClick'],
@@ -112,6 +118,7 @@ function setup({
       asset: (value: string) => value,
       fa: (name: string) => `fas fa-${name}`,
       formatMessage: (id: string) => id,
+      isMobile,
       remap(remapper: string | { prop: string } | undefined, data: Item) {
         return typeof remapper === 'object' ? data[remapper.prop as keyof Item] : remapper;
       },
@@ -164,7 +171,7 @@ it('should show the error message when the data event reports an error', async (
 
   await emitData([], 'Something broke');
 
-  expect(screen.getByText('error')).toBeDefined();
+  expect(screen.getByRole('alert').textContent).toBe('error');
 });
 
 it('should recover from an error when later data arrives', async () => {
@@ -177,12 +184,13 @@ it('should recover from an error when later data arrives', async () => {
   expect(screen.getByText('Recovered')).toBeDefined();
 });
 
-it('should show the empty message when there is nothing to display', async () => {
+it('should announce the empty message in a live region that exists before the data', async () => {
   const { emitData } = setup();
+  const statuses = screen.getAllByRole('status');
 
   await emitData([]);
 
-  expect(screen.getByText('noData')).toBeDefined();
+  expect(statuses.map((status) => status.textContent)).toContain('noData');
 });
 
 it('should hide when configured to hide without data', async () => {
@@ -297,4 +305,19 @@ it('should give a card without text or image alt a generic name', async () => {
   await emitData([{ id: 1, title: 'First' }]);
 
   expect(screen.getByRole('button', { name: 'openCard' })).toBeDefined();
+});
+
+it('should name icon-only footer buttons on mobile by their label', async () => {
+  const { emitData } = setup({
+    card: {
+      content: 'Content',
+      footer: [{ icon: 'trash', label: 'Delete' }],
+      title: { prop: 'title' },
+    },
+    isMobile: true,
+  });
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.getByRole('button', { name: 'Delete' })).toBeDefined();
 });
