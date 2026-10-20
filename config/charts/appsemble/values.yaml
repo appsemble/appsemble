@@ -213,6 +213,8 @@ remote: null
 
 securityEmail: security@appsemble.com
 
+rejectBreachedPasswords: false
+
 quotas:
   appEmail:
     enabled: false

@@ -758,6 +758,11 @@
       "format": "email",
       "default": "security@appsemble.com"
     },
+    "rejectBreachedPasswords": {
+      "type": "boolean",
+      "description": "If `true`, reject new passwords that appear in the Have I Been Pwned Pwned Passwords data set. The server then sends the first 5 characters of the SHA-1 hash of each new password to api.pwnedpasswords.com.",
+      "default": false
+    },
     "provision": {
       "type": "object",
       "description": "Provision the database with a pre-configured account and client credentials. This is for development purposes only.",

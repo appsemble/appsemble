@@ -5,6 +5,7 @@ import * as Sentry from '@sentry/node';
 import { matcher } from 'matcher';
 
 import { argv } from './argv.js';
+import { pwnedPasswordsApiUrl } from './breachedPassword.js';
 
 const require = createRequire(import.meta.url);
 
@@ -142,7 +143,14 @@ export function configureSentry(settings: {
     const effectiveTracesSampleRate = parseSampleRate(tracesSampleRate, 0.2);
     const effectiveProfileSampleRate = parseSampleRate(profileSampleRate, 0.25);
     const profilingIntegration = getProfilingIntegration();
-    const integrations = [profilingIntegration, Sentry.postgresIntegration()].filter(
+    const integrations = [
+      profilingIntegration,
+      Sentry.postgresIntegration(),
+      // The request URL contains part of the hash of a new password.
+      Sentry.nativeNodeFetchIntegration({
+        ignoreOutgoingRequests: (url) => url.startsWith(pwnedPasswordsApiUrl),
+      }),
+    ].filter(
       (integration): integration is NonNullable<typeof integration> => integration !== undefined,
     );
 

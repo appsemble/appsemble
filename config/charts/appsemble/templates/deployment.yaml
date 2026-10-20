@@ -247,6 +247,10 @@ spec:
             - name: SECURITY_EMAIL
               value: {{ . | quote }}
             {{- end }}
+            {{- if .Values.rejectBreachedPasswords }}
+            - name: REJECT_BREACHED_PASSWORDS
+              value: 'true'
+            {{- end }}
             {{- if .Values.proxy }}
             - name: PROXY
               value: 'true'
