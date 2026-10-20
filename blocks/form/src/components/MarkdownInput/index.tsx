@@ -109,7 +109,13 @@ export function MarkdownInput({
       );
       crepe.editor
         .config((ctx) => {
-          ctx.set(editorViewOptionsCtx, { editable: () => true });
+          ctx.set(editorViewOptionsCtx, {
+            editable: () => true,
+            attributes: {
+              'aria-labelledby': `${name}-label`,
+              'aria-multiline': 'true',
+            },
+          });
         })
         // Github-flavored Markdown
         .use(gfm)
@@ -200,6 +206,7 @@ export function MarkdownInput({
       help={help}
       icon={icon}
       label={remappedLabel as string}
+      labelId={`${name}-label`}
       optionalLabel={utils.formatMessage('optionalLabel')}
       required={isRequired(field, utils, formValues)}
       tag={tag}

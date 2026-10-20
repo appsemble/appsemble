@@ -599,7 +599,10 @@ const fieldsWithHelp = [
   },
 ];
 
-async function mountForm(parameters: Record<string, unknown>): Promise<HTMLElement> {
+async function mountForm(
+  parameters: Record<string, unknown>,
+  actions: Record<string, unknown> = {},
+): Promise<HTMLElement> {
   const container = document.createElement('div');
   // Focus only moves to elements that are attached to the document.
   document.body.append(container);
@@ -610,6 +613,7 @@ async function mountForm(parameters: Record<string, unknown>): Promise<HTMLEleme
     actions: {
       onLoad: Object.assign(vi.fn(), { type: 'noop' }),
       onSubmit: vi.fn(),
+      ...actions,
     },
     events: {
       emit: { change: vi.fn() },
@@ -623,7 +627,9 @@ async function mountForm(parameters: Record<string, unknown>): Promise<HTMLEleme
     parameters: { skipInitialLoad: true, ...parameters },
     utils: {
       ...defaultParams.utils,
-      formatMessage: (message: keyof typeof messages) => messages[message],
+      addCleanup: onTestFinished,
+      formatMessage: (message: keyof typeof messages, values: Record<string, unknown> = {}) =>
+        messages[message].replaceAll(/{(\w+)}/g, (match, key: string) => String(values[key])),
     },
   } as unknown as BootstrapParams);
   return container;
@@ -897,4 +903,78 @@ it('should not set an autocomplete attribute if the field does not define one', 
   expect(getInputByLabel(container, 'Email').hasAttribute('autocomplete')).toBe(false);
   expect(getInputByLabel(container, 'Password').hasAttribute('autocomplete')).toBe(false);
   expect(getInputByLabel(container, 'Age').hasAttribute('autocomplete')).toBe(false);
+});
+
+it('should name a fieldset after its label and its remove buttons after the entry', async () => {
+  const container = await mountForm({
+    fields: [
+      {
+        fields: [{ label: 'Name', name: 'name', type: 'string' }],
+        label: 'People',
+        name: 'people',
+        repeated: true,
+        type: 'fieldset',
+      },
+    ],
+  });
+  const screen = within(container);
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+  const group = screen.getByRole('group', { name: /^People/ });
+  expect(within(group).getByRole('button', { name: 'Remove entry 1' })).toBeDefined();
+});
+
+it('should expose whether the options of a filterable enum are expanded', async () => {
+  const container = await mountForm({
+    fields: [
+      { enum: [{ value: 'red' }], filter: true, label: 'Color', name: 'color', type: 'enum' },
+    ],
+  });
+  const screen = within(container);
+  const combobox = screen.getByRole('combobox', { name: /^Color/, expanded: false });
+
+  await waitFor(() => expect(combobox).toHaveProperty('disabled', false));
+  await userEvent.click(combobox);
+
+  expect(screen.getByRole('combobox', { expanded: true })).toBe(combobox);
+  expect(screen.getByRole('option', { name: 'red', selected: false })).toBeDefined();
+});
+
+it('should label the markdown editor and file inputs by their field label', async () => {
+  const container = await mountForm({
+    fields: [
+      { label: 'Description', name: 'description', type: 'markdown' },
+      { emptyFileLabel: 'Upload photo', label: 'Photo', name: 'photo', type: 'file' },
+    ],
+  });
+  const screen = within(container);
+
+  await waitFor(() => expect(screen.getByRole('textbox', { name: /^Description/ })).toBeDefined());
+  expect(screen.getByLabelText(/^Photo.*Upload photo$/)).toHaveProperty('type', 'file');
+});
+
+it('should label the progress bar while the form data loads', async () => {
+  const container = await mountForm(
+    { fields: [{ label: 'Name', name: 'name', type: 'string' }], skipInitialLoad: false },
+    { onLoad: Object.assign(() => new Promise(vi.fn()), { type: 'resource.get' }) },
+  );
+
+  await waitFor(() =>
+    expect(within(container).getByRole('progressbar', { name: 'Loading' })).toBeDefined(),
+  );
+});
+
+it('should announce a submission that takes long in an existing live region', async () => {
+  const container = await mountForm(
+    { fields: [{ label: 'Name', name: 'name', type: 'string' }], longSubmissionDuration: 0 },
+    { onSubmit: () => new Promise(vi.fn()) },
+  );
+  const statuses = within(container).getAllByRole('status');
+
+  await submitForm(container);
+
+  await waitFor(() =>
+    expect(statuses.map((status) => status.textContent)).toContain(messages.longSubmissionWarning),
+  );
 });

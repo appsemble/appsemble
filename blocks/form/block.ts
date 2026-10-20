@@ -1674,6 +1674,7 @@ declare module '@appsemble/sdk' {
     selectionSelected: { option: number | string };
     fixErrors: never;
     longSubmissionWarning: never;
+    removeEntry: { index: number };
     removeFile: never;
     resetLocation: never;
     closeImage: never;

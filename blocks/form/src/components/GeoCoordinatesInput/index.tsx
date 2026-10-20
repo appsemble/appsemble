@@ -126,14 +126,18 @@ export function GeoCoordinatesInput({
       error={dirty ? error : null}
       icon={icon}
       label={label ? (utils.remap(label, {}) as string) : name}
+      labelId={`${name}-label`}
       name={name}
       optionalLabel={utils.formatMessage('optionalLabel')}
       required={required}
       tag={utils.remap(tag, {}) as string}
     >
+      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <div
+        aria-labelledby={`${name}-label`}
         className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}
         ref={errorLinkRef as unknown as Ref<HTMLDivElement>}
+        role="group"
       >
         <div
           className={styles.map}

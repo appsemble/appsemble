@@ -618,7 +618,12 @@ bootstrap(
         data-path={path}
         onSubmit={onSubmit}
       >
-        {loading ? <progress className="progress is-small is-primary" /> : null}
+        {loading ? (
+          <progress
+            aria-label={utils.formatMessage('loading')}
+            className="progress is-small is-primary"
+          />
+        ) : null}
         {title ? <div className="title">{utils.remap(title, data) as string}</div> : null}
         {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <Message
@@ -712,17 +717,17 @@ bootstrap(
           </div>
         ) : null}
 
-        {longSubmission &&
-        !(formErrors.some(Boolean) || !isFormValid(errors)) &&
-        !submitErrorResult ? (
-          <div
-            className={classNames(
-              'is-flex is-flex-direction-column is-justify-content-flex-start text-left',
-            )}
-          >
+        {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
+        <div
+          className="is-flex is-flex-direction-column is-justify-content-flex-start text-left"
+          role="status"
+        >
+          {longSubmission &&
+          !(formErrors.some(Boolean) || !isFormValid(errors)) &&
+          !submitErrorResult ? (
             <span>{utils.formatMessage('longSubmissionWarning')}</span>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
 
         <FormButtons className="mt-2">
           {previous ? (

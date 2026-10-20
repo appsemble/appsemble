@@ -101,6 +101,11 @@ interface FileEntryProps extends InputProps<Blob | string, FileField> {
    * A function to update the ready status of the file entries
    */
   readonly handleFileEntryReady: (entryName: string, ready: boolean) => void;
+
+  /**
+   * The id of the element labelling the file input.
+   */
+  readonly labelId: string;
 }
 
 export function FileEntry({
@@ -111,6 +116,7 @@ export function FileEntry({
   formDataLoading,
   formValues: value,
   handleFileEntryReady,
+  labelId,
   name,
   onChange,
   removeThumbnail,
@@ -366,6 +372,7 @@ export function FileEntry({
                 ? `${acceptMime}, android/allowCamera`
                 : acceptMime
             }
+            aria-labelledby={`${labelId} ${name}-empty-label`}
             className={`file-input ${styles.input}`}
             disabled={disabled}
             name={name}
@@ -402,7 +409,7 @@ export function FileEntry({
             iconName || acceptedMimeTypeCategories.length === 1
               ? getMimeTypeIcon(acceptedMimeTypeCategories[0])
               : 'file',
-            <span className="file-label">
+            <span className="file-label" id={`${name}-empty-label`}>
               {utils.remap(field.emptyFileLabel ?? ' ', field) as string}
             </span>,
             true,
