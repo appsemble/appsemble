@@ -22,5 +22,10 @@
     "@appsemble/sdk": "0.40.5",
     "@ericblade/quagga2": "^1.8.2",
     "preact": "^10.0.0"
+  },
+  "devDependencies": {
+    "@appsemble/block-interaction-tests": "0.40.5",
+    "@testing-library/preact": "3.2.4",
+    "vitest": "4.1.12"
   }
 }

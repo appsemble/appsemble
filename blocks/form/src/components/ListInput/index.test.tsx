@@ -3,7 +3,7 @@
 import { getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type IconRegistry, resolveIconReference } from '@appsemble/lang-sdk';
 import { type BlockProps, Context } from '@appsemble/preact';
-import { render, screen, within } from '@testing-library/preact';
+import { fireEvent, render, screen, within } from '@testing-library/preact';
 import { expect, it, vi } from 'vitest';
 
 import { ListInput } from './index.js';
@@ -59,4 +59,13 @@ it('should not render an image for the chip remove icon without an override', ()
 
   const button = screen.getByRole('button', { name: 'Remove Alpha' });
   expect(within(button).queryByAltText('')).toBeNull();
+});
+
+it('should expose whether the options are expanded', () => {
+  renderListInput();
+
+  fireEvent.click(screen.getByRole('button', { name: /^Tags/, expanded: false }));
+
+  expect(screen.getByRole('button', { name: /^Tags/, expanded: true })).toBeDefined();
+  expect(screen.getByRole('checkbox', { name: 'Alpha' })).toBeDefined();
 });

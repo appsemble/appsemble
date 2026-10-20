@@ -232,7 +232,14 @@ export function FormInput({
       );
     case 'markdown':
       return (
-        <Suspense fallback={<progress className="progress is-small is-primary" />}>
+        <Suspense
+          fallback={
+            <progress
+              aria-label={utils.formatMessage('loading')}
+              className="progress is-small is-primary"
+            />
+          }
+        >
           <MarkdownInput
             dirty={dirty}
             errorLinkRef={errorLinkRef}

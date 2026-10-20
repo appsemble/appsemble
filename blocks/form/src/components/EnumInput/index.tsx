@@ -224,7 +224,11 @@ export function EnumInput({
           // @ts-expect-error strictNullChecks undefined is not assignable
           ref={ref}
         >
+          {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
           <InputField
+            aria-autocomplete="list"
+            aria-controls={`${name}-options`}
+            aria-expanded={enabled}
             autocomplete="off"
             className={classNames('field dropdown-trigger', className)}
             disabled={disabled || loading || originalOptions.length === 0}
@@ -241,22 +245,26 @@ export function EnumInput({
             placeholder={utils.remap(placeholder, {}) as string}
             readOnly={readOnly}
             required={required}
+            role="combobox"
             value={inputValue}
           />
+          {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus, jsx-a11y/prefer-tag-over-role */}
           <div
             className="dropdown-menu"
-            id="dropdown-menu"
+            id={`${name}-options`}
             onKeyDown={onKeyDown}
-            role="menu"
-            tabIndex={0}
+            role="listbox"
           >
             <div className="dropdown-content">
               {options.map((choice) => (
+                // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
                 <Button
+                  aria-selected={choice.value === value}
                   className="dropdown-item"
                   disabled={choice.disabled}
                   key={choice.value}
                   onClick={() => handleSelect(choice)}
+                  role="option"
                 >
                   {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
                 </Button>

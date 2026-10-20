@@ -10,6 +10,16 @@ declare module '@appsemble/sdk' {
 
   interface Messages {
     /**
+     * The accessible name of the select that chooses the barcode type.
+     */
+    barcodeType: never;
+
+    /**
+     * The accessible name of the select that chooses the patch size.
+     */
+    patchSize: never;
+
+    /**
      * This message is displayed if the data is empty.
      */
     empty: never;

@@ -12,6 +12,7 @@
   "longSubmissionWarning": "Het formulier wordt nog verzonden, even geduld a.u.b.",
   "optionalLabel": "(Optioneel)",
   "previousLabel": "Vorige",
+  "removeEntry": "Item {index} verwijderen",
   "removeFile": "Bestand verwijderen",
   "resetLocation": "Huidige locatie gebruiken",
   "search": "Zoeken",

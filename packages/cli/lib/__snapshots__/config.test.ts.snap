@@ -78,6 +78,9 @@ barcode event only holds the object with property barcode.",
     "listen": undefined,
   },
   "messages": {
+    "barcodeType": {
+      "description": "The accessible name of the select that chooses the barcode type.",
+    },
     "empty": {
       "description": "This message is displayed if the data is empty.",
     },
@@ -86,6 +89,9 @@ barcode event only holds the object with property barcode.",
     },
     "loading": {
       "description": "This message is displayed if no data has been loaded yet.",
+    },
+    "patchSize": {
+      "description": "The accessible name of the select that chooses the patch size.",
     },
     "removeImage": {
       "description": "The accessible name of the button that removes the selected image.",
@@ -1385,6 +1391,9 @@ Compatible data that is received will be displayed.",
     "anonymousLabel": {
       "description": "The name to display for replies without known user names.",
     },
+    "avatar": {
+      "description": "The accessible name of an avatar of a feed item without a known status.",
+    },
     "closeImage": {
       "description": "The accessible label for closing an enlarged image.",
     },
@@ -1410,7 +1419,19 @@ Compatible data that is received will be displayed.",
       "description": "The error message shown when an error occurs while submitting a reply.",
     },
     "replyLabel": {
-      "description": "The placeholder text used for the reply input.",
+      "description": "The placeholder text and accessible label of the reply input.",
+    },
+    "sendReply": {
+      "description": "The accessible label of the button that submits a reply.",
+    },
+    "statusInProgress": {
+      "description": "The accessible name of the status icon of a feed item that is in progress.",
+    },
+    "statusOpen": {
+      "description": "The accessible name of the status icon of an open feed item.",
+    },
+    "statusResolved": {
+      "description": "The accessible name of the status icon of a resolved feed item.",
     },
   },
   "parameters": {
@@ -1702,8 +1723,14 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
     "closeLabel": {
       "description": "The accessible label for closing the filter modal.",
     },
+    "fromLabel": {
+      "description": "The default accessible label of the \`from\` field of a date range.",
+    },
     "modalTitle": {
       "description": "The title of the modal.",
+    },
+    "openLabel": {
+      "description": "The accessible label of the button that opens the filter modal.",
     },
     "sliderMaximum": {
       "description": "The accessible label of the upper handle of a range slider.",
@@ -1713,6 +1740,9 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
     },
     "submitLabel": {
       "description": "The label of the filter button.",
+    },
+    "toLabel": {
+      "description": "The default accessible label of the \`to\` field of a date range.",
     },
   },
   "parameters": {
@@ -2533,6 +2563,9 @@ Include an array of fields in \`fields\` to replace the current list of fields i
       "description": undefined,
     },
     "previousLabel": {
+      "description": undefined,
+    },
+    "removeEntry": {
       "description": undefined,
     },
     "removeFile": {

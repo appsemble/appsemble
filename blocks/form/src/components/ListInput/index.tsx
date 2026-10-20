@@ -159,7 +159,7 @@ export function ListInput({
       error={dirty ? error : null}
       help={utils.remap(field.help, value) as string}
       icon={icon}
-      id={field.name}
+      id={name}
       inline={inline}
       label={(utils.remap(label, value) as string) ?? name}
       name={name}
@@ -171,7 +171,9 @@ export function ListInput({
         {(aria) => (
           <>
             <Button
+              aria-controls={`${name}-options`}
               aria-describedby={aria['aria-describedby']}
+              aria-expanded={isDropdownOpen}
               className={classNames(
                 'is-fullwidth',
                 styles.button,
@@ -185,7 +187,7 @@ export function ListInput({
               errorLinkRef={errorLinkRef as MutableRef<HTMLDivElement>}
               icon="chevron-down"
               iconRight={Boolean(icon)}
-              id={field.name}
+              id={name}
               onClick={showDropDown}
             >
               {/* Render placeholder text if present, otherwise render hardcoded text and style it if icon is present. */}
@@ -194,6 +196,7 @@ export function ListInput({
             {isDropdownOpen ? (
               <Form
                 className={classNames(className, styles.dropdown)}
+                id={`${name}-options`}
                 name={field.name}
                 onChange={handleChange}
                 onSubmit={(event) => event.preventDefault()}
@@ -206,12 +209,12 @@ export function ListInput({
                       <input
                         {...aria}
                         checked={selected.includes(valStr)}
-                        id={valStr.replaceAll(' ', '-')}
+                        id={`${name}-option-${valStr.replaceAll(' ', '-')}`}
                         name={valStr.replaceAll(' ', '-')}
                         type="checkbox"
                         value={valStr}
                       />
-                      <label htmlFor={valStr.replaceAll(' ', '-')}>
+                      <label htmlFor={`${name}-option-${valStr.replaceAll(' ', '-')}`}>
                         {(utils.remap(lab, {}) as string) || valStr}
                       </label>
                     </div>

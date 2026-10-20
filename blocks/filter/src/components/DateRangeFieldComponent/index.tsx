@@ -33,30 +33,43 @@ export function DateRangeFieldComponent({
     [onChange, value],
   );
 
+  const fromLabel = field.fromLabel
+    ? (utils.remap(field.fromLabel, {}) as string)
+    : utils.formatMessage('fromLabel');
+  const toLabel = field.toLabel
+    ? (utils.remap(field.toLabel, {}) as string)
+    : utils.formatMessage('toLabel');
+
   return (
-    <div
-      className={classNames(`field is-align-items-center is-grouped ${className} ${styles.gap}`, {
-        'is-loading': loading,
-        [styles.highlight]: highlight,
-      })}
+    <fieldset
+      aria-labelledby={field.label ? `${field.name}-label` : undefined}
+      className={classNames(
+        `field is-align-items-center is-grouped ${className} ${styles.fieldset}`,
+        {
+          'is-loading': loading,
+          [styles.highlight]: highlight,
+        },
+      )}
     >
       <Input
+        aria-label={fromLabel}
         className={styles.input}
         name={field.name}
         onChange={onChangeFrom}
-        placeholder={utils.remap(field.fromLabel ?? 'From', {}) as string}
+        placeholder={fromLabel}
         type="date"
         value={value?.[0]}
       />
       <div>{utils.remap(field.separator ?? 'to', {}) as string}</div>
       <Input
+        aria-label={toLabel}
         className={styles.input}
         name={field.name}
         onChange={onChangeTo}
-        placeholder={utils.remap(field.toLabel ?? 'To', {}) as string}
+        placeholder={toLabel}
         type="date"
         value={value?.[1]}
       />
-    </div>
+    </fieldset>
   );
 }

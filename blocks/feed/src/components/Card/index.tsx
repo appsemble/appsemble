@@ -138,24 +138,29 @@ export function Card({ content, onUpdate }: CardProps): VNode {
 
   let color;
   let icon: IconName;
+  let status: string;
 
   // XXX: Standardize this based on app definition
   switch (content?.status) {
     case 'open':
       color = 'has-background-danger';
       icon = 'exclamation';
+      status = utils.formatMessage('statusOpen');
       break;
     case 'in-behandeling':
       color = 'has-background-warning';
       icon = 'cog';
+      status = utils.formatMessage('statusInProgress');
       break;
     case 'opgelost':
       color = 'has-background-success';
       icon = 'check';
+      status = utils.formatMessage('statusResolved');
       break;
     default:
       color = '';
       icon = 'user';
+      status = utils.formatMessage('avatar');
   }
 
   return (
@@ -165,6 +170,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
           <AvatarWrapper action={actions.onAvatarClick} onAvatarClick={onAvatarClick}>
             <figure className={`image is-48x48 ${color} ${styles.avatarIcon}`}>
               <Icon icon={icon} size="large" />
+              <span className="is-sr-only">{status}</span>
             </figure>
           </AvatarWrapper>
           <header className="media-content">
@@ -248,12 +254,14 @@ export function Card({ content, onUpdate }: CardProps): VNode {
             </div>
             <form className="is-flex py-2 px-0" noValidate onSubmit={onSubmit}>
               <Input
+                aria-label={utils.formatMessage('replyLabel')}
                 onChange={onChange}
                 placeholder={utils.formatMessage('replyLabel')}
                 required
                 value={message}
               />
               <Button
+                aria-label={utils.formatMessage('sendReply')}
                 className={`${styles.replyButton} ml-1`}
                 disabled={!valid}
                 icon="paper-plane"

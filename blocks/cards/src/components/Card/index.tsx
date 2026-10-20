@@ -1,4 +1,5 @@
 import { useBlock } from '@appsemble/preact';
+import classNames from 'classnames';
 import { type ComponentChild, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
@@ -30,6 +31,10 @@ export function CardContent({ index, item }: CardContentProps): VNode {
   const title = remap(card.title, item) as string;
   const subtitle = remap(card.subtitle, item) as string;
   const content = remap(card.content, item) as string;
+  // A footer of only links continues the card content instead of forming a separate bar.
+  const linkFooter = card.footer?.every(
+    ({ onClick }) => (onClick ? actions[onClick] : actions.onClick).type === 'link',
+  );
 
   // The control stretches over the image and the content, so the whole area is clickable.
   // It wraps the first text of the card. Without text, the image alt or a generic label names it.
@@ -76,7 +81,7 @@ export function CardContent({ index, item }: CardContentProps): VNode {
           {textHost ? null : control()}
         </div>
       </div>
-      <footer className="card-footer">
+      <footer className={classNames('card-footer', { [styles.linkFooter]: linkFooter })}>
         {card.footer?.map((button) => (
           <ButtonComponent field={button} index={index} item={item} />
         ))}
