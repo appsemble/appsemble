@@ -24,12 +24,15 @@ test.describe('Mail', () => {
     await deleteOrganization(organizationId);
   });
 
-  test('should send an email when pressing the email button', async ({ page, mailpit }) => {
+  test('should send an email when pressing the email button', async ({
+    page,
+    mailpit,
+  }, testInfo) => {
     await page.locator('[data-block="@appsemble/action-button"]').getByRole('button').click();
     await page.waitForResponse('**/actions/pages.0.blocks.0.actions.onClick');
 
     const message = await mailpit.waitForMessage({
-      query: 'from:Appsemble Mail App',
+      query: `to:worker-${testInfo.parallelIndex}@appsemble.com from:Appsemble Mail App`,
     });
 
     expect(message.Subject).toBe('Test Email');

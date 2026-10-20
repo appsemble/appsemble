@@ -91,10 +91,17 @@ export const authenticatedTest = baseTest.extend<
   },
 
   mailpit: [
-    async ({}, use) => {
+    async ({}, use, testInfo) => {
       const mailpit = new MailpitClient('http://localhost:8025');
-      await mailpit.deleteMessages();
-      await use(mailpit);
+      const queryEmailsToThisWorker = `to:worker-${testInfo.parallelIndex}@appsemble.com`;
+
+      await mailpit.deleteMessagesBySearch({ query: queryEmailsToThisWorker });
+
+      try {
+        await use(mailpit);
+      } finally {
+        await mailpit.deleteMessagesBySearch({ query: queryEmailsToThisWorker });
+      }
     },
     { scope: 'worker' },
   ],
