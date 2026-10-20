@@ -102,7 +102,7 @@ export const test = base.extend<LiveAppFixtures>({
         {
           data: {
             redirectUri: url,
-            scope: 'openid',
+            scope: 'email groups:read groups:write openid profile resources:manage',
           },
         },
       );

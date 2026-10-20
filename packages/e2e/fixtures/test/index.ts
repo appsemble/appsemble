@@ -15,6 +15,7 @@ import { test as resourceFixtures } from './resource/index.js';
 import { test as studioFixtures } from './studio/index.js';
 import { test as testUtilsFixtures } from './test-utils/index.js';
 import { test as trainingFixtures } from './training/index.js';
+import { MailpitClient } from 'mailpit-api';
 
 /**
  * Base test object with all utility fixtures
@@ -38,7 +39,10 @@ export const baseTest = mergeTests(
  *
  * Used for tests that require a logged in user
  */
-export const authenticatedTest = baseTest.extend<object, { workerStorageState: string }>({
+export const authenticatedTest = baseTest.extend<
+  object,
+  { workerStorageState: string; mailpit: MailpitClient }
+>({
   // Use the same storage state for all tests in this worker.
   storageState: ({ workerStorageState }, use) => use(workerStorageState),
 
@@ -85,4 +89,13 @@ export const authenticatedTest = baseTest.extend<object, { workerStorageState: s
     await use(newRequest);
     await newRequest.dispose();
   },
+
+  mailpit: [
+    async ({}, use) => {
+      const mailpit = new MailpitClient('http://localhost:8025');
+      await mailpit.deleteMessages();
+      await use(mailpit);
+    },
+    { scope: 'worker' },
+  ],
 });
