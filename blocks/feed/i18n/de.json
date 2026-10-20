@@ -1,5 +1,6 @@
 {
   "anonymousLabel": "Anonym",
+  "avatar": "",
   "closeImage": "",
   "downloadImage": "",
   "emptyLabel": "Es sind keine Daten vorhanden.",
@@ -8,5 +9,9 @@
   "moreOptions": "",
   "permissionDeniedLabel": "Wenden Sie sich an Ihren Administrator, um Ihre Berechtigungen zu erweitern, falls Sie erwartet haben, hier Daten zu sehen.",
   "replyErrorMessage": "Beim Versenden dieser Nachricht ist ein Fehler aufgetreten.",
-  "replyLabel": "Hinterlassen Sie eine Nachricht…"
+  "replyLabel": "Hinterlassen Sie eine Nachricht…",
+  "sendReply": "",
+  "statusInProgress": "",
+  "statusOpen": "",
+  "statusResolved": ""
 }

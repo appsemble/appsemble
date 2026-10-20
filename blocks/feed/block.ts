@@ -141,7 +141,7 @@ declare module '@appsemble/sdk' {
     replyErrorMessage: never;
 
     /**
-     * The placeholder text used for the reply input.
+     * The placeholder text and accessible label of the reply input.
      */
     replyLabel: never;
 
@@ -179,6 +179,31 @@ declare module '@appsemble/sdk' {
      * The accessible name of a dropdown without a label.
      */
     moreOptions: never;
+
+    /**
+     * The accessible name of an avatar of a feed item without a known status.
+     */
+    avatar: never;
+
+    /**
+     * The accessible name of the status icon of an open feed item.
+     */
+    statusOpen: never;
+
+    /**
+     * The accessible name of the status icon of a feed item that is in progress.
+     */
+    statusInProgress: never;
+
+    /**
+     * The accessible name of the status icon of a resolved feed item.
+     */
+    statusResolved: never;
+
+    /**
+     * The accessible label of the button that submits a reply.
+     */
+    sendReply: never;
   }
 
   interface Parameters {

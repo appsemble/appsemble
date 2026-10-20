@@ -1,5 +1,6 @@
 {
   "anonymousLabel": "Anonyme",
+  "avatar": "",
   "closeImage": "",
   "downloadImage": "",
   "emptyLabel": "Aucune donnée à afficher",
@@ -8,5 +9,9 @@
   "moreOptions": "",
   "permissionDeniedLabel": "Contactez votre administrateur pour faire évoluer votre rôle si vous vous attendiez à voir des données ici.",
   "replyErrorMessage": "Une erreur s'est produite lors de l'envoi de ce message.",
-  "replyLabel": "Laissez un message…"
+  "replyLabel": "Laissez un message…",
+  "sendReply": "",
+  "statusInProgress": "",
+  "statusOpen": "",
+  "statusResolved": ""
 }
