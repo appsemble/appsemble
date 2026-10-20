@@ -1,5 +1,6 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { render, screen, waitFor } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
@@ -38,10 +39,19 @@ vi.mock('../OpenIDCallback/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
   OpenIDCallback: () => <p>Callback route</p>,
 }));
-vi.mock('../Page/index.js', () => ({
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  Page: () => <p>Page route</p>,
-}));
+vi.mock('../Page/index.js', async () => {
+  const { Link } = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+  return {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    Page: () => (
+      <main tabIndex={-1}>
+        <p>Page route</p>
+        <Link to="/en/about">About</Link>
+        <Link to="/en/home/details">Details tab</Link>
+      </main>
+    ),
+  };
+});
 vi.mock('../Register/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
   Register: () => <p>Register route</p>,
@@ -148,6 +158,27 @@ describe('AppRoutes', () => {
     renderRoutes('/nl', { appMessages: { 'pages.home': 'Start' } });
     await waitFor(() => expect(screen.getByText('/nl/start')).not.toBeNull());
     expect(screen.getByText('Page route')).not.toBeNull();
+  });
+
+  it('should leave focus alone on the first page the app redirects to', async () => {
+    renderRoutes('/en');
+    await waitFor(() => expect(screen.getByText('/en/home')).not.toBeNull());
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it('should move focus to the page after navigating to another page', async () => {
+    renderRoutes('/en/home');
+    await userEvent.click(screen.getByRole('link', { name: 'About' }));
+    await waitFor(() => expect(screen.getByText('/en/about')).not.toBeNull());
+    expect(document.activeElement).toBe(screen.getByRole('main'));
+  });
+
+  it('should keep focus on the link after navigating within the page', async () => {
+    renderRoutes('/en/home');
+    const link = screen.getByRole('link', { name: 'Details tab' });
+    await userEvent.click(link);
+    await waitFor(() => expect(screen.getByText('/en/home/details')).not.toBeNull());
+    expect(document.activeElement).toBe(link);
   });
 
   it('should render the loader until the messages of the current language are loaded', () => {

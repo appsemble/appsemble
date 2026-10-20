@@ -149,6 +149,16 @@ export function FlowPage({
   // Abort in-flight action chains when the flow page is unmounted.
   useEffect(() => () => abortController.current?.abort(), []);
 
+  // A new step replaces the blocks, and with them the control that moved to it. Move focus to the
+  // page, so keyboard and screen reader users continue from its start.
+  const focusedStep = useRef(currentStep);
+  useEffect(() => {
+    if (currentStep !== focusedStep.current) {
+      document.querySelector('main')?.focus({ preventScroll: true });
+      focusedStep.current = currentStep;
+    }
+  }, [currentStep]);
+
   useEffect(() => {
     if (pageDefinition.retainFlowData === false) {
       return () => {

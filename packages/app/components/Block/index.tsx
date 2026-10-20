@@ -130,6 +130,7 @@ export function Block({
     abortController.current = new AbortController();
   }
   const [initialized, setInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error>();
   const pushNotifications = useServiceWorkerRegistration();
   const isInModalDialog = useIsInModalDialog();
@@ -298,6 +299,7 @@ export function Block({
         pathIndex: prefixIndex,
       });
 
+      setIsLoading(false);
       ready(block);
     })().catch(setError);
   }, [
@@ -372,6 +374,7 @@ export function Block({
 
       const float = (
         <div
+          aria-busy={isLoading}
           className={classNames(`is-flex ${styles.root} ${styles.float}`, {
             [styles.top]: position.includes('top'),
             [styles.bottom]: position.includes('bottom'),
@@ -397,6 +400,7 @@ export function Block({
 
     return (
       <div
+        aria-busy={isLoading}
         className={`is-flex ${styles.root} ${layout === 'grow' ? styles.grow : styles.static}`}
         data-block={blockName}
         data-path={prefix}

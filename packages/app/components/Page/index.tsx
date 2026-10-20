@@ -410,6 +410,7 @@ export function Page(): ReactNode {
         })}
         data-path={prefix}
         data-path-index={prefixIndex}
+        tabIndex={-1}
       >
         <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
         {/* A grid layout that names a breadcrumbs area renders the trail there, and a tabs page

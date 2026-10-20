@@ -173,6 +173,11 @@ interface RouteCase {
   state: string;
 
   /**
+   * The name the page shows in the title bar instead of the app name.
+   */
+  appBarName?: string;
+
+  /**
    * Bring the app and the API in the shape this state needs.
    */
   setup?: () => void;
@@ -405,6 +410,7 @@ const cases: RouteCase[] = [
   {
     page: 'settings',
     state: 'default',
+    appBarName: 'Settings',
     setup() {
       appMember.isLoggedIn = true;
     },
@@ -413,9 +419,15 @@ const cases: RouteCase[] = [
   {
     page: 'feedback',
     state: 'form',
+    appBarName: 'Feedback',
     render: () => renderRoute(<SentryFeedback />, '/en/Feedback'),
   },
-  { page: 'debug', state: 'default', render: () => renderRoute(<AppDebug />, '/en/debug') },
+  {
+    page: 'debug',
+    state: 'default',
+    appBarName: 'Debug',
+    render: () => renderRoute(<AppDebug />, '/en/debug'),
+  },
   {
     page: 'openid-callback',
     state: 'error',
@@ -454,7 +466,23 @@ describe.each(cases)('$page $state', (routeCase) => {
     await renderCase(routeCase);
 
     const navbar = within(document.querySelector<HTMLElement>('.navbar')!);
-    expect(navbar.getByRole('heading', { level: 2 }).textContent).not.toBe('');
+    expect(navbar.queryByText(routeCase.appBarName ?? 'Test App')).not.toBeNull();
+  });
+
+  it('should name the page with one level 1 heading', async () => {
+    await renderCase(routeCase);
+
+    const headings = screen.getAllByRole('heading', { level: 1 });
+    expect(headings).toHaveLength(1);
+  });
+
+  it('should name the page with one level 1 heading when the title bar shows the app name', async () => {
+    mockApp({ titleBarText: 'appName' });
+
+    await renderCase(routeCase);
+
+    const headings = screen.getAllByRole('heading', { level: 1 });
+    expect(headings).toHaveLength(1);
   });
 
   it('should render the bottom navigation inside a layout that places it', async () => {
