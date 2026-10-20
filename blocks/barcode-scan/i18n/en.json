@@ -1,7 +1,9 @@
 {
+  "barcodeType": "Barcode type",
   "empty": "There is no data to display",
   "error": "There was a problem loading the data.",
   "loading": "Loading…",
+  "patchSize": "Patch size",
   "removeImage": "Remove image",
   "selectImage": "Select an image to scan",
   "stopScanning": "Stop scanning"

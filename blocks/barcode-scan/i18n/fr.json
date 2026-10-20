@@ -1,7 +1,9 @@
 {
+  "barcodeType": "",
   "empty": "Il n'y a aucune donnée à afficher.",
   "error": "Un problème est survenu lors du chargement des données.",
   "loading": "Chargement en cours…",
+  "patchSize": "",
   "removeImage": "",
   "selectImage": "",
   "stopScanning": ""
