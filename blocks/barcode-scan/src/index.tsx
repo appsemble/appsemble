@@ -84,8 +84,7 @@ bootstrap(
 
     return (
       <div className={styles.wrapper}>
-        {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-        {showBarcode ? <div role="status">Barcode: {barcode}</div> : null}
+        {showBarcode ? <output className="is-block">Barcode: {barcode}</output> : null}
 
         <div className={styles.comboBoxes}>
           {barcodeType === 'multiple' ? (
