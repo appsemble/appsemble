@@ -17,6 +17,7 @@ junit.xml
 /packages/e2e/test-results/
 /packages/e2e/playwright-report/
 /packages/e2e/playwright/.cache/
+/packages/e2e/playwright.config.js
 /packages/e2e/.auth/
 
 # Use this prefix for GitLab reports
@@ -44,4 +45,5 @@ public/
 !*.config.js
 !*rc.js
 
-/packages/e2e/playwright.config.js
+# Persistent mailpit data
+mailpit-data/

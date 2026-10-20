@@ -108,6 +108,20 @@ services:
     ports:
       - '63791:6379'
 
+  # Mailpit instance for testing email delivery
+  mailpit:
+    image: axllent/mailpit:v1.31.6
+    restart: always
+    volumes:
+      - ./mailpit-data:/data
+    ports:
+      - '127.0.0.1:1025:1025'
+      - '127.0.0.1:8025:8025'
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
 volumes:
   s3:
   s3-test:

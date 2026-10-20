@@ -146,11 +146,11 @@ Check the `read_user` scope, and click _Save application_.
 To be able to send emails from your local environment, you need to set up or connect to an SMTP
 server.
 
-A project that provides an email testing environment for developers is
-[Mailpit](https://github.com/axllent/mailpit). It acts as an SMTP server where you can view and test
-captured emails.
+[Mailpit](https://github.com/axllent/mailpit) is set up locally to provide an email testing
+environment. It acts as an SMTP server where you can view and test captured emails. Mailpit can be
+accessed on http://localhost:8025.
 
-For connecting to the SMTP server, you need to obtain the following settings:
+To connect to an SMTP server, you need to obtain the following settings:
 
 - Host
 - Port
