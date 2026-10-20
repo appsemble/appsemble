@@ -132,12 +132,10 @@ export function GeoCoordinatesInput({
       required={required}
       tag={utils.remap(tag, {}) as string}
     >
-      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-      <div
+      <fieldset
         aria-labelledby={`${name}-label`}
         className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}
-        ref={errorLinkRef as unknown as Ref<HTMLDivElement>}
-        role="group"
+        ref={errorLinkRef as unknown as Ref<HTMLFieldSetElement>}
       >
         <div
           className={styles.map}
@@ -163,7 +161,7 @@ export function GeoCoordinatesInput({
             icon="crosshairs"
           />
         </button>
-      </div>
+      </fieldset>
     </FormComponent>
   );
 }

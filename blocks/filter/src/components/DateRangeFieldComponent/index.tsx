@@ -41,14 +41,15 @@ export function DateRangeFieldComponent({
     : utils.formatMessage('toLabel');
 
   return (
-    // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
-    <div
+    <fieldset
       aria-labelledby={field.label ? `${field.name}-label` : undefined}
-      className={classNames(`field is-align-items-center is-grouped ${className} ${styles.gap}`, {
-        'is-loading': loading,
-        [styles.highlight]: highlight,
-      })}
-      role="group"
+      className={classNames(
+        `field is-align-items-center is-grouped ${className} ${styles.fieldset}`,
+        {
+          'is-loading': loading,
+          [styles.highlight]: highlight,
+        },
+      )}
     >
       <Input
         aria-label={fromLabel}
@@ -69,6 +70,6 @@ export function DateRangeFieldComponent({
         type="date"
         value={value?.[1]}
       />
-    </div>
+    </fieldset>
   );
 }

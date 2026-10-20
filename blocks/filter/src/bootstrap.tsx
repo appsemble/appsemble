@@ -12,7 +12,7 @@ import { toOData } from './utils/toOData.js';
 /**
  * Field types that render a single labelable control with the field name as its id.
  */
-const labelableTypes = new Set(['boolean', 'date', 'enum', 'list', 'string']);
+const fieldTypesWithControlId = new Set(['boolean', 'date', 'enum', 'list', 'string']);
 
 export function FilterBlock({
   actions,
@@ -181,7 +181,9 @@ export function FilterBlock({
               <label
                 className="label"
                 htmlFor={
-                  labelableTypes.has(highlightedField.type) ? highlightedField.name : undefined
+                  fieldTypesWithControlId.has(highlightedField.type)
+                    ? highlightedField.name
+                    : undefined
                 }
                 id={`${highlightedField.name}-label`}
               >
@@ -243,7 +245,7 @@ export function FilterBlock({
                       {field.label ? (
                         <label
                           className="label"
-                          htmlFor={labelableTypes.has(field.type) ? field.name : undefined}
+                          htmlFor={fieldTypesWithControlId.has(field.type) ? field.name : undefined}
                           id={`${field.name}-label`}
                         >
                           {utils.remap(field.label, {}) as string}
