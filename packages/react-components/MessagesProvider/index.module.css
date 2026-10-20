@@ -1,5 +1,11 @@
 .root {
+  /* The live region is a popover, so the browser styles of a popover are reset. */
+  background-color: transparent;
+  border: none;
   box-sizing: border-box;
+  color: inherit;
+  overflow: visible;
+  padding: 0;
 }
 
 .messageEnter {
@@ -25,10 +31,12 @@
 }
 
 .content {
+  inset-inline: 10px;
   min-height: 64px;
   position: fixed;
-  width: calc(100vw - 20px);
-  z-index: 6001; /* 1 more than the z-index of modals */
+
+  /* Browsers without popover support render the live region on the page in place. */
+  z-index: 6001;
 }
 
 .deleteButton {

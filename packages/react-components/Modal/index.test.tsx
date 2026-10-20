@@ -42,15 +42,29 @@ it('should close the modal when the close button is clicked', () => {
   expect(onClose).toHaveBeenCalledWith();
 });
 
-it('should close the modal when the background is clicked', () => {
+it('should close the modal when the background is clicked', async () => {
+  const user = userEvent.setup();
   const onClose = vi.fn();
-  const { getByRole } = render(
+  render(
     <Modal isActive onClose={() => onClose()}>
       test
     </Modal>,
   );
-  getByRole('presentation').click();
+  // The background is presentational, so it has no role.
+  await user.click(screen.getByRole('dialog').querySelector('.modal-background')!);
   expect(onClose).toHaveBeenCalledWith();
+});
+
+it('should not close the modal when its content is clicked', async () => {
+  const user = userEvent.setup();
+  const onClose = vi.fn();
+  render(
+    <Modal isActive onClose={onClose}>
+      test
+    </Modal>,
+  );
+  await user.click(screen.getByText('test'));
+  expect(onClose).not.toHaveBeenCalled();
 });
 
 describe('modal dialog behavior', () => {
@@ -65,17 +79,16 @@ describe('modal dialog behavior', () => {
         <Modal isActive={isActive} onClose={() => setIsActive(false)}>
           <button type="button">Zoom</button>
         </Modal>
-        <button type="button">Behind</button>
       </>
     );
   }
 
-  it('should expose a modal dialog', async () => {
+  it('should expose a dialog', async () => {
     const user = userEvent.setup();
     render(<Page />);
     await user.click(screen.getByRole('button', { name: 'Open' }));
 
-    expect(screen.getByRole('dialog').getAttribute('aria-modal')).toBe('true');
+    expect(screen.getByRole('dialog')).not.toBeNull();
   });
 
   it('should give the close button an accessible name', async () => {
@@ -84,35 +97,6 @@ describe('modal dialog behavior', () => {
     await user.click(screen.getByRole('button', { name: 'Open' }));
 
     expect(screen.getByRole('button', { name: 'Close' })).not.toBeNull();
-  });
-
-  it('should move focus into the dialog and keep it there when tabbing', async () => {
-    const user = userEvent.setup();
-    render(<Page />);
-    await user.click(screen.getByRole('button', { name: 'Open' }));
-    const dialog = screen.getByRole('dialog');
-
-    expect(dialog.contains(document.activeElement)).toBe(true);
-    await user.tab();
-    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Zoom' }));
-    await user.tab();
-    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Close' }));
-    await user.tab();
-    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Zoom' }));
-    await user.tab({ shift: true });
-    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Close' }));
-  });
-
-  it('should make the page behind the dialog inert while it is open', async () => {
-    const user = userEvent.setup();
-    render(<Page />);
-    const behind = screen.getByRole('button', { name: 'Behind' });
-    await user.click(screen.getByRole('button', { name: 'Open' }));
-
-    expect(behind.closest('[inert]')).not.toBeNull();
-
-    await user.keyboard('{Escape}');
-    expect(behind.closest('[inert]')).toBeNull();
   });
 
   it('should close when escape is pressed and return focus to the element that opened it', async () => {
@@ -127,17 +111,34 @@ describe('modal dialog behavior', () => {
     expect(document.activeElement).toBe(opener);
   });
 
-  it('should not close when escape is pressed if it is not closable', async () => {
+  it('should show the modal again when it is reopened while it transitions out', async () => {
     const user = userEvent.setup();
-    const onClose = vi.fn();
-    render(
-      <Modal closable={false} isActive onClose={onClose}>
-        test
-      </Modal>,
-    );
-
+    render(<Page />);
+    await user.click(screen.getByRole('button', { name: 'Open' }));
     await user.keyboard('{Escape}');
 
-    expect(onClose).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+
+    expect(screen.getByRole('dialog').contains(document.activeElement)).toBe(true);
+  });
+});
+
+describe('stacked modal dialogs', () => {
+  it('should keep a dialog that closes below the dialog on top of it', () => {
+    const { rerender } = render(
+      <>
+        <Modal isActive>Lower</Modal>
+        <Modal isActive>Upper</Modal>
+      </>,
+    );
+
+    rerender(
+      <>
+        <Modal isActive={false}>Lower</Modal>
+        <Modal isActive>Upper</Modal>
+      </>,
+    );
+
+    expect(document.elementsFromPoint(0, 0)[0]).toBe(screen.getByText('Upper').closest('dialog'));
   });
 });

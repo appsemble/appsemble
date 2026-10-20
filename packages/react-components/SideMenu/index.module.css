@@ -81,8 +81,6 @@
   /* Shows the side menu when opened on a small screen */
   &.open {
     left: 0;
-
-    /* Should be less than the z-index of the modal component and should be more than the main screen of the app */
   }
 }
 

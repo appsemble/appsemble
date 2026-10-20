@@ -1,7 +1,6 @@
 import { type BulmaColor } from '@appsemble/types';
 import { createContext, type ReactNode, useCallback, useContext, useState } from 'react';
 
-import styles from './index.module.css';
 import { CardFooterButton, ModalCard } from '../index.js';
 
 interface ConfirmationOptions<T, A extends any[]> {
@@ -84,7 +83,6 @@ export function Confirmation({ children }: ConfirmationProps): ReactNode {
         isActive={isActive}
         onClose={options?.reject}
         title={options?.title}
-        wrapperClassName={styles.card}
       >
         {options?.body}
       </ModalCard>
