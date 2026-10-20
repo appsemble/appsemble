@@ -717,17 +717,13 @@ bootstrap(
           </div>
         ) : null}
 
-        {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-        <div
-          className="is-flex is-flex-direction-column is-justify-content-flex-start text-left"
-          role="status"
-        >
+        <output className="is-flex is-flex-direction-column is-justify-content-flex-start text-left">
           {longSubmission &&
           !(formErrors.some(Boolean) || !isFormValid(errors)) &&
           !submitErrorResult ? (
             <span>{utils.formatMessage('longSubmissionWarning')}</span>
           ) : null}
-        </div>
+        </output>
 
         <FormButtons className="mt-2">
           {previous ? (
