@@ -1,8 +1,11 @@
 {
   "clearLabel": "Jasno",
   "closeLabel": "",
+  "fromLabel": "",
   "modalTitle": "Filtar",
+  "openLabel": "",
   "sliderMaximum": "",
   "sliderMinimum": "",
-  "submitLabel": "Filtar"
+  "submitLabel": "Filtar",
+  "toLabel": ""
 }
