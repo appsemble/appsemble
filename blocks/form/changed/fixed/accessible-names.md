@@ -1,1 +1,1 @@
-Name fieldsets, remove buttons, and Markdown, file and location fields
+Name fields and buttons, expose expanded state and announce long submissions
