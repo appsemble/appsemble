@@ -1,1 +1,1 @@
-Announce errors and empty results, and name mobile footer buttons
+Announce errors and empty results, name footer buttons and render links as links

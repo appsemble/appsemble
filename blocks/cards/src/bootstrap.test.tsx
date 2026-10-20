@@ -321,3 +321,45 @@ it('should name icon-only footer buttons on mobile by their label', async () => 
 
   expect(screen.getByRole('button', { name: 'Delete' })).toBeDefined();
 });
+
+it('should render a footer button with a link action as a link to its page', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'link',
+    href: (data: Item) => `/items/${data.id}`,
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({
+    card: {
+      content: 'Content',
+      footer: [{ icon: 'info', label: 'Details' }],
+      title: { prop: 'title' },
+    },
+    onClick,
+  });
+
+  await emitData([{ id: 1, title: 'First' }]);
+  await userEvent.click(screen.getByRole('link', { name: 'Details' }));
+
+  expect(screen.getByRole('link', { name: 'Details' }).getAttribute('href')).toBe('/items/1');
+  expect(onClick).toHaveBeenCalledExactlyOnceWith({ id: 1, title: 'First' }, { index: 0 });
+});
+
+it('should not link a disabled footer button with a link action', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'link',
+    href: (data: Item) => `/items/${data.id}`,
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({
+    card: {
+      content: 'Content',
+      footer: [{ disabled: true, icon: 'info', label: 'Details' }],
+      title: { prop: 'title' },
+    },
+    onClick,
+  });
+
+  await emitData([{ id: 1, title: 'First' }]);
+  await userEvent.click(screen.getByText('Details'));
+
+  expect(screen.queryByRole('link', { name: 'Details' })).toBeNull();
+  expect(onClick).not.toHaveBeenCalled();
+});

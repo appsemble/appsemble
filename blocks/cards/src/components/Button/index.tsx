@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { Fragment, type VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
+import styles from './index.module.css';
 import { type Button } from '../../../block.js';
 
 interface ButtonComponentProps {
@@ -90,6 +91,33 @@ export function ButtonComponent({
     },
     [action, disabled, item, index],
   );
+
+  if (action.type === 'link') {
+    const linkContent = (
+      <>
+        {icon ? <Icon icon={icon} /> : null}
+        {label ? <span>{remappedLabel}</span> : null}
+      </>
+    );
+    return (
+      <div className="card-footer-item is-justify-content-flex-start">
+        {disabled ? (
+          <span className={classNames(styles.link, styles.disabled)} title={remappedTitle}>
+            {linkContent}
+          </span>
+        ) : (
+          <a
+            className={styles.link}
+            href={action.href(item)}
+            onClick={onClick}
+            title={remappedTitle}
+          >
+            {linkContent}
+          </a>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="card-footer-item">
