@@ -20,5 +20,9 @@
     "@appsemble/sdk": "0.40.5",
     "fast-deep-equal": "^3.0.0",
     "mini-jsx": "^4.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "10.4.2",
+    "vitest": "4.1.12"
   }
 }
