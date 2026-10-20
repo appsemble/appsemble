@@ -24,6 +24,6 @@
   "devDependencies": {
     "@appsemble/lang-sdk": "0.40.5",
     "@testing-library/dom": "10.4.2",
-    "vitest": "4.1.11"
+    "vitest": "4.1.12"
   }
 }
