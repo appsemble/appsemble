@@ -11,6 +11,7 @@ import { type BlockManifest } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 import { Op } from 'sequelize';
+import semver from 'semver';
 
 import { argv } from './argv.js';
 import {
@@ -18,7 +19,14 @@ import {
   getBlockAssetFileUrls,
   getBlockAssetStorageKey,
 } from './blockAssets.js';
-import { App, BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
+import {
+  App,
+  BlockAsset,
+  BlockMessages,
+  BlockVersion,
+  Organization,
+  transactional,
+} from '../models/index.js';
 
 interface BlockVersionToJsonOptions {
   includeFileUrls?: boolean;
@@ -30,7 +38,6 @@ export function blockVersionToJson(
 ): BlockManifest {
   const {
     BlockAssets,
-    Organization,
     OrganizationId,
     actions,
     description,
@@ -45,12 +52,12 @@ export function blockVersionToJson(
     wildcardActions,
   } = blockVersion;
   // Call blockVersionToJson with a blockVersion that includes an Organization
-  const blockName = `@${OrganizationId || Organization!.id}/${name}`;
+  const blockName = `@${OrganizationId || blockVersion.Organization!.id}/${name}`;
   let iconUrl = null;
   if (blockVersion.icon || blockVersion.get('hasIcon')) {
     iconUrl = `/api/blocks/${blockName}/versions/${version}/icon`;
   } else if (blockVersion.Organization?.icon || blockVersion.Organization?.get('hasIcon')) {
-    iconUrl = `/api/organizations/${Organization!.id}/icon?${new URLSearchParams({
+    iconUrl = `/api/organizations/${blockVersion.Organization!.id}/icon?${new URLSearchParams({
       updated: blockVersion.Organization?.updated.toISOString(),
     })}`;
   }
@@ -220,6 +227,53 @@ export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<Blo
   }
 
   return result;
+}
+
+/**
+ * Synchronize the latest version of each block of an organization from the remote.
+ *
+ * A remote block is synchronized if its version is newer than the newest local version of the
+ * block, or if the block does not exist locally. A missing local organization is created from the
+ * remote organization, without members.
+ *
+ * @param organizationId The ID of the organization whose blocks to synchronize.
+ */
+export async function syncOrganizationBlocks(organizationId: string): Promise<void> {
+  if (!(await Organization.findByPk(organizationId, { attributes: ['id'], paranoid: false }))) {
+    const {
+      data: { description, name, website },
+    } = await axios.get<Pick<Organization, 'description' | 'name' | 'website'>>(
+      String(new URL(`/api/organizations/${organizationId}`, argv.remote)),
+    );
+    await Organization.create({ id: organizationId, name, description, website });
+    logger.info(`Created organization ${organizationId} from ${argv.remote}`);
+  }
+
+  const { data: remoteBlocks } = await axios.get<BlockManifest[]>(
+    String(new URL(`/api/organizations/${organizationId}/blocks`, argv.remote)),
+  );
+  const localBlocks = await BlockVersion.findAll({
+    attributes: ['name', 'version'],
+    where: { OrganizationId: organizationId },
+  });
+  const latestLocalVersions = new Map<string, string>();
+  for (const { name, version } of localBlocks) {
+    const latestVersion = latestLocalVersions.get(name);
+    if (!latestVersion || semver.gt(version, latestVersion)) {
+      latestLocalVersions.set(name, version);
+    }
+  }
+
+  // Intentionally not using Promise.all here to not overload the remote with requests
+  for (const remoteBlock of remoteBlocks) {
+    const name = remoteBlock.name.slice(`@${organizationId}/`.length);
+    const latestVersion = latestLocalVersions.get(name);
+    if (latestVersion && !semver.gt(remoteBlock.version, latestVersion)) {
+      logger.verbose(`Block @${organizationId}/${name}@${latestVersion} is up to date`);
+      continue;
+    }
+    await syncBlock({ OrganizationId: organizationId, name, version: remoteBlock.version });
+  }
 }
 
 export async function findBlockInApps(

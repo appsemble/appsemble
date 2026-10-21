@@ -855,6 +855,13 @@
       "description": "A remote Appsemble server to connect to in order to synchronize blocks.",
       "format": "uri"
     },
+    "syncOrganizationBlocks": {
+      "type": "array",
+      "description": "The organizations whose latest block versions are synchronized from `remote` on install and upgrade.",
+      "items": {
+        "type": "string"
+      }
+    },
     "securityEmail": {
       "type": "string",
       "description": "The default security contact email for reporting security vulnerabilities.",
