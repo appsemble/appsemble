@@ -128,7 +128,13 @@
     "s3-port": 8333,
     "s3-secure": false,
     "s3-access-key": "admin",
-    "s3-secret-key": "password"
+    "s3-secret-key": "password",
+    "smtp-host": "127.0.0.1",
+    "smtp-port": 1025,
+    "smtp-secure": false,
+    "smtp-user": "Appsemble",
+    "smtp-pass": "password",
+    "smtp-from": "localdev@appsemble.com"
   },
   "dependenciesComments": {
     "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tags of the `mermaid svgs`, `e2e node`, and `e2e keycloak` jobs in .gitlab-ci.yml; Renovate bumps them all together (see renovate.json)."

@@ -15,6 +15,7 @@ import { test as resourceFixtures } from './resource/index.js';
 import { test as studioFixtures } from './studio/index.js';
 import { test as testUtilsFixtures } from './test-utils/index.js';
 import { test as trainingFixtures } from './training/index.js';
+import { MailpitClient } from 'mailpit-api';
 
 /**
  * Base test object with all utility fixtures
@@ -33,12 +34,17 @@ export const baseTest = mergeTests(
   trainingFixtures,
 );
 
+const mailpitURL = process.env.MAILPIT_URL ?? 'http://localhost:8025';
+
 /**
  * Test object with the worker's storage state saved
  *
  * Used for tests that require a logged in user
  */
-export const authenticatedTest = baseTest.extend<object, { workerStorageState: string }>({
+export const authenticatedTest = baseTest.extend<
+  object,
+  { workerStorageState: string; mailpit: MailpitClient }
+>({
   // Use the same storage state for all tests in this worker.
   storageState: ({ workerStorageState }, use) => use(workerStorageState),
 
@@ -85,4 +91,20 @@ export const authenticatedTest = baseTest.extend<object, { workerStorageState: s
     await use(newRequest);
     await newRequest.dispose();
   },
+
+  mailpit: [
+    async ({}, use, testInfo) => {
+      const mailpit = new MailpitClient(mailpitURL);
+      const queryEmailsToThisWorker = `to:worker-${testInfo.parallelIndex}@appsemble.com`;
+
+      await mailpit.deleteMessagesBySearch({ query: queryEmailsToThisWorker });
+
+      try {
+        await use(mailpit);
+      } finally {
+        await mailpit.deleteMessagesBySearch({ query: queryEmailsToThisWorker });
+      }
+    },
+    { scope: 'worker' },
+  ],
 });
