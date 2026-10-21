@@ -6,8 +6,8 @@ export const messages = defineMessages({
     defaultMessage: 'Secrets',
   },
   appsembleLogin: {
-    id: 'studio.T0V0Ht',
-    defaultMessage: 'Appsemble Login',
+    id: 'studio.IPP5oc',
+    defaultMessage: 'Appsemble login',
   },
   displayAppsembleLogin: {
     id: 'studio.mXGY9/',

@@ -6,8 +6,8 @@ export const messages = defineMessages({
     defaultMessage: 'There was a problem extending your subscription.',
   },
   title: {
-    id: 'studio.82ACU5',
-    defaultMessage: 'Extend Subscription',
+    id: 'studio.dJlnNE',
+    defaultMessage: 'Extend subscription',
   },
   help: {
     id: 'studio.uV2tEV',

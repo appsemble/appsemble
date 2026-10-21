@@ -6,11 +6,11 @@ export const messages = defineMessages({
     defaultMessage: 'There was a problem loading the apps. Please try reloading the page.',
   },
   allApps: {
-    id: 'studio.tcaeP9',
-    defaultMessage: 'All Apps',
+    id: 'studio.ApTgM/',
+    defaultMessage: 'All apps',
   },
   myApps: {
-    id: 'studio.7i+1XP',
-    defaultMessage: 'My Apps',
+    id: 'studio.TnPYbz',
+    defaultMessage: 'My apps',
   },
 });

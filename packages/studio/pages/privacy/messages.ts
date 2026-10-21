@@ -2,8 +2,8 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   title: {
-    id: 'studio.vx0nkZ',
-    defaultMessage: 'Privacy Policy',
+    id: 'studio.cPwv2c',
+    defaultMessage: 'Privacy policy',
   },
   description: {
     id: 'studio.iGnSuL',

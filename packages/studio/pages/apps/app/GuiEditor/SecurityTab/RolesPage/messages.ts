@@ -26,8 +26,8 @@ export const messages = defineMessages({
     defaultMessage: 'Changing a role name will change all of its references in the app.',
   },
   defaultPageLabel: {
-    id: 'studio.MWTx65',
-    defaultMessage: 'Default Page',
+    id: 'studio.idcebo',
+    defaultMessage: 'Default page',
   },
   noneLabel: {
     id: 'studio.450Fty',
@@ -63,8 +63,8 @@ export const messages = defineMessages({
     defaultMessage: 'Cancel',
   },
   forceDeleteRole: {
-    id: 'studio.47OZ7Y',
-    defaultMessage: 'Force Delete',
+    id: 'studio.W9pNUn',
+    defaultMessage: 'Force delete',
   },
   deleteRoleReferences: {
     id: 'studio.RGtQNE',

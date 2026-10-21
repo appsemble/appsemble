@@ -19,10 +19,10 @@ test.describe('Apps', () => {
   });
 
   test('should show the page header', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'All Apps', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'All apps', exact: true })).toBeVisible();
   });
 
-  test('should display “My Apps” when logged in', async ({
+  test('should display “My apps” when logged in', async ({
     browser,
     loginUserOnPage,
     randomTestId,
@@ -36,7 +36,7 @@ test.describe('Apps', () => {
 
     await loginUserOnPage(email, password, page);
 
-    await expect(page.getByRole('heading', { name: 'My Apps', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'My apps', exact: true })).toBeVisible();
 
     await deleteUser(email);
   });

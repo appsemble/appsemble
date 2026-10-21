@@ -40,8 +40,8 @@ export const messages = defineMessages({
     defaultMessage: 'Updating resource',
   },
   resourceName: {
-    id: 'studio.fCCf9N',
-    defaultMessage: 'Resource Name',
+    id: 'studio.eqYdSS',
+    defaultMessage: 'Resource name',
   },
   fields: {
     id: 'studio.iJMNSQ',
@@ -61,16 +61,16 @@ export const messages = defineMessages({
       'System fields are fields that are automaticaly created with every new resource in Appsemble.',
   },
   removeField: {
-    id: 'studio.MVeTei',
-    defaultMessage: 'Remove Field',
+    id: 'studio.nX7n8h',
+    defaultMessage: 'Remove field',
   },
   newField: {
-    id: 'studio.gZD+CR',
-    defaultMessage: 'Add a new Field',
+    id: 'studio.cOwsoH',
+    defaultMessage: 'Add a new field',
   },
   fieldName: {
-    id: 'studio.TML/L4',
-    defaultMessage: 'Field Name',
+    id: 'studio.yMJMfH',
+    defaultMessage: 'Field name',
   },
   fieldProperties: {
     id: 'studio.MFG1+P',
@@ -164,12 +164,12 @@ export const messages = defineMessages({
     defaultMessage: 'Create',
   },
   maximumLenght: {
-    id: 'studio.EVa8ST',
-    defaultMessage: 'Maximum Length',
+    id: 'studio.ATemBX',
+    defaultMessage: 'Maximum length',
   },
   minimumLenght: {
-    id: 'studio.WGj64n',
-    defaultMessage: 'Minimum Length',
+    id: 'studio.0sw2UL',
+    defaultMessage: 'Minimum length',
   },
   maximum: {
     id: 'studio.BCzmdv',
@@ -188,16 +188,16 @@ export const messages = defineMessages({
     defaultMessage: 'Delete',
   },
   relatedResource: {
-    id: 'studio.QMUvie',
-    defaultMessage: 'Related Resource',
+    id: 'studio.PMBuak',
+    defaultMessage: 'Related resource',
   },
   selectRelatedResource: {
-    id: 'studio.+nW2YO',
-    defaultMessage: 'Select Related Resource',
+    id: 'studio.v6sj4m',
+    defaultMessage: 'Select related resource',
   },
   deletionWarning: {
-    id: 'studio.bEmJ9Y',
-    defaultMessage: 'Deletion Warning',
+    id: 'studio./YHD8C',
+    defaultMessage: 'Deletion warning',
   },
   deletionWarningMessage: {
     id: 'studio.il/JE4',
@@ -205,8 +205,8 @@ export const messages = defineMessages({
       'Are you sure you want to delete the `{resourceName}` resource? Deleted resources can not be recovered.',
   },
   updateWarning: {
-    id: 'studio.XREHho',
-    defaultMessage: 'Resource Warning',
+    id: 'studio.kg2p7g',
+    defaultMessage: 'Resource warning',
   },
   UpdateWarningMessage: {
     id: 'studio.fPH9wE',
@@ -218,11 +218,11 @@ export const messages = defineMessages({
     defaultMessage: 'Create new resource',
   },
   openErd: {
-    id: 'studio.Smajh0',
-    defaultMessage: 'Show Relationship Diagram',
+    id: 'studio.IIx/Zm',
+    defaultMessage: 'Show relationship diagram',
   },
   closeErd: {
-    id: 'studio.7LZ4pL',
-    defaultMessage: 'Close Diagram',
+    id: 'studio.0E+ypH',
+    defaultMessage: 'Close diagram',
   },
 });

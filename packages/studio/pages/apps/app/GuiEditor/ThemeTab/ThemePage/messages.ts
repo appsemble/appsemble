@@ -2,36 +2,36 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   themeColor: {
-    id: 'studio.yAtJ0m',
-    defaultMessage: 'Theme Color',
+    id: 'studio.DXD2M2',
+    defaultMessage: 'Theme color',
   },
   splashColor: {
-    id: 'studio.2icOAh',
-    defaultMessage: 'Splash Color',
+    id: 'studio.OJdj1K',
+    defaultMessage: 'Splash color',
   },
   primaryColor: {
-    id: 'studio.qzFcWI',
-    defaultMessage: 'Primary Color',
+    id: 'studio.HEwTnH',
+    defaultMessage: 'Primary color',
   },
   linkColor: {
-    id: 'studio.zhvLV9',
-    defaultMessage: 'Link Color',
+    id: 'studio.S+6M0e',
+    defaultMessage: 'Link color',
   },
   successColor: {
-    id: 'studio.sJwguN',
-    defaultMessage: 'Success Color',
+    id: 'studio.cqDud6',
+    defaultMessage: 'Success color',
   },
   infoColor: {
-    id: 'studio.OWRK6s',
-    defaultMessage: 'Info Color',
+    id: 'studio.dz9+Gr',
+    defaultMessage: 'Info color',
   },
   warningColor: {
-    id: 'studio.UUoguq',
-    defaultMessage: 'Warning Color',
+    id: 'studio.ws5WlT',
+    defaultMessage: 'Warning color',
   },
   dangerColor: {
-    id: 'studio.TGTcH5',
-    defaultMessage: 'Danger Color',
+    id: 'studio.WuC32e',
+    defaultMessage: 'Danger color',
   },
   font: {
     id: 'studio.A3jj9z',
@@ -46,11 +46,11 @@ export const messages = defineMessages({
     defaultMessage: 'Source',
   },
   tileLayers: {
-    id: 'studio.e1Z7f/',
-    defaultMessage: 'Tile Layers',
+    id: 'studio.MyaV3Q',
+    defaultMessage: 'Tile layers',
   },
   defaultTheme: {
-    id: 'studio.owyfG1',
-    defaultMessage: 'Default Theme',
+    id: 'studio.qwMDBy',
+    defaultMessage: 'Default theme',
   },
 });

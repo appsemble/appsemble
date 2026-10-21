@@ -6,8 +6,8 @@ export const messages = defineMessages({
     defaultMessage: 'There was a problem cancelling your subscription.',
   },
   title: {
-    id: 'studio.SKFWE+',
-    defaultMessage: 'Cancel Subscription',
+    id: 'studio.UWVETE',
+    defaultMessage: 'Cancel subscription',
   },
   help: {
     id: 'studio.8+1M5S',

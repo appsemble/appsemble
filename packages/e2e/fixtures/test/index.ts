@@ -68,7 +68,7 @@ export const authenticatedTest = baseTest.extend<
       await page.getByTestId('login').click();
 
       // Wait until auth state is saved in browser storage
-      await expect(page.getByText('My Apps')).toBeVisible();
+      await expect(page.getByText('My apps')).toBeVisible();
 
       await page.context().storageState({ path: fileName });
       await page.close();

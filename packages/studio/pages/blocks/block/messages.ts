@@ -2,8 +2,8 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   blockIcon: {
-    id: 'studio.PfPxNJ',
-    defaultMessage: 'Block Icon',
+    id: 'studio.Tc5BiV',
+    defaultMessage: 'Block icon',
   },
   error: {
     id: 'studio.2Ppkru',

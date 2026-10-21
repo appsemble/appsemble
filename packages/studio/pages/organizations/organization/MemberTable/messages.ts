@@ -2,8 +2,8 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   members: {
-    id: 'studio.dc9z3X',
-    defaultMessage: 'Organization Members',
+    id: 'studio.Sg9LAb',
+    defaultMessage: 'Organization members',
   },
   membersError: {
     id: 'studio.pwempj',
