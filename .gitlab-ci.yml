@@ -468,7 +468,7 @@ prettier:
 # Verify the committed Mermaid SVGs are in sync with the diagrams in the docs.
 mermaid svgs:
   extends: .npm
-  image: mcr.microsoft.com/playwright:v1.63.0-noble
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   stage: test
   script:
     - npm run render-mermaid
@@ -779,7 +779,7 @@ validate snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.63.0-noble
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   interruptible: true
   needs:
     - build docker image
@@ -880,7 +880,7 @@ e2e node:
 
 e2e keycloak:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.63.0-noble
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   interruptible: true
   needs:
     - build docker image
