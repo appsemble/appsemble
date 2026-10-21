@@ -1821,7 +1821,7 @@ lighthouse:
   # one pipeline.
   tags:
     - dcentralize
-  image: mcr.microsoft.com/playwright:v1.63.0-noble
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   allow_failure: true
   script:
     - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d > /tmp/appsemble.crt

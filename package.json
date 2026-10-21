@@ -137,7 +137,7 @@
     "smtp-from": "localdev@appsemble.com"
   },
   "dependenciesComments": {
-    "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tags of the `mermaid svgs`, `e2e node`, and `e2e keycloak` jobs in .gitlab-ci.yml; Renovate bumps them all together (see renovate.json)."
+    "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tags of the `mermaid svgs`, `e2e node`, `e2e keycloak`, and `lighthouse` jobs in .gitlab-ci.yml; Renovate bumps them all together (see renovate.json)."
   },
   "dependencies": {
     "@playwright/test": "1.64.1",
