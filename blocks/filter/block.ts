@@ -254,6 +254,36 @@ declare module '@appsemble/sdk' {
      * The label of the clear button.
      */
     clearLabel: never;
+
+    /**
+     * The accessible label for closing the filter modal.
+     */
+    closeLabel: never;
+
+    /**
+     * The accessible label of the upper handle of a range slider.
+     */
+    sliderMaximum: never;
+
+    /**
+     * The accessible label of the lower handle of a range slider.
+     */
+    sliderMinimum: never;
+
+    /**
+     * The accessible label of the button that opens the filter modal.
+     */
+    openLabel: never;
+
+    /**
+     * The default accessible label of the `from` field of a date range.
+     */
+    fromLabel: never;
+
+    /**
+     * The default accessible label of the `to` field of a date range.
+     */
+    toLabel: never;
   }
 
   interface Actions {

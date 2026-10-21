@@ -9,6 +9,7 @@ artwork for navigation, buttons and login providers without changing any block.
 - [Registering icons](#registering-icons)
 - [Referencing icons](#referencing-icons)
 - [Where icons can be used](#where-icons-can-be-used)
+- [Replacing built-in icons](#replacing-built-in-icons)
 - [Appearance](#appearance)
 - [Errors](#errors)
 - [Templates and portability](#templates-and-portability)
@@ -58,7 +59,7 @@ pages:
     icon: home
     blocks:
       - type: button-list
-        version: 0.40.1
+        version: 0.40.5
         parameters:
           buttons:
             - label: { translate: dossiers }
@@ -112,7 +113,7 @@ pages:
   - name: Overview
     blocks:
       - type: data-loader
-        version: 0.40.1
+        version: 0.40.5
         actions:
           onLoad:
             type: resource.query
@@ -121,7 +122,7 @@ pages:
           emit:
             data: items
       - type: tiles
-        version: 0.40.1
+        version: 0.40.5
         events:
           listen:
             data: items
@@ -133,6 +134,50 @@ pages:
 Only literal `icon:<key>` values are checked when the app is published. A remapper is evaluated at
 runtime, so a key it produces which isn’t in the registry, or a value which isn’t a valid icon
 reference, renders an empty icon box instead of failing validation.
+
+## Replacing built-in icons
+
+Blocks and the app shell also show icons you don’t set in the app definition, such as the remove
+button on a chip or the logout item in the profile menu. To replace these, list their Font Awesome
+names under `overrides`:
+
+```yaml copy filename="app-definition.yaml"
+icons:
+  add:
+    asset: plus-24
+    overrides:
+      - plus
+  remove:
+    asset: cross-24
+    overrides:
+      - xmark
+      - trash
+```
+
+Now every `plus` icon in the app shows the `plus-24` asset, including `icon: plus` on a page. To
+find the name of an icon, inspect it in the browser and look for its `fa-<name>` class, for example
+`fa-xmark`. List the name without `fa-`, spelled exactly as in the class. A name can only be listed
+once.
+
+Font Awesome also accepts older names for some icons, such as `times` for `xmark`. An override only
+replaces the name it lists, so if the same icon appears under several names, list each of them.
+
+Messages and form field errors show a status icon for their color. Override these names to use your
+own status icons:
+
+| Color   | Icon                   |
+| ------- | ---------------------- |
+| danger  | `circle-xmark`         |
+| warning | `triangle-exclamation` |
+| success | `circle-check`         |
+| info    | `circle-info`          |
+
+An override applies everywhere the icon appears, and the asset keeps its own colors. Pick artwork
+that looks right on every background the icon appears on. If that isn’t possible, don’t override the
+icon and use `icon:<key>` in the places you configure yourself.
+
+Blocks only follow overrides once they are updated to the Appsemble release that added them, so
+update the blocks in your app to the latest version.
 
 ## Appearance
 
@@ -171,7 +216,7 @@ need to be uploaded again with the names used in the registry.
 
 ## Version requirements
 
-Custom icons require Appsemble 0.40.1 or newer. Blocks published before that version render Font
+Custom icons require Appsemble 0.40.5 or newer. Blocks published before that version render Font
 Awesome icons only, so make sure the blocks in the app use a version which supports icon references.
 Existing Font Awesome icons keep working in every version, no changes to the app definition or the
 blocks are needed.

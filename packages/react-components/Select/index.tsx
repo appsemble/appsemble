@@ -1,5 +1,13 @@
 import classNames from 'classnames';
-import { type ChangeEvent, type ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
+import {
+  type ChangeEvent,
+  type ComponentPropsWithoutRef,
+  forwardRef,
+  useCallback,
+  useContext,
+} from 'react';
+
+import { FormComponentContext } from '../index.js';
 
 export interface SelectProps extends Omit<ComponentPropsWithoutRef<'select'>, 'onChange'> {
   /**
@@ -31,6 +39,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     { className, error, fullWidth, loading, multiple, name, onChange, id = name, ...props },
     ref,
   ) => {
+    const aria = useContext(FormComponentContext);
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLSelectElement>) => {
         onChange?.(
@@ -59,6 +68,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           name={name}
           onChange={handleChange}
           ref={ref}
+          {...aria}
           {...props}
         />
       </div>

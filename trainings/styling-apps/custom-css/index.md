@@ -8,7 +8,7 @@ theming.
 If you're not familiar with using CSS we recommend first learning the basics before applying your
 knowledge in Appsemble. One of the most common ways to learn this is through W3Schools.
 
-The following tutorials should give you a good base to start with. It's recommended you pratice a
+The following tutorials should give you a good base to start with. It's recommended you practice a
 bit locally before trying out with Appsemble, since some of our selectors might be difficult to
 reach from time to time.
 

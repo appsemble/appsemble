@@ -11,12 +11,14 @@ exports[`should render a slider field 1`] = `
     >
       <input
         class="slider is-fullwidth"
+        style="--slider-progress: 50%;"
         type="range"
       />
     </div>
     <span
       class="help help"
       data-testid="help-formcomp"
+      id="P0-0"
     />
   </div>
 </div>

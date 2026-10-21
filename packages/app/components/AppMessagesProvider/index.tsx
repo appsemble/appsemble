@@ -1,9 +1,4 @@
-import {
-  defaultLocale,
-  type IntlMessage,
-  type MessageGetter,
-  normalize,
-} from '@appsemble/lang-sdk';
+import { defaultLocale, type IntlMessage, type MessageGetter } from '@appsemble/lang-sdk';
 import { Content, Loader, Message, useLocationString } from '@appsemble/react-components';
 import { type AppMessages } from '@appsemble/types';
 import { detectLocale, has, objectCache } from '@appsemble/utils';
@@ -32,13 +27,17 @@ interface IntlMessagesProviderProps {
 interface AppMessageContext {
   getMessage: MessageGetter;
   getAppMessage: MessageGetter;
+
+  /**
+   * Whether the loaded messages belong to the language of the current URL.
+   */
+  messagesReady: boolean;
   getBlockMessage: (
     blockVersion: string,
     blockName: string,
     message: IntlMessage,
     prefix?: string,
   ) => IntlMessageFormat;
-  appMessageIds: string[];
 }
 
 // @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks)
@@ -67,6 +66,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     [lang],
   );
   const [messages, setMessages] = useState<AppMessages['messages']>();
+  const [messagesLanguage, setMessagesLanguage] = useState<string>();
   const [messagesError, setMessagesError] = useState(false);
   const [messagesLoading, setMessagesLoading] = useState(true);
 
@@ -84,11 +84,10 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
       (languages.includes(preferredLanguage) && preferredLanguage) ||
       detectLocale(languages, navigator.languages) ||
       defaultLanguage;
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
-    if (/^[A-Z]/.test(lang) || definition.pages.some((page) => lang === normalize(page.name))) {
+    if (lang) {
       // Someone got linked to a page without a language tag. Redirect them to the same page, but
-      // with language set. This is especially important for the OAuth2 callback URL.
+      // with language set, whichever language the page segment is in. This is especially important
+      // for the OAuth2 callback URL. An unknown page falls back to the default page.
       navigate(`/${detected}${redirect}`, { replace: true });
     } else {
       navigate(`/${detected}`, { replace: true });
@@ -106,11 +105,31 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     document.documentElement.lang = lang;
+    // A response for a language the user has already navigated away from is discarded, so the
+    // routes never run against the messages of another language.
+    setMessagesError(false);
+    let active = true;
     axios
       .get<AppMessages>(`${apiUrl}/api/apps/${appId}/messages/${lang}`)
-      .then(({ data }) => setMessages(data.messages))
-      .catch(() => setMessagesError(true))
-      .finally(() => setMessagesLoading(false));
+      .then(({ data }) => {
+        if (active) {
+          setMessages(data.messages);
+          setMessagesLanguage(lang);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setMessagesError(true);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setMessagesLoading(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
   }, [definition, lang]);
 
   const getMessage = useCallback(
@@ -149,9 +168,9 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
       getMessage,
       getAppMessage,
       getBlockMessage,
-      appMessageIds: messages?.app ? Object.keys(messages.app) : [],
+      messagesReady: messagesLanguage === lang,
     }),
-    [getMessage, getAppMessage, getBlockMessage, messages],
+    [getMessage, getAppMessage, getBlockMessage, lang, messagesLanguage],
   );
 
   if (messagesLoading) {

@@ -1,8 +1,19 @@
+import { type BlockProps, Context } from '@appsemble/preact';
+import { fa, resolveIcon } from '@appsemble/web-utils';
 import { render, screen, waitFor } from '@testing-library/preact';
 import userEvent from '@testing-library/user-event';
+import { type ComponentChildren, type VNode } from 'preact';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { ImageComponent } from './index.js';
+
+const block = {
+  utils: { fa, resolveIcon: (reference: string) => resolveIcon(reference) },
+} as BlockProps;
+
+function Provider({ children }: { readonly children: ComponentChildren }): VNode {
+  return <Context.Provider value={block}>{children}</Context.Provider>;
+}
 
 let originalDevicePixelRatio: PropertyDescriptor | undefined;
 let originalIntersectionObserver: typeof window.IntersectionObserver;
@@ -95,6 +106,8 @@ it('should request higher resolution Appsemble assets on high-DPR screens', asyn
     <ImageComponent
       alt="Course image"
       aspectRatio="9:16"
+      closeButtonLabel="Close"
+      downloadLabel="Download in HD"
       id="course"
       size={64}
       src="http://localhost/api/apps/1/assets/course-image"
@@ -114,6 +127,8 @@ it('should preserve Appsemble asset URLs when using automatic sizing', async () 
   render(
     <ImageComponent
       alt="Auto-sized asset"
+      closeButtonLabel="Close"
+      downloadLabel="Download in HD"
       id="auto-sized"
       size="auto"
       src="http://localhost/api/apps/1/assets/course-image"
@@ -133,7 +148,14 @@ it('should open the preview and not propagate the click by default', async () =>
   render(
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
     <div onClick={parentClick}>
-      <ImageComponent alt="Preview image" id="preview" size={48} src="https://example.com/x.png" />
+      <ImageComponent
+        alt="Preview image"
+        closeButtonLabel="Close"
+        downloadLabel="Download in HD"
+        id="preview"
+        size={48}
+        src="https://example.com/x.png"
+      />
     </div>,
   );
 
@@ -170,10 +192,13 @@ it('should download original Appsemble assets from previews', async () => {
   render(
     <ImageComponent
       alt="Preview image"
+      closeButtonLabel="Close"
+      downloadLabel="Download in HD"
       id="preview"
       size={48}
       src="http://localhost/api/apps/1/assets/course-image"
     />,
+    { wrapper: Provider },
   );
 
   const button = screen.getByAltText('Preview image').closest('button') as HTMLButtonElement;
@@ -196,6 +221,8 @@ it('should let the click propagate and not open the preview when openPreview is 
     <div onClick={parentClick}>
       <ImageComponent
         alt="Passthrough image"
+        closeButtonLabel="Close"
+        downloadLabel="Download in HD"
         id="passthrough"
         openPreview={false}
         size={48}
@@ -220,6 +247,8 @@ it('should not modify external image URLs', async () => {
   render(
     <ImageComponent
       alt="External image"
+      closeButtonLabel="Close"
+      downloadLabel="Download in HD"
       id="external"
       size={64}
       src="https://example.com/image.png"
@@ -231,4 +260,24 @@ it('should not modify external image URLs', async () => {
   await waitFor(() => {
     expect(image.getAttribute('src')).toBe('https://example.com/image.png');
   });
+});
+
+it('should describe the previewed image and label the close button', async () => {
+  render(
+    <ImageComponent
+      alt="Preview image"
+      closeButtonLabel="Close preview"
+      downloadLabel="Download in HD"
+      id="preview"
+      size={48}
+      src="https://example.com/x.png"
+    />,
+  );
+
+  await userEvent.click(
+    screen.getByAltText('Preview image').closest('button') as HTMLButtonElement,
+  );
+
+  expect(screen.getAllByAltText('Preview image')).toHaveLength(2);
+  expect(screen.getByRole('button', { name: 'Close preview' })).toBeDefined();
 });

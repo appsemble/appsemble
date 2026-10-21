@@ -35,7 +35,7 @@ export function Image({
   option,
 }: ImageComponentProps): VNode {
   const {
-    utils: { asset, remap },
+    utils: { asset, formatMessage, remap },
   } = useBlock();
 
   const alternate = remap(alt, option, { id }) as string;
@@ -83,5 +83,15 @@ export function Image({
     })();
   }, [asset, option, fetched, value, isVisible]);
 
-  return <ImageComponent alt={alternate} id={id} rounded={rounded} size={size} src={src} />;
+  return (
+    <ImageComponent
+      alt={alternate}
+      closeButtonLabel={formatMessage('closeImage')}
+      downloadLabel={formatMessage('downloadImage')}
+      id={id}
+      rounded={rounded}
+      size={size}
+      src={src}
+    />
+  );
 }

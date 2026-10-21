@@ -25,12 +25,12 @@ export function useActiveNavigation(
 ): (page: PageDefinition) => 'page' | 'location' | false {
   const { definition } = useAppDefinition();
   const { appMemberRoles, appMemberSelectedGroup } = useAppMember();
-  const { appMessageIds, getAppMessage } = useAppMessages();
+  const { getAppMessage } = useAppMessages();
   const pageId = useMatch('/:lang/:pageId/*')?.params.pageId;
 
   return useMemo(() => {
     const currentPage = pageId
-      ? findPageById(definition.pages, normalize(pageId), appMessageIds, getAppMessage)
+      ? findPageById(definition.pages, normalize(pageId), getAppMessage)
       : null;
     const containers = new Map<PageDefinition, PageDefinition[]>();
     const visiblePages = new Set<PageDefinition>();
@@ -62,14 +62,5 @@ export function useActiveNavigation(
       }
       return Boolean(selected && containers.get(selected)?.includes(page)) && 'location';
     };
-  }, [
-    pageId,
-    definition,
-    appMemberRoles,
-    appMemberSelectedGroup,
-    appMessageIds,
-    getAppMessage,
-    nested,
-    pages,
-  ]);
+  }, [pageId, definition, appMemberRoles, appMemberSelectedGroup, getAppMessage, nested, pages]);
 }

@@ -101,7 +101,7 @@ export async function handleUniqueAppMemberEmailIndex(
       emailVerified,
       ctx,
       403,
-      `Account linking is only allowed to a verified account. Please verify your email ${email}.`,
+      'Account linking requires an email address verified by the external login provider.',
     );
     const memberToLink = await AppMember.findOne({
       where: { email },
@@ -139,5 +139,7 @@ export async function handleUniqueAppMemberEmailIndex(
       ].join(','),
     };
     await handleAuthorization(data);
+  } else {
+    throw error;
   }
 }

@@ -67,6 +67,7 @@ function sanitizeAppDefinitionForPublicSettings(
       ? {
           breadcrumbs: definition.layout.breadcrumbs,
           breakpoints: definition.layout.breakpoints,
+          builtinPages: definition.layout.builtinPages,
           debug: definition.layout.debug,
           enabledSettings: definition.layout.enabledSettings,
           feedback: definition.layout.feedback,

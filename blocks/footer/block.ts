@@ -47,6 +47,15 @@ export interface Image {
    *
    */
   hide?: Remapper;
+
+  /**
+   * Whether clicking the image opens an enlargement.
+   *
+   * App assets can also be downloaded from the enlargement.
+   *
+   * @default true
+   */
+  enlarge?: Remapper;
 }
 
 export interface FooterColumnWithImage {
@@ -87,6 +96,23 @@ declare module '@appsemble/sdk' {
     [key: string]: never;
   }
 
+  interface Messages {
+    /**
+     * The accessible label for closing an enlarged image.
+     */
+    closeImage: never;
+
+    /**
+     * The accessible label for enlarging an image without alt text.
+     */
+    enlargeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
+  }
+
   interface Parameters {
     columns: FooterColumn[];
 
@@ -120,6 +146,9 @@ declare module '@appsemble/sdk' {
 
     /**
      * Copyright text to be rendered at the bottom.
+     *
+     * If this resolves to an object with a `label` and a `link`, the copyright is rendered as a
+     * link. The link must be relative or use the `http`, `https`, `mailto`, or `tel` scheme.
      */
     copyright?: Remapper;
   }

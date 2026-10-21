@@ -1,4 +1,4 @@
-import { Title } from '@appsemble/react-components';
+import { FieldError, Title } from '@appsemble/react-components';
 import { type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
@@ -66,7 +66,7 @@ export function JSONSchemaObjectEditor({
           {content}
         </>
       )}
-      {error ? <div className="help is-danger">{error}</div> : null}
+      {error ? <FieldError>{error}</FieldError> : null}
     </div>
   );
 }

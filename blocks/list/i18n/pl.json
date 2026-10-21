@@ -1,4 +1,9 @@
 {
+  "closeImage": "",
+  "downloadImage": "",
   "error": "",
-  "noData": ""
+  "loading": "",
+  "moreOptions": "",
+  "noData": "",
+  "toggleList": ""
 }

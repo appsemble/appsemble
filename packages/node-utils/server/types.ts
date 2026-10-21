@@ -39,18 +39,6 @@ declare module 'koa' {
   }
 
   interface DefaultContext {
-    appPath: string;
-    appHost: string;
-    appsembleApp: App;
-    appBlocks: BlockManifest[];
-    appMessages: AppMessages[];
-    appVariables: AppConfigEntry[];
-    appMembers: AppMemberInfo[];
-    appMemberInfo: AppMemberInfo;
-    appGroups: ExtendedGroup[];
-    appAssets: AppAsset[];
-    appReadmes: AppReadme[];
-    blockConfigs: ContextBlockConfig[];
     params?: Record<string, string>;
   }
 }
@@ -236,10 +224,20 @@ export interface GetBlocksAssetsPathsParams {
   identifiableBlocks: IdentifiableBlock[];
 }
 
-export type ExtendedTheme = Omit<Partial<ThemeType>, 'font'> & {
+export type ExtendedTheme = Omit<Partial<ThemeType>, 'displayFont' | 'font'> & {
   bulmaVersion: string;
   fontFamily: string;
   fontSource: string;
+
+  /**
+   * The display font family, or an empty string to fall back to the body font.
+   */
+  displayFontFamily: string;
+
+  /**
+   * The display font source, or an empty string to fall back to the body font.
+   */
+  displayFontSource: string;
 };
 
 export interface GetHostParams {

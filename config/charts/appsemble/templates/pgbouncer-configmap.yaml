@@ -50,5 +50,9 @@ data:
     {{- end }}
     max_user_connections = {{ div (int .Values.pgbouncer.maxUserConnections) (int .Values.pgbouncer.replicaCount) }}
     server_idle_timeout = 30
+    ; After a failed server login PgBouncer rejects every client for this many seconds (default
+    ; 15). A PostgreSQL failover or switchover makes the new primary available within seconds, so
+    ; retry quickly instead of failing requests long after the database is back.
+    server_login_retry = 1
     ignore_startup_parameters = extra_float_digits
 {{- end }}

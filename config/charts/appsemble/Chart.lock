@@ -4,9 +4,9 @@ dependencies:
   version: 0.37.0
 - name: seaweedfs
   repository: https://seaweedfs.github.io/seaweedfs/helm
-  version: 4.47.0
+  version: 4.48.0
 - name: valkey
   repository: https://valkey.io/valkey-helm
   version: 0.12.0
-digest: sha256:c7cdd46700b4fb3b6e85066f2bf320750f87303256f49a09bf7a880f3314bf9a
-generated: "2026-09-22T04:17:28.020461054Z"
+digest: sha256:7c98b76857cfa8dc8c62eded0dbff55e06fe0ae6a8f9066d3cd3a5497cfc206b
+generated: "2026-10-02T04:17:28.68690434Z"

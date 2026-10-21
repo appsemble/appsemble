@@ -5,14 +5,17 @@ import { fileURLToPath } from 'node:url';
  * Generate a proper Vitest configuration based on a project context.
  *
  * @param {ImportMeta} meta The import module meta object.
+ * @param {object} [options] Additional options.
+ * @param {boolean} [options.css] Process the CSS files under `src/`, so tests can assert computed
+ *   styles. By default CSS imports resolve to empty strings.
  * @returns {import('vitest/config').UserProjectConfigExport} A vitest configuration for the project.
  */
-export function createVitestConfig({ url }) {
+export function createVitestConfig({ url }, { css = false } = {}) {
   const { compilerOptions: { lib = [] } = {} } = JSON.parse(
     readFileSync(new URL('tsconfig.json', url)),
   );
 
-  const setupFilesAfterEnv = [];
+  const setupFilesAfterEnv = [fileURLToPath(new URL('jsdom.setup.ts', import.meta.url))];
   const isGitLabCi = process.env.GITLAB_CI === 'true';
   const maxWorkers = process.env.VITEST_MAX_WORKERS ?? (isGitLabCi ? '90%' : '50%');
 
@@ -39,6 +42,7 @@ export function createVitestConfig({ url }) {
         },
       },
       css: {
+        include: css ? [new RegExp(`^${RegExp.escape(fileURLToPath(new URL('src/', url)))}.*\\.css$`)] : [],
         modules: {
           classNameStrategy: 'non-scoped',
         },

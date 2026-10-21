@@ -1,6 +1,7 @@
 import { Context } from '@appsemble/preact';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { act, render, screen } from '@testing-library/preact';
+import { userEvent } from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
 
 import { Cards } from './bootstrap.js';
@@ -14,9 +15,24 @@ interface Item {
 
 interface SetupOptions {
   /**
+   * The card parameters.
+   */
+  card?: BlockProps['parameters']['card'];
+
+  /**
    * Whether to hide the block when it has no data.
    */
   hideOnNoData?: boolean;
+
+  /**
+   * Whether the app renders on a mobile screen.
+   */
+  isMobile?: boolean;
+
+  /**
+   * The action triggered when a card is clicked.
+   */
+  onClick?: BlockProps['actions']['onClick'];
 }
 
 interface Setup {
@@ -61,7 +77,14 @@ interface Setup {
   unmount: () => void;
 }
 
-function setup({ hideOnNoData = false }: SetupOptions = {}): Setup {
+function setup({
+  card = { content: 'Content', title: { prop: 'title' } },
+  hideOnNoData = false,
+  isMobile = false,
+  onClick = Object.assign(() => Promise.resolve(), {
+    type: 'noop',
+  }) as BlockProps['actions']['onClick'],
+}: SetupOptions = {}): Setup {
   const offData = vi.fn();
   const offReset = vi.fn();
   const ready = vi.fn();
@@ -69,9 +92,7 @@ function setup({ hideOnNoData = false }: SetupOptions = {}): Setup {
   let resetCallback: (() => void) | undefined;
 
   const props = {
-    actions: {
-      onClick: Object.assign(() => Promise.resolve(), { type: 'noop' as const }),
-    },
+    actions: { onClick },
     data: undefined,
     events: {
       emit: {},
@@ -88,17 +109,20 @@ function setup({ hideOnNoData = false }: SetupOptions = {}): Setup {
       off: { data: offData, reset: offReset },
     } as unknown as BlockProps['events'],
     parameters: {
-      card: { content: { prop: 'title' } },
+      card,
       defaultImage: '',
       hideOnNoData,
     },
     ready,
     utils: {
       asset: (value: string) => value,
+      fa: (name: string) => `fas fa-${name}`,
       formatMessage: (id: string) => id,
+      isMobile,
       remap(remapper: string | { prop: string } | undefined, data: Item) {
         return typeof remapper === 'object' ? data[remapper.prop as keyof Item] : remapper;
       },
+      resolveIcon: (name: string) => ({ type: 'fontawesome', name }),
     },
   } as unknown as BlockProps;
 
@@ -147,7 +171,7 @@ it('should show the error message when the data event reports an error', async (
 
   await emitData([], 'Something broke');
 
-  expect(screen.getByText('error')).toBeDefined();
+  expect(screen.getByRole('alert').textContent).toBe('error');
 });
 
 it('should recover from an error when later data arrives', async () => {
@@ -160,12 +184,13 @@ it('should recover from an error when later data arrives', async () => {
   expect(screen.getByText('Recovered')).toBeDefined();
 });
 
-it('should show the empty message when there is nothing to display', async () => {
+it('should announce the empty message in a live region that exists before the data', async () => {
   const { emitData } = setup();
+  const statuses = screen.getAllByRole('status');
 
   await emitData([]);
 
-  expect(screen.getByText('noData')).toBeDefined();
+  expect(statuses.map((status) => status.textContent)).toContain('noData');
 });
 
 it('should hide when configured to hide without data', async () => {
@@ -205,4 +230,136 @@ it('should stop listening for data and reset when unmounted', () => {
 
   expect(offData).toHaveBeenCalledExactlyOnceWith(dataCallback);
   expect(offReset).toHaveBeenCalledExactlyOnceWith(resetCallback);
+});
+
+it('should open a card with a button that is reachable by keyboard', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'click',
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({ onClick });
+  const item = { id: 1, title: 'First' };
+
+  await emitData([item]);
+  await userEvent.tab();
+  await userEvent.keyboard('{Enter}');
+
+  expect(document.activeElement).toBe(screen.getByRole('button', { name: 'First' }));
+  expect(onClick).toHaveBeenCalledExactlyOnceWith(item);
+});
+
+it('should name the button of a card without text by its image alt', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'click',
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({
+    card: { content: { prop: 'content' }, image: { alt: 'A red bike', file: '' } },
+    onClick,
+  });
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.getByRole('button', { name: 'A red bike' })).toBeDefined();
+});
+
+it('should link a card to the page of a link action', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'link',
+    href: (data: Item) => `/items/${data.id}`,
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({ onClick });
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.getByRole('link', { name: 'First' }).getAttribute('href')).toBe('/items/1');
+});
+
+it('should not render a control for a card without a click action', async () => {
+  const { emitData } = setup();
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.queryByRole('button')).toBeNull();
+  expect(screen.queryByRole('link')).toBeNull();
+});
+
+it('should open a card through its subtitle when it has no title', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'click',
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({
+    card: { content: { prop: 'content' }, subtitle: { prop: 'title' } },
+    onClick,
+  });
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.getByRole('button', { name: 'First' })).toBeDefined();
+});
+
+it('should give a card without text or image alt a generic name', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'click',
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({ card: { content: { prop: 'content' } }, onClick });
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.getByRole('button', { name: 'openCard' })).toBeDefined();
+});
+
+it('should name icon-only footer buttons on mobile by their label', async () => {
+  const { emitData } = setup({
+    card: {
+      content: 'Content',
+      footer: [{ icon: 'trash', label: 'Delete' }],
+      title: { prop: 'title' },
+    },
+    isMobile: true,
+  });
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.getByRole('button', { name: 'Delete' })).toBeDefined();
+});
+
+it('should render a footer button with a link action as a link to its page', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'link',
+    href: (data: Item) => `/items/${data.id}`,
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({
+    card: {
+      content: 'Content',
+      footer: [{ icon: 'info', label: 'Details' }],
+      title: { prop: 'title' },
+    },
+    onClick,
+  });
+
+  await emitData([{ id: 1, title: 'First' }]);
+  await userEvent.click(screen.getByRole('link', { name: 'Details' }));
+
+  expect(screen.getByRole('link', { name: 'Details' }).getAttribute('href')).toBe('/items/1');
+  expect(onClick).toHaveBeenCalledExactlyOnceWith({ id: 1, title: 'First' }, { index: 0 });
+});
+
+it('should not link a disabled footer button with a link action', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'link',
+    href: (data: Item) => `/items/${data.id}`,
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({
+    card: {
+      content: 'Content',
+      footer: [{ disabled: true, icon: 'info', label: 'Details' }],
+      title: { prop: 'title' },
+    },
+    onClick,
+  });
+
+  await emitData([{ id: 1, title: 'First' }]);
+  await userEvent.click(screen.getByText('Details'));
+
+  expect(screen.queryByRole('link', { name: 'Details' })).toBeNull();
+  expect(onClick).not.toHaveBeenCalled();
 });

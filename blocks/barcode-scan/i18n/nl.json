@@ -1,5 +1,10 @@
 {
+  "barcodeType": "Barcodetype",
   "empty": "",
   "error": "",
-  "loading": ""
+  "loading": "",
+  "patchSize": "Patchgrootte",
+  "removeImage": "",
+  "selectImage": "",
+  "stopScanning": ""
 }

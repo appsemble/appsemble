@@ -4,3 +4,24 @@
   object-fit: contain;
   width: 100%;
 }
+
+/*
+ * An image has no text baseline, so an inline wrapper would stand on the text baseline with its
+ * bottom edge. A Font Awesome glyph is centered in its rem-sized wrapper and its baseline lies
+ * 0.375× the glyph size below its center, so the wrapper is lowered by half its height minus that.
+ */
+.asset {
+  vertical-align: calc(0.375em - 0.75rem);
+}
+
+.asset:global(.is-small) {
+  vertical-align: calc(0.375em - 0.5rem);
+}
+
+.asset:global(.is-medium) {
+  vertical-align: calc(0.469em - 1rem);
+}
+
+.asset:global(.is-large) {
+  vertical-align: calc(0.75em - 1.5rem);
+}

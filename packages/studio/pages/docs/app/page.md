@@ -37,7 +37,8 @@ graph TD
 
 - **name**: The name of the page. This shows in the navbar, the URL and can be used by other actions
   to link to this page. The name of the page in the navbar can be changed with the `navTitle`
-  property, however.
+  property, however. When the page name is [translated](translating.md#translated-urls), the URL
+  uses the translated name.
 - **blocks**: Each page requires an array of blocks to be defined, with a minimum of 1 block. The
   order of the blocks defined in the page definition determine in which order the blocks get
   rendered on the page.

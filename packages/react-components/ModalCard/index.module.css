@@ -1,7 +1,10 @@
 .root {
   /* The transition times must be matched by the timeout value in the React code. */
   transition: opacity 300ms;
-  z-index: 6000;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .opening {
@@ -14,6 +17,14 @@
 
 .closing {
   opacity: 0;
+
+  /* The page behind the dialog can be used while it transitions out. */
+  pointer-events: none;
+}
+
+.body:first-child {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
 }
 
 .footer-placeholder {

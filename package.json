@@ -40,28 +40,32 @@
     ]
   },
   "overrides": {
+    "@ericblade/quagga2": {
+      "sharp": "^0.35.5"
+    },
     "axios": "~1.20.0",
     "gitleaks-secret-scanner": {
-      "tar": "7.5.19"
+      "tar": "7.5.21"
     },
+    "katex": "0.19.0",
     "third-party-web": "0.30.0"
   },
   "devDependencies": {
-    "@appsemble/eslint-config": "0.40.1",
-    "@lhci/cli": "0.15.1",
-    "@vitest/coverage-v8": "4.1.11",
-    "@vitest/ui": "4.1.11",
-    "cspell": "10.3.3",
+    "@appsemble/eslint-config": "0.40.5",
+    "@vitest/coverage-v8": "4.1.12",
+    "@vitest/ui": "4.1.12",
+    "cspell": "10.4.0",
     "dictionary-en": "4.0.0",
     "dictionary-nl": "2.0.0",
     "eslint-formatter-gitlab": "7.0.1",
     "husky": "9.1.7",
     "identity-obj-proxy": "3.0.0",
+    "intl-messageformat": "10.7.18",
     "jsdom": "22.1.0",
-    "lint-staged": "15.5.2",
-    "postcss": "8.5.28",
-    "postcss-preset-env": "9.6.0",
-    "prettier": "3.9.8",
+    "lint-staged": "17.6.0",
+    "postcss": "8.5.30",
+    "postcss-preset-env": "10.6.1",
+    "prettier": "3.9.10",
     "prettier-plugin-packagejson": "2.5.22",
     "remark-cli": "12.0.1",
     "remark-frontmatter": "5.0.0",
@@ -85,7 +89,7 @@
     "retext-repeated-words": "5.0.0",
     "retext-spell": "6.1.0",
     "retext-syntax-urls": "4.0.0",
-    "sharp": "0.35.4",
+    "sharp": "0.35.5",
     "style-search": "0.1.0",
     "stylelint": "16.26.1",
     "stylelint-color-format": "1.1.0",
@@ -95,12 +99,12 @@
     "stylelint-order": "6.0.4",
     "stylelint-prettier": "5.0.3",
     "ts-json-schema-generator": "1.5.1",
-    "tsx": "4.23.13",
+    "tsx": "4.23.15",
     "typescript": "5.9.3",
     "unified": "11.0.5",
     "unified-consistency": "2.0.0",
     "unified-prettier": "2.0.1",
-    "vitest": "4.1.11"
+    "vitest": "4.1.12"
   },
   "engines": {
     "node": ">=24"
@@ -117,7 +121,6 @@
     "gitlab-client-id": "743e32d7c7e38172fe6630123fe82be1f3d8c383e02e33a2a711a5e9ed5a2d88",
     "gitlab-client-secret": "d2d8ce5f59cea983f51d2ce496d5cdcdf19d1de4104422c565acdc11b3f2358d",
     "host": "http://localhost:9999",
-    "migrate-to": "next",
     "remote": "http://localhost:9999",
     "secret": "Local Appsemble development secret",
     "aes-secret": "Local Appsemble development AES secret",
@@ -125,13 +128,19 @@
     "s3-port": 8333,
     "s3-secure": false,
     "s3-access-key": "admin",
-    "s3-secret-key": "password"
+    "s3-secret-key": "password",
+    "smtp-host": "127.0.0.1",
+    "smtp-port": 1025,
+    "smtp-secure": false,
+    "smtp-user": "Appsemble",
+    "smtp-pass": "password",
+    "smtp-from": "localdev@appsemble.com"
   },
   "dependenciesComments": {
-    "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tag of the `mermaid svgs` job in .gitlab-ci.yml; Renovate bumps both together (see renovate.json)."
+    "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tags of the `mermaid svgs`, `e2e node`, and `e2e keycloak` jobs in .gitlab-ci.yml; Renovate bumps them all together (see renovate.json)."
   },
   "dependencies": {
-    "@playwright/test": "1.62.1",
+    "@playwright/test": "1.64.1",
     "gitleaks-secret-scanner": "^2.1.1",
     "i18n-iso-countries": "^7.14.0",
     "tslib": "^2.8.1",

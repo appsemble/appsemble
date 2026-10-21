@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import { type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { type MutableRef, useCallback } from 'preact/hooks';
+import { type MutableRef, useCallback, useContext } from 'preact/hooks';
 
+import { FormComponentContext } from '../FormComponent/index.js';
 import { useCombinedRefs } from '../useCombinedRefs.js';
 
 export interface TextAreaProps extends Omit<
@@ -47,8 +48,11 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       errorLinkRef as MutableRef<HTMLElement>,
     );
 
+    const aria = useContext(FormComponentContext);
+
     return (
       <textarea
+        {...aria}
         {...props}
         className={classNames('textarea', {
           'has-background-white-bis': readOnly,

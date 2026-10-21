@@ -4,8 +4,17 @@
 
 .fieldset-wrapper {
   background-color: rgb(0 0 0 / 2.5%);
-  border-radius: 4px;
+  border-radius: var(--input-radius, 4px);
   padding: 1rem;
+}
+
+.legend {
+  float: left;
+  width: 100%;
+}
+
+.legend + * {
+  clear: both;
 }
 
 .fieldset-entries-wrapper-grid {

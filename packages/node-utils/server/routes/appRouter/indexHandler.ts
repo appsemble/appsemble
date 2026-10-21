@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 
 import { getAppBlocks, type IdentifiableBlock } from '@appsemble/lang-sdk';
-import { createThemeURL, defaultLocale, mergeThemes } from '@appsemble/utils';
+import { createThemeURL, defaultLocale, detectLocale, mergeThemes } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 
 import { organizationBlocklist } from '../../../organizationBlocklist.js';
@@ -174,6 +174,22 @@ export function createIndexHandler(options: Options): Middleware {
 
     const updated = app.$updated ? new Date(app.$updated) : new Date();
 
+    const mergedTheme = mergeThemes(app.definition.theme ?? {});
+    let fontURL;
+    if (mergedTheme.font.source === 'google') {
+      fontURL = new URL('https://fonts.googleapis.com/css');
+      fontURL.searchParams.set('display', 'swap');
+      fontURL.searchParams.set('family', mergedTheme.font.family);
+    }
+
+    // The app fetches its messages only after its script has loaded, so start that request from the
+    // HTML. The language follows the order in which the app picks it, except for a preference the
+    // app member saved in local storage, which the server cannot see.
+    const [, pathLanguage] = path.split('/');
+    const messagesLanguage = languages.includes(pathLanguage)
+      ? pathLanguage
+      : detectLocale(languages, ctx.acceptsLanguages()) || defaultLanguage;
+
     return render(ctx, 'app/index.html', {
       app,
       noIndex: app.visibility !== 'public',
@@ -181,10 +197,10 @@ export function createIndexHandler(options: Options): Middleware {
       host,
       locale: defaultLanguage,
       locales: languages.filter((lang) => lang !== defaultLanguage),
-      // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-      // (strictNullChecks)
-      bulmaURL: createThemeURL(mergeThemes(app.definition.theme)),
+      bulmaURL: createThemeURL(mergedTheme),
+      fontURL,
       faURL,
+      messagesURL: `${host}/api/apps/${app.id}/messages/${messagesLanguage}`,
       nonce,
       settings,
       themeColor: app.definition.theme?.themeColor || '#ffffff',

@@ -1,4 +1,4 @@
-import { type AppRole } from '@appsemble/lang-sdk';
+import { type AppRole, getRouteSegment } from '@appsemble/lang-sdk';
 import { Loader } from '@appsemble/react-components';
 import { type AppMemberGroup, type AppMemberInfo } from '@appsemble/types';
 import { setUser as setSentryUser } from '@sentry/browser';
@@ -21,9 +21,10 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
-import { apiUrl, appId, development } from '../../utils/settings.js';
+import { apiUrl, appId } from '../../utils/settings.js';
 import { getGrantTotpChallenge } from '../../utils/totp.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
 
 axios.defaults.withCredentials = true;
 
@@ -128,6 +129,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   const isOAuth2Callback = /(^|\/)Callback$/.test(pathname);
   const navigate = useNavigate();
   const { lang } = useParams<{ lang: string }>();
+  const { getAppMessage } = useAppMessages();
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
@@ -180,10 +182,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     const refreshToken = refreshTokenRef.current;
     invalidateAuthRequests();
     resetSessionState();
-
-    if (development) {
-      return;
-    }
 
     try {
       await axios.post(
@@ -283,10 +281,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
    */
   const fetchToken = useCallback(
     async (grantType: string, params: Record<string, string>, requestId: number) => {
-      if (development) {
-        return isLatestAuthRequest(requestId) ? '' : false;
-      }
-
       let data: TokenResponse;
       try {
         ({ data } = await axios.post<TokenResponse>(
@@ -319,9 +313,10 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         }));
         // Only the login page renders the second step, so a login started anywhere else, such as
         // registering or an app member action, has to move there to be completed.
-        if (!/(^|\/)Login$/.test(pathname)) {
+        const loginSegment = getRouteSegment('Login', getAppMessage);
+        if (pathname.split('/').at(-1) !== loginSegment) {
           navigate({
-            pathname: `/${lang}/Login`,
+            pathname: `/${lang}/${loginSegment}`,
             search: params.redirect
               ? String(new URLSearchParams({ redirect: params.redirect }))
               : '',
@@ -343,7 +338,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       applyTokenExpiration(accessToken, requestId);
       return auth;
     },
-    [applyTokenExpiration, isLatestAuthRequest, lang, navigate, pathname],
+    [applyTokenExpiration, getAppMessage, isLatestAuthRequest, lang, navigate, pathname],
   );
 
   /**
@@ -399,13 +394,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     (credentials: AuthorizationCodeLoginParams) => login('authorization_code', credentials),
     [login],
   );
-
-  /**
-   * Login using the development server.
-   *
-   * @param credentials The username and password.
-   */
-  const developmentLogin = useCallback(() => login('development', {}), [login]);
 
   /**
    * Login using demo app functionality.
@@ -491,15 +479,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
       return;
     }
 
-    if (development) {
-      developmentLogin()
-        .finally(() => setIsLoading(false))
-        .catch(() => {
-          // This can fail if the server is not reachable, but in development this is fine.
-        });
-      return;
-    }
-
     if (isOAuth2Callback) {
       setIsLoading(false);
       return;
@@ -511,7 +490,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         // Do nothing. `login` already resets the local session state on failure.
       })
       .finally(() => setIsLoading(false));
-  }, [definition, developmentLogin, isLoading, isOAuth2Callback, login]);
+  }, [definition, isLoading, isOAuth2Callback, login]);
 
   // Handle refreshing access tokens
   useEffect(() => {
@@ -575,7 +554,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     () => ({
       authorizationCodeLogin,
       passwordLogin,
-      developmentLogin,
       demoLogin,
       totpLogin,
       completeTotpLogin,
@@ -592,7 +570,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
     [
       authorizationCodeLogin,
       passwordLogin,
-      developmentLogin,
       demoLogin,
       totpLogin,
       completeTotpLogin,

@@ -76,8 +76,8 @@ export const messages = defineMessages({
     defaultMessage: 'Export as JSON',
   },
   exportAll: {
-    id: 'studio.4I6271',
-    defaultMessage: 'Export all Messages',
+    id: 'studio.8+rPte',
+    defaultMessage: 'Export all messages',
   },
   import: {
     id: 'studio.4qv+fW',

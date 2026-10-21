@@ -53,6 +53,11 @@
   text-align: left;
 }
 
+.error-summary {
+  margin-bottom: 1.5rem;
+  scroll-margin-top: 64px;
+}
+
 .error-link {
   background-color: unset;
   border: 0;

@@ -46,43 +46,41 @@ export function Cards({
     }
   }, [blockData, events.on.data]);
 
-  if (loading) {
-    return <Loader />;
-  }
-
-  if (hideOnNoData && !data?.length) {
-    return null;
-  }
-
-  if (error) {
-    return (
-      <Message className="mt-4 mr-6 mb-4 ml-5" color="danger">
-        <span>
-          <FormattedMessage id="error" />
-        </span>
-      </Message>
-    );
-  }
-
-  if (!data?.length) {
-    return (
-      <Message className="mt-4 mr-6 mb-4 ml-5">
-        <span>
-          <FormattedMessage id="noData" />
-        </span>
-      </Message>
-    );
-  }
+  const hidden = hideOnNoData && !data?.length;
+  const empty = !loading && !hidden && !error && !data?.length;
 
   return (
-    <div className="container mt-4">
-      <div className="columns is-multiline">
-        {data.map((item, index) => (
-          <div className="column is-one-quarter">
-            <CardContent index={index} item={item} />
-          </div>
-        ))}
+    <>
+      {/* The region stays mounted, so screen readers announce the message added to it. */}
+      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
+      <div role="status">
+        {empty ? (
+          <Message className="mt-4 mr-6 mb-4 ml-5">
+            <span>
+              <FormattedMessage id="noData" />
+            </span>
+          </Message>
+        ) : null}
       </div>
-    </div>
+      {loading ? (
+        <Loader label={utils.formatMessage('loading')} />
+      ) : hidden || empty ? null : error ? (
+        <Message className="mt-4 mr-6 mb-4 ml-5" color="danger" role="alert">
+          <span>
+            <FormattedMessage id="error" />
+          </span>
+        </Message>
+      ) : (
+        <div className="container mt-4">
+          <div className="columns is-multiline">
+            {data.map((item, index) => (
+              <div className="column is-one-quarter">
+                <CardContent index={index} item={item} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

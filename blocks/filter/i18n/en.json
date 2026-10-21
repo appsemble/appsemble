@@ -1,5 +1,11 @@
 {
   "clearLabel": "Clear",
+  "closeLabel": "Close filter",
+  "fromLabel": "From",
   "modalTitle": "Filter",
-  "submitLabel": "Filter"
+  "openLabel": "Open filter",
+  "sliderMaximum": "Maximum",
+  "sliderMinimum": "Minimum",
+  "submitLabel": "Filter",
+  "toLabel": "To"
 }

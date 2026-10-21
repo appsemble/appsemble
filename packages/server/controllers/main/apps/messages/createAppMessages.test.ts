@@ -346,4 +346,108 @@ describe('createAppMessages', () => {
       }
     `);
   });
+
+  it('should reject a translated page name that takes the URL segment of another page', async () => {
+    authorizeStudio();
+    await app.update({
+      definition: {
+        name: 'Test App',
+        description: 'Description',
+        pages: [
+          { name: 'Home', blocks: [] },
+          { name: 'Tasks', blocks: [] },
+        ],
+      },
+    });
+    const response = await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'nl',
+      messages: { app: { 'pages.home': 'Taken', 'pages.tasks': 'Taken' } },
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Language “nl”: pages “Home” and “Tasks” share the URL segment “taken”",
+        "statusCode": 400,
+      }
+    `);
+    const foundMessages = await AppMessages.findAll({ where: { AppId: app.id } });
+    expect(foundMessages).toStrictEqual([]);
+  });
+
+  it('should reject a translated page name that takes the normalized name of another page', async () => {
+    authorizeStudio();
+    await app.update({
+      definition: {
+        name: 'Test App',
+        description: 'Description',
+        pages: [
+          { name: 'Home', blocks: [] },
+          { name: 'Tasks', blocks: [] },
+        ],
+      },
+    });
+    const response = await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'nl',
+      messages: { app: { 'pages.home': 'Tasks' } },
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Language “nl”: pages “Tasks” and “Home” share the URL segment “tasks”",
+        "statusCode": 400,
+      }
+    `);
+    const foundMessages = await AppMessages.findAll({ where: { AppId: app.id } });
+    expect(foundMessages).toStrictEqual([]);
+  });
+
+  it('should reject a base language that makes a stored regional language collide', async () => {
+    authorizeStudio();
+    await app.update({
+      definition: {
+        name: 'Test App',
+        description: 'Description',
+        pages: [
+          { name: 'Home', blocks: [] },
+          { name: 'Tasks', blocks: [] },
+        ],
+      },
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl-be',
+      messages: { app: { 'pages.tasks': 'Work' } },
+    });
+    const response = await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'nl',
+      messages: { app: { 'pages.home': 'Work' } },
+    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Language “nl-be”: pages “Home” and “Tasks” share the URL segment “work”",
+        "statusCode": 400,
+      }
+    `);
+    const foundMessages = await AppMessages.findAll({ where: { AppId: app.id } });
+    expect(foundMessages.map((messages) => messages.language)).toStrictEqual(['nl-be']);
+  });
+
+  it('should accept a translated route segment', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'nl',
+      messages: { app: { 'routes.Login': 'InLoggen' } },
+    });
+    expect(response.status).toBe(201);
+  });
 });

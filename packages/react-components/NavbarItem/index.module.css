@@ -3,8 +3,12 @@
   cursor: pointer;
   width: 100%;
 
-  &:focus,
   &:hover {
     background-color: hsl(0deg 0% 96%) !important;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: -3px;
   }
 }

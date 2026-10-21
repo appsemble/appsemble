@@ -1,11 +1,20 @@
 import { type BaseMessage } from '@appsemble/lang-sdk';
-import { createContext, type ReactNode, useCallback, useContext, useRef } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useRef,
+} from 'react';
+import { createPortal } from 'react-dom';
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { Message, useForceUpdate } from '../index.js';
+import { type ModalDialog, useModalDialogs } from '../useModalDialog/index.js';
 
 export interface Msg extends BaseMessage {
   /**
@@ -33,11 +42,83 @@ interface UniqueMessage extends Msg {
 }
 
 /**
+ * The messages that finished transitioning in.
+ */
+const shownMessages = new WeakSet<UniqueMessage>();
+
+/**
+ * The keys of the live regions rendered inside modal dialogs.
+ */
+const regionKeys = new WeakMap<ModalDialog, string>();
+let regionCount = 0;
+
+function getRegionKey(modalDialog: ModalDialog): string {
+  if (!regionKeys.has(modalDialog)) {
+    regionCount += 1;
+    regionKeys.set(modalDialog, String(regionCount));
+  }
+  return regionKeys.get(modalDialog)!;
+}
+
+interface LiveRegionProps {
+  /**
+   * Whether the messages are rendered in this live region.
+   */
+  readonly active: boolean;
+
+  readonly children: ReactNode;
+
+  /**
+   * The modal dialogs. The active live region is raised to the top when they change, so it's
+   * rendered on top of them.
+   */
+  readonly modalDialogs: readonly ModalDialog[];
+
+  /**
+   * The name of the slot of a dialog in a shadow root to render the live region in.
+   */
+  readonly slot?: string;
+}
+
+/**
+ * Render a live region on top of the page.
+ *
+ * The live region is shown as a popover, so it's rendered on top of a dialog that transitions out.
+ */
+function LiveRegion({ active, children, modalDialogs, slot }: LiveRegionProps): ReactNode {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const region = ref.current!;
+    if (!('showPopover' in region)) {
+      return;
+    }
+    region.setAttribute('popover', 'manual');
+    if (active) {
+      region.hidePopover();
+    }
+    region.showPopover();
+  }, [active, modalDialogs]);
+
+  return (
+    <div aria-live="polite" className={`${styles.root} mx-3`} ref={ref} slot={slot}>
+      {children}
+    </div>
+  );
+}
+
+/**
  * Render messages that may be pushed using {@link useMessages}.
+ *
+ * While a modal dialog is open, the messages are rendered inside the topmost dialog, because
+ * everything outside of it is blocked. Every modal dialog has its own live region, which is rendered
+ * as long as the dialog is shown, because screen readers only announce content that is added to an
+ * existing live region.
  */
 export function MessagesProvider({ children }: MessagesProviderProps): ReactNode {
   const { formatMessage } = useIntl();
   const forceUpdate = useForceUpdate();
+  const modalDialogs = useModalDialogs();
 
   // The counter is used as a key of messages.
   const counter = useRef(0);
@@ -71,12 +152,15 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
     [forceUpdate],
   );
 
-  return (
-    <Context.Provider value={push}>
-      {children}
-      <div className={`${styles.root} mx-3`}>
-        <TransitionGroup>
-          {msgs.current.map((message) => (
+  const renderRegion = (active: boolean, slot?: string): ReactNode => (
+    <LiveRegion active={active} modalDialogs={modalDialogs} slot={slot}>
+      <TransitionGroup>
+        {(active ? msgs.current : []).map((message) => {
+          // A message is rendered in another live region when a modal dialog opens or closes. A
+          // message that finished transitioning in isn't transitioned in or announced assertively
+          // again.
+          const shown = shownMessages.has(message);
+          return (
             <CSSTransition
               classNames={{
                 enter: styles.messageEnter,
@@ -84,14 +168,21 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
                 exit: styles.messageExit,
                 exitActive: styles.messageExitActive,
               }}
+              enter={!shown}
               key={message.id}
+              onEntered={() => shownMessages.add(message)}
               timeout={300}
             >
               <Message
                 className={`${styles.content} ${styles[message.layout || 'bottom']}`}
                 color={message.color || 'danger'}
               >
-                <span className={styles.body}>{message?.body}</span>
+                <span
+                  className={styles.body}
+                  role={(message.color || 'danger') === 'danger' && !shown ? 'alert' : undefined}
+                >
+                  {message.body}
+                </span>
                 {message.dismissable ? (
                   <button
                     aria-label={formatMessage(messages.dismiss)}
@@ -102,9 +193,25 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactNode
                 ) : null}
               </Message>
             </CSSTransition>
-          ))}
-        </TransitionGroup>
-      </div>
+          );
+        })}
+      </TransitionGroup>
+    </LiveRegion>
+  );
+
+  return (
+    <Context.Provider value={push}>
+      {children}
+      {renderRegion(!modalDialogs.length)}
+      {modalDialogs.map((modalDialog, index) => {
+        const root = modalDialog.dialog.getRootNode();
+        // The shadow host renders content inside a dialog in its shadow root using a slot.
+        return createPortal(
+          renderRegion(index === modalDialogs.length - 1, modalDialog.slot),
+          root instanceof ShadowRoot ? root.host : modalDialog.dialog,
+          getRegionKey(modalDialog),
+        );
+      })}
     </Context.Provider>
   );
 }

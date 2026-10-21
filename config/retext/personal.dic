@@ -44,6 +44,7 @@ RABO
 sepa
 predesigned
 codebase
+Pagina
 
 # Technical slang and libraries
 .editorconfig
@@ -106,6 +107,7 @@ OpenID
 OpenStreetMap
 PEM
 Preact
+prosemirror
 prerelease/release
 PWA
 pooler
@@ -244,3 +246,4 @@ BITMIME
 pids
 urandom
 renderable
+networkidle

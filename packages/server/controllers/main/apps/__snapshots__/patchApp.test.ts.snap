@@ -37,10 +37,7 @@ Content-Type: application/json; charset=utf-8
               "$ref": "#/components/schemas/EventsDefinition",
             },
             "gridArea": {
-              "description": "Grid area defined in the page layout definition.
-
-The \`breadcrumbs\` area is reserved for the breadcrumb trail of the app.
-",
+              "description": "Grid area defined in the page layout definition.",
               "type": "string",
             },
             "header": {
@@ -310,8 +307,8 @@ will remain the same until it is manually updated.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -472,8 +469,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -651,8 +648,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -830,8 +827,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -1016,8 +1013,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -1199,8 +1196,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -1382,8 +1379,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -1565,8 +1562,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -1766,8 +1763,8 @@ pages:
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -1810,7 +1807,7 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
               ],
             },
             "pages": {
-              "description": "The pages of the app.",
+              "description": "The pages grouped in this container. These may be container pages themselves.",
               "items": {
                 "anyOf": [
                   {
@@ -1971,8 +1968,8 @@ pages:
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -2015,7 +2012,7 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
               ],
             },
             "pages": {
-              "description": "The pages of the app.",
+              "description": "The pages grouped in this container. These may be container pages themselves.",
               "items": {
                 "anyOf": [
                   {
@@ -2176,8 +2173,8 @@ pages:
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -2220,7 +2217,7 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
               ],
             },
             "pages": {
-              "description": "The pages of the app.",
+              "description": "The pages grouped in this container. These may be container pages themselves.",
               "items": {
                 "anyOf": [
                   {
@@ -2401,10 +2398,7 @@ Content-Type: application/json; charset=utf-8
               "$ref": "#/components/schemas/EventsDefinition",
             },
             "gridArea": {
-              "description": "Grid area defined in the page layout definition.
-
-The \`breadcrumbs\` area is reserved for the breadcrumb trail of the app.
-",
+              "description": "Grid area defined in the page layout definition.",
               "type": "string",
             },
             "header": {
@@ -2674,8 +2668,8 @@ will remain the same until it is manually updated.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -2836,8 +2830,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -3015,8 +3009,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -3194,8 +3188,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -3380,8 +3374,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -3563,8 +3557,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -3746,8 +3740,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -3929,8 +3923,8 @@ instructed to contact the app owner to get permissions.
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -4130,8 +4124,8 @@ pages:
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -4174,7 +4168,7 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
               ],
             },
             "pages": {
-              "description": "The pages of the app.",
+              "description": "The pages grouped in this container. These may be container pages themselves.",
               "items": {
                 "anyOf": [
                   {
@@ -4335,8 +4329,8 @@ pages:
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -4379,7 +4373,7 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
               ],
             },
             "pages": {
-              "description": "The pages of the app.",
+              "description": "The pages grouped in this container. These may be container pages themselves.",
               "items": {
                 "anyOf": [
                   {
@@ -4540,8 +4534,8 @@ pages:
             "icon": {
               "description": "An optional icon from the Font Awesome icon set, or a custom icon reference.
 
-This will be displayed in the navigation menu. Use \`icon:<key>\` to reference a key from the app’s
-\`icons\` registry.
+This will be displayed in the navigation menu and the breadcrumb trail. Use \`icon:<key>\` to
+reference a key from the app’s \`icons\` registry.
 ",
               "format": "icon",
               "type": "string",
@@ -4584,7 +4578,7 @@ navigation. Set to \`hidden\` to display no navigational menus at all.
               ],
             },
             "pages": {
-              "description": "The pages of the app.",
+              "description": "The pages grouped in this container. These may be container pages themselves.",
               "items": {
                 "anyOf": [
                   {

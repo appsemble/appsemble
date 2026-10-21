@@ -1,7 +1,17 @@
 {
   "anonymousLabel": "Аноним",
+  "avatar": "",
+  "closeImage": "",
+  "downloadImage": "",
   "emptyLabel": "Данных для отображения нет",
+  "loading": "",
+  "map": "",
+  "moreOptions": "",
   "permissionDeniedLabel": "Обратитесь к администратору, чтобы повысить уровень ваших прав, если вы ожидали увидеть здесь данные.",
   "replyErrorMessage": "При попытке отправить это сообщение произошла ошибка.",
-  "replyLabel": "Оставьте сообщение…"
+  "replyLabel": "Оставьте сообщение…",
+  "sendReply": "",
+  "statusInProgress": "",
+  "statusOpen": "",
+  "statusResolved": ""
 }

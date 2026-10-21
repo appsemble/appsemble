@@ -4,9 +4,12 @@ import { EventEmitter } from 'node:events';
 
 import { createEvents, getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type BootstrapParams } from '@appsemble/sdk';
-import { expect, it, vi } from 'vitest';
+import { within } from '@testing-library/preact';
+import { userEvent } from '@testing-library/user-event';
+import { expect, it, onTestFinished, vi } from 'vitest';
 
 import { type Field, type Values } from '../block.js';
+import messages from '../i18n/en.json' with { type: 'json' };
 
 const sdk = vi.hoisted(() => ({
   bootstrap: vi.fn(),
@@ -18,6 +21,9 @@ vi.mock('@appsemble/sdk', async (importOriginal) => ({
 }));
 
 await import('./index.js');
+
+// Jsdom doesn’t implement scrolling.
+Element.prototype.scrollIntoView = () => null;
 
 const mount = sdk.bootstrap.mock.calls[0][0] as (params: BootstrapParams) => Promise<void>;
 
@@ -300,5 +306,675 @@ it('should submit the markdown typed right before the submit', async () => {
       $thumbnails: [],
       description: expect.stringMatching(/^A new product is available\.\s*$/),
     }),
+  );
+});
+
+it('should hide the error summary when hideErrorSummary is set', async () => {
+  async function submitInvalidForm(parameters: Record<string, unknown>): Promise<HTMLElement> {
+    const container = document.createElement('div');
+    const defaultParams = getDefaultBootstrapParams();
+    await mount({
+      ...defaultParams,
+      actions: {
+        onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+        onSubmit: vi.fn(),
+      },
+      events: {
+        emit: { change: vi.fn() },
+        on: {
+          data: vi.fn(() => false),
+          fields: vi.fn(() => false),
+        },
+        off: { fields: vi.fn() },
+      },
+      shadowRoot: container,
+      parameters: {
+        fields: [
+          {
+            label: 'Registration number',
+            name: 'registrationNumber',
+            requirements: [
+              { regex: '^\\d{9}$', errorMessage: 'This registration number is not valid' },
+            ],
+            type: 'string',
+          },
+        ],
+        skipInitialLoad: true,
+        ...parameters,
+      },
+      utils: {
+        ...defaultParams.utils,
+        formatMessage: (message: keyof typeof messages) => messages[message],
+      },
+    } as unknown as BootstrapParams);
+
+    const input = getInputByLabel(container, 'Registration number');
+    input.value = '123';
+    input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+    await waitFor(() =>
+      expect(container.textContent).toContain('This registration number is not valid'),
+    );
+    input.form?.requestSubmit();
+
+    const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+    await waitFor(() => expect(submit).toHaveProperty('disabled', true));
+    return container;
+  }
+
+  const withSummary = await submitInvalidForm({});
+  expect(withSummary.textContent).toContain('Please fix the following errors:');
+
+  const withNonMatchingRemapper = await submitInvalidForm({
+    hideErrorSummary: { equals: [{ prop: 'registrationNumber' }, '456'] },
+  });
+  expect(withNonMatchingRemapper.textContent).toContain('Please fix the following errors:');
+
+  const withoutSummary = await submitInvalidForm({
+    hideErrorSummary: { equals: [{ prop: 'registrationNumber' }, '123'] },
+  });
+  expect(withoutSummary.textContent).not.toContain('Please fix the following errors:');
+  expect(withoutSummary.textContent).toContain('This registration number is not valid');
+});
+
+it('should show the errors of untouched fields after submitting', async () => {
+  const container = document.createElement('div');
+  const defaultParams = getDefaultBootstrapParams();
+  await mount({
+    ...defaultParams,
+    actions: {
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+      onSubmit: vi.fn(),
+    },
+    events: {
+      emit: { change: vi.fn() },
+      on: {
+        data: vi.fn(() => false),
+        fields: vi.fn(() => false),
+      },
+      off: { fields: vi.fn() },
+    },
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          label: 'Name',
+          name: 'name',
+          requirements: [{ required: true, errorMessage: 'Name is required' }],
+          type: 'string',
+        },
+        {
+          fields: [
+            {
+              label: 'City',
+              name: 'city',
+              requirements: [{ required: true, errorMessage: 'City is required' }],
+              type: 'string',
+            },
+          ],
+          label: 'Address',
+          name: 'address',
+          type: 'fieldset',
+        },
+      ],
+      hideErrorSummary: true,
+      skipInitialLoad: true,
+    },
+    utils: {
+      ...defaultParams.utils,
+      formatMessage: (message: keyof typeof messages) => messages[message],
+    },
+  } as unknown as BootstrapParams);
+
+  const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+  await waitFor(() => expect(submit).toHaveProperty('disabled', false));
+  expect(container.textContent).not.toContain('Name is required');
+
+  submit.form?.requestSubmit();
+
+  await waitFor(() => {
+    expect(container.textContent).toContain('Name is required');
+    expect(container.textContent).toContain('City is required');
+  });
+  expect(container.textContent).not.toContain('Please fix the following errors:');
+});
+
+it('should name the invalid fields in the alert after a failed submit', async () => {
+  const container = document.createElement('div');
+  const params = {
+    ...getDefaultBootstrapParams(),
+    actions: {
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+      onSubmit: vi.fn(),
+    },
+    events: {
+      emit: { change: vi.fn() },
+      on: {
+        data: vi.fn(() => false),
+        fields: vi.fn(() => false),
+      },
+      off: { fields: vi.fn() },
+    },
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          label: 'Name',
+          name: 'name',
+          requirements: [{ required: true, errorMessage: 'Name is required' }],
+          type: 'string',
+        },
+      ],
+      skipInitialLoad: true,
+    },
+  } as unknown as BootstrapParams;
+
+  await mount(params);
+
+  const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+  await waitFor(() => expect(submit).toHaveProperty('disabled', false));
+  submit.closest('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+  await waitFor(() =>
+    expect(
+      Array.from(container.querySelectorAll('[role="alert"]'), (alert) => alert.textContent),
+    ).toContainEqual(expect.stringContaining('Name: Name is required')),
+  );
+});
+
+it.each([
+  { loaded: { name: 'Ada' }, shown: 'Ada' },
+  { loaded: undefined, shown: '' },
+])(
+  'should disable the fields until the onLoad action resolves with $loaded',
+  async ({ loaded, shown }) => {
+    let resolveLoad!: (value: unknown) => void;
+    const container = document.createElement('div');
+    await mount({
+      ...getDefaultBootstrapParams(),
+      actions: {
+        onLoad: Object.assign(
+          () =>
+            new Promise((resolve) => {
+              resolveLoad = resolve;
+            }),
+          { type: 'resource.get' },
+        ),
+        onSubmit: vi.fn(),
+      },
+      events: {
+        emit: { change: vi.fn() },
+        on: {
+          data: vi.fn(() => false),
+          fields: vi.fn(() => false),
+        },
+        off: { fields: vi.fn() },
+      },
+      shadowRoot: container,
+      parameters: {
+        fields: [{ label: 'Name', name: 'name', type: 'string' }],
+      },
+    } as unknown as BootstrapParams);
+
+    const input = getInputByLabel(container, 'Name');
+    expect(input).toHaveProperty('disabled', true);
+
+    resolveLoad(loaded);
+
+    await waitFor(() => expect(input).toHaveProperty('disabled', false));
+    expect(input.value).toBe(shown);
+  },
+);
+
+it('should keep the date picker open when another field changes', async () => {
+  // The date picker names weekdays and months in the document language.
+  document.documentElement.lang = 'en';
+  const change = vi.fn();
+  const container = document.createElement('div');
+  await mount({
+    ...getDefaultBootstrapParams(),
+    actions: {
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+      onSubmit: vi.fn(),
+    },
+    events: {
+      emit: { change },
+      on: {
+        data: vi.fn(() => false),
+        fields: vi.fn(() => false),
+      },
+      off: { fields: vi.fn() },
+    },
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          label: 'Date',
+          name: 'date',
+          requirements: [{ saturday: false, sunday: false }],
+          type: 'date',
+        },
+        { label: 'Name', name: 'name', type: 'string' },
+      ],
+      skipInitialLoad: true,
+    },
+  } as unknown as BootstrapParams);
+
+  getInputByLabel(container, 'Date').click();
+  await waitFor(() =>
+    expect(container.querySelector('.flatpickr-calendar.open')).toBeInstanceOf(HTMLElement),
+  );
+
+  const name = getInputByLabel(container, 'Name');
+  name.value = 'Ada';
+  name.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  await waitFor(() =>
+    expect(change).toHaveBeenLastCalledWith(expect.objectContaining({ lastChanged: 'name' })),
+  );
+
+  expect(container.querySelector('.flatpickr-calendar.open')).toBeInstanceOf(HTMLElement);
+});
+
+const fieldsWithHelp = [
+  {
+    help: 'Your full name',
+    label: 'Name',
+    name: 'name',
+    requirements: [{ required: true, errorMessage: 'Name is required' }],
+    type: 'string',
+  },
+  {
+    help: 'Your favorite color',
+    label: 'Color',
+    name: 'color',
+    options: [{ label: 'Red', value: 'red' }],
+    requirements: [{ required: true, errorMessage: 'Color is required' }],
+    type: 'radio',
+  },
+  {
+    label: 'Products',
+    name: 'products',
+    requirements: [{ minItems: 1, errorMessage: 'Pick a product' }],
+    selection: [{ id: 1, header: 'Apple' }],
+    type: 'selection',
+  },
+];
+
+async function mountForm(
+  parameters: Record<string, unknown>,
+  actions: Record<string, unknown> = {},
+): Promise<HTMLElement> {
+  const container = document.createElement('div');
+  // Focus only moves to elements that are attached to the document.
+  document.body.append(container);
+  onTestFinished(() => container.remove());
+  const defaultParams = getDefaultBootstrapParams();
+  await mount({
+    ...defaultParams,
+    actions: {
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+      onSubmit: vi.fn(),
+      ...actions,
+    },
+    events: {
+      emit: { change: vi.fn() },
+      on: {
+        data: vi.fn(() => false),
+        fields: vi.fn(() => false),
+      },
+      off: { fields: vi.fn() },
+    },
+    shadowRoot: container,
+    parameters: { skipInitialLoad: true, ...parameters },
+    utils: {
+      ...defaultParams.utils,
+      addCleanup: onTestFinished,
+      formatMessage: (message: keyof typeof messages, values: Record<string, unknown> = {}) =>
+        messages[message].replaceAll(/{(\w+)}/g, (match, key: string) => String(values[key])),
+    },
+  } as unknown as BootstrapParams);
+  return container;
+}
+
+async function submitForm(container: HTMLElement): Promise<void> {
+  const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+  await waitFor(() => expect(submit).toHaveProperty('disabled', false));
+  submit.form!.requestSubmit();
+}
+
+/**
+ * Name the given elements in the order they appear in the document.
+ *
+ * @param elements The elements to order by their names.
+ * @returns The names of the elements in document order.
+ */
+function documentOrder(elements: Record<string, Element>): string[] {
+  return Object.entries(elements)
+    .sort(([, a], [, b]) =>
+      a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+    )
+    .map(([name]) => name);
+}
+
+function getDescription(element: Element): string | undefined {
+  return element
+    .getAttribute('aria-describedby')
+    ?.split(' ')
+    .map((id) => element.ownerDocument.getElementById(id)?.textContent)
+    .join(' ');
+}
+
+it('should render the help text and errors between the label and the input if helpPosition is above', async () => {
+  const container = await mountForm({ fields: fieldsWithHelp, helpPosition: 'above' });
+  const screen = within(container);
+  await submitForm(container);
+  await waitFor(() => screen.getByText('Pick a product'));
+
+  const name = getInputByLabel(container, 'Name');
+  expect(
+    documentOrder({
+      error: screen.getByText('Name is required'),
+      help: screen.getByText('Your full name'),
+      input: name,
+      label: screen.getByText('Name'),
+    }),
+  ).toStrictEqual(['label', 'help', 'error', 'input']);
+  expect(name.getAttribute('aria-invalid')).toBe('true');
+  expect(getDescription(name)).toBe('Your full name Name is required');
+
+  const red = screen.getByRole('radio', { name: 'Red' });
+  expect(
+    documentOrder({
+      error: screen.getByText('Color is required'),
+      input: red,
+      label: screen.getByText('Color'),
+    }),
+  ).toStrictEqual(['label', 'error', 'input']);
+  expect(red.getAttribute('aria-invalid')).toBe('true');
+  expect(getDescription(red)).toBe('Color is required');
+
+  expect(
+    documentOrder({
+      error: screen.getByText('Pick a product'),
+      input: screen.getByRole('button', { name: 'Add' }),
+      label: screen.getByText('Products'),
+    }),
+  ).toStrictEqual(['label', 'error', 'input']);
+});
+
+it('should render the help text and errors below the input by default', async () => {
+  const container = await mountForm({ fields: fieldsWithHelp });
+  const screen = within(container);
+  expect(
+    documentOrder({
+      help: screen.getByText('Your full name'),
+      input: getInputByLabel(container, 'Name'),
+      label: screen.getByText('Name'),
+    }),
+  ).toStrictEqual(['label', 'input', 'help']);
+
+  await submitForm(container);
+  await waitFor(() => screen.getByText('Pick a product'));
+
+  const name = getInputByLabel(container, 'Name');
+  expect(
+    documentOrder({
+      error: screen.getByText('Name is required'),
+      input: name,
+      label: screen.getByText('Name'),
+    }),
+  ).toStrictEqual(['label', 'input', 'error']);
+  expect(screen.queryByText('Your full name')).toBeNull();
+  expect(getDescription(name)).toBe('Name is required');
+
+  expect(
+    documentOrder({
+      error: screen.getByText('Color is required'),
+      input: screen.getByRole('radio', { name: 'Red' }),
+    }),
+  ).toStrictEqual(['input', 'error']);
+  expect(
+    documentOrder({
+      error: screen.getByText('Pick a product'),
+      input: screen.getByRole('button', { name: 'Add' }),
+    }),
+  ).toStrictEqual(['input', 'error']);
+});
+
+it('should summarize only the first error above the submit button by default', async () => {
+  const container = await mountForm({ fields: fieldsWithHelp });
+  const screen = within(container);
+  await submitForm(container);
+
+  const summary = await vi.waitFor(() =>
+    screen.getByText('Please fix the following errors:').closest('[role="alert"]')!,
+  );
+  expect(summary.textContent).toBe('Please fix the following errors:Name: Name is required');
+  expect(
+    documentOrder({
+      products: screen.getByText('Products'),
+      submit: screen.getByRole('button', { name: 'Submit' }),
+      summary,
+    }),
+  ).toStrictEqual(['products', 'summary', 'submit']);
+  expect(document.activeElement).not.toBe(summary);
+});
+
+it('should summarize every error at the top of the form if errorSummaryPosition is top', async () => {
+  const container = await mountForm({
+    errorSummaryPosition: 'top',
+    fields: [
+      {
+        label: 'Email',
+        name: 'email',
+        requirements: [{ regex: '@', errorMessage: 'Email is invalid' }],
+        type: 'string',
+      },
+      {
+        label: 'Name',
+        name: 'name',
+        requirements: [{ required: true, errorMessage: 'Name is required' }],
+        type: 'string',
+      },
+    ],
+    title: 'Contact',
+  });
+  const screen = within(container);
+  // The email only becomes invalid after the name, but the summary lists the errors in field order.
+  const email = getInputByLabel(container, 'Email');
+  email.value = 'ada';
+  email.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  await waitFor(() => screen.getByText('Email is invalid'));
+
+  await submitForm(container);
+
+  const summary = await vi.waitFor(() =>
+    screen.getByRole('region', { name: 'Please fix the following errors:' }),
+  );
+  expect(
+    within(summary)
+      .getAllByRole('listitem')
+      .map((item) => item.textContent),
+  ).toStrictEqual(['Email: Email is invalid', 'Name: Name is required']);
+  expect(
+    documentOrder({
+      email,
+      summary,
+      title: screen.getByText('Contact'),
+    }),
+  ).toStrictEqual(['title', 'summary', 'email']);
+
+  await userEvent.click(within(summary).getByRole('button', { name: 'Name: Name is required' }));
+  expect(document.activeElement).toBe(getInputByLabel(container, 'Name'));
+});
+
+it('should scroll to and focus the error summary at the top after a failed submit', async () => {
+  const scrollIntoView = vi.spyOn(Element.prototype, 'scrollIntoView');
+  const container = await mountForm({ errorSummaryPosition: 'top', fields: fieldsWithHelp });
+  const screen = within(container);
+  await submitForm(container);
+
+  const summary = await vi.waitFor(() =>
+    screen.getByRole('region', { name: 'Please fix the following errors:' }),
+  );
+  await waitFor(() => expect(document.activeElement).toBe(summary));
+  expect(scrollIntoView.mock.contexts).toStrictEqual([summary]);
+});
+
+it('should set the autocomplete attribute of a password field, also while it is visible', async () => {
+  const container = await mountForm({
+    fields: [
+      {
+        autocomplete: 'current-password',
+        format: 'password',
+        label: 'Password',
+        name: 'password',
+        type: 'string',
+      },
+    ],
+  });
+  const password = getInputByLabel(container, 'Password');
+  expect(password.type).toBe('password');
+  expect(password.getAttribute('autocomplete')).toBe('current-password');
+
+  const screen = within(container);
+  await userEvent.click(screen.getByRole('button', { name: 'Show password' }));
+
+  const visiblePassword = getInputByLabel(container, 'Password');
+  expect(visiblePassword.type).toBe('text');
+  expect(visiblePassword.getAttribute('autocomplete')).toBe('current-password');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Hide password' }));
+  expect(getInputByLabel(container, 'Password').type).toBe('password');
+});
+
+it('should show and hide a password field that has a datalist', async () => {
+  const container = await mountForm({
+    fields: [
+      {
+        datalist: [{ value: 'correct horse battery staple' }],
+        datalistEnabled: true,
+        format: 'password',
+        label: 'Password',
+        name: 'password',
+        type: 'string',
+      },
+    ],
+  });
+  const screen = within(container);
+  expect(getInputByLabel(container, 'Password').type).toBe('password');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Show password' }));
+  expect(getInputByLabel(container, 'Password').type).toBe('text');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Hide password' }));
+  expect(getInputByLabel(container, 'Password').type).toBe('password');
+});
+
+it('should set the autocomplete attribute of string, multiline and number fields', async () => {
+  const container = await mountForm({
+    fields: [
+      { autocomplete: 'email', format: 'email', label: 'Email', name: 'email', type: 'string' },
+      {
+        autocomplete: 'street-address',
+        label: 'Address',
+        multiline: true,
+        name: 'address',
+        type: 'string',
+      },
+      { autocomplete: 'bday-year', label: 'Birth year', name: 'year', type: 'integer' },
+    ],
+  });
+  const screen = within(container);
+  expect(getInputByLabel(container, 'Email').getAttribute('autocomplete')).toBe('email');
+  expect(screen.getByRole('textbox', { name: /^Address/ }).getAttribute('autocomplete')).toBe(
+    'street-address',
+  );
+  expect(getInputByLabel(container, 'Birth year').getAttribute('autocomplete')).toBe('bday-year');
+});
+
+it('should not set an autocomplete attribute if the field does not define one', async () => {
+  const container = await mountForm({
+    fields: [
+      { format: 'email', label: 'Email', name: 'email', type: 'string' },
+      { format: 'password', label: 'Password', name: 'password', type: 'string' },
+      { label: 'Age', name: 'age', type: 'integer' },
+    ],
+  });
+  expect(getInputByLabel(container, 'Email').hasAttribute('autocomplete')).toBe(false);
+  expect(getInputByLabel(container, 'Password').hasAttribute('autocomplete')).toBe(false);
+  expect(getInputByLabel(container, 'Age').hasAttribute('autocomplete')).toBe(false);
+});
+
+it('should name a fieldset after its label and its remove buttons after the entry', async () => {
+  const container = await mountForm({
+    fields: [
+      {
+        fields: [{ label: 'Name', name: 'name', type: 'string' }],
+        label: 'People',
+        name: 'people',
+        repeated: true,
+        type: 'fieldset',
+      },
+    ],
+  });
+  const screen = within(container);
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+  const group = screen.getByRole('group', { name: /^People/ });
+  expect(within(group).getByRole('button', { name: 'Remove entry 1' })).toBeDefined();
+});
+
+it('should expose whether the options of a filterable enum are expanded', async () => {
+  const container = await mountForm({
+    fields: [
+      { enum: [{ value: 'red' }], filter: true, label: 'Color', name: 'color', type: 'enum' },
+    ],
+  });
+  const screen = within(container);
+  const combobox = screen.getByRole('combobox', { name: /^Color/, expanded: false });
+
+  await waitFor(() => expect(combobox).toHaveProperty('disabled', false));
+  await userEvent.click(combobox);
+
+  expect(screen.getByRole('combobox', { expanded: true })).toBe(combobox);
+  expect(screen.getByRole('option', { name: 'red', selected: false })).toBeDefined();
+});
+
+it('should label the markdown editor and file inputs by their field label', async () => {
+  const container = await mountForm({
+    fields: [
+      { label: 'Description', name: 'description', type: 'markdown' },
+      { emptyFileLabel: 'Upload photo', label: 'Photo', name: 'photo', type: 'file' },
+    ],
+  });
+  const screen = within(container);
+
+  await waitFor(() => expect(screen.getByRole('textbox', { name: /^Description/ })).toBeDefined());
+  expect(screen.getByLabelText(/^Photo.*Upload photo$/)).toHaveProperty('type', 'file');
+});
+
+it('should label the progress bar while the form data loads', async () => {
+  const container = await mountForm(
+    { fields: [{ label: 'Name', name: 'name', type: 'string' }], skipInitialLoad: false },
+    { onLoad: Object.assign(() => new Promise(vi.fn()), { type: 'resource.get' }) },
+  );
+
+  await waitFor(() =>
+    expect(within(container).getByRole('progressbar', { name: 'Loading' })).toBeDefined(),
+  );
+});
+
+it('should announce a submission that takes long in an existing live region', async () => {
+  const container = await mountForm(
+    { fields: [{ label: 'Name', name: 'name', type: 'string' }], longSubmissionDuration: 0 },
+    { onSubmit: () => new Promise(vi.fn()) },
+  );
+  const statuses = within(container).getAllByRole('status');
+
+  await submitForm(container);
+
+  await waitFor(() =>
+    expect(statuses.map((status) => status.textContent)).toContain(messages.longSubmissionWarning),
   );
 });

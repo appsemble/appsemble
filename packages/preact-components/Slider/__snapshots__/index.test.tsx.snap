@@ -4,6 +4,7 @@ exports[`should render an input element 1`] = `
 <input
   class="slider is-fullwidth"
   data-testid="slider-test"
+  style="--slider-progress: 50%;"
   type="range"
 />
 `;

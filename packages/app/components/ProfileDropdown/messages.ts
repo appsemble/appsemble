@@ -6,36 +6,36 @@ export const messages = defineMessages({
     defaultMessage: 'Logout',
   },
   demoLogin: {
-    id: 'app.RXkfY1',
-    defaultMessage: 'Change Role',
+    id: 'app.9EZXpi',
+    defaultMessage: 'Change role',
   },
   feedback: {
     id: 'app.Ejhdi4',
     defaultMessage: 'Feedback',
   },
   changeSelectedGroup: {
-    id: 'app.T6jAnc',
-    defaultMessage: 'Change Selected Group “{selectedGroupName}”',
+    id: 'app.9RMERp',
+    defaultMessage: 'Change selected group “{selectedGroupName}”',
   },
   selectGroup: {
-    id: 'app.UHsAfL',
-    defaultMessage: 'Select Group',
+    id: 'app.BfB0R+',
+    defaultMessage: 'Select group',
   },
   changeGroup: {
-    id: 'app.0Mbf4A',
-    defaultMessage: 'Change Group',
+    id: 'app.rZJVH5',
+    defaultMessage: 'Change group',
   },
   noGroup: {
-    id: 'app.KciU4I',
-    defaultMessage: 'No Group',
+    id: 'app.VxuIxU',
+    defaultMessage: 'No group',
   },
   settings: {
     id: 'app.D3idYv',
     defaultMessage: 'Settings',
   },
   pfp: {
-    id: 'app.IKMcY6',
-    defaultMessage: 'Profile Picture',
+    id: 'app.O9GTIc',
+    defaultMessage: 'Profile picture',
   },
   login: {
     id: 'app.AyGauy',

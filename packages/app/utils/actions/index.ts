@@ -37,6 +37,7 @@ import { noop } from './noop.js';
 import { notify } from './notify.js';
 import { request } from './request.js';
 import * as resource from './resource.js';
+import { scroll } from './scroll.js';
 import { share } from './share.js';
 import { staticAction } from './static.js';
 import * as storage from './storage.js';
@@ -108,6 +109,7 @@ export const actionCreators: ActionCreators = {
   'resource.subscription.unsubscribe': resource.unsubscribe,
   'resource.subscription.toggle': resource.toggle,
   'resource.subscription.status': resource.status,
+  scroll,
   share,
   static: staticAction,
   'storage.read': storage.read,

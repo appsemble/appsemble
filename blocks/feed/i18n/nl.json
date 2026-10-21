@@ -1,7 +1,17 @@
 {
   "anonymousLabel": "Anoniem",
+  "avatar": "Avatar",
+  "closeImage": "Sluit vergrote afbeelding",
+  "downloadImage": "Downloaden in HD",
   "emptyLabel": "Er zijn geen gegevens om weer te geven",
+  "loading": "Laden",
+  "map": "Kaart",
+  "moreOptions": "Meer opties",
   "permissionDeniedLabel": "Neem contact op met uw beheerder om uw rol te upgraden als u hier gegevens had verwacht te zien",
   "replyErrorMessage": "Er is een fout opgetreden bij het verzenden van dit bericht.",
-  "replyLabel": "Laat een bericht achter…"
+  "replyLabel": "Laat een bericht achter…",
+  "sendReply": "Reactie versturen",
+  "statusInProgress": "In behandeling",
+  "statusOpen": "Open",
+  "statusResolved": "Opgelost"
 }

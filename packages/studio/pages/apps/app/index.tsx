@@ -1,7 +1,6 @@
 import {
   CollapsibleMenuSection,
   Icon,
-  IconProvider,
   Loader,
   MenuItem,
   MenuSection,
@@ -350,52 +349,73 @@ export function AppRoutes(): ReactNode {
 
   return (
     <Context.Provider value={value}>
-      <IconProvider apiUrl={window.location.origin} appId={app.id} registry={app.definition.icons}>
-        <MetaSwitch
-          description={app.messages?.app?.description || app.definition.description}
-          title={app.messages?.app?.name || app.definition.name}
+      <MetaSwitch
+        description={app.messages?.app?.description || app.definition.description}
+        title={app.messages?.app?.name || app.definition.name}
+      >
+        <Route element={<IndexPage />} path="/" />
+
+        {app.yaml ? <Route element={<DefinitionPage />} path="/definition" /> : null}
+
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.UpdateApps]}
+            />
+          }
         >
-          <Route element={<IndexPage />} path="/" />
-
-          {app.yaml ? <Route element={<DefinitionPage />} path="/definition" /> : null}
-
           <Route
             element={
-              <ProtectedRoute
-                organization={organization}
-                permissions={[OrganizationPermission.UpdateApps]}
-              />
+              <Suspense fallback={<Loader />}>
+                <GuiEditorPage />
+              </Suspense>
             }
-          >
-            <Route
-              element={
-                <Suspense fallback={<Loader />}>
-                  <GuiEditorPage />
-                </Suspense>
-              }
-              path="/edit/gui/*"
-            />
-            <Route
-              element={
-                <Suspense fallback={<Loader />}>
-                  <EditPage />
-                </Suspense>
-              }
-              path="/edit"
-            />
-          </Route>
-
+            path="/edit/gui/*"
+          />
           <Route
             element={
-              <ProtectedRoute
-                organization={organization}
-                permissions={[OrganizationPermission.QueryAppAssets]}
-              />
+              <Suspense fallback={<Loader />}>
+                <EditPage />
+              </Suspense>
             }
-          >
-            <Route element={<AssetsPage />} path="/assets" />
-          </Route>
+            path="/edit"
+          />
+        </Route>
 
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.QueryAppAssets]}
+            />
+          }
+        >
+          <Route element={<AssetsPage />} path="/assets" />
+        </Route>
+
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.QueryAppResources]}
+            />
+          }
+        >
+          <Route element={<ResourcesRoutes />} path="/resources/*" />
+        </Route>
+
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.QueryAppMessages]}
+            />
+          }
+        >
+          <Route element={<TranslationsPage />} path="/translations" />
+        </Route>
+        {app.definition?.containers ? (
           <Route
             element={
               <ProtectedRoute
@@ -404,119 +424,96 @@ export function AppRoutes(): ReactNode {
               />
             }
           >
-            <Route element={<ResourcesRoutes />} path="/resources/*" />
+            <Route element={<ContainerLogs />} path="/container-logs" />
           </Route>
+        ) : null}
 
-          <Route
-            element={
-              <ProtectedRoute
-                organization={organization}
-                permissions={[OrganizationPermission.QueryAppMessages]}
-              />
-            }
-          >
-            <Route element={<TranslationsPage />} path="/translations" />
-          </Route>
-          {app.definition?.containers ? (
+        {app.yaml ? <Route element={<DefinitionPage />} path="/definition" /> : null}
+
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.PushAppNotifications]}
+            />
+          }
+        >
+          <Route element={<NotificationsPage />} path="/notifications" />
+        </Route>
+
+        {app.definition.security ? (
+          <>
             <Route
               element={
                 <ProtectedRoute
                   organization={organization}
-                  permissions={[OrganizationPermission.QueryAppResources]}
+                  permissions={[OrganizationPermission.QueryAppMembers]}
                 />
               }
             >
-              <Route element={<ContainerLogs />} path="/container-logs" />
+              <Route element={<MembersPage />} path="/members" />
             </Route>
-          ) : null}
 
-          {app.yaml ? <Route element={<DefinitionPage />} path="/definition" /> : null}
+            <Route
+              element={
+                <ProtectedRoute
+                  organization={organization}
+                  permissions={[OrganizationPermission.QueryGroups]}
+                />
+              }
+            >
+              <Route element={<GroupsRoutes />} path="/groups/*" />
+            </Route>
+          </>
+        ) : null}
 
-          <Route
-            element={
-              <ProtectedRoute
-                organization={organization}
-                permissions={[OrganizationPermission.PushAppNotifications]}
-              />
-            }
-          >
-            <Route element={<NotificationsPage />} path="/notifications" />
-          </Route>
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.ReadAppSettings]}
+            />
+          }
+        >
+          <Route element={<SnapshotsRoutes />} path="/snapshots/*" />
+          <Route element={<QuotasPage />} path="/quotas" />
+        </Route>
 
-          {app.definition.security ? (
-            <>
-              <Route
-                element={
-                  <ProtectedRoute
-                    organization={organization}
-                    permissions={[OrganizationPermission.QueryAppMembers]}
-                  />
-                }
-              >
-                <Route element={<MembersPage />} path="/members" />
-              </Route>
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.UpdateAppSettings]}
+            />
+          }
+        >
+          <Route element={<SettingsPage />} path="/settings" />
+        </Route>
 
-              <Route
-                element={
-                  <ProtectedRoute
-                    organization={organization}
-                    permissions={[OrganizationPermission.QueryGroups]}
-                  />
-                }
-              >
-                <Route element={<GroupsRoutes />} path="/groups/*" />
-              </Route>
-            </>
-          ) : null}
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.QueryAppVariables]}
+            />
+          }
+        >
+          <Route element={<VariablesPage />} path="/variables" />
+        </Route>
 
-          <Route
-            element={
-              <ProtectedRoute
-                organization={organization}
-                permissions={[OrganizationPermission.ReadAppSettings]}
-              />
-            }
-          >
-            <Route element={<SnapshotsRoutes />} path="/snapshots/*" />
-            <Route element={<QuotasPage />} path="/quotas" />
-          </Route>
+        <Route
+          element={
+            <ProtectedRoute
+              organization={organization}
+              permissions={[OrganizationPermission.QueryAppSecrets]}
+            />
+          }
+        >
+          <Route element={<SecretsPage />} path="/secrets" />
+        </Route>
 
-          <Route
-            element={
-              <ProtectedRoute
-                organization={organization}
-                permissions={[OrganizationPermission.UpdateAppSettings]}
-              />
-            }
-          >
-            <Route element={<SettingsPage />} path="/settings" />
-          </Route>
-
-          <Route
-            element={
-              <ProtectedRoute
-                organization={organization}
-                permissions={[OrganizationPermission.QueryAppVariables]}
-              />
-            }
-          >
-            <Route element={<VariablesPage />} path="/variables" />
-          </Route>
-
-          <Route
-            element={
-              <ProtectedRoute
-                organization={organization}
-                permissions={[OrganizationPermission.QueryAppSecrets]}
-              />
-            }
-          >
-            <Route element={<SecretsPage />} path="/secrets" />
-          </Route>
-
-          <Route element={<Navigate to={url} />} path="*" />
-        </MetaSwitch>
-      </IconProvider>
+        <Route element={<Navigate to={url} />} path="*" />
+      </MetaSwitch>
     </Context.Provider>
   );
 }

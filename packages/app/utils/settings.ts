@@ -6,7 +6,6 @@ export const {
   blockManifests,
   definition,
   demoMode,
-  development,
   displayAppMemberName,
   displayInstallationPrompt,
   e2e,

@@ -840,8 +840,20 @@ export interface BooleanField extends AbstractField, InlineField {
 
   /**
    * The text to display next to the checkbox.
+   *
+   * If `labelTextFormat` is `markdown`, the text is rendered as Markdown, for example to include a
+   * link such as `I accept the [terms](/terms)`. Links open in a new tab and clicking them does not
+   * toggle the checkbox.
    */
   labelText?: Remapper;
+
+  /**
+   * The format in which `labelText` is rendered.
+   *
+   * By default `labelText` is rendered as plain text. `markdown` renders it as Markdown. This is the
+   * only supported format, other formats may be added.
+   */
+  labelTextFormat?: 'markdown';
 
   /**
    * The type of the field.
@@ -1237,6 +1249,19 @@ export interface NumberField extends AbstractField, InlineField {
   defaultValue?: number;
 
   /**
+   * The HTML `autocomplete` attribute of the input, which tells browsers and assistive technology
+   * what data the field asks for, so they can fill it in.
+   *
+   * This is ignored if `display` is `slider`.
+   *
+   * See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens)
+   * for the supported values.
+   *
+   * @example 'bday-year'
+   */
+  autocomplete?: string;
+
+  /**
    * The type of the field.
    */
   type: 'integer' | 'number';
@@ -1270,7 +1295,7 @@ export interface NumberField extends AbstractField, InlineField {
   topLabels?: Remapper[];
 }
 
-export interface RangeField extends Omit<NumberField, 'display' | 'type'> {
+export interface RangeField extends Omit<NumberField, 'autocomplete' | 'display' | 'type'> {
   type: 'range';
   from?: Remapper;
   to?: Remapper;
@@ -1329,6 +1354,17 @@ export interface StringField extends AbstractField, InlineField {
    * The default value of the field.
    */
   defaultValue?: string;
+
+  /**
+   * The HTML `autocomplete` attribute of the input, which tells browsers and assistive technology
+   * what data the field asks for, so they can fill it in.
+   *
+   * See [autofill detail tokens](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-detail-tokens)
+   * for the supported values.
+   *
+   * @example 'email'
+   */
+  autocomplete?: string;
 
   /**
    * The native input format to use for validation.
@@ -1625,13 +1661,28 @@ declare module '@appsemble/sdk' {
     optionalLabel: never;
     fieldErrorLabel: never;
     formRequirementError: never;
+    hidePassword: never;
     invalidLabel: never;
     previousLabel: never;
     search: never;
+    showPassword: never;
+    selectionAdd: { option: number | string };
+    selectionClose: never;
     selectionNoOptions: never;
     selectionOptionsError: never;
+    selectionRemove: { option: number | string };
+    selectionSelected: { option: number | string };
     fixErrors: never;
     longSubmissionWarning: never;
+    removeEntry: { index: number };
+    removeFile: never;
+    resetLocation: never;
+    closeImage: never;
+    closeVideo: never;
+    downloadImage: never;
+    loading: never;
+    sliderMaximum: never;
+    sliderMinimum: never;
   }
 
   interface Parameters {
@@ -1704,6 +1755,38 @@ declare module '@appsemble/sdk' {
      * @default false
      */
     hideSubmitButton?: Remapper;
+
+    /**
+     * Whether the summary of invalid fields should not be visible.
+     *
+     * Each field still shows its own error message.
+     *
+     * @default false
+     */
+    hideErrorSummary?: Remapper;
+
+    /**
+     * Where the summary of invalid fields is shown after a submit fails validation.
+     *
+     * With `bottom`, the summary is shown above the submit button and links to the first invalid
+     * field. With `top`, the summary is shown at the top of the form and links to every invalid
+     * field in the order of the fields. It is scrolled into view and focused when a submit fails
+     * validation.
+     *
+     * @default 'bottom'
+     */
+    errorSummaryPosition?: 'bottom' | 'top';
+
+    /**
+     * Where the help text and the error message of each field are shown.
+     *
+     * With `below`, they are shown below the input, and the error message replaces the help text.
+     * With `above`, they are shown between the label and the input, with the error message below
+     * the help text.
+     *
+     * @default 'below'
+     */
+    helpPosition?: 'above' | 'below';
 
     /**
      * Whether or not space should be reserved for the help text.

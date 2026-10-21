@@ -1,6 +1,7 @@
 import { type IconReference, type IconRegistry, resolveIconReference } from '@appsemble/lang-sdk';
 import { type IconRenderOptions, type RenderableIcon } from '@appsemble/sdk';
-import { type BulmaSize } from '@appsemble/types';
+import { type BulmaColor, type BulmaSize } from '@appsemble/types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 
 import { fa } from './fa.js';
 
@@ -15,6 +16,19 @@ const sizeModifierMap: Partial<Record<BulmaSize, IconSizeModifier>> = {
 };
 
 /**
+ * The vertical alignment of a custom icon wrapper per Bulma size.
+ *
+ * An image has no text baseline, so an inline wrapper would stand on the text baseline with its
+ * bottom edge. A Font Awesome glyph is centered in its rem-sized wrapper and its baseline lies
+ * 0.375× the glyph size below its center, so the wrapper is lowered by half its height minus that.
+ */
+const assetVerticalAlignMap: Partial<Record<BulmaSize, string>> = {
+  small: 'calc(0.375em - 0.5rem)',
+  medium: 'calc(0.469em - 1rem)',
+  large: 'calc(0.75em - 1.5rem)',
+};
+
+/**
  * Get the icon size modifier to use, deriving it from the wrapper size if it isn’t explicit.
  *
  * @param size The Bulma size of the wrapper.
@@ -26,6 +40,30 @@ export function getIconSizeModifier(
   iconSize?: IconSizeModifier,
 ): IconSizeModifier | undefined {
   return iconSize ?? (size ? sizeModifierMap[size] : undefined);
+}
+
+/**
+ * The Font Awesome icons that indicate the status of messages and field errors per color.
+ *
+ * Apps replace these using the `overrides` of their icon registry.
+ */
+export const messageIcons: Record<'danger' | 'info' | 'success' | 'warning', IconName> = {
+  danger: 'circle-xmark',
+  info: 'circle-info',
+  success: 'circle-check',
+  warning: 'triangle-exclamation',
+};
+
+/**
+ * Get the status icon of a message color.
+ *
+ * @param color The Bulma color of the message.
+ * @returns The icon name, or `undefined` if the color has no status icon.
+ */
+export function getMessageIcon(color?: BulmaColor): IconName | undefined {
+  return color && Object.hasOwn(messageIcons, color)
+    ? messageIcons[color as keyof typeof messageIcons]
+    : undefined;
 }
 
 /**
@@ -106,6 +144,8 @@ export function createIconElement(
     glyph.className = iconSize ? `${fa(icon.name)} fa-${iconSize}` : fa(icon.name);
     wrapper.append(glyph);
   } else if (icon.type === 'asset') {
+    wrapper.style.verticalAlign =
+      (size && assetVerticalAlignMap[size]) ?? 'calc(0.375em - 0.75rem)';
     const img = document.createElement('img');
     img.alt = '';
     applyIconImageStyle(img);

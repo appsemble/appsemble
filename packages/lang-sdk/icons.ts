@@ -79,8 +79,9 @@ export type ResolvedIcon =
 /**
  * Resolve an icon reference against an icon registry.
  *
- * Registry keys and entries are validated here as well, so the result is safe to render even if
- * the registry wasn’t validated when it was published. Only own properties of the registry count.
+ * A bare name listed in an entry’s `overrides` resolves like `icon:<key>` for that entry. Registry
+ * keys and entries are validated here as well, so the result is safe to render even if the
+ * registry wasn’t validated when it was published. Only own properties of the registry count.
  *
  * @param reference The icon reference to resolve.
  * @param registry The app’s icon registry.
@@ -91,6 +92,15 @@ export function resolveIconReference(
   registry?: IconRegistry | null,
 ): ResolvedIcon {
   const parsed = parseIconReference(reference);
+  if (parsed.type === 'fontawesome' && typeof registry === 'object' && registry) {
+    const override = Object.keys(registry).find((key) => {
+      const overrides: unknown = registry[key]?.overrides;
+      return Array.isArray(overrides) && overrides.includes(parsed.name);
+    });
+    if (override !== undefined) {
+      return resolveIconReference(`${customIconPrefix}${override}`, registry);
+    }
+  }
   if (parsed.type !== 'custom') {
     return parsed;
   }

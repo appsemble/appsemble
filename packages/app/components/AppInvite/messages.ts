@@ -1,6 +1,10 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
+  title: {
+    id: 'app.hYOE+U',
+    defaultMessage: 'Invite',
+  },
   accept: {
     id: 'app.sjzLbX',
     defaultMessage: 'Accept',

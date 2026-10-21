@@ -17,7 +17,10 @@ declare class URLSearchParams {
  */
 export function mergeThemes(...themes: Partial<Theme>[]): Theme {
   const result = Object.assign({}, baseTheme, ...themes) as Theme;
-  result.font.source ||= 'google';
+  result.font = { ...result.font, source: result.font.source || 'google' };
+  if (result.displayFont) {
+    result.displayFont = { ...result.displayFont, source: result.displayFont.source || 'google' };
+  }
   return result;
 }
 
@@ -28,11 +31,15 @@ export function mergeThemes(...themes: Partial<Theme>[]): Theme {
  * @returns The URL to the Bulma theme.
  */
 export function createThemeURL(theme: Theme): string {
-  const { font, ...rest } = theme;
+  const { displayFont, font, ...rest } = theme;
   const params = new URLSearchParams({
     ...rest,
     fontFamily: font.family,
     fontSource: font.source ?? '',
+    ...(displayFont && {
+      displayFontFamily: displayFont.family,
+      displayFontSource: displayFont.source ?? '',
+    }),
   });
   // Sort for cacheability.
   params.sort();

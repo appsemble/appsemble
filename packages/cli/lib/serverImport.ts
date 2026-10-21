@@ -36,8 +36,7 @@ export async function serverImport<
     | 'runCronJobs'
     | 'scaleContainers'
     | 'setArgv'
-    | 'start'
-    | 'synchronizeTrainings',
+    | 'start',
 >(...members: T[]): Promise<Record<T, any>> {
   try {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

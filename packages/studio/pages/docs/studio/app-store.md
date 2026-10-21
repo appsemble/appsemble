@@ -3,14 +3,14 @@
 The app store is a webpage where all apps you can access are shown. The page is divided into two
 categories:
 
-**My Apps** > All apps from organizations you're in\
-**All Apps** > All apps that are publicly available
+**My apps** > All apps from organizations you're in\
+**All apps** > All apps that are publicly available
 
 Each app shows an icon, a title, which organization made it and what rating it has. Apps are
 automatically sorted based on how their rating is, but you can change how this is sorted if you'd
 like.
 
-By clicking on any of these apps you're taken to their frontpage. Depending on the app's
+By clicking on any of these apps you're taken to their front page. Depending on the app's
 [privacy setting](../app/security#app-privacy) and your role in the organization, you'll see a
 different screen.
 

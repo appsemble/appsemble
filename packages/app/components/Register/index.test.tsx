@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Register } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
+import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 
 const { axiosPost } = vi.hoisted(() => ({ axiosPost: vi.fn() }));
 
@@ -79,6 +80,11 @@ beforeEach(() => {
     definition: { defaultPage: 'Home', name: 'Test App', pages: [] },
   } as never);
   vi.spyOn(appMemberProvider, 'useAppMember').mockReturnValue({ passwordLogin } as never);
+  vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
+    getAppMessage: ({ defaultMessage }: { defaultMessage: string }) => ({
+      format: () => defaultMessage,
+    }),
+  } as never);
 });
 
 describe('Register', () => {

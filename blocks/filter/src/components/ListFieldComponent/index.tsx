@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Button, Form, useToggle } from '@appsemble/preact-components';
+import { Button, Form, Icon, useToggle } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
@@ -83,8 +83,11 @@ export function ListFieldComponent({
   return (
     <div className={styles.field}>
       <Button
+        aria-controls={`${field.name}-options`}
+        aria-expanded={isDropdownOpen}
         className={classNames('is-fullwidth', styles.button, { 'is-loading': loading })}
         icon="chevron-down"
+        id={field.name}
         onClick={showDropDown}
       >
         <em>&mdash; Select Option &mdash;</em>
@@ -92,6 +95,7 @@ export function ListFieldComponent({
       {isDropdownOpen ? (
         <Form
           className={classNames(className, styles.dropdown)}
+          id={`${field.name}-options`}
           name={field.name}
           onChange={handleChange}
           onSubmit={(event) => event.preventDefault()}
@@ -99,18 +103,17 @@ export function ListFieldComponent({
         >
           {field.list.map(({ label, value: val }) => {
             const remappedValue = utils.remap(val, {}) as string;
+            const id = `${field.name}-option-${remappedValue.replaceAll(' ', '-')}`;
             return (
               <div className={styles.option} key={remappedValue}>
                 <input
                   checked={selected.includes(remappedValue)}
-                  id={remappedValue.replaceAll(' ', '-')}
+                  id={id}
                   name={remappedValue.replaceAll(' ', '-')}
                   type="checkbox"
                   value={remappedValue}
                 />
-                <label htmlFor={remappedValue.replaceAll(' ', '-')}>
-                  {(utils.remap(label, {}) as string) || val}
-                </label>
+                <label htmlFor={id}>{(utils.remap(label, {}) as string) || val}</label>
               </div>
             );
           })}
@@ -132,7 +135,7 @@ export function ListFieldComponent({
                 onClick={removeFilter}
                 type="button"
               >
-                <i className={utils.fa('xmark')} />
+                <Icon icon="xmark" size="small" />
               </button>
             </div>
           );

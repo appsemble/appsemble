@@ -1,3 +1,4 @@
+import { getRouteSegment } from '@appsemble/lang-sdk';
 import {
   Button,
   type LoginFormValues,
@@ -22,6 +23,7 @@ import {
 } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { OpenIDLogin, type OpenIDLoginProps } from '../OpenIDLogin/index.js';
 import { TotpLogin } from '../TotpLogin/index.js';
 import { TotpSetup, type TotpSetupTokenResponse } from '../TotpSetup/index.js';
@@ -36,6 +38,7 @@ export function MainLogin(): ReactNode {
   const { definition } = useAppDefinition();
   const { cancelTotpLogin, completeTotpLogin, logout, passwordLogin, totpLogin, totpPending } =
     useAppMember();
+  const { getAppMessage } = useAppMessages();
   const linking = loadAccountLinkingState();
   const redirect = qs.get('redirect');
 
@@ -71,8 +74,8 @@ export function MainLogin(): ReactNode {
   const handleReturn = useCallback((): void => {
     clearAccountLinkingState();
     logout();
-    navigate('/Login');
-  }, [logout, navigate]);
+    navigate(`/${getRouteSegment('Login', getAppMessage)}`);
+  }, [getAppMessage, logout, navigate]);
 
   const onTotpVerify = useCallback(
     async (token: string): Promise<void> => {
@@ -142,8 +145,8 @@ export function MainLogin(): ReactNode {
         <PasswordLogin
           enableRegistration={enableSelfRegistration}
           onPasswordLogin={onPasswordLogin}
-          registerLink={`/${lang}/Register`}
-          resetPasswordLink={`/${lang}/Reset-Password`}
+          registerLink={`/${lang}/${getRouteSegment('Register', getAppMessage)}`}
+          resetPasswordLink={`/${lang}/${getRouteSegment('Reset-Password', getAppMessage)}`}
         />
       ) : null}
       {definition.security?.default?.policy === 'invite' ? null : (

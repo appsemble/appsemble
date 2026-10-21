@@ -3,16 +3,19 @@
   border: none;
   cursor: pointer;
   font: inherit;
-  outline: none;
   pointer-events: initial !important;
 
   &[disabled] {
     cursor: not-allowed;
   }
 
+  &:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 1px;
+  }
+
   &:not([disabled]) {
     &:active,
-    &:focus,
     &:hover {
       background-image: radial-gradient(
         circle closest-side,

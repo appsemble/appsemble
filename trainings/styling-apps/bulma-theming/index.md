@@ -1,6 +1,6 @@
 # Bulma theming
 
-An easy way to customise your app is by changing the colors of specific variables. These variables
+An easy way to customize your app is by changing the colors of specific variables. These variables
 are tied to certain parts of the app and blocks. Elements like the header, buttons and backgrounds
 all get their color from the app's `primaryColor` variable.
 

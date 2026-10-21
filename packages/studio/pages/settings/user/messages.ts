@@ -70,16 +70,16 @@ export const messages = defineMessages({
     defaultMessage: 'An email address is required',
   },
   displayName: {
-    id: 'studio.pwlQEY',
-    defaultMessage: 'Display Name',
+    id: 'studio.dOQCL8',
+    defaultMessage: 'Display name',
   },
   displayNameHelp: {
     id: 'studio.VL5z0t',
     defaultMessage: 'This is the name that displays for other users.',
   },
   saveProfile: {
-    id: 'studio.Wd+wHl',
-    defaultMessage: 'Save Profile',
+    id: 'studio.ZBVds5',
+    defaultMessage: 'Save profile',
   },
   submitSuccess: {
     id: 'studio.3zjiGZ',
@@ -134,20 +134,20 @@ export const messages = defineMessages({
     defaultMessage: 'Password',
   },
   changePassword: {
-    id: 'studio.QiKKFz',
-    defaultMessage: 'Change Password',
+    id: 'studio.L4nXIc',
+    defaultMessage: 'Change password',
   },
   currentPasswordLabel: {
-    id: 'studio.GretYf',
-    defaultMessage: 'Current Password',
+    id: 'studio.NIynnB',
+    defaultMessage: 'Current password',
   },
   newPasswordLabel: {
-    id: 'studio.Ev6SEF',
-    defaultMessage: 'New Password',
+    id: 'studio.fTHhSB',
+    defaultMessage: 'New password',
   },
   wrongPasswordError: {
-    id: 'studio.NFWglg',
-    defaultMessage: 'Current Password is incorrect.',
+    id: 'studio.Wl5Ylc',
+    defaultMessage: 'Current password is incorrect.',
   },
   changePasswordSuccess: {
     id: 'studio.dt/e+s',

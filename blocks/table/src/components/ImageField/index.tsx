@@ -29,10 +29,13 @@ interface ImageFieldProps {
 
 export function ImageField({ field, index, item, repeatedIndex }: ImageFieldProps): VNode {
   const {
-    utils: { asset, remap },
+    utils: { asset, formatMessage, remap },
   } = useBlock();
 
   const img = remap(field.image.file, item, { index, repeatedIndex }) as string;
+  const alt =
+    (remap(field.image.alt, item, { index, repeatedIndex }) as string) ||
+    (remap(field.label, {}) as string);
   const src = /^(https?:)?\/\//.test(img) ? img : asset(img);
 
   const modal = useToggle();
@@ -51,13 +54,26 @@ export function ImageField({ field, index, item, repeatedIndex }: ImageFieldProp
             type="button"
           >
             <figure className={`mr-3 ${styles.root}`}>
-              <img alt="list icon" className={styles.img} src={src} width={width} />
+              <img
+                alt={
+                  alt
+                    ? formatMessage('enlargeNamedImage', { name: alt })
+                    : formatMessage('enlargeImage')
+                }
+                className={styles.img}
+                src={src}
+                width={width}
+              />
             </figure>
           </button>
-          <Modal isActive={modal.enabled} onClose={modal.disable}>
-            <AppAssetDownloadButton src={src} />
+          <Modal
+            closeButtonLabel={formatMessage('closeImage')}
+            isActive={modal.enabled}
+            onClose={modal.disable}
+          >
+            <AppAssetDownloadButton label={formatMessage('downloadImage')} src={src} />
             <figure className="image">
-              <img alt="list icon" src={src} />
+              <img alt={alt || ''} src={src} />
             </figure>
           </Modal>
         </>

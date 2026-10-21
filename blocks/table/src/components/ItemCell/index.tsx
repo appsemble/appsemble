@@ -4,6 +4,7 @@ import { type ComponentProps, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
+import stretchedStyles from '../../stretchedControl.module.css';
 import {
   type Button,
   type CheckBox,
@@ -79,13 +80,17 @@ export function ItemCell({
     !('checkbox' in field) &&
     actions[field.onClick ?? 'onClick'];
 
-  const onCellClick = useCallback(() => {
-    if (!onClickAction || onClickAction.type === 'noop') {
-      return;
-    }
+  const onCellClick = useCallback(
+    (event: MouseEvent) => {
+      event.preventDefault();
+      if (!onClickAction || onClickAction.type === 'noop') {
+        return;
+      }
 
-    onClickAction(record, { index, repeatedIndex });
-  }, [onClickAction, record, index, repeatedIndex]);
+      onClickAction(record, { index, repeatedIndex });
+    },
+    [onClickAction, record, index, repeatedIndex],
+  );
 
   const alignment = field.alignment || 'left';
   let content: VNode | string;
@@ -115,17 +120,36 @@ export function ItemCell({
       />
     );
   } else {
-    content = renderValue(remap(field.value, item, { index, repeatedIndex }));
+    const value = renderValue(remap(field.value, item, { index, repeatedIndex }));
+    // The control stretches over the cell, so the whole cell is clickable.
+    // An empty cell is named by its column label, as the header shows it.
+    const label = value ? undefined : (remap(field.label, {}) as string) || undefined;
+    content =
+      !onClickAction || onClickAction.type === 'noop' ? (
+        value
+      ) : onClickAction.type === 'link' ? (
+        <a
+          aria-label={label}
+          className={stretchedStyles.control}
+          href={onClickAction.href(record)}
+          onClick={onCellClick}
+        >
+          {value}
+        </a>
+      ) : (
+        <button
+          aria-label={label}
+          className={stretchedStyles.control}
+          onClick={onCellClick}
+          type="button"
+        >
+          {value}
+        </button>
+      );
   }
 
   return (
-    <td
-      {...props}
-      // @ts-expect-error strict-null-checks type not assignable
-      className={onClickAction?.type !== 'noop' && !('checkbox' in field) && styles.clickable}
-      onClick={onCellClick}
-      role="gridcell"
-    >
+    <td {...props} className={styles.cell}>
       <div
         className={classNames(
           `is-flex is-justify-content-${alignment}`,

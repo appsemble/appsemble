@@ -2,6 +2,200 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.5](https://gitlab.com/appsemble/appsemble/-/releases/0.40.5)] - 2026-10-16
+
+### Added
+
+- Block(`button-list`): Add data-driven pressed state for toggle buttons.
+- Block(`footer`): Render the copyright as a link when its remapper returns a `label` and `link`.
+- Block(`form`): Add `autocomplete` to string and number fields to set the HTML `autocomplete`
+  attribute.
+- Block(`form`): Add `errorSummaryPosition` to list every invalid field at the top of the form.
+- Block(`form`): Add `helpPosition` to show help and errors between the label and the input.
+- Block(`form`): Add `labelTextFormat: markdown` to render boolean field label text as Markdown.
+- Block(`table`): Add `alt` to image fields.
+- Cli: Delete app variant message keys patched to `null`.
+- E2e: Add `scanAppAccessibility` fixture to score app accessibility with axe-core.
+- Preact-components: Add `FormComponentHelpPositionContext` to render help above form controls.
+
+### Changed
+
+- App: Leave app definition validation out of the app bundle, which makes it a third smaller.
+- App: Preload the font stylesheet and the app messages from the HTML.
+- Lang-sdk: Prefix prototype property names with `#` in the `xml.parse` remapper.
+
+### Fixed
+
+- Block(`cards`): Open cards with the keyboard.
+- Block(`form`): Disable the fields until the `onLoad` action has finished, so the loaded data does
+  not overwrite user input.
+- Block(`form`): Give the password visibility toggle an accessible name.
+- Block(`form`): Label form selection dialogs and their choice controls.
+- Block(`form`): Show and hide password fields that have a datalist.
+- Block(`form`): Validate required and prohibited requirements of boolean fields.
+- Block(`list`): Expose button titles as accessible names for list actions.
+- Block(`table`): Sort columns and open clickable cells with the keyboard.
+- App: Initialize blocks with the current viewport mode.
+- App: Make the dialog action keyboard and screen reader accessible.
+- App: Open `mailto:`, `tel:` and `sms:` links without leaving a blank tab behind.
+- App: Render the repeated app name in the title bar as text, not a heading.
+- App: Resolve `tab.name` to the opened tab, not the first tab, when the tab list loads as it opens.
+- App: Show float blocks in a dialog on top of the dialog.
+- Cli: Keep patching variant messages after a language without messages.
+- Preact-components: Add accessible names and states to loaders, dropdowns, radio groups and
+  sliders.
+- Preact-components: Keep an open date picker open when its disabled dates are recalculated.
+- React-components: Announce `Loader` to screen readers as a loading status.
+- React-components: Make `Modal` and `ModalCard` accessible modal dialogs with focus management.
+
+### Security
+
+- Block(`form`): Update the markdown editor and KaTeX to patch a KaTeX trust bypass.
+- Cli: Update postcss-preset-env to v10.
+- Lang-sdk: Update fast-xml-parser to patch entity expansion vulnerabilities.
+- Node-utils: Update webpack-dev-middleware to patch a path traversal vulnerability.
+- Server: Escape HTML in the inline settings script of apps and the studio.
+- Server: Update dependencies to patch known vulnerabilities.
+- Webpack-config: Update css-minimizer-webpack-plugin to v8 to fix serialize-javascript advisories.
+- Webpack-core: Update css-minimizer-webpack-plugin to v8 to fix serialize-javascript advisories.
+
+## \[[0.40.4](https://gitlab.com/appsemble/appsemble/-/releases/0.40.4)] - 2026-10-07
+
+### Added
+
+- Block(`list`): Add `collapseButton` parameter to configure the collapsible list toggle button.
+- Server: Support `$top` and `$skip` in server-side `resource.query` actions.
+
+### Changed
+
+- App: List the profile dropdown items in the collapsed top navigation menu.
+
+### Removed
+
+- Cli: Remove the `appsemble serve` development server.
+
+### Fixed
+
+- App: Wrap the email verification banner on narrow screens.
+- Preact-components: Show keyboard focus rings and support `--input-radius` and
+  `--appsemble-placeholder-color`.
+
+### Security
+
+- Block(`form`): Update prosemirror-view to fix XSS in clipboard paste handling.
+
+## \[[0.40.3](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3)] - 2026-10-02
+
+### Added
+
+- Block(`image`): Add `fill` parameter and fix alignment, placeholder and fullscreen rendering.
+- App: Serve pages and built-in routes at URLs translated through the app messages.
+- Server: Reject app messages that give two pages or routes the same URL segment.
+- Utils: Add `validateMessageSlugs` to check translated page and route URL segments.
+
+### Fixed
+
+- Server: Preserve external login errors and clarify account linking verification.
+
+## \[[0.40.3-test.4](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.4)] - 2026-10-01
+
+### Changed
+
+- App: Render icon overrides of `bars` and `xmark` in the menu burgers.
+- React-components: Render icon overrides of `bars` and `xmark` in the side menu burger.
+
+### Fixed
+
+- Cli: Fix building blocks outside the monorepo with the default webpack config.
+
+## \[[0.40.3-test.3](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.3)] - 2026-09-30
+
+### Added
+
+- App: Show page icons in breadcrumbs.
+
+### Fixed
+
+- Node-utils: Sign a multi-object delete with `Content-MD5` again, so deleting assets works against
+  object stores from before the S3 flexible checksums, such as the MinIO builds self-hosted
+  installations still run.
+- Preact-components: Show a danger-colored X icon for error messages.
+- React-components: Show a danger-colored X icon for error messages.
+- Server: Generate the self-signed PgBouncer certificate in each PgBouncer pod instead of in a
+  rendered Secret, which changed on every render under ArgoCD and kept the application out of sync.
+- Server: Let PgBouncer retry a failed server login after 1 second instead of 15, so a PostgreSQL
+  switchover or failover no longer fails requests for 15 seconds.
+- Server: Name the server PodDisruptionBudget `<release>-server`, so it no longer collides with the
+  one CloudNativePG creates for a Cluster named after the release.
+
+## \[[0.40.3-test.2](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.2)] - 2026-09-29
+
+## \[[0.40.3-test.1](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.1)] - 2026-09-29
+
+### Fixed
+
+- Block(`form`): Announce form errors to screen readers.
+- Preact-components: Announce form errors to screen readers.
+- React-components: Announce form errors to screen readers.
+- React-components: Announce notifications to screen readers.
+
+## \[[0.40.3-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.40.3-test.0)] - 2026-09-28
+
+### Added
+
+- Block(`footer`): Add the `closeImage` and `enlargeImage` messages.
+- Block(`footer`): Add the `enlarge` image parameter to control whether images open an enlargement.
+- Block(`form`): Add `hideErrorSummary` parameter to hide the summary of invalid fields.
+- Block(`form`): Show a status icon in field errors.
+- App: Add `scroll` action to scroll the page to the top or bottom.
+- App: Lay out the built-in pages of an app as a responsive grid using `layout.builtinPages`.
+- App: Place the resend banner and the bottom navigation in a page grid via reserved areas.
+- Lang-sdk: Add `layout.builtinPages` to lay out the built-in pages of an app as a responsive grid.
+- Lang-sdk: Add `overrides` to icon registry entries to replace built-in Font Awesome icons.
+- Lang-sdk: Add `scroll` action definition.
+- Lang-sdk: Add the `resend-banner` and `bottom-navigation` grid areas to page and built-in page
+  layouts.
+- Preact-components: Show status icons in messages and form field errors.
+- React-components: Show status icons in messages and form field errors.
+- Server: Roll back database migrations with the `migrateImage.tag` Helm value.
+- Server: Serve `layout.builtinPages` to the app.
+- Studio: Document bundled and external Valkey deployment.
+- Studio: Show a status icon in field errors.
+
+### Changed
+
+- Block(`form`): Show the errors of untouched fields after a submit attempt.
+- Lang-sdk: Allow blocks to claim the breadcrumbs, resend-banner and bottom-navigation grid areas.
+- Server: Read the training catalog from bundled files without database synchronization.
+- Server: Retry Valkey connections with capped exponential backoff.
+- Server: Run database migrations in a dedicated Job.
+- Server: Run the Helm migrate Job before the Deployment rolls over, connected to PostgreSQL
+  directly.
+
+### Removed
+
+- Cli: Remove the synchronize-trainings command.
+
+### Fixed
+
+- Block(`barcode-scan`): Name the image and camera scanner buttons for screen readers.
+- Block(`footer`): Render footer content and actions correctly.
+- Block(`form`): Name the remove file and reset location buttons for screen readers.
+- Block(`form`): Show validation errors on selection and geocoordinates fields.
+- Block(`image`): Name the change image control for screen readers.
+- App: Align custom icons with their label in inline contexts.
+- App: Keep the content of the built-in pages clear of the bottom navigation.
+- App: Render the title bar on the built-in pages that were missing one.
+- App: Stop a built-in page from applying the navigation of the page rendered before it.
+- Preact-components: Align custom icons with their label in inline contexts.
+- Web-utils: Align custom icons with their label in inline contexts.
+
+## \[[0.40.2](https://gitlab.com/appsemble/appsemble/-/releases/0.40.2)] - 2026-09-23
+
+### Changed
+
+- Server: Install PostgreSQL 18 client tools and support PostgreSQL 17 and 18.
+
 ## \[[0.40.1](https://gitlab.com/appsemble/appsemble/-/releases/0.40.1)] - 2026-09-22
 
 ## \[[0.40.0](https://gitlab.com/appsemble/appsemble/-/releases/0.40.0)] - 2026-09-22

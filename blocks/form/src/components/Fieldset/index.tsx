@@ -28,6 +28,7 @@ import { FieldsetEntry } from '../FieldsetEntry/index.js';
 interface FieldsetProps extends InputProps<Values | Values[], FieldsetType> {
   readonly formDataLoading: boolean;
   readonly display?: FormDisplay;
+  readonly hasTriedToSubmit: boolean;
   readonly setFieldErrorLink?: (
     fieldName: string,
     params: { ref: MutableRef<any>; error: string; label: string },
@@ -51,6 +52,7 @@ export function Fieldset({
   fieldsetEntryValues = {},
   formDataLoading,
   formValues,
+  hasTriedToSubmit,
   name,
   onChange,
   readOnly,
@@ -105,14 +107,14 @@ export function Fieldset({
     <fieldset
       className={classNames('appsemble-fieldset mb-4', className, styles['fieldset-wrapper'])}
     >
-      <div className="is-flex is-justify-content-space-between">
-        <div className="title is-5 mb-4">{utils.remap(field.label, localValues) as string}</div>
+      <legend className={`is-flex is-justify-content-space-between ${styles.legend}`}>
+        <span className="title is-5 mb-4">{utils.remap(field.label, localValues) as string}</span>
         {field.repeated && !minLength ? (
           <span className="is-pulled-right has-text-weight-normal">
             {utils.formatMessage('optionalLabel')}
           </span>
         ) : null}
-      </div>
+      </legend>
       {field.repeated ? (
         <>
           <div className={styles[`fieldset-entries-wrapper-${display}`]}>
@@ -126,6 +128,7 @@ export function Fieldset({
                 <div className="mb-2 is-flex is-justify-content-end is-align-items-center">
                   {!minLength || localValues.length > minLength ? (
                     <button
+                      aria-label={utils.formatMessage('removeEntry', { index: index + 1 })}
                       className="delete"
                       name={String(index)}
                       onClick={removeEntry}
@@ -145,6 +148,7 @@ export function Fieldset({
                   fieldSpan={!fieldsetSpan}
                   formDataLoading={formDataLoading}
                   formValues={formValues}
+                  hasTriedToSubmit={hasTriedToSubmit}
                   index={index}
                   name={`${name}.${index}`}
                   onChange={changeArray}
@@ -174,6 +178,7 @@ export function Fieldset({
           field={field}
           formDataLoading={formDataLoading}
           formValues={formValues}
+          hasTriedToSubmit={hasTriedToSubmit}
           name={name}
           onChange={onChange}
           removeThumbnail={removeThumbnail}

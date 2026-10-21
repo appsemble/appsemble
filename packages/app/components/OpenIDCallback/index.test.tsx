@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OpenIDCallback } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
+import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 
 const { clearOAuth2State, loadOAuth2State } = vi.hoisted(() => ({
   clearOAuth2State: vi.fn(),
@@ -18,9 +19,19 @@ vi.mock('@appsemble/web-utils', async (importOriginal) => {
   return { ...actual, clearOAuth2State, loadOAuth2State };
 });
 
+// The app bar needs the whole app runtime around it, which has nothing to do with the callback.
+// eslint-disable-next-line @typescript-eslint/naming-convention
+vi.mock('../TitleBar/index.js', () => ({ AppBar: () => null }));
+
 const authorizationCodeLogin = vi.fn();
 
 function mockAppMember(overrides: Record<string, unknown> = {}): void {
+  vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
+    getAppMessage: ({ defaultMessage }: { defaultMessage: string }) => ({
+      format: () => defaultMessage,
+    }),
+    getMessage: () => ({ format: () => '' }),
+  } as never);
   vi.spyOn(appMemberProvider, 'useAppMember').mockReturnValue({
     appMemberRoles: [],
     authorizationCodeLogin,

@@ -1,7 +1,17 @@
 {
   "anonymousLabel": "Anonimno",
+  "avatar": "",
+  "closeImage": "",
+  "downloadImage": "",
   "emptyLabel": "Nema podataka za prikaz",
+  "loading": "",
+  "map": "",
+  "moreOptions": "",
   "permissionDeniedLabel": "Obratite se administratoru da nadogradi vašu ulogu ako ste očekivali vidjeti podatke ovdje",
   "replyErrorMessage": "Nešto je pošlo po zlu pri pokušaju slanja ove poruke.",
-  "replyLabel": "Ostavite poruku…"
+  "replyLabel": "Ostavite poruku…",
+  "sendReply": "",
+  "statusInProgress": "",
+  "statusOpen": "",
+  "statusResolved": ""
 }

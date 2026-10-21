@@ -1,5 +1,5 @@
-.clickable {
-  cursor: pointer;
+.cell {
+  position: relative;
 }
 
 .editable {

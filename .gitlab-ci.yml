@@ -7,6 +7,11 @@ default:
       - scheduler_failure
       - api_failure
 
+variables:
+  # Runner tag for the publish docker and npm jobs. To publish on a self-hosted runner, set this to
+  # `dcentralize` as a project CI/CD variable before pushing the release tag.
+  PUBLISH_RUNNER_TAG: saas-linux-small-amd64
+
 stages:
   - security
   - cleanup
@@ -217,7 +222,10 @@ build docker image:
   stage: build
   script:
     - CACHE_IMAGE="$CI_REGISTRY_IMAGE/cache:$CI_COMMIT_REF_SLUG"
-    - docker buildx create --use
+    # Buildx refuses to create a builder from the TLS environment the docker image sets for dind,
+    # so the builder runs on a context created from it.
+    - docker context create ci
+    - docker buildx create --use ci
     - docker buildx build
       -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
       --cache-from "type=registry,ref=$CACHE_IMAGE"
@@ -285,6 +293,7 @@ seed database:
           until pg_isready -h database -p 5432 -U admin; do
             sleep 1
           done
+          appsemble-server migrate next
           exec appsemble-server start
       variables:
         SECRET: secret
@@ -301,7 +310,6 @@ seed database:
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
-        migrateTo: next
   script:
     - npm run scripts create-user --
       --name $BOT_ACCOUNT_NAME
@@ -367,6 +375,9 @@ pack:
   stage: build
   script:
     - mkdir build/
+    # Published packages ship compiled output, so drop the monorepo-only `ts-source` export
+    # condition before packing (see strip-ts-source-exports).
+    - npm run scripts -- strip-ts-source-exports 'packages/*/package.json'
     - npm --pack-destination build --workspace @appsemble/types pack
     - npm --pack-destination build --workspace @appsemble/sdk pack
     - npm --pack-destination build --workspace @appsemble/lang-sdk pack
@@ -457,7 +468,7 @@ prettier:
 # Verify the committed Mermaid SVGs are in sync with the diagrams in the docs.
 mermaid svgs:
   extends: .npm
-  image: mcr.microsoft.com/playwright:v1.62.1-noble
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   stage: test
   script:
     - npm run render-mermaid
@@ -599,6 +610,8 @@ test node single bucket:
     - files=$(grep -rlw -E "$exports" --include='*.test.ts' --exclude-dir=node_modules packages/cli packages/server | grep -vxF packages/server/commands/backupProductionData.test.ts)
     - test -n "$files"
     - echo "$files"
+    # The service health check passes on any port SeaweedFS exposes, and those open before S3 does.
+    - until (echo > "/dev/tcp/$S3_HOST/$S3_PORT") 2>/dev/null; do sleep 1; done
     - npm test -- --no-file-parallelism $files
   artifacts:
     reports:
@@ -749,7 +762,6 @@ validate snippets:
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
-        migrateTo: next
   script:
     - npm run appsemble -- config set remote 'http://appsemble:9999'
     - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
@@ -767,7 +779,7 @@ validate snippets:
 
 e2e node:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.62.1-noble
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   interruptible: true
   needs:
     - build docker image
@@ -792,7 +804,13 @@ e2e node:
     E2E_HOST: 'https://appsemble:9999'
     APPSEMBLE_SSL_KEY_E2E_SERVICE: $APPSEMBLE_SSL_KEY_E2E
     APPSEMBLE_SSL_CRT_E2E_SERVICE: $APPSEMBLE_SSL_CRT_E2E
+    MAILPIT_URL: 'http://mailpit:8025'
   services:
+    - name: axllent/mailpit:v1.31.6
+      alias: mailpit
+      variables:
+        MP_SMTP_AUTH_ACCEPT_ANY: '1'
+        MP_SMTP_AUTH_ALLOW_INSECURE: '1'
     - name: '$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG'
       alias: database
       variables:
@@ -838,8 +856,13 @@ e2e node:
         S3_BUCKET: appsemble
         S3_ACCESS_KEY: appsemble-server
         S3_SECRET_KEY: appsemble-server-secret
-        migrateTo: next
         E2E: true
+        SMTP_HOST: mailpit
+        SMTP_PORT: 1025
+        SMTP_SECURE: 'false'
+        SMTP_USER: Appsemble
+        SMTP_PASS: password
+        SMTP_FROM: localdev@appsemble.com
   script:
     - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d > /tmp/appsemble.crt
     - export NODE_EXTRA_CA_CERTS=/tmp/appsemble.crt
@@ -864,11 +887,12 @@ e2e node:
     paths:
       - packages/e2e/test-results/
     reports:
-      junit: packages/e2e/results.xml
+      junit: junit.xml
+      metrics: packages/e2e/test-results/accessibility-metrics.txt
 
 e2e keycloak:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.62.1-noble
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   interruptible: true
   needs:
     - build docker image
@@ -883,6 +907,7 @@ e2e keycloak:
     matrix:
       - KEYCLOAK_PROTOCOL: oidc
       - KEYCLOAK_PROTOCOL: saml
+      - KEYCLOAK_PROTOCOL: entra-broker
   variables:
     FF_NETWORK_PER_BUILD: 'true'
     DATABASE_HOST: database
@@ -951,7 +976,6 @@ e2e keycloak:
         S3_SECURE: false
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
-        migrateTo: next
         E2E: true
   script:
     - npm run appsemble -- config set context e2e
@@ -974,7 +998,7 @@ e2e keycloak:
     paths:
       - packages/e2e/test-results/
     reports:
-      junit: packages/e2e/results.xml
+      junit: junit.xml
 
 # Apps under SLA are supported through Appsemble core changes
 e2e SLA apps:
@@ -1123,7 +1147,7 @@ gitlab release:
 publish docker:
   extends: .docker
   tags:
-    - saas-linux-small-amd64
+    - $PUBLISH_RUNNER_TAG
   stage: publish
   needs:
     - build docker image
@@ -1131,6 +1155,11 @@ publish docker:
     GIT_STRATEGY: none
   rules:
     - if: $CI_COMMIT_TAG
+  before_script:
+    # Start from empty Docker credentials so those saved on the runner are never used.
+    - unset DOCKER_AUTH_CONFIG
+    - export DOCKER_CONFIG="$(mktemp -d)"
+    - !reference [.docker, before_script]
   script:
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
     - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
@@ -1178,7 +1207,7 @@ publish helm:
 # See: https://docs.npmjs.com/generating-provenance-statements#publishing-packages-with-provenance-via-gitlab-cicd
 publish npm:
   tags:
-    - saas-linux-small-amd64
+    - $PUBLISH_RUNNER_TAG
   stage: publish
   needs:
     - job: pack
@@ -1194,9 +1223,13 @@ publish npm:
       aud: 'npm:registry.npmjs.org'
   script:
     - |
-      if echo "$CI_RUNNER_TAGS" | grep -q "self-hosted"; then
-        echo "Detected self-hosted runner, using NPM_TOKEN for authentication"
+      # npm only accepts trusted publishing and provenance from GitLab-hosted runners.
+      RUNNER_ENVIRONMENT=$(node -p "JSON.parse(Buffer.from(process.env.NPM_ID_TOKEN.split('.')[1], 'base64url')).runner_environment")
+      if [ "$RUNNER_ENVIRONMENT" != gitlab-hosted ]; then
+        echo "Detected $RUNNER_ENVIRONMENT runner, using NPM_TOKEN for authentication"
         npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+        # npm publish uses trusted publishing and provenance whenever it finds the ID tokens.
+        unset NPM_ID_TOKEN SIGSTORE_ID_TOKEN
         PROVENANCE_FLAG=""
       else
         echo "Using npm trusted publishing (OIDC)"
@@ -1321,6 +1354,7 @@ update dependencies:
     - ./scripts/cleanup-review-resources.sh
     - ./scripts/pre-review-capacity-check.sh
     - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
+    - ./scripts/review-dns-records.sh "$CI_MERGE_REQUEST_IID"
     - ./scripts/deploy-review-postgresql.sh
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
@@ -1495,6 +1529,8 @@ staging:
       printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
     - kubectl create secret generic staging-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
     - rm pgbouncer-userlist.txt
+    # Reserve memory for workload peaks rather than average use, leaving capacity for monitoring.
+    # Asset storage needs headroom for production-sized restores, storage overhead, and growth.
     - helm install staging ./public/appsemble-*.tgz
       --atomic
       --timeout 120m
@@ -1520,7 +1556,8 @@ staging:
       --set "migrateTo=next"
       --set "oauthSecret=oauth2"
       --set "skipCustomDomains=true"
-      --set 'seaweedfs.allInOne.data.size=20Gi'
+      --set 'resources.deployment.requests.memory=1536Mi'
+      --set 'seaweedfs.allInOne.data.size=40Gi'
       --set "seaweedfs.allInOne.data.annotations.helm\\.sh/resource-policy=keep"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
@@ -1717,22 +1754,6 @@ provision review:
   script:
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context review
-    - |
-      REVIEW_HOST="$CI_MERGE_REQUEST_IID.$APPSEMBLE_REVIEW_DOMAIN"
-      REVIEW_IP=
-      for attempt in $(seq 1 60); do
-        REVIEW_IP=$(node -e 'const host = process.argv[1]; fetch(`https://dns.google/resolve?name=${host}&type=A`).then((response) => response.json()).then((data) => { const answer = (data.Answer || []).find((entry) => entry.type === 1); if (answer) { process.stdout.write(answer.data); } }).catch((error) => { console.error(error); process.exit(1); });' "$REVIEW_HOST")
-        if [ -n "$REVIEW_IP" ]; then
-          break
-        fi
-        echo "Waiting for A record for $REVIEW_HOST ($attempt/60)"
-        sleep 10
-      done
-      if [ -z "$REVIEW_IP" ]; then
-        echo "No A record found for $REVIEW_HOST" >&2
-        exit 1
-      fi
-      echo "$REVIEW_IP $REVIEW_HOST" >> /etc/hosts
     - npm run appsemble -- config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - npm run scripts -- wait-for-api
     - npm run scripts -- wait-for-ssl

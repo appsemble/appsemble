@@ -26,6 +26,9 @@
 
 .comboBoxContainer select:focus {
   border-color: hsl(210deg 100% 56%);
-  box-shadow: 0 0 0 2px rgb(30 144 255 / 30%);
-  outline: none;
+}
+
+.comboBoxContainer select:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: 1px;
 }

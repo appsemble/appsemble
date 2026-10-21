@@ -99,6 +99,7 @@ export type Action =
   | BaseAction<'resource.subscription.subscribe'>
   | BaseAction<'resource.subscription.toggle'>
   | BaseAction<'resource.subscription.unsubscribe'>
+  | BaseAction<'scroll'>
   | BaseAction<'share'>
   | BaseAction<'static'>
   | BaseAction<'storage.append'>

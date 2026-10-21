@@ -1,13 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  getBuiltinPagesDefaultGridLayout,
   getCascadedGridTemplateAreas,
   getGridTemplateAreas,
   getPageGridLayouts,
-  hasBreadcrumbsGridArea,
-  pageHasBreadcrumbsGridArea,
+  hasBuiltinPagesGridArea,
+  hasGridArea,
+  pageHasGridArea,
 } from './gridUtils.js';
 import {
+  type BuiltinPagesLayoutDefinition,
   type PageDefinition,
   type PageLayoutDefinition,
   type ResponsiveGridLayoutDefinition,
@@ -152,16 +155,103 @@ describe('getCascadedGridTemplateAreas', () => {
 
     expect(getCascadedGridTemplateAreas(missingLayout).mobile).toStrictEqual(new Set(['main']));
   });
+
+  it('should fall back to the given default below the smallest defined template', () => {
+    const layout = {
+      desktop: { layout: { columns: 2, template: ['title content'] } },
+    } as ResponsiveGridLayoutDefinition;
+
+    expect(
+      getCascadedGridTemplateAreas(layout, { columns: 1, template: ['title', 'content'] }),
+    ).toStrictEqual({
+      mobile: new Set(['title', 'content']),
+      tablet: new Set(['title', 'content']),
+      desktop: new Set(['title', 'content']),
+    });
+  });
 });
 
-describe('hasBreadcrumbsGridArea', () => {
+describe('getBuiltinPagesDefaultGridLayout', () => {
+  it('should stack the title above the content when a template names the title', () => {
+    const layout = {
+      desktop: { layout: { columns: 2, template: ['title content'] } },
+    } as BuiltinPagesLayoutDefinition;
+
+    expect(getBuiltinPagesDefaultGridLayout(layout)).toStrictEqual({
+      columns: 1,
+      template: ['title', 'content'],
+    });
+  });
+
+  it('should hold the content alone when no template names the title', () => {
+    const layout = {
+      desktop: { layout: { columns: 3, template: ['. content .'] } },
+    } as BuiltinPagesLayoutDefinition;
+
+    expect(getBuiltinPagesDefaultGridLayout(layout)).toStrictEqual({
+      columns: 1,
+      template: ['content'],
+    });
+  });
+
+  it('should hold the content alone for a layout that defines no template', () => {
+    const missingLayout: BuiltinPagesLayoutDefinition | undefined = undefined;
+
+    expect(getBuiltinPagesDefaultGridLayout(missingLayout)).toStrictEqual({
+      columns: 1,
+      template: ['content'],
+    });
+  });
+
+  it('should stack the banner and the bottom navigation around the content', () => {
+    const layout = {
+      desktop: {
+        layout: {
+          columns: 2,
+          template: ['resend-banner resend-banner', 'content content', 'bottom-navigation .'],
+        },
+      },
+    } as BuiltinPagesLayoutDefinition;
+
+    expect(getBuiltinPagesDefaultGridLayout(layout)).toStrictEqual({
+      columns: 1,
+      template: ['resend-banner', 'content', 'bottom-navigation'],
+    });
+  });
+});
+
+describe('hasBuiltinPagesGridArea', () => {
+  it('should hold when a device template names the area', () => {
+    const layout = {
+      mobile: { layout: { columns: 1, template: ['title', 'content'] } },
+    } as BuiltinPagesLayoutDefinition;
+
+    expect(hasBuiltinPagesGridArea(layout, 'title')).toBe(true);
+  });
+
+  it('should not hold for a layout that leaves the area out', () => {
+    const layout = {
+      mobile: { layout: { columns: 1, template: ['content'] } },
+    } as BuiltinPagesLayoutDefinition;
+
+    expect(hasBuiltinPagesGridArea(layout, 'title')).toBe(false);
+  });
+
+  it('should not hold without a layout', () => {
+    const missingLayout: BuiltinPagesLayoutDefinition | undefined = undefined;
+
+    expect(hasBuiltinPagesGridArea(missingLayout, 'title')).toBe(false);
+  });
+});
+
+describe('hasGridArea', () => {
   it('should hold when the smallest device defines the area', () => {
     const layout = {
       mobile: { layout: { columns: 1, template: ['breadcrumbs', 'main'] } },
       desktop: { layout: { columns: 2, template: ['breadcrumbs breadcrumbs', 'main aside'] } },
     } as PageLayoutDefinition;
 
-    expect(hasBreadcrumbsGridArea(layout)).toBe(true);
+    expect(hasGridArea(layout, 'breadcrumbs')).toBe(true);
   });
 
   it('should not hold when a smaller device renders a template without the area', () => {
@@ -170,44 +260,46 @@ describe('hasBreadcrumbsGridArea', () => {
       desktop: { layout: { columns: 2, template: ['breadcrumbs breadcrumbs', 'main aside'] } },
     } as PageLayoutDefinition;
 
-    expect(hasBreadcrumbsGridArea(layout)).toBe(false);
+    expect(hasGridArea(layout, 'breadcrumbs')).toBe(false);
   });
 
   it('should not hold for a layout that defines no area at all', () => {
     const missingLayout: PageLayoutDefinition | undefined = undefined;
 
-    expect(hasBreadcrumbsGridArea(missingLayout)).toBe(false);
+    expect(hasGridArea(missingLayout, 'breadcrumbs')).toBe(false);
   });
 });
 
-describe('pageHasBreadcrumbsGridArea', () => {
+describe('pageHasGridArea', () => {
   const layout = {
-    mobile: { layout: { columns: 1, template: ['breadcrumbs', 'main'] } },
+    mobile: { layout: { columns: 1, template: ['breadcrumbs', 'main', 'bottom-navigation'] } },
   } as ResponsiveGridLayoutDefinition;
 
-  it('should hold for a basic page placing the trail', () => {
+  it('should hold for a basic page placing the area', () => {
     const page = { name: 'Home', blocks: [], layout } as unknown as PageDefinition;
 
-    expect(pageHasBreadcrumbsGridArea(page)).toBe(true);
+    expect(pageHasGridArea(page, 'breadcrumbs')).toBe(true);
+    expect(pageHasGridArea(page, 'bottom-navigation')).toBe(true);
   });
 
-  it('should hold for a tabs page whose tabs place the trail', () => {
+  it('should hold for a tabs page whose tabs place the area', () => {
     const page = {
       name: 'Lot Details',
       type: 'tabs',
       tabs: [{ name: 'Overview', blocks: [], layout }],
     } as unknown as PageDefinition;
 
-    expect(pageHasBreadcrumbsGridArea(page)).toBe(true);
+    expect(pageHasGridArea(page, 'breadcrumbs')).toBe(true);
   });
 
-  it('should not hold for a page whose grid leaves the trail out', () => {
+  it('should not hold for a page whose grid leaves the area out', () => {
     const page = {
       name: 'Home',
       blocks: [],
       layout: { mobile: { layout: { columns: 1, template: ['main'] } } },
     } as unknown as PageDefinition;
 
-    expect(pageHasBreadcrumbsGridArea(page)).toBe(false);
+    expect(pageHasGridArea(page, 'breadcrumbs')).toBe(false);
+    expect(pageHasGridArea(page, 'resend-banner')).toBe(false);
   });
 });

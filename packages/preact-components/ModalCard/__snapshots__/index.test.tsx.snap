@@ -4,12 +4,13 @@ exports[`should not render a bulma modal when it is inactive 1`] = `<div />`;
 
 exports[`should render a bulma modal when it is active 1`] = `
 <div>
-  <div
-    class="is-active modal root open"
+  <dialog
+    class="is-active modal root open dialog"
+    open=""
+    tabindex="-1"
   >
     <div
       class="modal-background"
-      role="presentation"
     />
     <div
       class="modal-card"
@@ -19,8 +20,10 @@ exports[`should render a bulma modal when it is active 1`] = `
       >
         <p
           class="modal-card-title"
+          id="P0-0"
         />
         <button
+          aria-label="Close"
           class="delete is-large"
           type="button"
         />
@@ -38,6 +41,9 @@ exports[`should render a bulma modal when it is active 1`] = `
         />
       </div>
     </div>
-  </div>
+    <slot
+      name="P0-1"
+    />
+  </dialog>
 </div>
 `;

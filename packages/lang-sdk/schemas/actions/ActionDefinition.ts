@@ -72,6 +72,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/ResourceUpdateGroupActionDefinition' },
         { $ref: '#/components/schemas/ResourceUpdatePositionsActionDefinition' },
         { $ref: '#/components/schemas/ResourcePatchActionDefinition' },
+        { $ref: '#/components/schemas/ScrollActionDefinition' },
         { $ref: '#/components/schemas/ShareActionDefinition' },
         { $ref: '#/components/schemas/StaticActionDefinition' },
         { $ref: '#/components/schemas/StorageAppendActionDefinition' },

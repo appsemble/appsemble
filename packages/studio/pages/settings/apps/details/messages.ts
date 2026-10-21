@@ -98,7 +98,7 @@ export const messages = defineMessages({
     defaultMessage: 'Select a file',
   },
   pictureDescription: {
-    id: 'studio.KGZ3lm',
-    defaultMessage: 'The public picture to use for your profile.',
+    id: 'studio.FGdxVQ',
+    defaultMessage: 'The picture to use for your public profile.',
   },
 });

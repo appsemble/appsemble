@@ -17,6 +17,7 @@ import { MessageActionDefinition } from '../../schemas/actions/MessageActionDefi
 import { NoopActionDefinition } from '../../schemas/actions/NoopActionDefinition.js';
 import { NotifyActionDefinition } from '../../schemas/actions/NotifyActionDefinition.js';
 import { RequestActionDefinition } from '../../schemas/actions/RequestActionDefinition.js';
+import { ScrollActionDefinition } from '../../schemas/actions/ScrollActionDefinition.js';
 import { ShareActionDefinition } from '../../schemas/actions/ShareActionDefinition.js';
 import { StaticActionDefinition } from '../../schemas/actions/StaticActionDefinition.js';
 import { ThrowActionDefinition } from '../../schemas/actions/ThrowActionDefinition.js';
@@ -40,6 +41,7 @@ export const miscellaneousActions: Record<string, OpenAPIV3.SchemaObject> = {
   noop: NoopActionDefinition,
   notify: NotifyActionDefinition,
   request: RequestActionDefinition,
+  scroll: ScrollActionDefinition,
   share: ShareActionDefinition,
   static: StaticActionDefinition,
   throw: ThrowActionDefinition,

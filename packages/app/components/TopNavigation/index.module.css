@@ -18,3 +18,13 @@
     top: 100%;
   }
 }
+
+/* Bulma hides navbar dividers on touch screens; keep the one separating the profile items. */
+.profileMenu > :global(.navbar-divider) {
+  display: block;
+}
+
+.profileMenu :global(.navbar-item) {
+  align-items: center;
+  display: flex;
+}

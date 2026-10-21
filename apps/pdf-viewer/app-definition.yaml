@@ -1,9 +1,10 @@
 name: pdf-viewer
+description: An app demonstrating how PDF files can be displayed
 defaultPage: PDF Viewer
 pages:
   - name: PDF Viewer
     blocks:
       - type: pdf-viewer
-        version: 0.40.1
+        version: 0.40.5
         parameters:
           url: my-pdf

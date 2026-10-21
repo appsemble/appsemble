@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-core",
-  "version": "0.40.1",
+  "version": "0.40.5",
   "private": true,
   "description": "The Webpack configuration for the Appsemble core",
   "keywords": [
@@ -36,12 +36,12 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.40.1",
+    "@appsemble/node-utils": "0.40.5",
     "@mdx-js/loader": "^3.0.0",
     "bulma": "=0.9.4",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
     "css-loader": "^6.0.0",
-    "css-minimizer-webpack-plugin": "^5.0.0",
+    "css-minimizer-webpack-plugin": "^8.0.0",
     "estree-util-value-to-estree": "^3.0.0",
     "hast-util-from-html-isomorphic": "^2.0.0",
     "hast-util-to-text": "4.0.2",
@@ -73,7 +73,7 @@
     "@types/mdast": "4.0.4",
     "@types/unused-webpack-plugin": "2.4.5",
     "url": "0.11.4",
-    "vitest": "4.1.11"
+    "vitest": "4.1.12"
   },
   "engines": {
     "node": ">=24"

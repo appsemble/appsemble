@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
-import { FormComponent, type SharedFormComponentProps } from '@appsemble/preact-components';
+import { FormComponent, Icon } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { type Ref, type VNode } from 'preact';
@@ -9,14 +10,15 @@ import styles from './index.module.css';
 import { type GeoCoordinatesField, type InputProps } from '../../../block.js';
 import { isRequired } from '../../utils/requirements.js';
 
-type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField> &
-  SharedFormComponentProps;
+type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField>;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.
  */
 export function GeoCoordinatesInput({
+  dirty,
   disabled,
+  error,
   errorLinkRef,
   field,
   formValues,
@@ -31,6 +33,7 @@ export function GeoCoordinatesInput({
   const [locationMarker, setLocationMarker] = useState<CircleMarker>(null);
   const { icon, label, tag } = field;
   const required = isRequired(field, utils, formValues);
+  const builtInCrosshairs = utils.resolveIcon('crosshairs').type === 'fontawesome';
 
   const {
     defaultLocation: [defaultLat = 51.449_107, defaultLng = 5.457_96] = [],
@@ -94,9 +97,9 @@ export function GeoCoordinatesInput({
       attributionControl: false,
       layers: [new TileLayer(theme.tileLayer)],
     })
-      .once('locationerror', (error) => {
+      .once('locationerror', (event) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
-        if (error?.code === 1) {
+        if (event?.code === 1) {
           utils.showMessage({ body: utils.remap(locationError, {}) as string });
         }
         // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
@@ -120,35 +123,45 @@ export function GeoCoordinatesInput({
 
   return (
     <FormComponent
+      error={dirty ? error : null}
       icon={icon}
       label={label ? (utils.remap(label, {}) as string) : name}
+      labelId={`${name}-label`}
       name={name}
       optionalLabel={utils.formatMessage('optionalLabel')}
       required={required}
       tag={utils.remap(tag, {}) as string}
     >
-      <div
+      <fieldset
+        aria-labelledby={`${name}-label`}
         className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}
-        ref={errorLinkRef as unknown as Ref<HTMLDivElement>}
+        ref={errorLinkRef as unknown as Ref<HTMLFieldSetElement>}
       >
         <div
           className={styles.map}
           ref={ref.current ? (ref as MutableRef<HTMLDivElement>) : undefined}
         />
         <div className={styles.crossHairsOverlay}>
-          <i className={`fas fa-crosshairs ${styles.crossHairs}`} />
+          <Icon
+            className={classNames(styles.crossHairs, { [styles.centralPicker]: builtInCrosshairs })}
+            icon="crosshairs"
+          />
         </div>
         <button
+          aria-label={utils.formatMessage('resetLocation')}
           className={`button ${styles.resetButton}`}
           disabled={disabled}
           onClick={onReset}
           type="button"
         >
-          <span className={`icon ${styles.currentlocation}`}>
-            <i className="fas fa-crosshairs" />
-          </span>
+          <Icon
+            className={classNames(styles.currentlocation, {
+              [styles.currentLocationPicture]: builtInCrosshairs,
+            })}
+            icon="crosshairs"
+          />
         </button>
-      </div>
+      </fieldset>
     </FormComponent>
   );
 }

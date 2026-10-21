@@ -1,11 +1,14 @@
 import { EventEmitter } from 'events';
 
 import {
+  bottomNavigationGridArea,
+  breadcrumbsGridArea,
   findPageById,
   getPageDisplayName,
   getPagePathSegment,
+  getRouteSegment,
   normalize,
-  pageHasBreadcrumbsGridArea,
+  pageHasGridArea,
   remap,
   type PageDefinition,
   type Remapper,
@@ -20,7 +23,15 @@ import {
 } from '@appsemble/react-components';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import classNames from 'classnames';
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
   Navigate,
@@ -46,6 +57,7 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
+import { BuiltinPage } from '../BuiltinPage/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { FlowPage } from '../FlowPage/index.js';
 import { usePage } from '../MenuProvider/index.js';
@@ -71,11 +83,11 @@ export function Page(): ReactNode {
   } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
-  const { pathname, search } = useLocation();
+  const { hash, pathname, search } = useLocation();
   const routeParams = useParams();
-  const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
+  const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
-  const { page: navPage, setPage } = usePage();
+  const { hasBottomNavigation, setPage } = usePage();
   const pushNotifications = useServiceWorkerRegistration();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const showMessage = useMessages();
@@ -89,30 +101,27 @@ export function Page(): ReactNode {
 
   const [dialog, setDialog] = useState<ShowDialogParams | undefined>();
   const stepRef = useRef<unknown>();
-  const tabRef = useRef<unknown>();
   const url = `/${lang}`;
 
-  const defaultErrorPage = useCallback(
+  const permissionError = useCallback(
     (): ReactNode => (
-      <Content padding>
-        <Message color="danger">
-          <p>
-            <FormattedMessage
-              {...messages.permissionError}
-              values={{
-                link: (text) => (
-                  <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
-                    {text}
-                  </a>
-                ),
-              }}
-            />
-          </p>
-          <Button className="mt-4" color="danger">
-            <FormattedMessage {...messages.logout} />
-          </Button>
-        </Message>
-      </Content>
+      <Message color="danger">
+        <p>
+          <FormattedMessage
+            {...messages.permissionError}
+            values={{
+              link: (text) => (
+                <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
+                  {text}
+                </a>
+              ),
+            }}
+          />
+        </p>
+        <Button className="mt-4" color="danger">
+          <FormattedMessage {...messages.logout} />
+        </Button>
+      </Message>
     ),
     [],
   );
@@ -144,12 +153,14 @@ export function Page(): ReactNode {
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const normalizedPageId = normalize(pageId);
-  const pageDefinition = findPageById(
-    appDefinition.pages,
-    normalizedPageId,
-    appMessageIds,
-    getAppMessage,
-  );
+  const pageDefinition = findPageById(appDefinition.pages, normalizedPageId, getAppMessage);
+
+  // The path is rebuilt from its segments (`/:lang/:pageId/...rest`), because replacing the text
+  // of the page segment could also replace part of the language segment.
+  const replacePageSegment = (segment: string): string => {
+    const [langSegment, , ...rest] = pathname.split('/').filter(Boolean);
+    return `/${[langSegment, segment, ...rest].join('/')}`;
+  };
   const index = pageDefinition ? appDefinition.pages.indexOf(pageDefinition) : -1;
   const internalPageName = pageDefinition ? normalize(pageDefinition.name) : null;
   const prefix = internalPageName ? `pages.${internalPageName}` : null;
@@ -173,7 +184,11 @@ export function Page(): ReactNode {
   useEffect(() => () => abortController.abort(), [abortController]);
 
   const remapWithContext = useCallback(
-    (mappers: Remapper, input: any, { history = [], ...context }: Record<string, any> = {}) =>
+    (
+      mappers: Remapper,
+      input: any,
+      { history = [], tabName, ...context }: Record<string, any> = {},
+    ) =>
       remap(mappers, input, {
         appId,
         url: window.location.href,
@@ -194,8 +209,7 @@ export function Page(): ReactNode {
         locale: lang,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         stepRef,
-        // @ts-expect-error 2322 unknown is not assignable to type (strictNullChecks)
-        tabRef,
+        tabName,
       }),
     [
       getAppMessage,
@@ -336,15 +350,15 @@ export function Page(): ReactNode {
     [appDefinition, appMemberRoles, appMemberSelectedGroup],
   );
 
-  useEffect(() => {
-    if (
-      pageDefinition &&
-      checkPagePermissionsCallback(pageDefinition) &&
-      navPage !== pageDefinition
-    ) {
+  // The menu page drives the navigation of the app, so it only applies while this page is rendered.
+  // The cleanup and the next set land in the same commit, so switching pages never renders a frame
+  // without one.
+  useLayoutEffect(() => {
+    if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
       setPage(pageDefinition);
+      return () => setPage(undefined);
     }
-  }, [checkPagePermissionsCallback, navPage, pageDefinition, setPage]);
+  }, [checkPagePermissionsCallback, pageDefinition, setPage]);
 
   useEffect(() => {
     if (navigator.credentials) {
@@ -377,20 +391,22 @@ export function Page(): ReactNode {
   // If the user is on an existing page and is allowed to view it, render it.
   if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
     const pageName = getPageDisplayName(pageDefinition, getAppMessage);
-    const canonicalPageId = getPagePathSegment(pageDefinition);
+    const translatedPageId = getPagePathSegment(pageDefinition, getAppMessage);
 
-    if (pageId && pageId !== canonicalPageId) {
-      // Redirect translated or legacy aliases to the canonical internal page slug,
-      // while preserving query params.
+    if (pageId && pageId !== translatedPageId) {
+      // The canonical slug and other aliases redirect to the slug of the current language, while
+      // preserving query params and the fragment.
       return (
-        <Navigate replace to={{ pathname: pathname.replace(pageId, canonicalPageId), search }} />
+        <Navigate replace to={{ hash, pathname: replacePageSegment(translatedPageId), search }} />
       );
     }
 
     return (
       <main
         className={classNames(styles.root, {
-          [styles.hasBottomNavigation]: appDefinition.layout?.navigation === 'bottom',
+          // A grid that places the bottom navigation flows around it, so it needs no clearance.
+          [styles.hasBottomNavigation]:
+            hasBottomNavigation && !pageHasGridArea(pageDefinition, bottomNavigationGridArea),
         })}
         data-path={prefix}
         data-path-index={prefixIndex}
@@ -398,7 +414,8 @@ export function Page(): ReactNode {
         <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
         {/* A grid layout that names a breadcrumbs area renders the trail there, and a tabs page
             renders its own trail so it can name the active tab as the last crumb. */}
-        {pageDefinition.type === 'tabs' || pageHasBreadcrumbsGridArea(pageDefinition) ? null : (
+        {pageDefinition.type === 'tabs' ||
+        pageHasGridArea(pageDefinition, breadcrumbsGridArea) ? null : (
           <Breadcrumbs data={data} pageDefinition={pageDefinition} remap={remapWithContext} />
         )}
         {pageDefinition.type === 'tabs' ? (
@@ -415,7 +432,6 @@ export function Page(): ReactNode {
             remap={remapWithContext}
             showDialog={showDialog}
             showShareDialog={showShareDialog}
-            tabRef={tabRef}
           />
         ) : (
           // The switch is used to enforce an exact path.
@@ -444,17 +460,17 @@ export function Page(): ReactNode {
                   pageDefinition.pages.some(checkPagePermissionsCallback) && pageId ? (
                     <Navigate
                       to={{
-                        pathname: pathname.replace(
-                          pageId,
-                          // @ts-expect-error 2345 argument of type is not assignable to parameter
-                          // of type (strictNullChecks)
-                          normalize(pageDefinition.pages.find(checkPagePermissionsCallback)?.name),
+                        pathname: replacePageSegment(
+                          getPagePathSegment(
+                            pageDefinition.pages.find(checkPagePermissionsCallback)!,
+                            getAppMessage,
+                          ),
                         ),
                         search,
                       }}
                     />
                   ) : (
-                    defaultErrorPage()
+                    <Content padding>{permissionError()}</Content>
                   )
                 ) : (
                   <BlockList
@@ -499,7 +515,8 @@ export function Page(): ReactNode {
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
   if (pageDefinition && !isLoggedIn) {
-    return <Navigate to={`${url}/Login?${new URLSearchParams({ redirect })}`} />;
+    const loginSegment = getRouteSegment('Login', getAppMessage);
+    return <Navigate to={`${url}/${loginSegment}?${new URLSearchParams({ redirect })}`} />;
   }
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
@@ -508,7 +525,7 @@ export function Page(): ReactNode {
   const defaultPage = appDefinition.pages.find((p) => p.name === defaultPageName);
 
   if (defaultPage && checkPagePermissionsCallback(defaultPage)) {
-    return <Navigate replace to={`${url}/${getPagePathSegment(defaultPage)}`} />;
+    return <Navigate replace to={`${url}/${getPagePathSegment(defaultPage, getAppMessage)}`} />;
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
@@ -516,9 +533,13 @@ export function Page(): ReactNode {
     (pd) => checkPagePermissionsCallback(pd) && !pd.parameters,
   );
   if (redirectPage) {
-    return <Navigate replace to={`${url}/${getPagePathSegment(redirectPage)}`} />;
+    return <Navigate replace to={`${url}/${getPagePathSegment(redirectPage, getAppMessage)}`} />;
   }
 
   // If the user isn’t allowed to view any pages, show an error message.
-  return defaultErrorPage();
+  return (
+    <BuiltinPage narrow page="page-error" state="permission" title={messages.permissionErrorTitle}>
+      {permissionError()}
+    </BuiltinPage>
+  );
 }

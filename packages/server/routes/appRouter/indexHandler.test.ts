@@ -1,7 +1,7 @@
 // eslint-disable-next-line unicorn/import-style
 import crypto from 'node:crypto';
 
-import { type AppDefinition } from '@appsemble/lang-sdk';
+import { type AppDefinition, type Theme } from '@appsemble/lang-sdk';
 import {
   errorMiddleware,
   logger,
@@ -282,7 +282,7 @@ describe('indexHandler', () => {
     expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Content-Security-Policy: base-uri 'self'; connect-src * blob: data:; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-zCYrniI+9/bTmzwyYtPfYOHkPht43kpSB8FKKbsGTl4=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
+      Content-Security-Policy: base-uri 'self'; connect-src * blob: data:; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-9cAE2FQHBsow/6lbx8p2T3tLgFYiB+iCgZ6+jC/QpLY=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
       X-Appsemble-Messages-Cache: miss
@@ -404,14 +404,16 @@ describe('indexHandler', () => {
           "appUrl": "http://app.test.host.example/",
           "bulmaURL": "/bulma/0.9.4/bulma.min.css?dangerColor=%23ff2800&fontFamily=Open+Sans&fontSource=google&infoColor=%23a7d0ff&linkColor=%230440ad&primaryColor=%235393ff&splashColor=%23ffffff&successColor=%231fd25b&themeColor=%23ffffff&tileLayer=https%3A%2F%2F%7Bs%7D.tile.openstreetmap.org%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D.png&warningColor=%23fed719",
           "faURL": "/fa/6.7.2/css/all.min.css",
+          "fontURL": "https://fonts.googleapis.com/css?display=swap&family=Open+Sans",
           "host": "http://host.example",
           "locale": "en",
           "locales": [
             "nl",
           ],
+          "messagesURL": "http://host.example/api/apps/1/messages/en",
           "noIndex": true,
           "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-          "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]}</script>",
+          "settings": "<script>window.settings={"apiUrl":"http:\\u002F\\u002Fhost.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@appsemble\\u002Fa","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble\\u002Fa","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test\\u002Fa","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test\\u002Fb","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test\\u002Fa","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test\\u002Fb","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]}</script>",
           "themeColor": "#ffffff",
         },
         "filename": "app/index.html",
@@ -450,6 +452,32 @@ describe('indexHandler', () => {
     secondResponse.data.data.nonce = firstResponse.data.data.nonce;
     expect(secondResponse.data).toStrictEqual(firstResponse.data);
   });
+
+  it.each([
+    ['the URL', '/nl/test-page', 'en-US', 'nl'],
+    ['the Accept-Language header', '/', 'nl-NL,nl;q=0.9', 'nl'],
+    ['the default language', '/', 'fr-FR', 'en'],
+  ])(
+    'should preload the messages in the language of %s',
+    async (source, path, acceptLanguage, language) => {
+      const app = await App.create({
+        OrganizationId: 'test',
+        definition: { name: 'Test App', pages: [{ name: 'Test Page', blocks: [] }] },
+        path: 'app',
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+      });
+      await AppMessages.bulkCreate(
+        ['en', 'nl'].map((lang) => ({ AppId: app.id, language: lang, messages: {} })),
+      );
+
+      const response = await request.get(path, { headers: { 'accept-language': acceptLanguage } });
+
+      expect(response.data.data.messagesURL).toBe(
+        `http://host.example/api/apps/${app.id}/messages/${language}`,
+      );
+    },
+  );
 
   it('should miss the settings cache when the latest snapshot changes', async () => {
     const cache = createTestCache();
@@ -1011,14 +1039,16 @@ describe('indexHandler', () => {
           "appUrl": "http://app.test.host.example/",
           "bulmaURL": "/bulma/0.9.4/bulma.min.css?dangerColor=%23ff2800&fontFamily=Open+Sans&fontSource=google&infoColor=%23a7d0ff&linkColor=%230440ad&primaryColor=%235393ff&splashColor=%23ffffff&successColor=%231fd25b&themeColor=%23ffffff&tileLayer=https%3A%2F%2F%7Bs%7D.tile.openstreetmap.org%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D.png&warningColor=%23fed719",
           "faURL": "/fa/6.7.2/css/all.min.css",
+          "fontURL": "https://fonts.googleapis.com/css?display=swap&family=Open+Sans",
           "host": "http://host.example",
           "locale": "en",
           "locales": [
             "nl",
           ],
+          "messagesURL": "http://host.example/api/apps/1/messages/en",
           "noIndex": true,
           "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-          "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]};(function(c,l,a,r,i,t,y){
+          "settings": "<script>window.settings={"apiUrl":"http:\\u002F\\u002Fhost.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@appsemble\\u002Fa","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble\\u002Fa","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test\\u002Fa","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test\\u002Fb","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test\\u002Fa","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test\\u002Fb","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]};(function(c,l,a,r,i,t,y){
           c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
           t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
           y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
@@ -1064,7 +1094,25 @@ describe('indexHandler', () => {
     });
   });
 
-  it('should render a stricter published app CSP when contentSecurityPolicy is configured', async () => {
+  it.each([
+    {},
+    {
+      theme: { font: { family: 'body', source: 'custom' }, displayFont: { family: 'Baloo 2' } },
+    },
+    {
+      theme: { font: { family: 'body', source: 'custom' } },
+      pageTheme: { displayFont: { family: 'Baloo 2' } },
+    },
+    {
+      theme: { font: { family: 'body', source: 'custom' } },
+      blockTheme: { font: { family: 'Lato' } },
+    },
+  ] as {
+    theme?: Partial<Theme>;
+    pageTheme?: Partial<Theme>;
+    blockTheme?: Partial<Theme>;
+  }[])('should render a stricter published app CSP for %j', async (themes) => {
+    const { theme, pageTheme, blockTheme } = themes;
     setArgv({
       blockAssetsBaseUrl: 'https://static.appsemble.example/minio',
       host: 'http://host.example',
@@ -1077,10 +1125,12 @@ describe('indexHandler', () => {
         contentSecurityPolicy: {
           'connect-src': ['https://api.example.com'],
         },
+        theme,
         pages: [
           {
             name: 'Test Page',
-            blocks: [],
+            theme: pageTheme,
+            blocks: [{ type: 'a', version: '0.1.0', theme: blockTheme }],
           },
         ],
       },
@@ -1127,7 +1177,7 @@ describe('indexHandler', () => {
       expect.arrayContaining(['https://static.appsemble.example']),
     );
     expect(csp['style-src']).toStrictEqual(
-      expect.arrayContaining(['https://static.appsemble.example']),
+      expect.arrayContaining(['https://static.appsemble.example', 'https://fonts.googleapis.com']),
     );
     expect(csp['media-src']).toStrictEqual(
       expect.arrayContaining([
@@ -1140,6 +1190,39 @@ describe('indexHandler', () => {
     );
     expect(csp['media-src']).not.toContain('*');
     expect(csp['object-src']).toStrictEqual(["'none'"]);
+  });
+
+  it('should not allow google fonts when every theme uses custom fonts', async () => {
+    await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        theme: { font: { family: 'body', source: 'custom' } },
+        pages: [
+          {
+            name: 'Test Page',
+            theme: { displayFont: { family: 'heading', source: 'custom' } },
+            blocks: [
+              {
+                type: 'a',
+                version: '0.1.0',
+                theme: { font: { family: 'block', source: 'custom' } },
+              },
+            ],
+          },
+        ],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+
+    const response = await request.get('/');
+    const csp = parseCsp(response.headers['content-security-policy'] as string);
+
+    expect(csp['style-src']).not.toContain('https://fonts.googleapis.com');
   });
 
   it('should render a 404 page if no app is found', async () => {
@@ -1326,9 +1409,9 @@ describe('indexHandler', () => {
     expect(response.data).toMatchObject({
       filename: 'app/index.html',
     });
-    expect(response.data.data.settings).toContain('"blockManifests":[');
-    expect(response.data.data.settings).toContain('"name":"@test/a"');
-    expect(response.data.data.settings).toContain('"files":["a0.css","a0.js"]');
+    expect(parseSettingsScript(response.data.data.settings).blockManifests).toContainEqual(
+      expect.objectContaining({ name: '@test/a', files: ['a0.css', 'a0.js'] }),
+    );
   });
 
   it('should lazily create a build manifest when the latest snapshot has no build manifest', async () => {
@@ -1366,9 +1449,9 @@ describe('indexHandler', () => {
     expect(response.data).toMatchObject({
       filename: 'app/index.html',
     });
-    expect(response.data.data.settings).toContain('"blockManifests":[');
-    expect(response.data.data.settings).toContain('"name":"@test/a"');
-    expect(response.data.data.settings).toContain('"files":["a0.css","a0.js"]');
+    expect(parseSettingsScript(response.data.data.settings).blockManifests).toContainEqual(
+      expect.objectContaining({ name: '@test/a', files: ['a0.css', 'a0.js'] }),
+    );
 
     expect(await AppBuildSnapshot.findByPk(snapshot.id)).toStrictEqual(
       expect.objectContaining({
@@ -1480,7 +1563,7 @@ describe('indexHandler', () => {
     expect(response.data).toMatchObject({
       filename: 'app/index.html',
     });
-    expect(response.data.data.settings).toContain('"blockManifests":[]');
+    expect(parseSettingsScript(response.data.data.settings).blockManifests).toStrictEqual([]);
     expect(await AppBuildSnapshot.findByPk(snapshot.id)).toBeNull();
   });
 
@@ -1511,8 +1594,9 @@ describe('indexHandler', () => {
     expect(response.data).toMatchObject({
       filename: 'app/index.html',
     });
-    expect(response.data.data.settings).toContain('"blockManifests":[');
-    expect(response.data.data.settings).toContain('"name":"@test/a"');
+    expect(parseSettingsScript(response.data.data.settings).blockManifests).toContainEqual(
+      expect.objectContaining({ name: '@test/a' }),
+    );
     expect(await AppBuildSnapshot.findByPk(snapshot.id)).toBeNull();
   });
 
@@ -1557,9 +1641,9 @@ describe('indexHandler', () => {
     expect(response.data).toMatchObject({
       filename: 'app/index.html',
     });
-    expect(response.data.data.settings).toContain('"blockManifests":[');
-    expect(response.data.data.settings).toContain('"name":"@test/a"');
-    expect(response.data.data.settings).not.toContain('"blockManifests":[]');
+    expect(parseSettingsScript(response.data.data.settings).blockManifests).toContainEqual(
+      expect.objectContaining({ name: '@test/a' }),
+    );
     expect(findOrCreateSpy.mock.calls).toHaveLength(1);
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       `Failed to persist a build manifest for app snapshot ${snapshot.id}.`,

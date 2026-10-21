@@ -1,0 +1,10 @@
+/* Bulma only lays out the crumbs that are links. */
+.text {
+  align-items: center;
+  display: flex;
+  padding: 0 0.75em;
+}
+
+li:first-child > .text {
+  padding-left: 0;
+}

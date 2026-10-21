@@ -14,8 +14,6 @@ For installation, upgrades, values, and chart-specific caveats, use the
 The published chart is also available on
 [Artifact Hub](https://artifacthub.io/packages/helm/appsemble/appsemble).
 
-This page focuses on TLS setup patterns for Helm deployments.
-
 ## Database migrations
 
 The Helm chart runs database migrations automatically after each `helm install` and `helm upgrade`.
@@ -41,6 +39,19 @@ buckets are claimed through Kubernetes (an `ObjectBucketClaim` on OpenShift Data
 when the credentials must stay least-privilege. The secret contract, provisioning steps per provider
 and the commands that copy an existing installation into a single bucket are in the
 [Appsemble chart README](https://gitlab.com/appsemble/appsemble/-/tree/main/config/charts/appsemble#object-storage).
+
+## Valkey
+
+The chart bundles one Valkey pod for the app-serving cache and e-mail registration rate limits. Its
+data is disposable, so the bundled pod has no persistent volume. Create the `valkey` password secret
+before installing the chart. The server keeps serving requests while Valkey is unavailable and
+reconnects when it returns.
+
+To use a managed Valkey or Redis service, set `valkey.enabled=false` and configure
+`externalValkey.host`, `port`, `username`, `tls`, `existingSecret` and `passwordKey`. The secret
+must contain the external service's password. See the
+[chart's Valkey setup](https://gitlab.com/appsemble/appsemble/-/tree/main/config/charts/appsemble#valkey)
+for both secret contracts and an external service example.
 
 ## Cert-manager
 
