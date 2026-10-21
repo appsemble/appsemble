@@ -45,7 +45,7 @@
     "@appsemble/node-utils": "0.40.5",
     "@appsemble/types": "0.40.5",
     "@axe-core/playwright": "4.13.0",
-    "@playwright/test": "1.63.0",
+    "@playwright/test": "1.64.1",
     "strip-indent": "^4.0.0"
   },
   "engines": {
