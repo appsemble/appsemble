@@ -1549,6 +1549,7 @@ update dependencies:
       --set "provision.user.timezone=Europe/Amsterdam"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
+      --set "syncOrganizationBlocks={appsemble}"
       --set "sentry.allowedDomains={*.appsemble.review}"
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "rejectBreachedPasswords=true"
@@ -1568,6 +1569,7 @@ update dependencies:
       --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
       --set "pgbouncer.enabled=true"
       --set "backups.enabled=false"
+    - kubectl logs "job/review-$CI_MERGE_REQUEST_IID-sync-organization-blocks"
 
 review:
   extends: .review-deploy
