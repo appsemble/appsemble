@@ -7,7 +7,11 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
-import { shouldHideGroupDropdown, shouldShowMenu } from '../../utils/layout.js';
+import {
+  shouldHideGroupDropdown,
+  shouldShowMenu,
+  titleBarShowsPageName,
+} from '../../utils/layout.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -104,7 +108,7 @@ export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): Rea
   const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
   const displayAppName = (definition?.layout?.titleBarText || 'pageName') === 'appName';
 
-  const pageName = displayAppName || hideName ? null : children;
+  const pageName = titleBarShowsPageName(definition, hideName) ? children : null;
 
   if (definition.layout?.hideTitleBar) {
     return null;

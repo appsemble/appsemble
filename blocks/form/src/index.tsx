@@ -30,7 +30,7 @@ import { generateDefaultValues } from './utils/generateDefaultValues.js';
 import { isFormValid } from './utils/validity.js';
 
 const goToRef = (ref: MutableRef<any>): void => {
-  ref?.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  ref?.current?.scrollIntoView({ block: 'center' });
   ref?.current?.focus({ preventScroll: true });
 };
 
@@ -183,7 +183,7 @@ bootstrap(
 
     useEffect(() => {
       if (failedSubmitCount) {
-        errorSummaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        errorSummaryRef.current?.scrollIntoView({ block: 'start' });
         errorSummaryRef.current?.focus({ preventScroll: true });
       }
     }, [failedSubmitCount]);

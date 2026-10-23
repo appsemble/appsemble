@@ -267,6 +267,11 @@ export function Block({
 
     (async () => {
       if (shadowRoot) {
+        // The reduced motion rule of the app stylesheet doesn't reach into the shadow root.
+        const reducedMotionStyle = document.createElement('style');
+        reducedMotionStyle.textContent =
+          '@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; } }';
+        shadowRoot.append(reducedMotionStyle);
         await Promise.all(
           [
             bulmaUrl,

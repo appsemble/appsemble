@@ -34,11 +34,18 @@ main:focus:not(:focus-visible) {
   outline: none;
 }
 
+/* Scripts scroll without a behavior of their own, so they follow the user's motion preference. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Block shadow roots get the same rule from the Block component. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
 }

@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events';
 
 import { type AppDefinition, type FlowPageDefinition } from '@appsemble/lang-sdk';
 import { noop } from '@appsemble/utils';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
@@ -47,44 +47,61 @@ beforeEach(() => {
   );
 });
 
+const pageDefinition: FlowPageDefinition = {
+  name: 'Survey',
+  type: 'flow',
+  steps: [
+    { name: 'One', blocks: [] },
+    { name: 'Two', blocks: [] },
+  ],
+};
+
+function renderFlowPage(): void {
+  render(
+    <IntlProvider locale="en">
+      <MemoryRouter initialEntries={['/en/survey']}>
+        <input aria-label="Note" />
+        <main tabIndex={-1}>
+          <FlowPage
+            appDefinition={{ name: 'Test App', pages: [pageDefinition] } as AppDefinition}
+            appStorage={{} as AppStorage}
+            data={{}}
+            // eslint-disable-next-line unicorn/prefer-event-target
+            ee={new EventEmitter()}
+            pageDefinition={pageDefinition}
+            prefix="pages.survey"
+            prefixIndex="pages.0"
+            remap={noop}
+            setData={noop}
+            showDialog={() => noop}
+            showShareDialog={() => Promise.resolve()}
+            stepRef={{ current: undefined }}
+          />
+        </main>
+      </MemoryRouter>
+    </IntlProvider>,
+  );
+}
+
 describe('FlowPage', () => {
   it('should move focus to the page when the flow moves to the next step', async () => {
-    const pageDefinition: FlowPageDefinition = {
-      name: 'Survey',
-      type: 'flow',
-      steps: [
-        { name: 'One', blocks: [] },
-        { name: 'Two', blocks: [] },
-      ],
-    };
-    render(
-      <IntlProvider locale="en">
-        <MemoryRouter initialEntries={['/en/survey']}>
-          <main tabIndex={-1}>
-            <FlowPage
-              appDefinition={{ name: 'Test App', pages: [pageDefinition] } as AppDefinition}
-              appStorage={{} as AppStorage}
-              data={{}}
-              // eslint-disable-next-line unicorn/prefer-event-target
-              ee={new EventEmitter()}
-              pageDefinition={pageDefinition}
-              prefix="pages.survey"
-              prefixIndex="pages.0"
-              remap={noop}
-              setData={noop}
-              showDialog={() => noop}
-              showShareDialog={() => Promise.resolve()}
-              stepRef={{ current: undefined }}
-            />
-          </main>
-        </MemoryRouter>
-      </IntlProvider>,
-    );
+    renderFlowPage();
 
     expect(document.activeElement).toBe(document.body);
 
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
 
     expect(document.activeElement).toBe(screen.getByRole('main'));
+  });
+
+  it('should keep focus outside the step when the flow moves to the next step', () => {
+    renderFlowPage();
+    const note = screen.getByRole('textbox', { name: 'Note' });
+    note.focus();
+
+    // A block moves to the next step without user input, so focus stays on the note.
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+    expect(document.activeElement).toBe(note);
   });
 });

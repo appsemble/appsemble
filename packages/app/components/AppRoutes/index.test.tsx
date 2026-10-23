@@ -40,7 +40,11 @@ vi.mock('../OpenIDCallback/index.js', () => ({
   OpenIDCallback: () => <p>Callback route</p>,
 }));
 vi.mock('../Page/index.js', async () => {
-  const { Link } = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+  const {
+    Link,
+    Navigate,
+    useLocation: useMockLocation,
+  } = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
   return {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     Page: () => (
@@ -48,6 +52,8 @@ vi.mock('../Page/index.js', async () => {
         <p>Page route</p>
         <Link to="/en/about">About</Link>
         <Link to="/en/home/details">Details tab</Link>
+        {/* A container page redirects to its first sub page after it renders. */}
+        {useMockLocation().pathname === '/en/container' ? <Navigate to="/en/child" /> : null}
       </main>
     ),
   };
@@ -166,7 +172,14 @@ describe('AppRoutes', () => {
     expect(document.activeElement).toBe(document.body);
   });
 
+  it('should leave focus alone on a page the first page redirects to', async () => {
+    renderRoutes('/en/container');
+    await waitFor(() => expect(screen.getByText('/en/child')).not.toBeNull());
+    expect(document.activeElement).toBe(document.body);
+  });
+
   it('should move focus to the page after navigating to another page', async () => {
+    vi.spyOn(navigator.userActivation, 'hasBeenActive', 'get').mockReturnValue(true);
     renderRoutes('/en/home');
     await userEvent.click(screen.getByRole('link', { name: 'About' }));
     await waitFor(() => expect(screen.getByText('/en/about')).not.toBeNull());

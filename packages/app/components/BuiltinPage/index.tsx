@@ -13,6 +13,7 @@ import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, type MessageDescriptor } from 'react-intl';
 
 import styles from './index.module.css';
+import { titleBarShowsPageName } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
 import { Main } from '../Main/index.js';
@@ -152,8 +153,7 @@ export function BuiltinPage({
   });
 
   const hasTitleArea = hasBuiltinPagesGridArea(layout, builtinPagesTitleGridArea);
-  const titleBarNamesPage =
-    appBarName && !definition.layout?.hideTitleBar && definition.layout?.titleBarText !== 'appName';
+  const titleBarNamesPage = appBarName && titleBarShowsPageName(definition);
   // The title area or the title bar renders the H1, if either names the page.
   const heading =
     hasTitleArea || titleBarNamesPage ? null : (

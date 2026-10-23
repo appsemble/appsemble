@@ -94,14 +94,15 @@ export function AppRoutes(): ReactNode {
   const pagePath = pathname.split('/', 3).join('/');
 
   // Client-side navigation keeps focus on the activated link, or drops it when the link unmounts.
-  // Move it to the new page, so keyboard and screen reader users continue from its start. The
-  // first page keeps the initial focus of the browser.
+  // Move it to the new page, so keyboard and screen reader users continue from its start. Until the
+  // user interacts, pages are the first page or redirects from it, which keep the initial focus of
+  // the browser.
   useEffect(() => {
     const main = document.querySelector('main');
     if (!main || pagePath === focusedPage.current) {
       return;
     }
-    if (focusedPage.current !== undefined) {
+    if (navigator.userActivation.hasBeenActive) {
       main.focus({ preventScroll: true });
     }
     focusedPage.current = pagePath;
