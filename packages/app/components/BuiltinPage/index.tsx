@@ -10,7 +10,7 @@ import {
 import { Content, Loader, Title, useMeta } from '@appsemble/react-components';
 import classNames from 'classnames';
 import { type ReactNode, useMemo } from 'react';
-import { FormattedMessage, type MessageDescriptor } from 'react-intl';
+import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { titleBarShowsPageName } from '../../utils/layout.js';
@@ -138,6 +138,7 @@ export function BuiltinPage({
 }: BuiltinPageProps): ReactNode {
   const { definition } = useAppDefinition();
   const { hasBottomNavigation } = usePage();
+  const { formatMessage } = useIntl();
   useMeta(title);
 
   const layout = definition.layout?.builtinPages;
@@ -183,6 +184,7 @@ export function BuiltinPage({
 
   return (
     <Root
+      aria-label={formatMessage(title)}
       className={
         gridClassName
           ? classNames(gridClassName, {

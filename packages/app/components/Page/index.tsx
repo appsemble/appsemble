@@ -403,6 +403,7 @@ export function Page(): ReactNode {
 
     return (
       <main
+        aria-label={pageName}
         className={classNames(styles.root, {
           // A grid that places the bottom navigation flows around it, so it needs no clearance.
           [styles.hasBottomNavigation]:

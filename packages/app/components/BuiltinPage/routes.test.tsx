@@ -474,6 +474,7 @@ describe.each(cases)('$page $state', (routeCase) => {
 
     const headings = screen.getAllByRole('heading', { level: 1 });
     expect(headings).toHaveLength(1);
+    expect(screen.getByRole('main').getAttribute('aria-label')).toBe(headings[0].textContent);
   });
 
   it('should name the page with one level 1 heading when the title bar shows the app name', async () => {
@@ -483,6 +484,7 @@ describe.each(cases)('$page $state', (routeCase) => {
 
     const headings = screen.getAllByRole('heading', { level: 1 });
     expect(headings).toHaveLength(1);
+    expect(screen.getByRole('main').getAttribute('aria-label')).toBe(headings[0].textContent);
   });
 
   it('should render the bottom navigation inside a layout that places it', async () => {
