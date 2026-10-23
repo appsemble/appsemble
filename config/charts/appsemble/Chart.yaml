@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.5
-appVersion: 0.40.5
+version: 0.40.6
+appVersion: 0.40.6
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,103 +33,80 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(button-list): Add data-driven pressed state for toggle buttons."
+      description: "E2e: Add mailpit fixture allowing you to communicate with the
+        Mailpit API using the mailpit-api package."
     - kind: added
-      description: "Block(footer): Render the copyright as a link when its remapper
-        returns a label and link."
+      description: "Lang-sdk: Add theme.displayFont: a display face next to the body
+        face in theme.font. Both families are emitted on :root as --font-family and
+        --font-family-display."
     - kind: added
-      description: "Block(form): Add autocomplete to string and number fields to set
-        the HTML autocomplete attribute."
-    - kind: added
-      description: "Block(form): Add errorSummaryPosition to list every invalid field
-        at the top of the form."
-    - kind: added
-      description: "Block(form): Add helpPosition to show help and errors between the
-        label and the input."
-    - kind: added
-      description: "Block(form): Add labelTextFormat: markdown to render boolean field
-        label text as Markdown."
-    - kind: added
-      description: "Block(table): Add alt to image fields."
-    - kind: added
-      description: "Cli: Delete app variant message keys patched to null."
-    - kind: added
-      description: "E2e: Add scanAppAccessibility fixture to score app accessibility
-        with axe-core."
-    - kind: added
-      description: "Preact-components: Add FormComponentHelpPositionContext to render
-        help above form controls."
+      description: "Preact-components: Expose slider progress to themes as the
+        --slider-progress CSS custom property."
     - kind: changed
-      description: "App: Leave app definition validation out of the app bundle, which
-        makes it a third smaller."
+      description: "E2e: Change scope of the giveAppConsent fixture to include all
+        possible scopes."
     - kind: changed
-      description: "App: Preload the font stylesheet and the app messages from the HTML."
+      description: "Preact-components: Focus the first focusable element of a modal
+        when it opens."
     - kind: changed
-      description: "Lang-sdk: Prefix prototype property names with # in the xml.parse remapper."
+      description: "Preact-components: Render modals as native dialog elements on top
+        of the page."
+    - kind: changed
+      description: "React-components: Focus the first focusable element of a modal
+        when it opens instead of the modal itself."
+    - kind: changed
+      description: "React-components: Render modals as native dialog elements on top
+        of the page."
     - kind: fixed
-      description: "Block(cards): Open cards with the keyboard."
+      description: "Block(barcode-scan): Label the selects, announce scanned codes and
+        show a focus ring."
     - kind: fixed
-      description: "Block(form): Disable the fields until the onLoad action has
-        finished, so the loaded data does not overwrite user input."
+      description: "Block(cards): Announce errors and empty results, name footer
+        buttons and render links as links."
     - kind: fixed
-      description: "Block(form): Give the password visibility toggle an accessible name."
+      description: "Block(data-notifier): Announce new data and hide the collapsed
+        refresh button."
     - kind: fixed
-      description: "Block(form): Label form selection dialogs and their choice controls."
+      description: "Block(feed): Name the avatar, its status and the reply controls,
+        and show an avatar focus ring."
     - kind: fixed
-      description: "Block(form): Show and hide password fields that have a datalist."
+      description: "Block(filter): Label fields, date ranges and the open button, and
+        expose list state."
     - kind: fixed
-      description: "Block(form): Validate required and prohibited requirements of
-        boolean fields."
+      description: "Block(form): Name fields and buttons, expose expanded state and
+        announce long submissions."
     - kind: fixed
-      description: "Block(list): Expose button titles as accessible names for list actions."
+      description: "Block(list): Make item title and field controls at least 24 by 24 pixels."
     - kind: fixed
-      description: "Block(table): Sort columns and open clickable cells with the keyboard."
+      description: "Block(list): Render items as plain text without a pointer cursor
+        when the list has no click action."
     - kind: fixed
-      description: "App: Initialize blocks with the current viewport mode."
+      description: "App: Explain invalid or already used email verification links on
+        the verify page."
     - kind: fixed
-      description: "App: Make the dialog action keyboard and screen reader accessible."
+      description: "App: Show page error recovery when a block script fails to load."
     - kind: fixed
-      description: "App: Open mailto:, tel: and sms: links without leaving a blank tab behind."
+      description: "App: Show page error recovery when a block stylesheet fails to load."
     - kind: fixed
-      description: "App: Render the repeated app name in the title bar as text, not a heading."
+      description: "Node-utils: Reserve infrastructure host names for organization identifiers."
     - kind: fixed
-      description: "App: Resolve tab.name to the opened tab, not the first tab, when
-        the tab list loads as it opens."
+      description: "React-components: Fade in and announce a message assertively only
+        once when a modal opens or closes."
     - kind: fixed
-      description: "App: Show float blocks in a dialog on top of the dialog."
+      description: "React-components: Hide the links of the closed side menu from
+        keyboard and screen reader users."
     - kind: fixed
-      description: "Cli: Keep patching variant messages after a language without messages."
+      description: "React-components: Show messages on top of open modals."
     - kind: fixed
-      description: "Preact-components: Add accessible names and states to loaders,
-        dropdowns, radio groups and sliders."
+      description: "Server: Fix organization DNS and stagger wildcard certificate renewals."
     - kind: fixed
-      description: "Preact-components: Keep an open date picker open when its disabled
-        dates are recalculated."
+      description: "Server: Keep no organization when creating it fails, so the same
+        id can be used again."
     - kind: fixed
-      description: "React-components: Announce Loader to screen readers as a loading status."
+      description: "Server: Preserve app controller fields omitted from app updates."
     - kind: fixed
-      description: "React-components: Make Modal and ModalCard accessible modal
-        dialogs with focus management."
-    - kind: security
-      description: "Block(form): Update the markdown editor and KaTeX to patch a KaTeX
-        trust bypass."
-    - kind: security
-      description: "Cli: Update postcss-preset-env to v10."
-    - kind: security
-      description: "Lang-sdk: Update fast-xml-parser to patch entity expansion vulnerabilities."
-    - kind: security
-      description: "Node-utils: Update webpack-dev-middleware to patch a path
-        traversal vulnerability."
-    - kind: security
-      description: "Server: Escape HTML in the inline settings script of apps and the studio."
-    - kind: security
-      description: "Server: Update dependencies to patch known vulnerabilities."
-    - kind: security
-      description: "Webpack-config: Update css-minimizer-webpack-plugin to v8 to fix
-        serialize-javascript advisories."
-    - kind: security
-      description: "Webpack-core: Update css-minimizer-webpack-plugin to v8 to fix
-        serialize-javascript advisories."
+      description: "Studio: Explain invalid or already used email verification links
+        on the verify page."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.6](https://gitlab.com/appsemble/appsemble/-/releases/0.40.6)] - 2026-10-23
+
+### Added
+
+- E2e: Add `mailpit` fixture allowing you to communicate with the Mailpit API using the
+  `mailpit-api` package.
+- Lang-sdk: Add `theme.displayFont`: a display face next to the body face in `theme.font`. Both
+  families are emitted on `:root` as `--font-family` and `--font-family-display`.
+- Preact-components: Expose slider progress to themes as the `--slider-progress` CSS custom
+  property.
+
+### Changed
+
+- E2e: Change `scope` of the `giveAppConsent` fixture to include all possible scopes.
+- Preact-components: Focus the first focusable element of a modal when it opens.
+- Preact-components: Render modals as native dialog elements on top of the page.
+- React-components: Focus the first focusable element of a modal when it opens instead of the modal
+  itself.
+- React-components: Render modals as native dialog elements on top of the page.
+
+### Fixed
+
+- Block(`barcode-scan`): Label the selects, announce scanned codes and show a focus ring.
+- Block(`cards`): Announce errors and empty results, name footer buttons and render links as links.
+- Block(`data-notifier`): Announce new data and hide the collapsed refresh button.
+- Block(`feed`): Name the avatar, its status and the reply controls, and show an avatar focus ring.
+- Block(`filter`): Label fields, date ranges and the open button, and expose list state.
+- Block(`form`): Name fields and buttons, expose expanded state and announce long submissions.
+- Block(`list`): Make item title and field controls at least 24 by 24 pixels.
+- Block(`list`): Render items as plain text without a pointer cursor when the list has no click
+  action.
+- App: Explain invalid or already used email verification links on the verify page.
+- App: Show page error recovery when a block script fails to load.
+- App: Show page error recovery when a block stylesheet fails to load.
+- Node-utils: Reserve infrastructure host names for organization identifiers.
+- React-components: Fade in and announce a message assertively only once when a modal opens or
+  closes.
+- React-components: Hide the links of the closed side menu from keyboard and screen reader users.
+- React-components: Show messages on top of open modals.
+- Server: Fix organization DNS and stagger wildcard certificate renewals.
+- Server: Keep no organization when creating it fails, so the same id can be used again.
+- Server: Preserve app controller fields omitted from app updates.
+- Studio: Explain invalid or already used email verification links on the verify page.
+
 ## \[[0.40.5](https://gitlab.com/appsemble/appsemble/-/releases/0.40.5)] - 2026-10-16
 
 ### Added
