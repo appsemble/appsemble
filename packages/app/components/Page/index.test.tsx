@@ -250,25 +250,6 @@ it('should resolve tab.name to its own tab when the tab list arrives after the t
   expect(tabName).toBe('Beta');
 });
 
-it('should name the page with an H1 when the title bar shows the app name', async () => {
-  mockApp({
-    name: 'Test App',
-    defaultPage: 'Home',
-    layout: { titleBarText: 'appName' },
-    pages: [{ name: 'Home', blocks: [block] }],
-  } as AppDefinition);
-  renderApp();
-
-  expect(await screen.findByRole('heading', { level: 1, name: 'Home' })).not.toBeNull();
-});
-
-it('should leave the H1 to the title bar when it shows the page name', async () => {
-  renderApp();
-
-  await waitFor(() => expect(document.querySelector('main')).not.toBeNull());
-  expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
-});
-
 describe('reserved grid areas', () => {
   const layout = {
     mobile: { layout: { columns: 1, template: ['resend-banner', 'main', 'bottom-navigation'] } },

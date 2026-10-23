@@ -48,7 +48,6 @@ import { ShareDialog, type ShareDialogState } from './ShareDialog/index.js';
 import { type ShowDialogParams, type ShowShareDialog } from '../../types.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
-import { titleBarShowsPageName } from '../../utils/layout.js';
 import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { AppStorage } from '../../utils/storage.js';
@@ -414,9 +413,6 @@ export function Page(): ReactNode {
         tabIndex={-1}
       >
         <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
-        {titleBarShowsPageName(appDefinition, pageDefinition.hideName) ? null : (
-          <h1 className="is-sr-only">{pageName}</h1>
-        )}
         {/* A grid layout that names a breadcrumbs area renders the trail there, and a tabs page
             renders its own trail so it can name the active tab as the last crumb. */}
         {pageDefinition.type === 'tabs' ||
