@@ -1,4 +1,3 @@
-import { setTimeout as sleep } from 'node:timers/promises';
 import { inspect } from 'node:util';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
@@ -14,15 +13,9 @@ const recordTTL = 3600;
 /**
  * The number of resource record sets to send in one bulk request.
  *
- * A bulk request is applied atomically, so the chunk size bounds both the size of a request and the
- * amount of work a retry repeats.
+ * A bulk request is applied atomically, so the chunk size bounds the size of a request.
  */
 const bulkSize = 250;
-
-/**
- * The number of times a request is repeated after the deSEC API rate limit is reached.
- */
-const maxRetries = 5;
 
 /**
  * The record types which point a host name at the deployment.
@@ -136,26 +129,13 @@ function getSubname(host: string, zone: string): string {
 async function writeRRsets(rrsets: RRset[], { token, zone }: Provider): Promise<void> {
   for (let index = 0; index < rrsets.length; index += bulkSize) {
     const chunk = rrsets.slice(index, index + bulkSize);
-    for (let retries = 0; ; retries += 1) {
-      try {
-        await axios.patch(
-          // Not SSRF: the zone is from server config (argv)
-          // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
-          `https://desec.io/api/v1/domains/${zone}/rrsets/`,
-          chunk,
-          { headers: { authorization: `Token ${token}` } },
-        );
-        break;
-      } catch (error) {
-        if (retries >= maxRetries || !axios.isAxiosError(error) || error.response?.status !== 429) {
-          throw error;
-        }
-        const seconds = Number(error.response.headers['retry-after']);
-        const retryAfter = Number.isFinite(seconds) ? seconds : 1;
-        logger.warn(`Rate limited by the deSEC API. Retrying in ${retryAfter} seconds`);
-        await sleep(retryAfter * 1000);
-      }
-    }
+    await axios.patch(
+      // Not SSRF: the zone is from server config (argv)
+      // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
+      `https://desec.io/api/v1/domains/${zone}/rrsets/`,
+      chunk,
+      { headers: { authorization: `Token ${token}` } },
+    );
   }
 }
 

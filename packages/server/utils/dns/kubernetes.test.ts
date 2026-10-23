@@ -49,7 +49,7 @@ describe('kubernetes', () => {
   });
 
   describe('configureDNS', () => {
-    it('should create an ingress for both organization host names when an organization is created', async () => {
+    it('should create an ingress for only the organization wildcard when an organization is created', async () => {
       let config: AxiosRequestConfig | undefined;
       mock.onPost(/.*/).reply((request) => {
         config = request;
@@ -71,7 +71,7 @@ describe('kubernetes', () => {
       expect(config?.httpsAgent.options.ca).toBe(ca);
       expect(JSON.parse(config?.data)).toStrictEqual({
         metadata: {
-          annotations: {},
+          annotations: { 'cert-manager.io/renew-before-percentage': expect.any(String) },
           labels: {
             'app.kubernetes.io/component': 'domain',
             'app.kubernetes.io/instance': 'testorg-host-example',
@@ -97,22 +97,10 @@ describe('kubernetes', () => {
                 ],
               },
             },
-            {
-              host: 'testorg.host.example',
-              http: {
-                paths: [
-                  {
-                    backend: { service: { name: 'review-service', port: { name: 'http' } } },
-                    path: '/',
-                    pathType: 'Prefix',
-                  },
-                ],
-              },
-            },
           ],
           tls: [
             {
-              hosts: ['*.testorg.host.example', 'testorg.host.example'],
+              hosts: ['*.testorg.host.example'],
               secretName: 'testorg-host-example-tls-wilcard',
             },
           ],
@@ -204,7 +192,7 @@ describe('kubernetes', () => {
       expect(JSON.parse(configs[1].data).spec.rules[0].host).toBe('*.testorg.host.example');
     });
 
-    it('should update an existing organization ingress to serve both organization host names', async () => {
+    it('should update an organization ingress to serve only its wildcard host', async () => {
       mock.reset();
 
       const configs: AxiosRequestConfig[] = [];
@@ -232,10 +220,12 @@ describe('kubernetes', () => {
       });
       const { spec } = JSON.parse(patch.data);
       expect(spec.rules[0].host).toBe('*.testorg.host.example');
-      expect(spec.rules[1].host).toBe('testorg.host.example');
+      expect(spec.rules.map(({ host }: { host: string }) => host)).toStrictEqual([
+        '*.testorg.host.example',
+      ]);
       expect(spec.tls).toStrictEqual([
         {
-          hosts: ['*.testorg.host.example', 'testorg.host.example'],
+          hosts: ['*.testorg.host.example'],
           secretName: 'testorg-host-example-tls-wilcard',
         },
       ]);
@@ -349,7 +339,10 @@ describe('kubernetes', () => {
       expect(config?.httpsAgent.options.ca).toBe(ca);
       expect(JSON.parse(config?.data)).toStrictEqual({
         metadata: {
-          annotations: { custom: 'annotation' },
+          annotations: {
+            custom: 'annotation',
+            'cert-manager.io/renew-before-percentage': expect.any(String),
+          },
           labels: {
             'app.kubernetes.io/component': 'domain',
             'app.kubernetes.io/instance': 'foo-host-example',
@@ -375,22 +368,10 @@ describe('kubernetes', () => {
                 ],
               },
             },
-            {
-              host: 'foo.host.example',
-              http: {
-                paths: [
-                  {
-                    backend: { service: { name: 'review-service', port: { name: 'http' } } },
-                    path: '/',
-                    pathType: 'Prefix',
-                  },
-                ],
-              },
-            },
           ],
           tls: [
             {
-              hosts: ['*.foo.host.example', 'foo.host.example'],
+              hosts: ['*.foo.host.example'],
               secretName: 'foo-host-example-tls-wilcard',
             },
           ],
@@ -1001,7 +982,7 @@ describe('kubernetes', () => {
       await kubernetes.reconcileDNS({ dryRun: false });
 
       const creates = configs.filter(({ method }) => method === 'post');
-      expect(creates).toHaveLength(9);
+      expect(creates).toHaveLength(8);
       for (const { url } of creates) {
         expect(url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
       }
@@ -1010,14 +991,12 @@ describe('kubernetes', () => {
         'app3-example-com',
         'collection2-example-com',
         'collection3-example-com',
-        'org1-host-example',
         'org2-host-example',
         'org3-host-example',
         'www-collection2-example-com',
         'www-collection3-example-com',
       ]);
       expect(creates.map(({ data }) => JSON.parse(data).spec.rules[0].host).sort()).toStrictEqual([
-        '*.org1.host.example',
         '*.org2.host.example',
         '*.org3.host.example',
         'app2.example.com',
@@ -1029,23 +1008,47 @@ describe('kubernetes', () => {
       ]);
     });
 
-    it('should add the organization host to an organization ingress which only serves the wildcard host', async () => {
+    it('should preserve existing organization ingresses', async () => {
       await kubernetes.reconcileDNS({ dryRun: false });
 
-      const creates = configs.filter(
-        ({ data, method }) =>
-          method === 'post' && JSON.parse(data).metadata.name === 'org1-host-example',
-      );
-      expect(creates).toHaveLength(1);
-      const { spec } = JSON.parse(creates[0].data);
-      expect(spec.rules[0].host).toBe('*.org1.host.example');
-      expect(spec.rules[1].host).toBe('org1.host.example');
-      expect(spec.tls).toStrictEqual([
-        {
-          hosts: ['*.org1.host.example', 'org1.host.example'],
-          secretName: 'org1-host-example-tls-wilcard',
-        },
-      ]);
+      expect(
+        configs.filter(
+          ({ data, method }) =>
+            method === 'post' && JSON.parse(data).metadata.name === 'org1-host-example',
+        ),
+      ).toStrictEqual([]);
+    });
+
+    it('should stagger new organization renewals consistently across deployments', async () => {
+      await kubernetes.reconcileDNS({ dryRun: false });
+      const percentages = configs
+        .filter(
+          ({ data, method }) =>
+            method === 'post' && JSON.parse(data).spec.rules[0].host.startsWith('*.'),
+        )
+        .map(
+          ({ data }) =>
+            JSON.parse(data).metadata.annotations['cert-manager.io/renew-before-percentage'],
+        );
+      expect(percentages).toHaveLength(2);
+      expect(new Set(percentages).size).toBeGreaterThan(1);
+      for (const percentage of percentages) {
+        expect(Number(percentage)).toBeGreaterThanOrEqual(25);
+        expect(Number(percentage)).toBeLessThanOrEqual(45);
+      }
+      configs.length = 0;
+      await kubernetes.reconcileDNS({ dryRun: false });
+      expect(
+        configs
+          .filter(
+            ({ data, method }) =>
+              method === 'post' && JSON.parse(data).spec.rules[0].host.startsWith('*.'),
+          )
+          .map(
+            ({ data }) =>
+              JSON.parse(data).metadata.annotations['cert-manager.io/renew-before-percentage'],
+          ),
+      ).toStrictEqual(percentages);
     });
 
     it('should create DNS records for all organizations and delete the records of extra ingresses', async () => {
@@ -1070,6 +1073,8 @@ describe('kubernetes', () => {
       expect(deleted).toStrictEqual([
         { subname: '*.org4', type: 'A', ttl: 3600, records: [] },
         { subname: '*.org4', type: 'AAAA', ttl: 3600, records: [] },
+        { subname: 'org4', type: 'A', ttl: 3600, records: [] },
+        { subname: 'org4', type: 'AAAA', ttl: 3600, records: [] },
       ]);
       expect(created.map(({ subname }: { subname: string }) => subname)).toStrictEqual([
         '*.org1',

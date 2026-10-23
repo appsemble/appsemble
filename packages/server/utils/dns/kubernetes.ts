@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { Agent } from 'node:https';
 import { join } from 'node:path';
@@ -263,15 +264,15 @@ function generateSSLSecretName(domain: string): string {
 }
 
 /**
- * Get the host names served by the ingress of an organization.
+ * Get the DNS host names of an organization.
  *
  * The wildcard host serves the apps of the organization. The organization host itself redirects to
- * the organization page in Appsemble Studio. Both are listed on the ingress and get a DNS record of
- * their own, so resolving them doesn't depend on a wildcard record higher up in the zone.
+ * the organization page in Appsemble Studio. Each has a DNS record so resolving them doesn't depend
+ * on a wildcard record higher up in the zone.
  *
  * @param organizationId The id of the organization.
  * @param hostname The host name of the Appsemble deployment.
- * @returns The host names of the ingress of the organization. The wildcard host comes first, as it
+ * @returns The DNS host names of the organization. The wildcard host comes first, as it
  *   determines the name of the ingress and of its TLS secret.
  */
 function getOrganizationHosts(organizationId: string, hostname: string): [string, string] {
@@ -288,7 +289,12 @@ function getOrganizationHosts(organizationId: string, hostname: string): [string
  *   command line arguments and the environment.
  */
 async function createIngressFunction(): Promise<
-  (hosts: string[], customSSL?: boolean, redirectTo?: string) => Promise<void>
+  (
+    hosts: string[],
+    customSSL?: boolean,
+    redirectTo?: string,
+    organizationId?: string,
+  ) => Promise<void>
 > {
   const { clusterIssuer, ingressAnnotations, ingressClassName, issuer, serviceName, servicePort } =
     argv;
@@ -304,7 +310,7 @@ async function createIngressFunction(): Promise<
       : undefined;
   const issuerAnnotationValue = clusterIssuer || issuer;
 
-  return async (hosts, customSSL, redirectTo) => {
+  return async (hosts, customSSL, redirectTo, organizationId) => {
     const [domain] = hosts;
     const name = normalize(domain);
     const url = `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`;
@@ -317,6 +323,11 @@ async function createIngressFunction(): Promise<
           }
         : {}) as Record<string, string>),
     };
+    if (organizationId) {
+      annotations['cert-manager.io/renew-before-percentage'] = String(
+        25 + (createHash('sha256').update(organizationId).digest().readUInt32BE(0) % 21),
+      );
+    }
     const secretName = generateSSLSecretName(domain);
 
     if (!customSSL && issuerAnnotationKey) {
@@ -483,7 +494,7 @@ export async function configureDNS(): Promise<void> {
   Organization.afterCreate('dns', async ({ id }) => {
     const hosts = getOrganizationHosts(id, hostname);
     await createDNSRecords(hosts);
-    await createIngress(hosts);
+    await createIngress([hosts[0]], false, undefined, id);
   });
 
   Organization.afterDestroy('dns', async ({ id }) => {
@@ -662,7 +673,7 @@ export async function reconcileDNS({
   );
   const missingIngresses = [
     ...[...appDomains, ...appCollectionDomains].map((host) => [host]),
-    ...organizationHosts.values(),
+    ...[...organizationHosts.keys()].map((host) => [host]),
   ].filter(
     (expected) => !ingressHosts.some(({ hosts }) => expected.every((host) => hosts.includes(host))),
   );
@@ -672,7 +683,11 @@ export async function reconcileDNS({
       continue;
     }
     await deleteIngress(name);
-    await deleteDNSRecords(hosts.filter((host) => host.endsWith(`.${hostname}`)));
+    await deleteDNSRecords(
+      hosts
+        .filter((host) => host.endsWith(`.${hostname}`))
+        .flatMap((host) => (host.startsWith('*.') ? [host, host.slice(2)] : [host])),
+    );
     logger.info(`Deleted extra ingress ${name}`);
   }
   // The records of every organization are written before any ingress is created or patched, because
@@ -696,6 +711,7 @@ export async function reconcileDNS({
       hosts,
       appDomainCertificates.has(name) || (!organizationHosts.has(name) && skipCustomDomains),
       redirect,
+      organizationHosts.has(name) ? name.slice(2, -hostname.length - 1) : undefined,
     );
     if (appDomainCertificates.has(name)) {
       const { sslCertificate, sslKey } = appDomainCertificates.get(name)!;

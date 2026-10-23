@@ -1,4 +1,4 @@
-import { createFormData, organizationBlocklist, readFixture } from '@appsemble/node-utils';
+import { createFormData, readFixture } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
@@ -173,18 +173,27 @@ describe('createOrganization', () => {
     });
   });
 
-  it.each(organizationBlocklist)(
-    'should not allow the organization id ‘%s’',
-    async (blockedName) => {
-      authorizeStudio();
-      const response = await request.post(
-        '/api/organizations',
-        createFormData({ id: blockedName }),
-      );
-      expect(response).toMatchObject({
-        status: 400,
-        data: { message: 'This organization id is not allowed.' },
-      });
-    },
-  );
+  it.each([
+    'www',
+    'api',
+    'email',
+    'mail',
+    'app',
+    'site',
+    'smtp',
+    'imap',
+    'autoconfig',
+    'autodiscover',
+    'mta-sts',
+    'grafana',
+    'mailpit',
+    'minio',
+  ])('should not allow the organization id ‘%s’', async (blockedName) => {
+    authorizeStudio();
+    const response = await request.post('/api/organizations', createFormData({ id: blockedName }));
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'This organization id is not allowed.' },
+    });
+  });
 });
