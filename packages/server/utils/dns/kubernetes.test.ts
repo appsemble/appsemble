@@ -1019,6 +1019,27 @@ describe('kubernetes', () => {
       ).toStrictEqual([]);
     });
 
+    it('should preserve existing organization ingresses which also serve the organization host', async () => {
+      mock.onGet('/apis/networking.k8s.io/v1/namespaces/test/ingresses').reply(200, {
+        items: [
+          {
+            metadata: { name: 'org1-host-example' },
+            spec: { rules: [{ host: '*.org1.host.example' }, { host: 'org1.host.example' }] },
+          },
+        ],
+      });
+
+      await kubernetes.reconcileDNS({ dryRun: false });
+
+      expect(
+        configs.filter(
+          ({ data, method, url }) =>
+            url?.endsWith('/org1-host-example') ||
+            (method === 'post' && JSON.parse(data).metadata.name === 'org1-host-example'),
+        ),
+      ).toStrictEqual([]);
+    });
+
     it('should stagger new organization renewals consistently across deployments', async () => {
       await kubernetes.reconcileDNS({ dryRun: false });
       const percentages = configs
