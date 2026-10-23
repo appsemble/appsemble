@@ -2,7 +2,7 @@
 
 exports[`should render a list item component 1`] = `
 <div
-  class="item has-text-left is-flex is-flex-direction-column my-1 py-2 pl-3 pr-2"
+  class="item has-text-left is-flex is-flex-direction-column my-1 py-2 pl-3 pr-2 clickable"
   data-testid="list-item-test"
   id=".item.1"
 >

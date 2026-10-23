@@ -26,22 +26,17 @@ exports[`should render a list with data from a data-loader 1`] = `
                 class="is-flex image"
               >
                 <div />
-                <button
-                  class="item has-text-left is-block"
-                  type="button"
+                <div
+                  class="is-flex is-justify-content-space-between is-align-items-center"
                 >
-                  <div
-                    class="is-flex is-justify-content-space-between is-align-items-center"
-                  >
-                    <div>
-                      <h4
-                        class="title"
-                      >
-                        test
-                      </h4>
-                    </div>
+                  <div>
+                    <h4
+                      class="title"
+                    >
+                      test
+                    </h4>
                   </div>
-                </button>
+                </div>
               </div>
             </div>
           </div>
@@ -66,22 +61,17 @@ exports[`should render a list with data from a data-loader 1`] = `
                 class="is-flex image"
               >
                 <div />
-                <button
-                  class="item has-text-left is-block"
-                  type="button"
+                <div
+                  class="is-flex is-justify-content-space-between is-align-items-center"
                 >
-                  <div
-                    class="is-flex is-justify-content-space-between is-align-items-center"
-                  >
-                    <div>
-                      <h4
-                        class="title"
-                      >
-                        test
-                      </h4>
-                    </div>
+                  <div>
+                    <h4
+                      class="title"
+                    >
+                      test
+                    </h4>
                   </div>
-                </button>
+                </div>
               </div>
             </div>
           </div>
