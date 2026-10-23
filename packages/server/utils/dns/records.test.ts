@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createDNSRecords, deleteDNSRecords } from './records.js';
 import { setArgv } from '../argv.js';
@@ -114,6 +114,47 @@ describe('records', () => {
       expect(mock.history.patch.map(({ data }) => JSON.parse(data).length)).toStrictEqual([
         250, 150,
       ]);
+    });
+
+    it('should complete a bulk update after a short deSEC rate limit', async () => {
+      const records = new Map<string, string[]>();
+      let requests = 0;
+      mock.onPatch(/.*/).reply(({ data }) => {
+        requests += 1;
+        if (requests === 3) {
+          return [429, { detail: 'Request was throttled.' }, { 'retry-after': '0' }];
+        }
+        for (const record of JSON.parse(data)) {
+          records.set(`${record.subname}:${record.type}`, record.records);
+        }
+        return [200, []];
+      });
+
+      await createDNSRecords(
+        Array.from({ length: 400 }, (...[, index]) => `org${index}.host.example`),
+      );
+
+      expect(records.size).toBe(800);
+      expect(records.get('org399:A')).toStrictEqual(['203.0.113.10']);
+      expect(records.get('org399:AAAA')).toStrictEqual(['2001:db8::10']);
+    });
+
+    it('should share the retry deadline across all bulk chunks', async () => {
+      let now = 0;
+      let requests = 0;
+      vi.spyOn(Date, 'now').mockImplementation(() => now);
+      mock.onPatch(/.*/).reply(() => {
+        requests += 1;
+        if (requests === 3) {
+          return [429, { detail: 'Request was throttled.' }, { 'retry-after': '0' }];
+        }
+        now += 30_000;
+        return [200, []];
+      });
+
+      await expect(
+        createDNSRecords(Array.from({ length: 400 }, (...[, index]) => `org${index}.host.example`)),
+      ).rejects.toThrow('Request failed with status code 429');
     });
 
     it('should fail promptly when deSEC requests a day-long rate limit backoff', async () => {
