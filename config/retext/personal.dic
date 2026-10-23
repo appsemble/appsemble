@@ -3,6 +3,8 @@ Appsemble
 # Unrecognized words
 accessor/processor
 anonymize/synthesize
+autoconfig
+autodiscover
 benchmark/mark
 changelog/kitten
 cryptographical/potential
