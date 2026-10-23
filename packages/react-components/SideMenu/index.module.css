@@ -56,7 +56,13 @@
 
   /* This matches the size of the navbar */
   top: 3.25rem;
-  transition: left 0.15s;
+  transition:
+    left 0.15s,
+    visibility 0.15s;
+
+  /* A closed menu is off screen, so hiding it keeps its links out of the tab order and away from
+     screen readers. */
+  visibility: hidden;
   width: menu-width;
   z-index: 1500;
 
@@ -64,6 +70,7 @@
   @media screen and (width >1024px) {
     &:not(.toggleable) {
       left: 0;
+      visibility: visible;
     }
 
     &.toggleable {
@@ -74,6 +81,7 @@
       &.open {
         left: 0;
         transition: ease-in 0.1s;
+        visibility: visible;
       }
     }
   }
@@ -81,6 +89,7 @@
   /* Shows the side menu when opened on a small screen */
   &.open {
     left: 0;
+    visibility: visible;
   }
 }
 
