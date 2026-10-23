@@ -683,11 +683,14 @@ export async function reconcileDNS({
       continue;
     }
     await deleteIngress(name);
-    await deleteDNSRecords(
-      hosts
-        .filter((host) => host.endsWith(`.${hostname}`))
-        .flatMap((host) => (host.startsWith('*.') ? [host, host.slice(2)] : [host])),
-    );
+    await deleteDNSRecords([
+      ...new Set(
+        hosts
+          .filter((host) => host.endsWith(`.${hostname}`))
+          .flatMap((host) => (host.startsWith('*.') ? [host, host.slice(2)] : [host]))
+          .filter((host) => !appDomains.has(host) && !appCollectionDomains.has(host)),
+      ),
+    ]);
     logger.info(`Deleted extra ingress ${name}`);
   }
   // The records of every organization are written before any ingress is created or patched, because

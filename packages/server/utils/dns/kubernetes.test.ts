@@ -1092,6 +1092,65 @@ describe('kubernetes', () => {
       });
     });
 
+    it('should delete each DNS record once for a stale ingress with both organization hosts', async () => {
+      mock.onGet('/apis/networking.k8s.io/v1/namespaces/test/ingresses').reply(200, {
+        items: [
+          {
+            metadata: { name: 'orphan-host-example' },
+            spec: { rules: [{ host: '*.orphan.host.example' }, { host: 'orphan.host.example' }] },
+          },
+        ],
+      });
+      const patches: AxiosRequestConfig[] = [];
+      mock.onPatch(/.*/).reply((request) => {
+        patches.push(request);
+        return [200, []];
+      });
+      setArgv({
+        host: 'https://host.example',
+        serviceName: 'review-service',
+        servicePort: 'http',
+        dnsProvider: 'desec',
+        dnsZone: 'host.example',
+        dnsToken: 'test.token',
+        dnsTargets: '203.0.113.10',
+      });
+
+      await kubernetes.reconcileDNS({ dryRun: false });
+
+      expect(JSON.parse(patches[0].data)).toStrictEqual([
+        { subname: '*.orphan', type: 'A', ttl: 3600, records: [] },
+        { subname: '*.orphan', type: 'AAAA', ttl: 3600, records: [] },
+        { subname: 'orphan', type: 'A', ttl: 3600, records: [] },
+        { subname: 'orphan', type: 'AAAA', ttl: 3600, records: [] },
+      ]);
+    });
+
+    it('should preserve DNS records reused by an active custom domain', async () => {
+      await App.update({ domain: 'org4.host.example' }, { where: { domain: 'app1.example.com' } });
+      const patches: AxiosRequestConfig[] = [];
+      mock.onPatch(/.*/).reply((request) => {
+        patches.push(request);
+        return [200, []];
+      });
+      setArgv({
+        host: 'https://host.example',
+        serviceName: 'review-service',
+        servicePort: 'http',
+        dnsProvider: 'desec',
+        dnsZone: 'host.example',
+        dnsToken: 'test.token',
+        dnsTargets: '203.0.113.10',
+      });
+
+      await kubernetes.reconcileDNS({ dryRun: false });
+
+      expect(JSON.parse(patches[0].data)).toStrictEqual([
+        { subname: '*.org4', type: 'A', ttl: 3600, records: [] },
+        { subname: '*.org4', type: 'AAAA', ttl: 3600, records: [] },
+      ]);
+    });
+
     it('should create the DNS records of all organizations before any ingress', async () => {
       mock.onPatch(/.*/).reply((request) => {
         configs.push(request);
