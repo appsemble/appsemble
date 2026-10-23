@@ -468,9 +468,10 @@ const link = LanguageComponent.define<'Link', Link>(
 const ctx = LanguageCtx.compileComponents([menu, link], 'Menu');
 const root = ctx.root({ label: 'Main', children: [{ label: 'Home', href: '/' }] });
 
-root.val.label; // string
-root.child('children')?.child(0)?.val; // Menu | Link | undefined
-root.child('children')?.child(0)?.as('Link')?.val.href; // string | undefined (runtime-checked)
+const { label }: { label: string } = root.val;
+const item: Link | Menu | undefined = root.child('children')?.child(0)?.val;
+// `as` checks at runtime that the node resolves to `Link`.
+const href: string | undefined = root.child('children')?.child(0)?.as('Link')?.val.href;
 ```
 
 With a schema map instead of defs, pass the types directly:
@@ -488,12 +489,16 @@ restores the referenced component's type. `LCValue` follows `$ref`s and is for n
 references only; on a recursive one tsc fails with TS2615.
 
 ```ts
-const link = defineFromSchema('Link', linkSchema, {}); // linkSchema is `as const`
-const menu = defineFromSchema('Menu', menuSchema, {}); // children: oneOf [$ref Menu, $ref Link]
+// Both schemas are `as const`; Menu's children are `oneOf: [{ $ref: 'Menu' }, { $ref: 'Link' }]`.
+const link = defineFromSchema('Link', linkSchema, {});
+const menu = defineFromSchema('Menu', menuSchema, {});
 
 const root = LanguageCtx.compileComponents([menu, link], 'Menu').root(data);
-root.val; // { label: string; children: unknown[] }
-root.child('children')?.child(0)?.as('Link')?.val; // { label: string; href: string } | undefined
+const menuValue: { label: string; children: unknown[] } = root.val;
+const linkValue: { label: string; href: string } | undefined = root
+  .child('children')
+  ?.child(0)
+  ?.as('Link')?.val;
 ```
 
 See `schema-derived.test.ts` for the full example.

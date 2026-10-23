@@ -14,7 +14,8 @@ describe('resolution cache (3a)', () => {
     const r1 = ctx.root(app).child('pages')!.child(0)!.resolve();
     // A brand-new cursor tree over the SAME value object (as a re-render would mint).
     const r2 = ctx.root(app).child('pages')!.child(0)!.resolve();
-    expect(r2).toBe(r1); // same object identity → served from the ctx cache, not re-resolved
+    // Same object identity: served from the ctx cache, not re-resolved.
+    expect(r2).toBe(r1);
   });
 
   it('an edit elsewhere still reuses a structurally-shared subtree', () => {
@@ -24,7 +25,8 @@ describe('resolution cache (3a)', () => {
     // Edit a sibling (name) immutably, sharing the pages array/object references.
     const edited = { ...app, name: 'T2' };
     const after = ctx.root(edited).child('pages')!.child(0)!.resolve();
-    expect(after).toBe(before); // shared page object → cache hit despite the edit
+    // Shared page object: a cache hit despite the edit.
+    expect(after).toBe(before);
     expect(edited.pages[0]).toBe(page);
   });
 });

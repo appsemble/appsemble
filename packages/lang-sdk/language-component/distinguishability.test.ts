@@ -212,18 +212,12 @@ describe('discriminator short-circuit', () => {
     const Action = LanguageComponent.define(
       'Action',
       {
-        oneOf: [
-          { $ref: '#/components/schemas/Link' },
-          { $ref: '#/components/schemas/Dialog' },
-        ],
+        oneOf: [{ $ref: '#/components/schemas/Link' }, { $ref: '#/components/schemas/Dialog' }],
         discriminator: { propertyName: 'type' },
       } as Schema,
       {},
     );
-    const ctx = LanguageCtx.compile(
-      LanguageComponent.schemas([Link, Dialog, Action]),
-      'Action',
-    );
+    const ctx = LanguageCtx.compile(LanguageComponent.schemas([Link, Dialog, Action]), 'Action');
     expect(ctx.distinguishabilityLint).toStrictEqual([]);
     expect(partNames(ctx.root({ type: 'dialog' }).identity)).toContain('Dialog');
   });
