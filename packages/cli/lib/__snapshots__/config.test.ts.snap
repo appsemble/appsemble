@@ -3842,6 +3842,23 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/TagsField",
           },
         ],
+        "description": "Any of the form field types.
+
+The GUI editor identifies a field by its \`label\`, falling back to its \`name\` when no label is set.",
+        "x-appsemble-gui": {
+          "labelFromProperties": [
+            {
+              "keys": [
+                "label",
+              ],
+            },
+            {
+              "keys": [
+                "name",
+              ],
+            },
+          ],
+        },
       },
       "Fieldset": {
         "additionalProperties": false,
