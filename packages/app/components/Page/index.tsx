@@ -273,7 +273,6 @@ export function Page(): ReactNode {
             `appsemble-group-${appId}-appMemberSelectedGroup`,
             JSON.stringify(selectedGroup),
           );
-          navigate(0);
           return selectedGroup;
         },
         getAppMemberSelectedGroup: () => appMemberSelectedGroup,

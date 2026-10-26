@@ -85,7 +85,7 @@ function translatedRoute({ element, getAppMessage, name }: TranslatedRouteProps)
 export function AppRoutes(): ReactNode {
   const { getAppMessage, messagesReady } = useAppMessages();
   const { definition } = useAppDefinition();
-  const { appMemberRoles, isLoggedIn } = useAppMember();
+  const { appMemberRoles, appMemberSelectedGroup, isLoggedIn } = useAppMember();
   const focusedPage = useRef<string>();
 
   // The language and page segments identify the page, so switching tabs or page parameters keeps
@@ -152,7 +152,11 @@ export function AppRoutes(): ReactNode {
           elements[name] ? translatedRoute({ element: elements[name], getAppMessage, name }) : [],
         )}
 
-        <Route caseSensitive element={<Page />} path="/:pageId/*" />
+        <Route
+          caseSensitive
+          element={<Page key={appMemberSelectedGroup?.id ?? 'no-group'} />}
+          path="/:pageId/*"
+        />
         <Route
           element={<Navigate to={getPagePathSegment({ name: defaultPageName }, getAppMessage)} />}
           path="*"
