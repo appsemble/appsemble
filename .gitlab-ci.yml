@@ -1864,6 +1864,10 @@ cleanup review environments:
     - if: $CI_COMMIT_BRANCH == 'main'
       when: manual
   allow_failure: true
+  # The review agent only serves jobs in a review/* environment.
+  environment:
+    name: review/cleanup
+    action: access
   variables:
     GIT_STRATEGY: fetch
   script:
