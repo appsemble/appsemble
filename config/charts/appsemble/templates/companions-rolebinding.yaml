@@ -14,12 +14,6 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: {{ include "appsemble.fullname" . }}-serviceaccount
-    namespace: 
-    {{- $fullname := include "appsemble.fullname" . | quote -}}
-    {{- if contains "review" $fullname -}}
-    {{- indent 1 "review" }}
-    {{- else -}}
-    {{ include "appsemble.fullname" . | indent 1 }}
-    {{- end -}}
+    namespace: {{ .Release.Namespace }}
 
 {{ end }}
