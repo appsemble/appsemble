@@ -431,8 +431,6 @@ Useful for conditional rendering.",
           "icon": {
             "description": "An FontAwesome icon to display inside of the button.
 
-This is the only thing visible on mobile so it's required
-
 This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
             "format": "icon",
             "type": "string",
@@ -474,9 +472,6 @@ Describe what the button does. This helps with accessibility for people using sc
             "format": "remapper",
           },
         },
-        "required": [
-          "icon",
-        ],
         "type": "object",
       },
       "CardItemDefinition": {

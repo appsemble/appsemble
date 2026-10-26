@@ -307,7 +307,7 @@ it('should give a card without text or image alt a generic name', async () => {
   expect(screen.getByRole('button', { name: 'openCard' })).toBeDefined();
 });
 
-it('should name icon-only footer buttons on mobile by their label', async () => {
+it('should show the label of footer buttons on mobile', async () => {
   const { emitData } = setup({
     card: {
       content: 'Content',
@@ -319,7 +319,26 @@ it('should name icon-only footer buttons on mobile by their label', async () => 
 
   await emitData([{ id: 1, title: 'First' }]);
 
-  expect(screen.getByRole('button', { name: 'Delete' })).toBeDefined();
+  expect(screen.getByRole('button', { name: 'Delete' }).textContent).toBe('Delete');
+});
+
+it('should render a footer link without an icon as its label only', async () => {
+  const onClick = Object.assign(vi.fn(), {
+    type: 'link',
+    href: (data: Item) => `/items/${data.id}`,
+  }) as unknown as BlockProps['actions']['onClick'];
+  const { emitData } = setup({
+    card: {
+      content: 'Content',
+      footer: [{ label: 'Details' }],
+      title: { prop: 'title' },
+    },
+    onClick,
+  });
+
+  await emitData([{ id: 1, title: 'First' }]);
+
+  expect(screen.getByRole('link', { name: 'Details' }).innerHTML).toBe('<span>Details</span>');
 });
 
 it('should render a footer button with a link action as a link to its page', async () => {
