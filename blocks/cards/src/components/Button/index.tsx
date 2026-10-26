@@ -75,7 +75,7 @@ export function ButtonComponent({
   const content = (
     <Fragment>
       {icon ? <Icon icon={icon} size={isMobile ? 'small' : size} /> : null}
-      {label && !isMobile ? <span>{remappedLabel}</span> : null}
+      {label ? <span>{remappedLabel}</span> : null}
     </Fragment>
   );
 
@@ -122,7 +122,6 @@ export function ButtonComponent({
   return (
     <div className="card-footer-item">
       <button
-        aria-label={isMobile ? remappedLabel : undefined}
         className={className}
         disabled={disabled}
         onClick={onClick}
