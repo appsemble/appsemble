@@ -5,6 +5,11 @@ ci_access:
         - review/*
       access_as:
         ci_job: {}
+    - id: appsemble/infra
+      environments:
+        - review
+      access_as:
+        ci_job: {}
   groups:
     - id: appsemble/apps
       environments:

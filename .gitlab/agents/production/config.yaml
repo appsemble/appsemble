@@ -5,3 +5,8 @@ ci_access:
         - production
       access_as:
         ci_job: {}
+    - id: appsemble/infra
+      environments:
+        - production
+      access_as:
+        ci_job: {}

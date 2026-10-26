@@ -5,3 +5,8 @@ ci_access:
         - staging
       access_as:
         ci_job: {}
+    - id: appsemble/infra
+      environments:
+        - staging
+      access_as:
+        ci_job: {}
