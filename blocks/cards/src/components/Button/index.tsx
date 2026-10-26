@@ -68,16 +68,6 @@ export function ButtonComponent({
   });
   const remappedTitle = remap(title, item, { index }) as string;
   const remappedLabel = remap(label, item, { index }) as string;
-  if (hide) {
-    return null;
-  }
-
-  const content = (
-    <Fragment>
-      {icon ? <Icon icon={icon} size={isMobile ? 'small' : size} /> : null}
-      {label ? <span>{remappedLabel}</span> : null}
-    </Fragment>
-  );
 
   const onClick = useCallback(
     (event: MouseEvent) => {
@@ -90,6 +80,17 @@ export function ButtonComponent({
       action(item, { index });
     },
     [action, disabled, item, index],
+  );
+
+  if (hide) {
+    return null;
+  }
+
+  const content = (
+    <Fragment>
+      {icon ? <Icon icon={icon} size={isMobile ? 'small' : size} /> : null}
+      {label ? <span>{remappedLabel}</span> : null}
+    </Fragment>
   );
 
   if (action.type === 'link') {
