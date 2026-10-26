@@ -31,5 +31,7 @@ spec:
                 - scale-containers # Command that handles scaling
                 - -vv
               env:
+                - name: SERVICE_NAME
+                  value: {{ include "appsemble.fullname" . }}
 {{ include "appsemble.postgres" . | indent 16 }}
 {{ end }}
