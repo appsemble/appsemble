@@ -1,5 +1,7 @@
 ci_access:
-  groups:
-    - id: appsemble
+  projects:
+    - id: appsemble/appsemble
       environments:
         - staging
+      access_as:
+        ci_job: {}
