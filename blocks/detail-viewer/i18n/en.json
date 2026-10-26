@@ -2,5 +2,7 @@
   "closeImage": "Close enlarged image",
   "downloadImage": "Download in HD",
   "loading": "Loading",
-  "map": "Map"
+  "map": "Map",
+  "video": "Video",
+  "videoThumbnail": "Video thumbnail"
 }

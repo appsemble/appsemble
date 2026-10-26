@@ -273,6 +273,16 @@ declare module '@appsemble/sdk' {
      * The accessible name of a map.
      */
     map: never;
+
+    /**
+     * The accessible name of an embedded video player.
+     */
+    video: never;
+
+    /**
+     * The alternative text of a video thumbnail shown without a video.
+     */
+    videoThumbnail: never;
   }
 
   interface Parameters {

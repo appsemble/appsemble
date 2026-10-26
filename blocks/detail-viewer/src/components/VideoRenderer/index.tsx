@@ -12,7 +12,7 @@ export function VideoRenderer({
   field: { height = 350, hide, label, platform, thumbnail: t, value, width = 350 },
 }: RendererProps<VideoField>): VNode | null {
   const {
-    utils: { asset, remap },
+    utils: { asset, formatMessage, remap },
   } = useBlock();
 
   const video = remap(value, data) as string;
@@ -87,7 +87,7 @@ export function VideoRenderer({
             height={height}
             sandbox={sandboxConfig}
             src={videoUrl ?? undefined}
-            title="video"
+            title={formatMessage('video')}
             width={width}
           />
         ) : (
@@ -103,7 +103,11 @@ export function VideoRenderer({
           </video>
         )
       ) : thumbnailUrl ? (
-        <ImageField field={{} as FileField} source={thumbnailUrl} />
+        <ImageField
+          field={{} as FileField}
+          label={formatMessage('videoThumbnail')}
+          source={thumbnailUrl}
+        />
       ) : null}
     </div>
   );

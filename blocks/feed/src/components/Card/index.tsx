@@ -226,7 +226,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         {isPreactChild(description) ? <p className="content">{description}</p> : null}
         {actions.onButtonClick.type !== 'noop' && (
           <Button className={`${styles.button} mb-4`} onClick={onButtonClick}>
-            {parameters.buttonLabel ?? 'Click'}
+            {parameters.buttonLabel ?? utils.formatMessage('buttonLabel')}
           </Button>
         )}
         {actions.onLoadReply.type !== 'noop' && replies ? (

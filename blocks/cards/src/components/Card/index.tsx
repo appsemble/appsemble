@@ -67,7 +67,7 @@ export function CardContent({ index, item }: CardContentProps): VNode {
       <div className={styles.main}>
         <div class="card-image">
           <figure className="image">
-            <img alt={alt} className={styles['image-size']} src={imageSrc} />
+            <img alt={alt ?? ''} className={styles['image-size']} src={imageSrc} />
           </figure>
         </div>
         <div class="card-content">

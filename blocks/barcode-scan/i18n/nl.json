@@ -3,8 +3,10 @@
   "empty": "",
   "error": "",
   "loading": "",
+  "noImage": "Geen afbeelding geselecteerd",
   "patchSize": "Patchgrootte",
   "removeImage": "",
+  "selectedImage": "Geselecteerde afbeelding",
   "selectImage": "",
   "stopScanning": ""
 }

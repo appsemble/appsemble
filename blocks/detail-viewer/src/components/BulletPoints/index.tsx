@@ -45,13 +45,11 @@ export function BulletPoints({
           {remappedValue.flatMap((val) => (
             <li>
               <Field data={val} field={heading} />
-              <div>
-                {description ? (
-                  <dd>
-                    <Field data={val} field={description} />
-                  </dd>
-                ) : null}
-              </div>
+              {description ? (
+                <div className={styles.description}>
+                  <Field data={val} field={description} />
+                </div>
+              ) : null}
             </li>
           ))}
         </ol>

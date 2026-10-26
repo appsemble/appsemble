@@ -145,8 +145,9 @@ it('should wait for pending validation actions before submitting', async () => {
 
 it('should load the markdown editor when a markdown field is rendered', async () => {
   const container = document.createElement('div');
+  const defaultParams = getDefaultBootstrapParams();
   const params = {
-    ...getDefaultBootstrapParams(),
+    ...defaultParams,
     actions: {
       onLoad: Object.assign(vi.fn(), { type: 'noop' }),
       onSubmit: vi.fn(),
@@ -163,6 +164,10 @@ it('should load the markdown editor when a markdown field is rendered', async ()
     parameters: {
       fields: [{ label: 'Description', name: 'description', type: 'markdown' }],
       skipInitialLoad: true,
+    },
+    utils: {
+      ...defaultParams.utils,
+      formatMessage: (message: keyof typeof messages) => messages[message],
     },
   } as unknown as BootstrapParams;
 

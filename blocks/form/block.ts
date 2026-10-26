@@ -996,9 +996,8 @@ interface ActionEnumField extends AbstractEnumField {
   action: string;
 
   /**
-   * This message is displayed if the options failed to load.
-   *
-   * @default "Error loading options"
+   * This message is displayed if the options failed to load. Defaults to a message in the app
+   * language.
    */
   loadError?: Remapper;
 }
@@ -1018,9 +1017,8 @@ interface EventEnumField extends AbstractEnumField {
   event: string;
 
   /**
-   * This message is displayed if the options failed to load.
-   *
-   * @default "Error loading options"
+   * This message is displayed if the options failed to load. Defaults to a message in the app
+   * language.
    */
   loadError?: Remapper;
 }
@@ -1074,9 +1072,8 @@ export interface AbstractSelectionField extends AbstractField, InlineField {
   requirements?: SelectionRequirement[];
 
   /**
-   * The label to show on the button for adding a new entry.
-   *
-   * @default 'Add'
+   * The label to show on the button for adding a new entry. Defaults to "Add" in the app
+   * language.
    */
   addLabel?: Remapper;
 
@@ -1425,9 +1422,8 @@ export interface Fieldset extends AbstractField {
   repeated?: boolean;
 
   /**
-   * The label to show on the button for adding a new entry for repeated fields.
-   *
-   * @default 'Add'
+   * The label to show on the button for adding a new entry for repeated fields. Defaults to "Add"
+   * in the app language.
    */
   addLabel?: Remapper;
 
@@ -1655,6 +1651,7 @@ declare module '@appsemble/sdk' {
   }
 
   interface Messages {
+    addLabel: never;
     confirmLabel: never;
     submitLabel: never;
     submitError: never;
@@ -1681,6 +1678,10 @@ declare module '@appsemble/sdk' {
     closeVideo: never;
     downloadImage: never;
     loading: never;
+    markdownBold: never;
+    markdownItalic: never;
+    markdownLink: never;
+    markdownStrikethrough: never;
     sliderMaximum: never;
     sliderMinimum: never;
   }

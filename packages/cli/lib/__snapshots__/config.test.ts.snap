@@ -90,6 +90,9 @@ barcode event only holds the object with property barcode.",
     "loading": {
       "description": "This message is displayed if no data has been loaded yet.",
     },
+    "noImage": {
+      "description": "This message is displayed while no image is selected.",
+    },
     "patchSize": {
       "description": "The accessible name of the select that chooses the patch size.",
     },
@@ -98,6 +101,9 @@ barcode event only holds the object with property barcode.",
     },
     "selectImage": {
       "description": "The accessible name of the control that selects an image to scan.",
+    },
+    "selectedImage": {
+      "description": "The alternative text of the selected image.",
     },
     "stopScanning": {
       "description": "The accessible name of the button that stops the camera scanner.",
@@ -928,6 +934,12 @@ Compatible data that is received will be displayed.",
     "map": {
       "description": "The accessible name of a map.",
     },
+    "video": {
+      "description": "The accessible name of an embedded video player.",
+    },
+    "videoThumbnail": {
+      "description": "The alternative text of a video thumbnail shown without a video.",
+    },
   },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1388,6 +1400,9 @@ Compatible data that is received will be displayed.",
     },
     "avatar": {
       "description": "The accessible name of an avatar of a feed item without a known status.",
+    },
+    "buttonLabel": {
+      "description": "The text of the button when no \`buttonLabel\` is set.",
     },
     "closeImage": {
       "description": "The accessible label for closing an enlarged image.",
@@ -2521,6 +2536,9 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     },
   },
   "messages": {
+    "addLabel": {
+      "description": undefined,
+    },
     "closeImage": {
       "description": undefined,
     },
@@ -2552,6 +2570,18 @@ Include an array of fields in \`fields\` to replace the current list of fields i
       "description": undefined,
     },
     "longSubmissionWarning": {
+      "description": undefined,
+    },
+    "markdownBold": {
+      "description": undefined,
+    },
+    "markdownItalic": {
+      "description": undefined,
+    },
+    "markdownLink": {
+      "description": undefined,
+    },
+    "markdownStrikethrough": {
       "description": undefined,
     },
     "optionalLabel": {
@@ -2677,8 +2707,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "loadError": {
-            "default": "Error loading options",
-            "description": "This message is displayed if the options failed to load.",
+            "description": "This message is displayed if the options failed to load. Defaults to a message in the app language.",
             "format": "remapper",
           },
           "name": {
@@ -3378,8 +3407,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "loadError": {
-            "default": "Error loading options",
-            "description": "This message is displayed if the options failed to load.",
+            "description": "This message is displayed if the options failed to load. Defaults to a message in the app language.",
             "format": "remapper",
           },
           "name": {
@@ -3522,8 +3550,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "properties": {
           "addLabel": {
-            "default": "Add",
-            "description": "The label to show on the button for adding a new entry.",
+            "description": "The label to show on the button for adding a new entry. Defaults to "Add" in the app language.",
             "format": "remapper",
           },
           "allowRemovalFromModal": {
@@ -3684,8 +3711,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "properties": {
           "addLabel": {
-            "default": "Add",
-            "description": "The label to show on the button for adding a new entry for repeated fields.",
+            "description": "The label to show on the button for adding a new entry for repeated fields. Defaults to "Add" in the app language.",
             "format": "remapper",
           },
           "disabled": {
@@ -5399,8 +5425,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "properties": {
           "addLabel": {
-            "default": "Add",
-            "description": "The label to show on the button for adding a new entry.",
+            "description": "The label to show on the button for adding a new entry. Defaults to "Add" in the app language.",
             "format": "remapper",
           },
           "allowRemovalFromModal": {
@@ -7668,8 +7693,14 @@ Only used when \`paginatorType\` is \`scroll\`.",
     },
   },
   "messages": {
+    "navigationLabel": {
+      "description": "The accessible name of the pagination landmark",
+    },
     "nextLabel": {
       "description": "The label of the next button",
+    },
+    "pageLabel": {
+      "description": "The current page out of the total number of pages",
     },
     "prevLabel": {
       "description": "The label of the previous button",

@@ -136,6 +136,11 @@ declare module '@appsemble/sdk' {
     anonymousLabel: never;
 
     /**
+     * The text of the button when no `buttonLabel` is set.
+     */
+    buttonLabel: never;
+
+    /**
      * The error message shown when an error occurs while submitting a reply.
      */
     replyErrorMessage: never;
