@@ -73,7 +73,7 @@ pages:
   - name: Updates
     blocks:
       - type: html
-        version: 0.40.6
+        version: 0.40.7-node-brotli.0
         parameters:
           placeholders:
             headerContent: Grand Restaurant

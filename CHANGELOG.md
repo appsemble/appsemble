@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.7-node-brotli.0](https://gitlab.com/appsemble/appsemble/-/releases/0.40.7-node-brotli.0)] - 2026-10-26
+
+### Changed
+
+- Block(`cards`): Make the footer button icon optional and show button labels on mobile.
+
+### Fixed
+
+- Block(`form`): Stop smooth scrolling to a field when the user prefers reduced motion.
+- Block(`list`): Stop smooth scrolling to the linked item when the user prefers reduced motion.
+- App: Expose flow page progress and loading blocks to assistive technology.
+- App: Keep app member sessions active when switching groups.
+- App: Move focus to the page on navigation and flow step changes.
+- App: Render the page name in the title bar as the H1.
+- App: Shorten transitions and stop smooth scrolling when the user prefers reduced motion.
+
 ## \[[0.40.6](https://gitlab.com/appsemble/appsemble/-/releases/0.40.6)] - 2026-10-23
 
 ### Added
