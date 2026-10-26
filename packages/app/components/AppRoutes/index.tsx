@@ -6,8 +6,8 @@ import {
   type TranslatableRoute,
 } from '@appsemble/lang-sdk';
 import { Loader, MetaProvider } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
-import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
+import { type ReactNode, useEffect, useRef } from 'react';
+import { Navigate, Route, Routes, useLocation, useMatch, useParams } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { sentryDsn, showDemoLogin } from '../../utils/settings.js';
@@ -86,6 +86,26 @@ export function AppRoutes(): ReactNode {
   const { getAppMessage, messagesReady } = useAppMessages();
   const { definition } = useAppDefinition();
   const { appMemberRoles, isLoggedIn } = useAppMember();
+  const focusedPage = useRef<string>();
+
+  // The language and page segments identify the page, so switching tabs or page parameters keeps
+  // focus where it is.
+  const pagePath = useMatch('/:lang/:pageId/*')?.pathnameBase;
+
+  // Client-side navigation keeps focus on the activated link, or drops it when the link unmounts.
+  // Move it to the new page, so keyboard and screen reader users continue from its start. Until the
+  // user interacts, pages are the first page or redirects from it, which keep the initial focus of
+  // the browser.
+  useEffect(() => {
+    const main = document.querySelector('main');
+    if (!main || pagePath === focusedPage.current) {
+      return;
+    }
+    if (navigator.userActivation.hasBeenActive) {
+      main.focus({ preventScroll: true });
+    }
+    focusedPage.current = pagePath;
+  });
 
   if (definition == null) {
     return null;

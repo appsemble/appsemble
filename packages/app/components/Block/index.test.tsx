@@ -278,3 +278,52 @@ describe('modal dialogs', () => {
     expect(isRenderedInside(dialog!, message)).toBe(true);
   });
 });
+
+describe('block loading state', () => {
+  it('should mark the block busy until it is bootstrapped', async () => {
+    blockVersion += 1;
+    const block: BlockDefinition = {
+      type: '@test/busy-controls',
+      version: `1.0.${blockVersion}`,
+    };
+    const pageDefinition = { name: 'Home', blocks: [block] };
+    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Home',
+        pages: [pageDefinition],
+      } as AppDefinition,
+      demoMode: false,
+      revision: 1,
+      blockManifests: [
+        { name: block.type, version: block.version, files: ['busy-controls.js'] },
+      ] as BlockManifest[],
+    });
+    render(
+      <IntlProvider locale="en">
+        <MemoryRouter>
+          <Block
+            appStorage={{} as AppStorage}
+            block={block}
+            // eslint-disable-next-line unicorn/prefer-event-target
+            ee={new EventEmitter()}
+            flowActions={{}}
+            pageDefinition={pageDefinition}
+            pageReady={Promise.resolve()}
+            prefix="pages.home.blocks.0"
+            prefixIndex="pages.0.blocks.0"
+            ready={noop}
+            remap={noop}
+            showDialog={() => noop}
+            showShareDialog={() => Promise.resolve()}
+          />
+        </MemoryRouter>
+      </IntlProvider>,
+    );
+
+    const busy = (): string | null | undefined =>
+      document.querySelector('[aria-busy]')?.getAttribute('aria-busy');
+    expect(busy()).toBe('true');
+    await waitFor(() => expect(busy()).toBe('false'));
+  });
+});

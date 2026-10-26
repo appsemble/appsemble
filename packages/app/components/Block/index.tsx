@@ -130,6 +130,7 @@ export function Block({
     abortController.current = new AbortController();
   }
   const [initialized, setInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error>();
   const pushNotifications = useServiceWorkerRegistration();
   const isInModalDialog = useIsInModalDialog();
@@ -266,6 +267,11 @@ export function Block({
 
     (async () => {
       if (shadowRoot) {
+        // The reduced motion rule of the app stylesheet doesn't reach into the shadow root.
+        const reducedMotionStyle = document.createElement('style');
+        reducedMotionStyle.textContent =
+          '@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; } }';
+        shadowRoot.append(reducedMotionStyle);
         await Promise.all(
           [
             bulmaUrl,
@@ -298,6 +304,7 @@ export function Block({
         pathIndex: prefixIndex,
       });
 
+      setIsLoading(false);
       ready(block);
     })().catch(setError);
   }, [
@@ -372,6 +379,7 @@ export function Block({
 
       const float = (
         <div
+          aria-busy={isLoading}
           className={classNames(`is-flex ${styles.root} ${styles.float}`, {
             [styles.top]: position.includes('top'),
             [styles.bottom]: position.includes('bottom'),
@@ -397,6 +405,7 @@ export function Block({
 
     return (
       <div
+        aria-busy={isLoading}
         className={`is-flex ${styles.root} ${layout === 'grow' ? styles.grow : styles.static}`}
         data-block={blockName}
         data-path={prefix}
