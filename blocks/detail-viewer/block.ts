@@ -15,6 +15,13 @@ interface AbstractField {
    * Whether the field should not be rendered.
    */
   hide?: Remapper;
+
+  /**
+   * The heading level of the label.
+   *
+   * Defaults to 5 for field groups and bullet points, and to 6 for other fields.
+   */
+  labelLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 interface AbstractMarkerIcon {
@@ -176,6 +183,14 @@ export interface VideoField extends AbstractField {
   thumbnail?: Remapper;
 
   /**
+   * The URL or asset id of a WebVTT file with captions for the video.
+   *
+   * A video with captions loads over CORS, so a video or captions file on another domain must
+   * allow cross-origin requests. Videos from a platform show the captions of that platform instead.
+   */
+  captions?: Remapper;
+
+  /**
    * The name of the type of the field.
    */
   type: 'video';
@@ -254,6 +269,11 @@ export interface RendererProps<F extends Field> {
 
 declare module '@appsemble/sdk' {
   interface Messages {
+    /**
+     * The label of the captions of a video.
+     */
+    captions: never;
+
     /**
      * The accessible label for closing an enlarged image.
      */

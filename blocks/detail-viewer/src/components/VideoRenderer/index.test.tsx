@@ -44,3 +44,51 @@ it('names the video player after the field label', () => {
 
   expect(screen.getByTitle('Introduction')).toBeDefined();
 });
+
+it.each([
+  [undefined, 6],
+  [2, 2],
+] as const)('labels the video with a heading (labelLevel: %s)', (labelLevel, level) => {
+  render(
+    <Context.Provider value={block}>
+      <VideoRenderer
+        data={{ title: 'Introduction', video: 'intro.mp4' }}
+        field={{ type: 'video', label: { prop: 'title' }, labelLevel, value: { prop: 'video' } }}
+      />
+    </Context.Provider>,
+  );
+
+  expect(screen.getByRole('heading', { level, name: 'Introduction' })).toBeDefined();
+});
+
+it('offers the configured captions for the video', () => {
+  const { container } = render(
+    <Context.Provider value={block}>
+      <VideoRenderer
+        data={{ captions: 'intro.vtt', video: 'intro.mp4' }}
+        field={{ type: 'video', captions: { prop: 'captions' }, value: { prop: 'video' } }}
+      />
+    </Context.Provider>,
+  );
+
+  const track = container.querySelector('video track[kind="captions"]');
+
+  expect(track?.getAttribute('src')).toBe('intro.vtt');
+  expect(track?.getAttribute('label')).toBe('captions');
+  // Browsers only load captions from another origin, such as app assets, over CORS.
+  expect(container.querySelector('video')?.getAttribute('crossorigin')).toBe('anonymous');
+});
+
+it('offers no captions when none are configured', () => {
+  const { container } = render(
+    <Context.Provider value={block}>
+      <VideoRenderer
+        data={{ video: 'intro.mp4' }}
+        field={{ type: 'video', value: { prop: 'video' } }}
+      />
+    </Context.Provider>,
+  );
+
+  expect(container.querySelector('video track')).toBeNull();
+  expect(container.querySelector('video')?.hasAttribute('crossorigin')).toBe(false);
+});
