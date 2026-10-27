@@ -178,6 +178,60 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should validate block parameters in match case actions', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      parameters: { foo: 'bar' },
+      actions: {
+        onClick: {
+          type: 'match',
+          match: [
+            {
+              case: true,
+              action: {
+                type: 'dialog',
+                blocks: [{ type: 'test', version: '1.2.3', parameters: {} }],
+              },
+            },
+          ],
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        parameters: {
+          type: 'object',
+          required: ['foo'],
+          properties: { foo: { type: 'string' } },
+        },
+        actions: { onClick: {} },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('requires property "foo"', {}, undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onClick',
+        'match',
+        0,
+        'action',
+        'blocks',
+        0,
+        'parameters',
+      ]),
+    ]);
+  });
+
   it('should validate missing block parameters', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({

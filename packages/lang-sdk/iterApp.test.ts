@@ -172,6 +172,24 @@ describe('iterAction', () => {
     expect(onBlockList).not.toHaveBeenCalled();
     expect(result).toBe(false);
   });
+
+  it('should iterate over blocks in match case actions', () => {
+    const onBlock = vi.fn();
+    const block: BlockDefinition = { type: 'form', version: '0.1.2' };
+
+    const action: ActionDefinition = {
+      type: 'match',
+      match: [
+        { case: false, action: { type: 'noop' } },
+        { case: true, action: { type: 'dialog', blocks: [block] } },
+      ],
+    };
+
+    const result = iterAction(action, { onBlock });
+
+    expect(onBlock.mock.calls).toStrictEqual([[block, ['match', 1, 'action', 'blocks', 0]]]);
+    expect(result).toBe(false);
+  });
 });
 
 describe('iterBlock', () => {
@@ -437,6 +455,22 @@ describe('iterPage', () => {
     expect(result).toBe(false);
   });
 
+  it('should iterate over blocks in basic page actions', () => {
+    const onBlock = vi.fn();
+    const block: BlockDefinition = { type: 'form', version: '0.1.2' };
+
+    const page: BasicPageDefinition = {
+      name: 'Page',
+      blocks: [],
+      actions: { onLoad: { type: 'dialog', blocks: [block] } },
+    };
+
+    const result = iterPage(page, { onBlock });
+
+    expect(onBlock.mock.calls).toStrictEqual([[block, ['actions', 'onLoad', 'blocks', 0]]]);
+    expect(result).toBe(false);
+  });
+
   it('should call onAction and onBlockList for pages with actions and sub pages', () => {
     const onAction = vi.fn();
     const onPage = vi.fn();
@@ -562,5 +596,22 @@ describe('iterApp', () => {
     expect(onAction).toHaveBeenCalledTimes(1);
     expect(onAction).toHaveBeenCalledWith(app.cron?.foo.action, ['cron', 'foo', 'action']);
     expect(result).toBe(true);
+  });
+
+  it('should iterate over webhook actions', () => {
+    const onAction = vi.fn();
+    const action: ActionDefinition = { type: 'noop' };
+
+    const app: AppDefinition = {
+      name: 'App',
+      defaultPage: 'Page 1',
+      pages: [],
+      webhooks: { foo: { schema: {}, action } },
+    };
+
+    const result = iterApp(app, { onAction });
+
+    expect(onAction.mock.calls).toStrictEqual([[action, ['webhooks', 'foo', 'action']]]);
+    expect(result).toBe(false);
   });
 });
