@@ -10,7 +10,7 @@ function action(type: Action['type']): Action {
   return Object.assign(() => Promise.resolve([]), { type }) as unknown as Action;
 }
 
-function renderCard(status: string): void {
+function renderCard(status: string, parameters: Record<string, unknown> = {}): void {
   const props = {
     ...getDefaultBootstrapParams(),
     actions: {
@@ -19,7 +19,7 @@ function renderCard(status: string): void {
       onLoadReply: action('resource.query'),
       onSubmitReply: action('resource.create'),
     },
-    parameters: {},
+    parameters,
   } as unknown as BlockProps;
 
   render(
@@ -46,3 +46,21 @@ it('should label the reply input and submit button', () => {
   expect(screen.getByRole('textbox', { name: 'replyLabel' })).toBeDefined();
   expect(screen.getByRole('button', { name: 'sendReply' })).toBeDefined();
 });
+
+it.each([
+  [undefined, 4, 5],
+  [2, 2, 3],
+  [6, 6, 6],
+])(
+  'should render the title and subtitle as headings (titleLevel: %s)',
+  (titleLevel, title, subtitle) => {
+    renderCard('open', {
+      subtitle: { static: 'Main street' },
+      title: { static: 'Broken lamp' },
+      titleLevel,
+    });
+
+    expect(screen.getByRole('heading', { level: title, name: 'Broken lamp' })).toBeDefined();
+    expect(screen.getByRole('heading', { level: subtitle, name: 'Main street' })).toBeDefined();
+  },
+);

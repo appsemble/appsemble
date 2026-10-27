@@ -131,6 +131,10 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   const description = utils.remap(parameters.description, content);
   const latitude = utils.remap(parameters.marker?.latitude, content);
   const longitude = utils.remap(parameters.marker?.longitude, content);
+  const titleLevel = parameters.titleLevel ?? 4;
+  const Title = `h${titleLevel}` as const;
+  const Subtitle = `h${Math.min(titleLevel + 1, 6) as 2 | 3 | 4 | 5 | 6}` as const;
+  const Author = `h${Math.min(titleLevel + 2, 6) as 3 | 4 | 5 | 6}` as const;
 
   if (parameters.pictureBase?.endsWith('/')) {
     parameters.pictureBase = parameters.pictureBase.slice(0, -1);
@@ -174,9 +178,11 @@ export function Card({ content, onUpdate }: CardProps): VNode {
             </figure>
           </AvatarWrapper>
           <header className="media-content">
-            {isPreactChild(title) ? <h4 className="title is-4 is-marginless">{title}</h4> : null}
+            {isPreactChild(title) ? (
+              <Title className="title is-4 is-marginless">{title}</Title>
+            ) : null}
             {isPreactChild(subtitle) ? (
-              <h5 className="subtitle is-5 is-marginless">{subtitle}</h5>
+              <Subtitle className="subtitle is-5 is-marginless">{subtitle}</Subtitle>
             ) : null}
             {isPreactChild(heading) ? <p className="subtitle is-6">{heading}</p> : null}
           </header>
@@ -246,7 +252,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
 
                 return (
                   <div className="content" key={reply.id}>
-                    <h6 className="is-marginless">{author as string}</h6>
+                    <Author className="is-marginless">{author as string}</Author>
                     <p>{replyContent as string}</p>
                   </div>
                 );

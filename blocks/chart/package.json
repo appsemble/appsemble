@@ -19,5 +19,10 @@
   "dependencies": {
     "@appsemble/sdk": "0.40.6",
     "chart.js": "^3.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/user-event": "14.6.8",
+    "vitest": "4.1.12"
   }
 }

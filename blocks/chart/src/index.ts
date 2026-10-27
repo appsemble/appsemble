@@ -11,6 +11,8 @@ import {
   PointElement,
 } from 'chart.js';
 
+import './index.css';
+
 Chart.register(
   BarController,
   BarElement,
@@ -76,18 +78,23 @@ bootstrap(
   ({
     actions,
     events,
-    parameters: { backgroundColors, labelOptions, labels, type = 'line', yAxis },
+    parameters: { backgroundColors, description, labelOptions, labels, type = 'line', yAxis },
     shadowRoot,
     theme,
-    utils: { remap },
+    utils: { formatMessage, remap },
   }) => {
     const loader = document.createElement('progress');
     loader.classList.add('progress', 'is-small', 'is-primary');
     shadowRoot.append(loader);
     let loaded = false;
 
+    const name = (remap(description, {}) as string) || formatMessage('chart');
     const canvas = document.createElement('canvas');
-    shadowRoot.append(canvas);
+    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', name);
+    const table = document.createElement('table');
+    table.className = 'table data';
+    shadowRoot.append(canvas, table);
     const ctx = canvas.getContext('2d');
     const yAxisID = 'y';
     // @ts-expect-error strictNullChecks null is not assignable to type
@@ -176,6 +183,45 @@ bootstrap(
       });
     }
 
+    // The table gives screen reader users the data, and keyboard users the click action.
+    function renderTable(): void {
+      table.replaceChildren();
+      table.createCaption().textContent = name;
+      const head = table.createTHead().insertRow();
+      head.append(document.createElement('td'));
+      for (const dataset of chart.data.datasets) {
+        const header = document.createElement('th');
+        header.scope = 'col';
+        header.textContent = dataset.label ?? '';
+        head.append(header);
+      }
+      const body = table.createTBody();
+      for (const [index, label] of (chart.data.labels ?? []).entries()) {
+        const row = body.insertRow();
+        const header = document.createElement('th');
+        header.scope = 'row';
+        header.textContent = String(label);
+        row.append(header);
+        for (const dataset of chart.data.datasets) {
+          const cell = row.insertCell();
+          const value = dataset.data[index] as number | undefined;
+          if (value == null) {
+            continue;
+          }
+          if (!actions.onClick || actions.onClick.type === 'noop') {
+            cell.textContent = String(value);
+            continue;
+          }
+          const button = document.createElement('button');
+          button.className = 'button is-small';
+          button.type = 'button';
+          button.textContent = String(value);
+          button.addEventListener('click', () => actions.onClick?.({ label, value }));
+          cell.append(button);
+        }
+      }
+    }
+
     function addDatasets(dataset: DataSet | DataSet[]): void {
       if (!loaded) {
         loaded = true;
@@ -190,6 +236,7 @@ bootstrap(
         addDataset(dataset);
       }
       chart.update();
+      renderTable();
     }
 
     events.on.add(addDatasets);

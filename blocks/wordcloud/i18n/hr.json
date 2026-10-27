@@ -2,5 +2,7 @@
   "empty": "Nema podataka za prikaz",
   "error": "Došlo je do problema pri učitavanju podataka.",
   "loading": "Učitavanje …",
-  "unsupported": "Vaš preglednik ne podržava blok oblaka riječi!"
+  "unsupported": "Vaš preglednik ne podržava blok oblaka riječi!",
+  "wordFrequency": "",
+  "wordcloud": ""
 }

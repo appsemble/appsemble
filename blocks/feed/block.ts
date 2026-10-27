@@ -235,6 +235,15 @@ declare module '@appsemble/sdk' {
     title?: Remapper;
 
     /**
+     * The heading level of the title.
+     *
+     * The subtitle and the reply authors use the levels below it, down to 6.
+     *
+     * @default 4
+     */
+    titleLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+
+    /**
      * The subtitle displayed on the card.
      */
     subtitle?: Remapper;

@@ -9,7 +9,17 @@ import { ImageField } from '../ImageField/index.js';
 
 export function VideoRenderer({
   data,
-  field: { height = 350, hide, label, platform, thumbnail: t, value, width = 350 },
+  field: {
+    captions,
+    height = 350,
+    hide,
+    label,
+    labelLevel = 6,
+    platform,
+    thumbnail: t,
+    value,
+    width = 350,
+  },
 }: RendererProps<VideoField>): VNode | null {
   const {
     utils: { asset, formatMessage, remap },
@@ -19,6 +29,8 @@ export function VideoRenderer({
   const thumbnail = remap(t, data) as string;
   const conceal = remap(hide, data) as boolean;
   const remappedLabel = remap(label, data) as string;
+  const captionsSource = remap(captions, data) as string;
+  const Heading = `h${labelLevel}` as const;
 
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
@@ -80,7 +92,7 @@ export function VideoRenderer({
 
   return conceal ? null : (
     <div className={styles.wrapper}>
-      {isPreactChild(remappedLabel) ? <h1 className="label">{remappedLabel}</h1> : null}
+      {isPreactChild(remappedLabel) ? <Heading className="label">{remappedLabel}</Heading> : null}
       {video ? (
         platform ? (
           <iframe
@@ -92,6 +104,7 @@ export function VideoRenderer({
             width={width}
           />
         ) : (
+          // eslint-disable-next-line jsx-a11y/media-has-caption -- Captions are optional
           <video
             controls
             height={height}
@@ -100,7 +113,14 @@ export function VideoRenderer({
             src={videoUrl ?? undefined}
             width={width}
           >
-            <track class="viewport" kind="captions" label="English" src="captions.vtt" />
+            {captionsSource ? (
+              <track
+                kind="captions"
+                src={
+                  /^(https?:)?\/\//.test(captionsSource) ? captionsSource : asset(captionsSource)
+                }
+              />
+            ) : null}
           </video>
         )
       ) : thumbnailUrl ? (

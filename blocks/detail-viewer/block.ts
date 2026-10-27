@@ -15,6 +15,13 @@ interface AbstractField {
    * Whether the field should not be rendered.
    */
   hide?: Remapper;
+
+  /**
+   * The heading level of the label.
+   *
+   * Defaults to 5 for field groups and bullet points, and to 6 for other fields.
+   */
+  labelLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 interface AbstractMarkerIcon {
@@ -174,6 +181,13 @@ export interface VideoField extends AbstractField {
    * Image that will be there at the start of the video.
    */
   thumbnail?: Remapper;
+
+  /**
+   * The URL or asset id of a WebVTT file with captions for the video.
+   *
+   * Videos from a platform show the captions of that platform instead.
+   */
+  captions?: Remapper;
 
   /**
    * The name of the type of the field.
