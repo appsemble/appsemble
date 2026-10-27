@@ -185,7 +185,8 @@ export interface VideoField extends AbstractField {
   /**
    * The URL or asset id of a WebVTT file with captions for the video.
    *
-   * Videos from a platform show the captions of that platform instead.
+   * A video with captions loads over CORS, so a video or captions file on another domain must
+   * allow cross-origin requests. Videos from a platform show the captions of that platform instead.
    */
   captions?: Remapper;
 
@@ -268,6 +269,11 @@ export interface RendererProps<F extends Field> {
 
 declare module '@appsemble/sdk' {
   interface Messages {
+    /**
+     * The label of the captions of a video.
+     */
+    captions: never;
+
     /**
      * The accessible label for closing an enlarged image.
      */

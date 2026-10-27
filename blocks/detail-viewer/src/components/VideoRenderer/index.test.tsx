@@ -71,9 +71,12 @@ it('offers the configured captions for the video', () => {
     </Context.Provider>,
   );
 
-  expect(container.querySelector('video track[kind="captions"]')?.getAttribute('src')).toBe(
-    'intro.vtt',
-  );
+  const track = container.querySelector('video track[kind="captions"]');
+
+  expect(track?.getAttribute('src')).toBe('intro.vtt');
+  expect(track?.getAttribute('label')).toBe('captions');
+  // Browsers only load captions from another origin, such as app assets, over CORS.
+  expect(container.querySelector('video')?.getAttribute('crossorigin')).toBe('anonymous');
 });
 
 it('offers no captions when none are configured', () => {
@@ -87,4 +90,5 @@ it('offers no captions when none are configured', () => {
   );
 
   expect(container.querySelector('video track')).toBeNull();
+  expect(container.querySelector('video')?.hasAttribute('crossorigin')).toBe(false);
 });

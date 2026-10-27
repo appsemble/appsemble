@@ -94,6 +94,12 @@ it('gives the chart image a generic name without a description', () => {
   expect(screen.getByRole('img', { name: 'chart' })).toBeDefined();
 });
 
+it('offers no data table before data arrives', () => {
+  renderChart();
+
+  expect(screen.queryByRole('table')).toBeNull();
+});
+
 it('offers the chart data as a table', () => {
   renderChart({ description: 'Visitors per day' })([
     { label: 'Adults', data: [3, 5] },

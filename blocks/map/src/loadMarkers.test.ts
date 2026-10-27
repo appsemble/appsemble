@@ -50,6 +50,7 @@ it('gives markers a generic name without a markerLabel', async () => {
   renderMarkers();
 
   expect(await screen.findByRole('button', { name: 'marker' })).toBeDefined();
+  expect(screen.queryByTitle('marker')).toBeNull();
 });
 
 it.each(['{Enter}', ' '])('activates a marker with the keyboard (%s)', async (key) => {

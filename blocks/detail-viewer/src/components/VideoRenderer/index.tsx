@@ -107,6 +107,8 @@ export function VideoRenderer({
           // eslint-disable-next-line jsx-a11y/media-has-caption -- Captions are optional
           <video
             controls
+            // Captions from another origin, such as app assets, only load over CORS.
+            crossOrigin={captionsSource ? 'anonymous' : undefined}
             height={height}
             id="interactive"
             poster={(thumbnailUrl || assetVideoThumbnailUrl) ?? undefined}
@@ -116,6 +118,7 @@ export function VideoRenderer({
             {captionsSource ? (
               <track
                 kind="captions"
+                label={formatMessage('captions')}
                 src={
                   /^(https?:)?\/\//.test(captionsSource) ? captionsSource : asset(captionsSource)
                 }

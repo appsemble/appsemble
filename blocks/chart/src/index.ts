@@ -94,7 +94,7 @@ bootstrap(
     canvas.setAttribute('aria-label', name);
     const table = document.createElement('table');
     table.className = 'table data';
-    shadowRoot.append(canvas, table);
+    shadowRoot.append(canvas);
     const ctx = canvas.getContext('2d');
     const yAxisID = 'y';
     // @ts-expect-error strictNullChecks null is not assignable to type
@@ -226,6 +226,7 @@ bootstrap(
       if (!loaded) {
         loaded = true;
         loader.remove();
+        shadowRoot.append(table);
       }
 
       if (Array.isArray(dataset)) {
