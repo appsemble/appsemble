@@ -2603,6 +2603,20 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should not require resource permissions for webhook actions', async () => {
+    const app = createTestApp();
+    delete app.security;
+    app.webhooks = {
+      createPerson: {
+        schema: { type: 'object' },
+        action: { type: 'resource.create', resource: 'person' },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.errors).toStrictEqual([]);
+  });
+
   it('should report an error if a resource action on a block refers to a non-existent resource', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
