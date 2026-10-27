@@ -5125,6 +5125,24 @@ The \`time\` format represents local time as an \`HH:mm\` string.",
             "description": "A description for the text field. For adding more information about the field.",
             "format": "remapper",
           },
+          "hourCycle": {
+            "anyOf": [
+              {
+                "const": "h12",
+                "type": "string",
+              },
+              {
+                "const": "h23",
+                "type": "string",
+              },
+              {
+                "format": "remapper",
+              },
+            ],
+            "description": "The hour cycle used to display and edit a \`time\` field.
+
+Use \`h12\` for hours 1–12 with AM/PM, or \`h23\` for hours 0–23. A remapper receives all form values and must return either value. Stored values remain \`HH:mm\`, independently of the browser locale. If omitted, the native browser time input is used.",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
 

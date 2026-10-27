@@ -1374,6 +1374,16 @@ export interface StringField extends AbstractField, InlineField {
   format?: 'email' | 'password' | 'time' | 'url';
 
   /**
+   * The hour cycle used to display and edit a `time` field.
+   *
+   * Use `h12` for hours 1–12 with AM/PM, or `h23` for hours 0–23.
+   * A remapper receives all form values and must return either value.
+   * Stored values remain `HH:mm`, independently of the browser locale.
+   * If omitted, the native browser time input is used.
+   */
+  hourCycle?: 'h12' | 'h23' | Remapper;
+
+  /**
    * Whether the string field should be multiline or not.
    *
    * @default false

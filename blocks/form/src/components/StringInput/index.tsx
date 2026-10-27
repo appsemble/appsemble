@@ -8,6 +8,7 @@ import { useCallback, useMemo, useState } from 'preact/hooks';
 import { type InputProps, type StringField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { getMaxLength, getMinLength, isRequired } from '../../utils/requirements.js';
+import { TimeInput } from '../TimeInput/index.js';
 
 type StringInputProps = InputProps<string, StringField>;
 
@@ -37,6 +38,7 @@ export function StringInput({
     datalistEnabled = false,
     format,
     help,
+    hourCycle,
     icon,
     inline,
     label,
@@ -93,6 +95,14 @@ export function StringInput({
     inline,
     errorLinkRef,
   };
+
+  if (format === 'time' && hourCycle !== undefined) {
+    const cycle = utils.remap(hourCycle, formValues);
+    if (cycle !== 'h12' && cycle !== 'h23') {
+      throw new TypeError('A time field hourCycle must resolve to h12 or h23');
+    }
+    return <TimeInput {...commonProps} hourCycle={cycle} value={value as string} />;
+  }
 
   return multiline ? (
     <TextAreaField {...commonProps} />
