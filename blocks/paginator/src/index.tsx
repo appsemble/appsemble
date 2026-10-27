@@ -122,9 +122,11 @@ bootstrap(
             <Button className="mr-4" disabled={loading || page === 0} onClick={prevPage}>
               {formatMessage('prevLabel')}
             </Button>
-            <span aria-live="polite" className="mr-4">
-              {formatMessage('pageLabel', { page: page + 1, pageCount: lastPage + 1 })}
-            </span>
+            {pageCount === undefined ? null : (
+              <span aria-live="polite" className="mr-4">
+                {formatMessage('pageLabel', { page: page + 1, pageCount })}
+              </span>
+            )}
             <Button disabled={loading || page >= lastPage} onClick={nextPage}>
               {formatMessage('nextLabel')}
             </Button>

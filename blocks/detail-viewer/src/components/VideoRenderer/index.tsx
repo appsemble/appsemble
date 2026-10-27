@@ -18,6 +18,7 @@ export function VideoRenderer({
   const video = remap(value, data) as string;
   const thumbnail = remap(t, data) as string;
   const conceal = remap(hide, data) as boolean;
+  const remappedLabel = remap(label, data) as string;
 
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
@@ -79,7 +80,7 @@ export function VideoRenderer({
 
   return conceal ? null : (
     <div className={styles.wrapper}>
-      {isPreactChild(label) ? <h1 className="label">{label}</h1> : null}
+      {isPreactChild(remappedLabel) ? <h1 className="label">{remappedLabel}</h1> : null}
       {video ? (
         platform ? (
           <iframe
@@ -87,7 +88,7 @@ export function VideoRenderer({
             height={height}
             sandbox={sandboxConfig}
             src={videoUrl ?? undefined}
-            title={formatMessage('video')}
+            title={remappedLabel || formatMessage('video')}
             width={width}
           />
         ) : (

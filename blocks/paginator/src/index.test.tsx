@@ -16,7 +16,7 @@ await import('./index.js');
 
 const Paginator = preact.bootstrap.mock.calls[0][0] as FunctionComponent<BlockProps>;
 
-async function setup(itemsCount: number): Promise<void> {
+async function setup(itemsCount?: number): Promise<void> {
   let itemsCountChange: ((count: number) => void) | undefined;
   const props = {
     actions: { onLoad: vi.fn().mockResolvedValue([]) },
@@ -43,7 +43,9 @@ async function setup(itemsCount: number): Promise<void> {
   await act(() => {
     render(<Paginator {...props} />);
   });
-  await act(() => itemsCountChange?.(itemsCount));
+  if (itemsCount !== undefined) {
+    await act(() => itemsCountChange?.(itemsCount));
+  }
 }
 
 async function click(name: string): Promise<void> {
@@ -60,6 +62,12 @@ it('should label the pagination and announce the current page', async () => {
   await click('nextLabel');
 
   expect(screen.getByText('pageLabel 2/3').getAttribute('aria-live')).toBe('polite');
+});
+
+it('should not announce a page before the number of pages is known', async () => {
+  await setup();
+
+  expect(screen.queryByText(/pageLabel/)).toBeNull();
 });
 
 it('should only enable the buttons that change the page', async () => {

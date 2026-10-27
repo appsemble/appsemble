@@ -26,3 +26,21 @@ it('names the thumbnail of a field without a video', () => {
 
   expect(screen.getByRole('button', { name: 'videoThumbnail' })).toBeDefined();
 });
+
+it('names the video player after the field label', () => {
+  render(
+    <Context.Provider value={block}>
+      <VideoRenderer
+        data={{ title: 'Introduction', video: 'abc123' }}
+        field={{
+          type: 'video',
+          label: { prop: 'title' },
+          platform: 'youtube',
+          value: { prop: 'video' },
+        }}
+      />
+    </Context.Provider>,
+  );
+
+  expect(screen.getByTitle('Introduction')).toBeDefined();
+});
