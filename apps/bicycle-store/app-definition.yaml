@@ -80,7 +80,7 @@ pages:
       - employee
     blocks:
       - type: data-loader
-        version: 0.34.8
+        version: 0.40.6
         events:
           emit:
             data: bicycleInventory
@@ -123,7 +123,7 @@ pages:
             type: dialog
             blocks:
               - type: form
-                version: 0.34.8
+                version: 0.40.6
                 parameters:
                   fields:
                     - name: phoneNumber
@@ -172,7 +172,7 @@ pages:
       - manager
     blocks:
       - type: data-loader
-        version: 0.34.8
+        version: 0.40.6
         events:
           emit:
             data: bicycleStock
@@ -183,7 +183,7 @@ pages:
             type: resource.query
             resource: bicycles
       - type: table
-        version: 0.34.8
+        version: 0.40.6
         events:
           listen:
             data: bicycleStock
@@ -195,7 +195,7 @@ pages:
             - label: Amount in stock
               value: { prop: stock }
       - type: action-button
-        version: 0.34.8
+        version: 0.40.6
         parameters:
           icon: plus
         actions:
@@ -203,7 +203,7 @@ pages:
             type: dialog
             blocks:
               - type: form
-                version: 0.34.8
+                version: 0.40.6
                 parameters:
                   fields:
                     - type: string
@@ -237,7 +237,7 @@ pages:
   - name: Sale history
     blocks:
       - type: data-loader
-        version: 0.34.8
+        version: 0.40.6
         events:
           emit:
             data: saleHistoryData
@@ -246,7 +246,7 @@ pages:
             type: resource.query
             resource: saleHistory
       - type: feed
-        version: 0.34.8
+        version: 0.40.6
         events:
           listen:
             data: saleHistoryData
