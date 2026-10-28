@@ -178,6 +178,60 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should validate block parameters in match case actions', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      parameters: { foo: 'bar' },
+      actions: {
+        onClick: {
+          type: 'match',
+          match: [
+            {
+              case: true,
+              action: {
+                type: 'dialog',
+                blocks: [{ type: 'test', version: '1.2.3', parameters: {} }],
+              },
+            },
+          ],
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        parameters: {
+          type: 'object',
+          required: ['foo'],
+          properties: { foo: { type: 'string' } },
+        },
+        actions: { onClick: {} },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('requires property "foo"', {}, undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onClick',
+        'match',
+        0,
+        'action',
+        'blocks',
+        0,
+        'parameters',
+      ]),
+    ]);
+  });
+
   it('should validate missing block parameters', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
@@ -2546,6 +2600,41 @@ describe('validateAppDefinition', () => {
         undefined,
         ['webhooks', 'patchPerson', 'action', 'optimistic'],
       ),
+    ]);
+  });
+
+  it('should not require resource permissions for webhook actions', async () => {
+    const app = createTestApp();
+    delete app.security;
+    app.webhooks = {
+      createPerson: {
+        schema: { type: 'object' },
+        action: { type: 'resource.create', resource: 'person' },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should reject client-side actions in webhook actions', async () => {
+    const app = createTestApp();
+    app.webhooks = {
+      createPerson: {
+        schema: { type: 'object' },
+        action: { type: 'flow.next' },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('action type is not supported for webhooks', 'flow.next', undefined, [
+        'webhooks',
+        'createPerson',
+        'action',
+        'type',
+      ]),
     ]);
   });
 

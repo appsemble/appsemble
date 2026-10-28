@@ -25,7 +25,7 @@ import {
   resendBannerGridArea,
 } from './gridUtils.js';
 import { isValidIconName, parseIconReference } from './icons.js';
-import { iterAction, iterApp, type Prefix } from './iterApp.js';
+import { iterApp, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { normalize } from './normalize.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
@@ -2068,6 +2068,11 @@ function validateActions(definition: AppDefinition, report: Report): void {
         return;
       }
 
+      if (path[0] === 'webhooks' && !serverActions.has(action.type as ServerActionName)) {
+        report(action.type, 'action type is not supported for webhooks', [...path, 'type']);
+        return;
+      }
+
       if (validateUnsupportedServerOptimisticResourceWrite(action, path)) {
         return;
       }
@@ -2137,7 +2142,8 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
-        if (!action.type.startsWith('resource.subscription.')) {
+        // Webhook actions run on the server without checking resource permissions.
+        if (!action.type.startsWith('resource.subscription.') && path[0] !== 'webhooks') {
           if (!definition.security) {
             report(action.type, 'missing security definition', [...path, 'resource']);
             return;
@@ -2340,23 +2346,6 @@ function validateActions(definition: AppDefinition, report: Report): void {
       }
     },
   });
-
-  for (const [name, webhook] of Object.entries(definition.webhooks ?? {})) {
-    if (
-      webhook.action &&
-      iterAction(
-        webhook.action,
-        {
-          onAction(action, path) {
-            return validateUnsupportedServerOptimisticResourceWrite(action, path);
-          },
-        },
-        ['webhooks', name, 'action'],
-      )
-    ) {
-      return;
-    }
-  }
 }
 
 function validateEvents(

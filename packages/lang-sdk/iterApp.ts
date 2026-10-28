@@ -1,6 +1,7 @@
 import {
   type ActionDefinition,
   type AppDefinition,
+  type BasicPageDefinition,
   type BlockDefinition,
   type ControllerDefinition,
   type PageDefinition,
@@ -55,6 +56,12 @@ export function iterAction(
 
   if (action.type === 'each') {
     return iterAction(action.do, callbacks, [...prefix, 'do']);
+  }
+
+  if (action.type === 'match') {
+    return action.match.some((matchCase, index) =>
+      iterAction(matchCase.action, callbacks, [...prefix, 'match', index, 'action']),
+    );
   }
 
   if ('blocks' in action) {
@@ -221,7 +228,15 @@ export function iterPage(
     return result;
   }
 
-  const { blocks = [] } = page as { blocks?: BlockDefinition[] };
+  const { actions, blocks = [] } = page as BasicPageDefinition;
+
+  if (
+    Object.entries(actions ?? {}).some(([key, action]) =>
+      iterAction(action, callbacks, [...prefix, 'actions', key]),
+    )
+  ) {
+    return true;
+  }
 
   return iterBlockList(blocks, callbacks, [...prefix, 'blocks']);
 }
@@ -246,6 +261,13 @@ export function iterApp(app: AppDefinition, callbacks: IterCallbacks): boolean {
   if (app.cron) {
     for (const [name, job] of Object.entries(app.cron)) {
       if (job?.action && iterAction(job.action, callbacks, ['cron', name, 'action'])) {
+        return true;
+      }
+    }
+  }
+  if (app.webhooks) {
+    for (const [name, webhook] of Object.entries(app.webhooks)) {
+      if (webhook?.action && iterAction(webhook.action, callbacks, ['webhooks', name, 'action'])) {
         return true;
       }
     }
