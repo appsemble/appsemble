@@ -14,7 +14,7 @@ export interface Resolution {
   identity: Identity | null;
   winners: Schema[];
   matched: boolean;
-  // A leaf's own ref-cut errors; a combinator has none (its validity is whether branches matched).
+  // The node's own ref-cut errors, including those of a combinator's sibling keywords.
   localErrors?: ValidationError[];
   // The discriminated (or plain) union this node resolves through, surfaced so a consumer (the GUI
   // editor's kind switcher) can enumerate every branch and switch kind — even when `comp` merged the
@@ -217,12 +217,17 @@ export function localShapeFactory(): (schema: Schema) => Schema {
 //   oneOf: exactly one branch matches and governs; an untagged oneOf passes the winner through.
 //   anyOf: at least one matches; every matched branch governs.
 //   allOf: all match; all branches govern.
+// The node also matches its own keywords next to the combinator (`required`, `type`, ...), which no
+// branch checks.
 function resolveComposite(
   mode: 'allOf' | 'anyOf' | 'oneOf',
   schema: Schema,
   branches: Resolution[],
   tag: SchemaTag | undefined,
+  value: unknown,
+  ctx: ResolveContext,
 ): Resolution {
+  const own = matchesLocalShape(value, schema, ctx);
   const matched = branches.filter((branch) => branch.matched);
   // A union decided in a nested branch still surfaces here (a union merged into an allOf).
   const union = branches.map((branch) => branch.union).find(Boolean);
@@ -260,8 +265,9 @@ function resolveComposite(
         : compositeOrNull(mode, tag, identityParts(governing));
     return {
       identity,
-      matched: true,
+      matched: own.matched,
       winners: [schema, ...governing.flatMap((b) => b.winners)],
+      localErrors: own.errors,
       union,
     };
   }
@@ -269,6 +275,7 @@ function resolveComposite(
     identity: unresolvedOrNull(reason, tag, identityParts(considered)),
     matched: false,
     winners: [schema],
+    localErrors: own.errors,
     union,
   };
 }
@@ -497,6 +504,8 @@ export function resolve(
                   ctx,
                 ),
                 tag,
+                value,
+                ctx,
               ),
               union: thisUnion,
             };
@@ -526,7 +535,7 @@ export function resolve(
           };
         }
         return {
-          ...resolveComposite(mode, resolved, [resolveBranch(picked)], tag),
+          ...resolveComposite(mode, resolved, [resolveBranch(picked)], tag, value, ctx),
           union: thisUnion,
         };
       }
@@ -535,6 +544,8 @@ export function resolve(
         resolved,
         escalateAmbiguous(mode, resolved, branches, branches.map(resolveBranch), value, ctx),
         tag,
+        value,
+        ctx,
       );
       return thisUnion ? { ...composed, union: thisUnion } : composed;
     }

@@ -82,6 +82,32 @@ describe('engine edge cases', () => {
     expect(invalid.mounts.get('/')!.localValid).toBe(false);
   });
 
+  it('enforces the keywords next to a oneOf during local validation', () => {
+    // Shaped like a tabs page: shared `required` beside a oneOf that picks `tabs` or `definition`.
+    const schemas = {
+      TabsLike: {
+        'x-appsemble-language-component': { name: 'TabsLike', mode: 'single' },
+        type: 'object',
+        required: ['name'],
+        oneOf: [{ required: ['tabs'] }, { required: ['definition'] }],
+        properties: {
+          name: { type: 'string' },
+          tabs: { type: 'array' },
+          definition: { type: 'object' },
+        },
+      },
+    } satisfies Record<string, Schema>;
+
+    const tabsCtx = LanguageCtx.compile(schemas, 'TabsLike');
+    const valid = buildTree(tabsCtx, { name: 'Tabs', tabs: [] }).mounts.get('/')!;
+    const missingName = buildTree(tabsCtx, { tabs: [] }).mounts.get('/')!;
+
+    expect(valid.localValid).toBe(true);
+    expect(missingName.identity.name).toBe('TabsLike');
+    expect(missingName.localValid).toBe(false);
+    expect(missingName.localErrors.map((error) => error.argument)).toContain('name');
+  });
+
   it("captures a node's own local-shape errors on its mount during the walk", () => {
     const Strict = LanguageComponent.define(
       'StrictLocal',
