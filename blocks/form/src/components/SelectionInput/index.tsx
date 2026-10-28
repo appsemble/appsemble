@@ -172,7 +172,12 @@ export function SelectionInput({
       {!readOnly && (!maxItems || selectedOptions.length < maxItems) ? (
         <FormButtons>
           <Button disabled={disabled} icon="plus" onClick={handleModalOpen}>
-            {utils.remap(field.addLabel ?? 'Add', selectedOptions) as string}
+            {
+              utils.remap(
+                field.addLabel ?? utils.formatMessage('addLabel'),
+                selectedOptions,
+              ) as string
+            }
           </Button>
         </FormButtons>
       ) : null}

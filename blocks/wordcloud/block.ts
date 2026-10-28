@@ -28,6 +28,14 @@ declare module '@appsemble/sdk' {
     fields: Remapper[] | string[];
 
     /**
+     * A short text alternative that describes what the wordcloud shows.
+     *
+     * This is the accessible name of the wordcloud. Screen reader users can also read the words and
+     * how often each occurs as a list.
+     */
+    description?: Remapper;
+
+    /**
      * List of options for rendering the wordcloud.
      */
     options: Options;
@@ -129,5 +137,15 @@ declare module '@appsemble/sdk' {
      * This message is displayed if the browser does not support the block
      */
     unsupported: never;
+
+    /**
+     * The accessible name of a wordcloud without a description.
+     */
+    wordcloud: never;
+
+    /**
+     * A word in the list of words of the wordcloud, with how often it occurs.
+     */
+    wordFrequency: { count: number; word: string };
   }
 }

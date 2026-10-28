@@ -22,5 +22,9 @@
     "@types/wordcloud": "^1.0.0",
     "preact": "^10.0.0",
     "wordcloud": "^1.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/preact": "3.2.4",
+    "vitest": "4.1.12"
   }
 }

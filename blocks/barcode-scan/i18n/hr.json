@@ -3,8 +3,10 @@
   "empty": "Nema podataka za prikaz",
   "error": "Došlo je do problema pri učitavanju podataka.",
   "loading": "Učitavanje …",
+  "noImage": "",
   "patchSize": "",
   "removeImage": "",
+  "selectedImage": "",
   "selectImage": "",
   "stopScanning": ""
 }

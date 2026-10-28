@@ -59,6 +59,13 @@ export interface YAxis {
 }
 
 declare module '@appsemble/sdk' {
+  interface Messages {
+    /**
+     * The accessible name of a chart without a description.
+     */
+    chart: never;
+  }
+
   interface EventListeners {
     /**
      * Add new data to the chart.
@@ -82,6 +89,14 @@ declare module '@appsemble/sdk' {
      * @default 'line'
      */
     type: 'bar' | 'line';
+
+    /**
+     * A short text alternative that describes what the chart shows.
+     *
+     * This is the accessible name of the chart. Screen reader users can also read the chart data
+     * as a table.
+     */
+    description?: Remapper;
 
     /**
      * The labels to display at the bottom of the chart.
@@ -119,6 +134,8 @@ declare module '@appsemble/sdk' {
      * Returns the data of the clicked data in the format of `label`, `data`.
      *
      * Returns an empty object if the user clicks outside of a data entry.
+     *
+     * Keyboard users launch it from the data table of the chart, which shows while it has focus.
      */
     onClick?: never;
   }

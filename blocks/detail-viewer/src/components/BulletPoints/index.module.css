@@ -11,6 +11,6 @@
   text-align: center;
 }
 
-.horizontalList dd {
+.horizontalList .description {
   margin-top: 5px;
 }

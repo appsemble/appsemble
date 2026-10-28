@@ -1,4 +1,6 @@
 {
-  "prevLabel": "Previous",
-  "nextLabel": "Next"
+  "navigationLabel": "Pagination",
+  "nextLabel": "Next",
+  "pageLabel": "Page {page} of {pageCount}",
+  "prevLabel": "Previous"
 }

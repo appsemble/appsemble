@@ -1,5 +1,12 @@
 import { type BootstrapParams } from '@appsemble/sdk';
-import { type LatLngBounds, type LayerGroup, type Map, Marker } from 'leaflet';
+import {
+  type LatLngBounds,
+  type LayerGroup,
+  type LeafletEvent,
+  type LeafletKeyboardEvent,
+  type Map,
+  Marker,
+} from 'leaflet';
 
 import { createIcon } from './createIcon.js';
 
@@ -37,9 +44,22 @@ export function loadMarkers(
     if (Number.isNaN(Number(lat)) || Number.isNaN(Number(lng))) {
       return;
     }
+    const title = params.utils.remap(params.parameters.markerLabel, marker) as string;
+    const name = title || params.utils.formatMessage('marker');
     createIcon(params, data && data.id === marker.id).then((icon) =>
-      new Marker([lat, lng], { icon })
+      new Marker([lat, lng], { icon, title })
+        // Leaflet only names markers through the title, which also shows as a tooltip.
+        .on('add', ({ target: added }: LeafletEvent) =>
+          (added as Marker).getElement()?.setAttribute('aria-label', name),
+        )
         .on('click', () => params.actions.onMarkerClick(marker))
+        // Leaflet makes markers focusable buttons, but doesn't activate them with the keyboard.
+        .on('keydown', ({ originalEvent }: LeafletKeyboardEvent) => {
+          if (originalEvent.key === 'Enter' || originalEvent.key === ' ') {
+            originalEvent.preventDefault();
+            params.actions.onMarkerClick(marker);
+          }
+        })
         .addTo(target),
     );
   }

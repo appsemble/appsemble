@@ -1,4 +1,5 @@
 {
+  "addLabel": "",
   "closeImage": "",
   "closeVideo": "",
   "confirmLabel": "Подтвердить",
@@ -10,6 +11,10 @@
   "invalidLabel": "Это значение недопустимо",
   "loading": "",
   "longSubmissionWarning": "Форма находится в процессе отправки, пожалуйста, подождите.",
+  "markdownBold": "",
+  "markdownItalic": "",
+  "markdownLink": "",
+  "markdownStrikethrough": "",
   "optionalLabel": "(Необязательно)",
   "previousLabel": "Предыдущая",
   "removeEntry": "",

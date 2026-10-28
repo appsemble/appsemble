@@ -63,7 +63,7 @@ export function ListInput({
     };
 
     const handleError = (): void => {
-      setError('Error loading options');
+      setError(utils.formatMessage('selectionOptionsError'));
       setLoading(false);
     };
 

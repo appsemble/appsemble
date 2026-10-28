@@ -1,3 +1,4 @@
 {
-  "locationError": "Ihr Standort konnte nicht ermittelt werden. Sind die Standortdienste aktiviert?"
+  "locationError": "Ihr Standort konnte nicht ermittelt werden. Sind die Standortdienste aktiviert?",
+  "marker": ""
 }
