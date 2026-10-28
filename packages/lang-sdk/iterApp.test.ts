@@ -471,6 +471,22 @@ describe('iterPage', () => {
     expect(result).toBe(false);
   });
 
+  it('should iterate over blocks of basic pages with empty actions', () => {
+    const onBlock = vi.fn();
+    const block: BlockDefinition = { type: 'form', version: '0.1.2' };
+
+    const page = {
+      name: 'Page',
+      blocks: [block],
+      actions: null,
+    } as unknown as BasicPageDefinition;
+
+    const result = iterPage(page, { onBlock });
+
+    expect(onBlock.mock.calls).toStrictEqual([[block, ['blocks', 0]]]);
+    expect(result).toBe(false);
+  });
+
   it('should call onAction and onBlockList for pages with actions and sub pages', () => {
     const onAction = vi.fn();
     const onPage = vi.fn();

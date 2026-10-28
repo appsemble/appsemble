@@ -2617,6 +2617,27 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([]);
   });
 
+  it('should reject client-side actions in webhook actions', async () => {
+    const app = createTestApp();
+    app.webhooks = {
+      createPerson: {
+        schema: { type: 'object' },
+        action: { type: 'flow.next' },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('action type is not supported for webhooks', 'flow.next', undefined, [
+        'webhooks',
+        'createPerson',
+        'action',
+        'type',
+      ]),
+    ]);
+  });
+
   it('should report an error if a resource action on a block refers to a non-existent resource', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({

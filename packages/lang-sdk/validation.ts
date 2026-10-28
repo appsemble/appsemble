@@ -2068,6 +2068,11 @@ function validateActions(definition: AppDefinition, report: Report): void {
         return;
       }
 
+      if (path[0] === 'webhooks' && !serverActions.has(action.type as ServerActionName)) {
+        report(action.type, 'action type is not supported for webhooks', [...path, 'type']);
+        return;
+      }
+
       if (validateUnsupportedServerOptimisticResourceWrite(action, path)) {
         return;
       }

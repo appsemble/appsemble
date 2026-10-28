@@ -228,10 +228,10 @@ export function iterPage(
     return result;
   }
 
-  const { actions = {}, blocks = [] } = page as BasicPageDefinition;
+  const { actions, blocks = [] } = page as BasicPageDefinition;
 
   if (
-    Object.entries(actions).some(([key, action]) =>
+    Object.entries(actions ?? {}).some(([key, action]) =>
       iterAction(action, callbacks, [...prefix, 'actions', key]),
     )
   ) {
