@@ -84,6 +84,9 @@ export async function requestFirst(request: Request): Promise<Response> {
  * server can tell the two apart, and it records that verdict in `Cache-Control`, so read the
  * verdict back off the stored response instead of deriving it from the URL.
  *
+ * A stored response that may be replaced is still served when the network fails or takes longer
+ * than 3 seconds to respond, so a stalled connection does not hold up an asset that is available.
+ *
  * @param request The request for which to get a response.
  * @returns The fetch response object.
  */
@@ -94,7 +97,15 @@ export async function cacheFirstIfImmutable(request: Request): Promise<Response>
   }
   let response: Response;
   try {
-    response = await fetch(request);
+    const fetching = fetch(request);
+    response = await (cached
+      ? Promise.race([
+          fetching,
+          new Promise<never>((resolve, reject) => {
+            setTimeout(() => reject(new Error('The network did not respond in time')), 3000);
+          }),
+        ])
+      : fetching);
   } catch (error: unknown) {
     return tryCached(request, () => {
       throw error;

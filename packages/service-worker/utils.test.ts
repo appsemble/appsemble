@@ -1,5 +1,5 @@
 import makeServiceWorkerEnv from 'service-worker-mock';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { cacheFirstIfImmutable } from './utils.js';
 
@@ -16,6 +16,10 @@ async function cacheResponse(cacheControl: string, body: string): Promise<void> 
 describe('cacheFirstIfImmutable', () => {
   beforeEach(() => {
     Object.assign(global, makeServiceWorkerEnv());
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should serve a stored response that is marked immutable without going to the network', async () => {
@@ -44,6 +48,37 @@ describe('cacheFirstIfImmutable', () => {
     const response = await cacheFirstIfImmutable(new Request(assetUrl));
 
     expect(await response.text()).toBe('stored');
+  });
+
+  it('should serve a replaceable stored response when the network does not respond in time', async () => {
+    vi.useFakeTimers();
+    await cacheResponse('public,max-age=3600', 'stored');
+    vi.spyOn(global, 'fetch').mockReturnValue(
+      new Promise((resolve) => {
+        setTimeout(() => resolve(new Response('fresh', { status: 200 })), 10_000);
+      }),
+    );
+
+    const pending = cacheFirstIfImmutable(new Request(assetUrl));
+    await vi.advanceTimersByTimeAsync(3000);
+    const response = await pending;
+
+    expect(await response.text()).toBe('stored');
+  });
+
+  it('should keep waiting on a slow network when nothing is stored', async () => {
+    vi.useFakeTimers();
+    vi.spyOn(global, 'fetch').mockReturnValue(
+      new Promise((resolve) => {
+        setTimeout(() => resolve(new Response('fresh', { status: 200 })), 10_000);
+      }),
+    );
+
+    const pending = cacheFirstIfImmutable(new Request(assetUrl));
+    await vi.advanceTimersByTimeAsync(10_000);
+    const response = await pending;
+
+    expect(await response.text()).toBe('fresh');
   });
 
   it('should request a response that is not stored yet', async () => {
