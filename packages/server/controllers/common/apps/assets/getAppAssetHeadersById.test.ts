@@ -74,7 +74,7 @@ describe('getAssetHeadersById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.bin"',
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
         'access-control-expose-headers': 'Content-Disposition',
       }),
       data: Buffer.from([]),
@@ -99,6 +99,22 @@ describe('getAssetHeadersById', () => {
     });
   });
 
+  it('should not mark an asset fetched by name as immutable', async () => {
+    const { Asset } = await getAppDB(app.id);
+    await Asset.create({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      name: 'test-asset',
+    });
+
+    const response = await request.head(`/api/apps/${app.id}/assets/test-asset`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({ 'cache-control': 'public,max-age=3600' }),
+    });
+  });
+
   it('should serve the source mime and filename for image assets.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
@@ -113,7 +129,7 @@ describe('getAssetHeadersById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/png',
         'content-disposition': 'inline; filename="logo.png"',
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
       }),
       data: '',
     });
@@ -135,7 +151,7 @@ describe('getAssetHeadersById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': `attachment; filename="${asset.id}"`,
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
         'access-control-expose-headers': 'Content-Disposition',
       }),
       data: Buffer.from([]),
@@ -159,7 +175,7 @@ describe('getAssetHeadersById', () => {
       headers: expect.objectContaining({
         'content-type': 'text/plain',
         'content-disposition': `attachment; filename="${asset.id}.txt"`,
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
         'access-control-expose-headers': 'Content-Disposition',
       }),
       data: Buffer.from([]),

@@ -77,6 +77,47 @@ export async function requestFirst(request: Request): Promise<Response> {
 }
 
 /**
+ * Serve a cached response only if it is marked immutable, and request a fresh one otherwise.
+ *
+ * App asset URLs carry either an asset id or an asset name in their last segment. An id addresses
+ * one fixed set of bytes, while a name can be pointed at a different asset at any time. Only the
+ * server can tell the two apart, and it records that verdict in `Cache-Control`, so read the
+ * verdict back off the stored response instead of deriving it from the URL.
+ *
+ * @param request The request for which to get a response.
+ * @returns The fetch response object.
+ */
+export async function cacheFirstIfImmutable(request: Request): Promise<Response> {
+  const cached = await caches.match(request);
+  if (cached?.headers.get('Cache-Control')?.includes('immutable')) {
+    return cached;
+  }
+  let response: Response;
+  try {
+    response = await fetch(request);
+  } catch (error: unknown) {
+    return tryCached(request, () => {
+      throw error;
+    });
+  }
+
+  if (response.status === 404 || response.status === 410) {
+    const cache = await caches.open('appsemble');
+    const { origin, pathname } = new URL(request.url);
+    const cacheKeys = await cache.keys();
+    for (const cacheRequest of cacheKeys) {
+      const cachedUrl = new URL(cacheRequest.url);
+      if (cachedUrl.origin === origin && cachedUrl.pathname === pathname) {
+        await cache.delete(cacheRequest);
+      }
+    }
+    return response;
+  }
+
+  return put(request, response, () => tryCached(request, () => response));
+}
+
+/**
  * Implements a stale-while-revalidate caching strategy.
  *
  * 1. Serve cached response immediately if available.

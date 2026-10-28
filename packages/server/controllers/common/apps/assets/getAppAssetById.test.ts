@@ -78,7 +78,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.bin"',
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
       }),
     });
   });
@@ -101,8 +101,69 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.mp3"',
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=3600',
       }),
+    });
+  });
+
+  it('should send the ETag of the stored object as a quoted string', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+    });
+
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, Buffer.from('buffer'));
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers.etag).toMatch(/^"[^"]+"$/);
+  });
+
+  it('should not mark a derived image fetched by name as immutable', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+      name: 'logo',
+    });
+    const image = await sharp({
+      create: {
+        width: 300,
+        height: 300,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, image);
+
+    // The first request encodes the derivative, the second serves the stored copy. Both address a
+    // name that can be aimed elsewhere, so neither may be cached as immutable.
+    const freshResponse = await request.get(
+      `/api/apps/${app.id}/assets/logo?width=150&height=150`,
+      {
+        responseType: 'arraybuffer',
+      },
+    );
+    const cachedResponse = await request.get(
+      `/api/apps/${app.id}/assets/logo?width=150&height=150`,
+      { responseType: 'arraybuffer' },
+    );
+
+    expect(freshResponse).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({ 'cache-control': 'public,max-age=3600' }),
+    });
+    expect(cachedResponse).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({ 'cache-control': 'public,max-age=3600' }),
     });
   });
 
@@ -137,7 +198,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
       }),
     });
 
@@ -175,7 +236,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
       }),
     });
 
@@ -452,7 +513,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
       }),
     });
 
@@ -484,7 +545,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.bin"',
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
       }),
     });
   });
@@ -513,7 +574,7 @@ describe('getAppAssetById', () => {
         'content-type': 'image/svg+xml',
         'content-disposition': 'inline; filename="logo.svg"',
         'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox",
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
       }),
     });
     // The bytes are streamed through untouched, including the resize params being ignored.
@@ -581,7 +642,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
       }),
     });
 
@@ -730,7 +791,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
       }),
     });
 
@@ -786,7 +847,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'public,max-age=31536000,immutable',
       }),
     });
 

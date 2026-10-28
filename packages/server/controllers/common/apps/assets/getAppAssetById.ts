@@ -1,5 +1,6 @@
 import {
   assertKoaCondition,
+  assetValidators,
   getAppAssetLocation,
   getS3File,
   getS3FileBuffer,
@@ -66,18 +67,19 @@ async function serveCachedDerivedAsset(
   appId: number,
   sourceAsset: { id: string; filename?: string | null },
   cachedAsset: { id: string; mime?: string | null; destroy: () => Promise<unknown> },
+  immutable: boolean,
 ): Promise<boolean> {
   try {
     const { bucket, key } = getAppAssetLocation(appId, cachedAsset.id);
     const stats = await getS3FileStats(bucket, key);
     const stream = await getS3File(bucket, key);
     const mime = cachedAsset.mime ?? 'application/octet-stream';
-    setAssetHeaders(
-      ctx,
+    setAssetHeaders(ctx, {
       mime,
-      getDerivedFilename(sourceAsset.id, sourceAsset.filename, mime),
-      stats,
-    );
+      filename: getDerivedFilename(sourceAsset.id, sourceAsset.filename, mime),
+      immutable,
+      ...assetValidators(stats),
+    });
     ctx.body = stream;
     return true;
   } catch (error) {
@@ -116,6 +118,10 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   });
   assertKoaCondition(sourceAsset != null, ctx, 404, 'Asset not found');
 
+  // Both the asset id and the asset name resolve here. Only the id keeps addressing these bytes
+  // after the name is pointed at a different asset.
+  const immutable = assetId === sourceAsset.id;
+
   // SVG is vector XML, not a raster source; a rasterized copy discards the vector, so serve it
   // unmodified below. Match the media type exactly, ignoring any parameter and case.
   const isSvg = sourceAsset.mime?.toLowerCase().split(';', 1)[0].trim() === 'image/svg+xml';
@@ -132,7 +138,10 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
         attributes: ['id', 'mime', 'filename', 'name'],
       });
 
-      if (cachedAsset && (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset))) {
+      if (
+        cachedAsset &&
+        (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset, immutable))
+      ) {
         return;
       }
     } else {
@@ -144,7 +153,10 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
         attributes: ['id', 'mime', 'filename', 'name'],
       });
 
-      if (cachedAsset && (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset))) {
+      if (
+        cachedAsset &&
+        (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset, immutable))
+      ) {
         return;
       }
     }
@@ -180,7 +192,10 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
         attributes: ['id', 'mime', 'filename', 'name'],
       });
 
-      if (cachedAsset && (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset))) {
+      if (
+        cachedAsset &&
+        (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset, immutable))
+      ) {
         return;
       }
     }
@@ -219,11 +234,11 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       }
     }
 
-    setAssetHeaders(
-      ctx,
-      derivedMime,
-      getDerivedFilename(sourceAsset.id, sourceAsset.filename, derivedMime),
-    );
+    setAssetHeaders(ctx, {
+      mime: derivedMime,
+      filename: getDerivedFilename(sourceAsset.id, sourceAsset.filename, derivedMime),
+      immutable,
+    });
     ctx.body = derivedImage;
     return;
   }
@@ -233,7 +248,12 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   const stats = await getS3FileStats(bucket, key);
   const stream = await getS3File(bucket, key);
 
-  setAssetHeaders(ctx, sourceAsset.mime ?? 'application/octet-stream', sourceFilename, stats);
+  setAssetHeaders(ctx, {
+    mime: sourceAsset.mime ?? 'application/octet-stream',
+    filename: sourceFilename,
+    immutable,
+    ...assetValidators(stats),
+  });
 
   if (isSvg) {
     // An inline SVG renders as a document on this origin; sandbox it and block all resource loading
