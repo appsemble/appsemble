@@ -26,9 +26,9 @@ so nothing hit.)
 ## Incremental re-analysis (shipped: `buildTree`)
 
 The caller passes the changed paths (an LSP has them from edit ranges); the engine re-walks only the
-subtree enclosing each, from the nearest `$ref` boundary (`boundaryFor`), and reuses the rest of the
-previous tree. No content hashing, diffing, or library — the retained previous tree is the cache.
-Checked against a full analysis every time (identical `mounts` throughout):
+subtree enclosing each, from the nearest `$ref` boundary (`Node.boundaryAt`), and reuses the rest of
+the previous tree. No content hashing, diffing, or library — the retained previous tree is the
+cache. Checked against a full analysis every time (identical `mounts` throughout):
 
 - **single-leaf edit (per-keystroke case): 3,148 ms → 37 ms, 84x** on reservations (2,339 objects).
 - replaying 84 git commits: only 1.6x — each commit bundles ~33 scattered edits whose boundaries

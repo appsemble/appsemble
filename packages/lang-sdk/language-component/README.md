@@ -290,7 +290,7 @@ tree = buildTree(ctx, app, {
 
 Only the subtree enclosing each changed path (from its nearest `$ref` boundary, found by
 `Node.boundaryAt`) is re-walked; the rest of the tree is reused. On a ~2,300-object app a
-single-leaf edit is ~9 ms versus a multi-second full build (see `PERFORMANCE.md`). No hashing or
+single-leaf edit is ~37 ms versus a multi-second full build (see `PERFORMANCE.md`). No hashing or
 diffing — the retained previous tree is the cache, and the caller supplies what changed.
 
 A `scan` returns a `ScanResult`: a `MountIndex` (so `mountAt` looks a node up by path, `nodeAt`
