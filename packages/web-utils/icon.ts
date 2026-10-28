@@ -69,13 +69,23 @@ export function getMessageIcon(color?: BulmaColor): IconName | undefined {
 /**
  * Build the URL of an icon asset.
  *
+ * The URL carries the asset id when it is known, because the asset served under an id never
+ * changes, so it can be cached for good. Otherwise it carries the asset name.
+ *
  * @param apiUrl The base URL of the Appsemble API.
  * @param appId The ID of the app owning the asset.
  * @param asset The validated name of the asset.
+ * @param assetIds The asset ids of the app’s icon assets, by asset name.
  * @returns The URL the asset is served from.
  */
-export function getIconAssetUrl(apiUrl: string, appId: number, asset: string): string {
-  return `${apiUrl}/api/apps/${appId}/assets/${encodeURIComponent(asset)}`;
+export function getIconAssetUrl(
+  apiUrl: string,
+  appId: number,
+  asset: string,
+  assetIds?: Record<string, string>,
+): string {
+  const id = assetIds && Object.hasOwn(assetIds, asset) ? assetIds[asset] : asset;
+  return `${apiUrl}/api/apps/${appId}/assets/${encodeURIComponent(id)}`;
 }
 
 /**

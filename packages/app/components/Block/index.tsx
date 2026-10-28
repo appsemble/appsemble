@@ -15,7 +15,7 @@ import {
 } from '@appsemble/react-components';
 import { type BlockUtils } from '@appsemble/sdk';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
-import { createIconElement, fa, resolveIcon } from '@appsemble/web-utils';
+import { createIconElement, fa, getIconAssetUrl, resolveIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -28,7 +28,7 @@ import { callBootstrap, getBlockFileURL } from '../../utils/bootstrapper.js';
 import { createEvents } from '../../utils/events.js';
 import { injectCSS } from '../../utils/injectCSS.js';
 import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
-import { apiUrl, appId, appUpdated } from '../../utils/settings.js';
+import { apiUrl, appId, appUpdated, iconAssetIds } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -247,7 +247,9 @@ export function Block({
       },
       fa,
       resolveIcon(reference) {
-        return resolveIcon(reference, appDefinition.icons, utils.asset);
+        return resolveIcon(reference, appDefinition.icons, (asset) =>
+          getIconAssetUrl(apiUrl, appId, asset, iconAssetIds),
+        );
       },
       icon(reference, options) {
         return createIconElement(utils.resolveIcon(reference), options);

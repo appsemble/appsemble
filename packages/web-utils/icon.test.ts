@@ -35,6 +35,23 @@ describe('getIconAssetUrl', () => {
       'https://example.com/api/apps/42/assets/a%20b%2Fc',
     );
   });
+
+  it('should address the asset by id when its id is known', () => {
+    expect(
+      getIconAssetUrl('https://example.com', 42, 'company-logo', {
+        'company-logo': '0f2793d9-e819-4b5c-9d4e-2a1f0c3b7e61',
+      }),
+    ).toBe('https://example.com/api/apps/42/assets/0f2793d9-e819-4b5c-9d4e-2a1f0c3b7e61');
+  });
+
+  it('should address the asset by name when its id is unknown', () => {
+    expect(getIconAssetUrl('https://example.com', 42, 'company-logo', {})).toBe(
+      'https://example.com/api/apps/42/assets/company-logo',
+    );
+    expect(getIconAssetUrl('https://example.com', 42, 'constructor', {})).toBe(
+      'https://example.com/api/apps/42/assets/constructor',
+    );
+  });
 });
 
 describe('resolveIcon', () => {
