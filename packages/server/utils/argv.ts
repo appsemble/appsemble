@@ -446,6 +446,14 @@ export interface Argv {
   disableRegistration: boolean;
 
   /**
+   * Whether or not to reject new passwords that appear in the Have I Been Pwned Pwned Passwords
+   * data set.
+   *
+   * @default false
+   */
+  rejectBreachedPasswords: boolean;
+
+  /**
    * The remote to use synchronizing blocks.
    *
    * @example 'https://appsemble.app'
@@ -779,6 +787,7 @@ const defaults: Argv = {
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   googleClientSecret: undefined,
   disableRegistration: false,
+  rejectBreachedPasswords: false,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   remote: null,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)

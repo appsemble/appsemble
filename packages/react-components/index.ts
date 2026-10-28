@@ -5,6 +5,7 @@ export * from './AsyncSelect/index.js';
 export * from './Button/index.js';
 export * from './ButtonChildren/index.js';
 export * from './Box/index.js';
+export * from './BreachedPasswordSimpleFormError/index.js';
 export * from './CardFooterButton/index.js';
 export * from './Checkbox/index.js';
 export * from './CheckboxField/index.js';

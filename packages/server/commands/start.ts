@@ -94,6 +94,11 @@ export function builder(yargs: Argv): Argv {
       type: 'boolean',
       default: false,
     })
+    .option('reject-breached-passwords', {
+      desc: 'If specified, new passwords that appear in the Have I Been Pwned Pwned Passwords data set are rejected',
+      type: 'boolean',
+      default: false,
+    })
     .option('app-domain-strategy', {
       desc: 'How to link app domain names to apps',
       choices: ['kubernetes-ingress'],

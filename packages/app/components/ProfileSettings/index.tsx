@@ -1,4 +1,5 @@
 import {
+  BreachedPasswordSimpleFormError,
   Button,
   FileUpload,
   FormButtons,
@@ -217,6 +218,9 @@ export function ProfileSettings(): ReactNode {
                 defaultValues={{ currentPassword: '', newPassword: '' }}
                 onSubmit={onChangePassword}
               >
+                <BreachedPasswordSimpleFormError>
+                  {() => <FormattedMessage {...messages.submitError} />}
+                </BreachedPasswordSimpleFormError>
                 <SimpleFormField
                   component={PasswordField}
                   label={<FormattedMessage {...messages.oldPassword} />}

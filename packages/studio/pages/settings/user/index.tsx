@@ -1,5 +1,6 @@
 import {
   AsyncButton,
+  BreachedPasswordSimpleFormError,
   Button,
   CheckboxField,
   Content,
@@ -260,9 +261,9 @@ export function UserPage(): ReactNode {
               onSubmit={onChangePassword}
               resetOnSuccess
             >
-              <SimpleFormError>
+              <BreachedPasswordSimpleFormError>
                 {() => <FormattedMessage {...messages.wrongPasswordError} />}
-              </SimpleFormError>
+              </BreachedPasswordSimpleFormError>
               <SimpleFormField
                 autoComplete="current-password"
                 component={PasswordField}
