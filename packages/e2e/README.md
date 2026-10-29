@@ -95,6 +95,28 @@ export const test = base.extend<object>({
 });
 ```
 
+## Resource lifecycle tracking
+
+Resources created using `createTestResource` are tracked and automatically deleted at the end of the
+test by default.
+
+Set `trackBrowserResources` to `true` to also track resources created by browser `POST` requests:
+
+```ts
+test.use({ trackBrowserResources: true });
+```
+
+Set `autoCleanupResources` to `false` to preserve all tracked resources after the test. This can be
+useful when inspecting resources created by a failed test.
+
+```ts
+test.use({ autoCleanupResources: false });
+```
+
+> **Note:** Only resources created by browser `POST` requests and resources created using the
+> `createTestResource` are tracked. Resources created using other methods like webhooks do not get
+> tracked.
+
 ## Contributing
 
 When writing end-to-end tests, have a look at the
