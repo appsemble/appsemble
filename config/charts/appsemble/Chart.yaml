@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.7
-appVersion: 0.40.7
+version: 0.40.8
+appVersion: 0.40.8
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,104 +32,12 @@ dependencies:
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "Block(chart): Add description and a data table that screen reader
-        and keyboard users can use."
-    - kind: added
-      description: "Block(detail-viewer): Add captions to video fields for a WebVTT
-        captions file."
-    - kind: added
-      description: "Block(detail-viewer): Add labelLevel to set the heading level of
-        field labels."
-    - kind: added
-      description: "Block(feed): Add titleLevel to set the heading level of card titles."
-    - kind: added
-      description: "Block(form): Support explicit 12-hour and 24-hour time input controls."
-    - kind: added
-      description: "Block(map): Add markerLabel to give markers an accessible name."
-    - kind: added
-      description: "Block(wordcloud): Add description and a word frequency list for
-        screen readers."
-    - kind: added
-      description: "App: Explain when a new password is rejected because it appears in
-        a data breach."
-    - kind: added
-      description: "E2e: Add resource lifecycle tracking and configurable automatic cleanup."
-    - kind: added
-      description: "E2e: Attach an HTML accessibility report that lists the failing
-        elements and blocks of each page."
-    - kind: added
-      description: "E2e: Write the accessibility scan results as a GitLab accessibility report."
-    - kind: added
-      description: "Scripts: Fail validation when an app or app template pins an
-        outdated block version."
-    - kind: added
-      description: "Server: Add the reject-breached-passwords option to reject new
-        passwords found in known data breaches."
-    - kind: changed
-      description: "Block(cards): Make the footer button icon optional and show button
-        labels on mobile."
-    - kind: changed
-      description: "Block(detail-viewer): Render geocoordinates and video labels as
-        level 6 headings instead of level 1."
     - kind: fixed
-      description: "Block(barcode-scan): Remove the captions track that points to a
-        missing file."
+      description: "Server: Fix companion container access when the Helm release
+        namespace differs from its name."
     - kind: fixed
-      description: "Block(barcode-scan): Translate the selected image texts."
-    - kind: fixed
-      description: "Block(cards): Hide card images without alternative text from
-        screen readers."
-    - kind: fixed
-      description: "Block(detail-viewer): Use valid bullet point list markup and name
-        the video player and its thumbnail."
-    - kind: fixed
-      description: "Block(feed): Translate the default button label."
-    - kind: fixed
-      description: "Block(filter): Name fields without a label by their field name for
-        screen readers."
-    - kind: fixed
-      description: "Block(form): Stop smooth scrolling to a field when the user
-        prefers reduced motion."
-    - kind: fixed
-      description: "Block(form): Translate the add button, option loading error and
-        Markdown toolbar labels."
-    - kind: fixed
-      description: "Block(list): Stop smooth scrolling to the linked item when the
-        user prefers reduced motion."
-    - kind: fixed
-      description: "Block(map): Launch onMarkerClick when a marker is activated with
-        the keyboard."
-    - kind: fixed
-      description: "Block(paginator): Add a navigation landmark, page status and
-        disabled end buttons."
-    - kind: fixed
-      description: "App: Display messages triggered by controller action callbacks."
-    - kind: fixed
-      description: "App: Expose flow page progress and loading blocks to assistive technology."
-    - kind: fixed
-      description: "App: Give the profile picture camera button an accessible name."
-    - kind: fixed
-      description: "App: Keep app member sessions active when switching groups."
-    - kind: fixed
-      description: "App: Move focus to the page on navigation and flow step changes."
-    - kind: fixed
-      description: "App: Render the page name in the title bar as the H1."
-    - kind: fixed
-      description: "App: Shorten transitions and stop smooth scrolling when the user
-        prefers reduced motion."
-    - kind: fixed
-      description: "App: Show the app store link in the side menu in the link color."
-    - kind: fixed
-      description: "E2e: Scan a page that a link redirects to only once."
-    - kind: fixed
-      description: "Lang-sdk: Reject client-side actions in webhooks."
-    - kind: fixed
-      description: "Lang-sdk: Validate blocks in match cases, basic page actions and webhooks."
-    - kind: fixed
-      description: "Preact-components: Stop presenting the static Location marker as a button."
-    - kind: fixed
-      description: "Server: Notify app member roles from server side notify actions."
+      description: "Server: Fix the cleanup, subscription charge and container scaling
+        Helm cron jobs."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.8](https://gitlab.com/appsemble/appsemble/-/releases/0.40.8)] - 2026-10-29
+
+### Fixed
+
+- Server: Fix companion container access when the Helm release namespace differs from its name.
+- Server: Fix the cleanup, subscription charge and container scaling Helm cron jobs.
+
 ## \[[0.40.7](https://gitlab.com/appsemble/appsemble/-/releases/0.40.7)] - 2026-10-29
 
 ### Added
