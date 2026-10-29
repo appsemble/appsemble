@@ -1,7 +1,9 @@
+import { type JSONSchema } from '@ngruychev/json-schema-to-ts';
 import { type Schema } from 'jsonschema';
 
 import { mapValues } from '../mapValues.js';
 import { type Node } from './node.js';
+import { type LocalValue } from './overlay-schema.js';
 import {
   COMPONENT_KEY,
   isTagged,
@@ -170,6 +172,20 @@ export class LanguageComponent<Name extends string = string, V = unknown, Ctx = 
       ? schema
       : withTag(schema, name, tagMode(schema) ?? 'single');
     return new LanguageComponent<Name, V, Ctx>(name, annotated, binding);
+  }
+
+  // `define` for a `const` schema literal: the value type is its `LocalValue`. The cast only drops
+  // `as const`'s readonly, which jsonschema's mutable `Schema` does not accept.
+  static defineFromSchema<const Name extends string, const Comp extends JSONSchema, Ctx = unknown>(
+    name: Name,
+    schema: Comp,
+    binding: LanguageComponentBinding<Ctx>,
+  ): LanguageComponent<Name, LocalValue<Comp>, Ctx> {
+    return LanguageComponent.define<Name, LocalValue<Comp>, Ctx>(
+      name,
+      schema as unknown as Schema,
+      binding,
+    );
   }
 
   // The `name -> schema` registry from a def list, for `LanguageCtx.compile`. Every value is tagged

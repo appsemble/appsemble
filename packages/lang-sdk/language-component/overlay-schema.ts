@@ -1,7 +1,5 @@
 import type { FromSchema, JSONSchema } from '@ngruychev/json-schema-to-ts';
-import { type Schema } from 'jsonschema';
 
-import { LanguageComponent, type LanguageComponentBinding } from './languageComponent.js';
 import { type Components } from './node.js';
 
 /**
@@ -55,21 +53,3 @@ export type ComponentName<Comp> = Comp extends { $id: infer Id extends string } 
 export type DeriveComponents<Refs extends JSONSchemaReference[]> = {
   [Ref in Refs[number] as ComponentName<Ref>]: LocalValue<Ref>;
 } & Components;
-
-// `LanguageComponent.define` for a `const` schema literal: the value type is its `LocalValue`. The cast
-// only drops `as const`'s readonly, which jsonschema's mutable `Schema` does not accept.
-export function defineFromSchema<
-  const Name extends string,
-  const Comp extends JSONSchema,
-  Ctx = unknown,
->(
-  name: Name,
-  schema: Comp,
-  binding: LanguageComponentBinding<Ctx>,
-): LanguageComponent<Name, LocalValue<Comp>, Ctx> {
-  return LanguageComponent.define<Name, LocalValue<Comp>, Ctx>(
-    name,
-    schema as unknown as Schema,
-    binding,
-  );
-}

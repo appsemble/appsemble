@@ -2,7 +2,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { LanguageComponent } from './languageComponent.js';
 import { LanguageCtx } from './languageCtx.js';
-import { defineFromSchema, type LCValue, type LocalValue } from './overlay-schema.js';
+import { type LCValue, type LocalValue } from './overlay-schema.js';
 
 /*
  * Language components whose value types are derived from `const` schema literals instead of
@@ -29,8 +29,8 @@ const menuSchema = {
   },
 } as const;
 
-const link = defineFromSchema('Link', linkSchema, {});
-const menu = defineFromSchema('Menu', menuSchema, {});
+const link = LanguageComponent.defineFromSchema('Link', linkSchema, {});
+const menu = LanguageComponent.defineFromSchema('Menu', menuSchema, {});
 
 describe('schema-derived language components', () => {
   const ctx = LanguageCtx.compileComponents([menu, link], 'Menu');
@@ -65,7 +65,7 @@ describe('schema-derived language components', () => {
     expectTypeOf<LocalValue<typeof pageSchema>>().toEqualTypeOf<{ links: unknown[] }>();
 
     // A deep root type next to local registry entries: only the root follows its references.
-    const page = defineFromSchema('Page', pageSchema, {});
+    const page = LanguageComponent.defineFromSchema('Page', pageSchema, {});
     const deep = LanguageCtx.compile<Page, { Link: LocalValue<typeof linkSchema> }>(
       LanguageComponent.schemas([page, link]),
       'Page',

@@ -15,8 +15,6 @@ export {
   type RootValue,
 } from './languageComponent.js';
 export { type CompileOptions, LanguageCtx, type ScanValidation } from './languageCtx.js';
-// The opt-in FromSchema derivation (`./overlay-schema.js`) is a deep import on purpose, so the barrel
-// never pulls in json-schema-to-ts.
 export { type ChildValue, type ChildValues, type Components, Node } from './node.js';
 export {
   type Discriminator,

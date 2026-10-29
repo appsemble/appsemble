@@ -477,21 +477,20 @@ const href: string | undefined = root.child('children')?.child(0)?.as('Link')?.v
 With a schema map instead of defs, pass the types directly:
 `LanguageCtx.compile<Menu, { Menu: Menu; Link: Link }>(schemas, 'Menu')`.
 
-`overlay-schema.ts` is the opt-in `FromSchema` derivation
-(`LocalValue`/`LCValue`/`DeriveComponents`) for consumers who want value types generated from
-`const` schema literals. It is the only part that touches the published
-`@ngruychev/json-schema-to-ts` fork's `ignoreRefSiblings` option (draft-07), and it is a deep import
-(the barrel never pulls it in), so `Node`'s recursion-safety is unconditional.
+`overlay-schema.ts` holds the `FromSchema` derivation (`LocalValue`/`LCValue`/`DeriveComponents`)
+for value types generated from `const` schema literals, using the `@ngruychev/json-schema-to-ts`
+fork's draft-07 `ignoreRefSiblings` option. `Node` never transforms a schema type, so its
+recursion-safety does not depend on it.
 
-`defineFromSchema(name, constSchema, binding)` is `define` with the value type set to the schema's
-`LocalValue`. `LocalValue` cuts each `$ref` to `unknown`, so recursive components work, and `as`
-restores the referenced component's type. `LCValue` follows `$ref`s and is for non-recursive
-references only; on a recursive one tsc fails with TS2615.
+`LanguageComponent.defineFromSchema(name, constSchema, binding)` is `define` with the value type set
+to the schema's `LocalValue`. `LocalValue` cuts each `$ref` to `unknown`, so recursive components
+work, and `as` restores the referenced component's type. `LCValue` follows `$ref`s and is for
+non-recursive references only; on a recursive one tsc fails with TS2615.
 
 ```ts
 // Both schemas are `as const`; Menu's children are `oneOf: [{ $ref: 'Menu' }, { $ref: 'Link' }]`.
-const link = defineFromSchema('Link', linkSchema, {});
-const menu = defineFromSchema('Menu', menuSchema, {});
+const link = LanguageComponent.defineFromSchema('Link', linkSchema, {});
+const menu = LanguageComponent.defineFromSchema('Menu', menuSchema, {});
 
 const root = LanguageCtx.compileComponents([menu, link], 'Menu').root(data);
 const menuValue: { label: string; children: unknown[] } = root.val;
