@@ -174,6 +174,7 @@ export function BlockList({
           ee,
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           remap,
+          showMessage: push,
           appMemberGroups,
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           addAppMemberGroup,
