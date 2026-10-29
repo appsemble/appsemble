@@ -138,6 +138,7 @@ const allYamlErrors = expect.arrayContaining([
 
 interface Client {
   connection: MessageConnection;
+  telemetry: TelemetryImpl;
   publishes: { uri: string; diagnostics: Diagnostic[] }[];
   logs: string[];
   open: (text: string) => void;
@@ -164,12 +165,13 @@ async function startServer(): Promise<Client> {
     new StreamMessageWriter(toClient),
   );
   const settings = new SettingsState();
+  const telemetry = new TelemetryImpl(serverConnection);
   new YAMLServerInit(
     serverConnection,
     settings,
     workspaceContext,
     { handle: () => Promise.reject(new Error('No external schemas in tests')) },
-    new TelemetryImpl(serverConnection),
+    telemetry,
   ).start();
 
   const connection = createMessageConnection(
@@ -206,6 +208,7 @@ async function startServer(): Promise<Client> {
   const latest = (): Diagnostic[] => publishes.at(-1)?.diagnostics ?? [];
   return {
     connection,
+    telemetry,
     publishes,
     logs,
     open(text) {
@@ -362,6 +365,21 @@ describe('yaml language service diagnostics across block set changes', () => {
 
     await client.waitForDiagnostics((diagnostics) =>
       expect(yamlServiceMessages(diagnostics)).toStrictEqual(allYamlErrors),
+    );
+  });
+});
+
+describe('language service errors', () => {
+  it('shows an error the yaml language service reports in the language server output', async () => {
+    client.telemetry.sendError(
+      'yaml.validation.error',
+      new RangeError('Maximum call stack size exceeded'),
+    );
+
+    await vi.waitFor(() =>
+      expect(client.logs.join('\n')).toMatch(
+        /yaml\.validation\.error: RangeError: Maximum call stack size exceeded/,
+      ),
     );
   });
 });

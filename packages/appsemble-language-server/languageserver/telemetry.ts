@@ -22,7 +22,11 @@ export class TelemetryImpl implements Telemetry {
   }
 
   sendError(name: string, error: unknown): void {
-    this.send({ name, type: 'track', properties: { error: convertErrorToTelemetryMsg(error) } });
+    const message = convertErrorToTelemetryMsg(error);
+    // The yaml language service reports its own failures only here, so log them as well, where they
+    // show in the language server output.
+    this.connection.console.error(`${name}: ${message}`);
+    this.send({ name, type: 'track', properties: { error: message } });
   }
 
   sendTrack(name: string, properties: unknown): void {
