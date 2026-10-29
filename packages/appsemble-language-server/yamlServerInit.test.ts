@@ -6,8 +6,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createConnection,
   createMessageConnection,
+  type CompletionItem,
+  type CompletionList,
   type Diagnostic,
+  type Hover,
   type MessageConnection,
+  type Position,
   StreamMessageReader,
   StreamMessageWriter,
 } from 'vscode-languageserver/node.js';
@@ -38,7 +42,7 @@ const manifests: Record<string, unknown> = Object.fromEntries(
         type: 'object',
         additionalProperties: false,
         properties: {
-          icon: { type: 'string' },
+          icon: { type: 'string', description: 'The icon the block shows.' },
           fields: { type: 'array', items: { $ref: '#/definitions/Field' } },
         },
         definitions: {
@@ -143,6 +147,8 @@ interface Client {
   logs: string[];
   open: (text: string) => void;
   change: (text: string) => void;
+  completionLabels: (position: Position) => Promise<string[]>;
+  hoverText: (position: Position) => Promise<string>;
 
   /**
    * Wait until the server publishes diagnostics that satisfy the assertion.
@@ -215,6 +221,27 @@ async function startServer(): Promise<Client> {
       connection.sendNotification('textDocument/didOpen', {
         textDocument: { uri, languageId: 'yaml', version, text },
       });
+    },
+    async completionLabels(position) {
+      const result = await connection.sendRequest<CompletionItem[] | CompletionList | null>(
+        'textDocument/completion',
+        { textDocument: { uri }, position },
+      );
+      const items = Array.isArray(result) ? result : (result?.items ?? []);
+      return items.map(({ label }) => label);
+    },
+    async hoverText(position) {
+      const result = await connection.sendRequest<Hover | null>('textDocument/hover', {
+        textDocument: { uri },
+        position,
+      });
+      const contents = result?.contents;
+      if (!contents) {
+        return '';
+      }
+      return typeof contents === 'object' && 'value' in contents
+        ? contents.value
+        : JSON.stringify(contents);
     },
     change(text) {
       version += 1;
@@ -399,5 +426,117 @@ describe('documents the app validation cannot read', () => {
     const aliasDiagnostic = diagnostics.find(({ message }) => message.includes('missingAnchor'));
     // `description` is the second line of the app definition.
     expect(aliasDiagnostic?.range.start.line).toBe(1);
+  });
+});
+
+/**
+ * The position at the end of the first line of the text that matches the pattern.
+ *
+ * @param text The document text.
+ * @param pattern A pattern matching the whole line.
+ * @param character The character on the line, or the end of the line.
+ * @returns The position.
+ */
+function positionOf(text: string, pattern: RegExp, character?: number): Position {
+  const lines = text.split('\n');
+  const line = lines.findIndex((candidate) => pattern.test(candidate));
+  expect(line).not.toBe(-1);
+  return { line, character: character ?? lines[line].length };
+}
+
+/**
+ * An app whose first block has an empty parameter line to complete and an `icon` to hover.
+ *
+ * @param blocks Further blocks to place after the first one.
+ * @returns The app definition YAML.
+ */
+function appToInspect(blocks: Block[]): string {
+  return app([{ ...alpha, parameters: ['icon: plus', ''] }, ...blocks]);
+}
+
+interface Inspection {
+  parameterCompletions: string[];
+  parameterHover: string;
+  appHover: string;
+}
+
+/**
+ * Ask for completions on the empty block parameter line, and hover the `icon` block parameter and
+ * the app's `defaultPage`.
+ *
+ * @param text The app definition the server has open.
+ * @returns What the server answered.
+ */
+async function inspect(text: string): Promise<Inspection> {
+  return {
+    parameterCompletions: await client.completionLabels(positionOf(text, /^ {10}$/)),
+    parameterHover: await client.hoverText(positionOf(text, /^ {10}icon: plus$/, 11)),
+    appHover: await client.hoverText(positionOf(text, /^defaultPage:/, 2)),
+  };
+}
+
+const answersFromBlockAndAppSchemas = {
+  parameterCompletions: expect.arrayContaining(['fields']),
+  parameterHover: expect.stringMatching(/The icon the block shows\./),
+  appHover: expect.stringMatching(/The name of the page that should be displayed/),
+};
+
+describe('completion and hover across block set changes', () => {
+  it('completes and describes block parameters on the first load', async () => {
+    const text = appToInspect([]);
+    client.open(text);
+    await client.settle();
+
+    expect(await inspect(text)).toStrictEqual(answersFromBlockAndAppSchemas);
+  });
+
+  it('completes and describes block parameters after a block it has not seen is added', async () => {
+    client.open(app([alpha]));
+    await client.settle();
+
+    const text = appToInspect([beta]);
+    client.change(text);
+    await client.settle();
+
+    expect(await inspect(text)).toStrictEqual(answersFromBlockAndAppSchemas);
+  });
+
+  it('completes and describes block parameters after returning to blocks it already loaded', async () => {
+    client.open(appToInspect([beta]));
+    await client.settle();
+    client.change(app([alpha, gamma]));
+    await client.settle();
+
+    const text = appToInspect([beta]);
+    client.change(text);
+    await client.settle();
+
+    expect(await inspect(text)).toStrictEqual(answersFromBlockAndAppSchemas);
+  });
+
+  it('completes and describes block parameters after ten block set changes', async () => {
+    client.open(app([alpha]));
+    await client.settle();
+    for (const blocks of [
+      [alpha, beta],
+      [beta],
+      [beta, gamma],
+      [alphaNext],
+      [alpha, gamma],
+      [gamma],
+      [alpha, beta, gamma],
+      [alphaNext, beta],
+      [beta],
+      [alpha],
+    ]) {
+      client.change(app(blocks));
+      await client.settle();
+    }
+
+    const text = appToInspect([gamma]);
+    client.change(text);
+    await client.settle();
+
+    expect(await inspect(text)).toStrictEqual(answersFromBlockAndAppSchemas);
   });
 });
