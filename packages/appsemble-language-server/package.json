@@ -1,0 +1,72 @@
+{
+  "name": "@appsemble/appsemble-language-server",
+  "version": "0.40.6",
+  "private": true,
+  "description": "A language server for Appsemble app definitions",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "languageserver",
+    "low-code",
+    "lowcode",
+    "lsp"
+  ],
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/appsemble-language-server"
+  },
+  "files": [
+    "**/*.d.ts",
+    "**/*.js",
+    "**/*.js.map",
+    "!*.config.js",
+    "!**/*.test.js",
+    "!**/*.test.d.ts"
+  ],
+  "bin": {
+    "appsemble-language-server": "./build/server.js"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "ts-source": "./index.ts",
+      "default": "./index.js"
+    }
+  },
+  "scripts": {
+    "test": "vitest",
+    "start": "tsx server.ts",
+    "prepack": "tsc --noEmit false",
+    "build": "tsx ./esbuild.ts"
+  },
+  "dependencies": {
+    "@appsemble/lang-sdk": "0.40.6",
+    "@vscode/l10n": "^0.0.18",
+    "jsonschema": "~1.4.1",
+    "lodash-es": "^4.17.21",
+    "request-light": "~0.5.7",
+    "type-fest": "^4.0.0",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-protocol": "^3.17.5",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-languageserver-types": "^3.17.5",
+    "vscode-uri": "^3.1.0",
+    "yaml": "^2.8.1",
+    "yaml-language-server": "1.21.0"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "esbuild": "^0.25.9",
+    "esbuild-plugins-node-modules-polyfill": "^1.8.2",
+    "esbuild-shim-plugin": "^1.0.3",
+    "vitest": "2.1.9"
+  }
+}
