@@ -4668,6 +4668,43 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([]);
   });
 
+  it('should not report an unexpected error for a flow page without steps', async () => {
+    const app = createTestApp();
+    app.pages.push({ name: 'Flow', type: 'flow' } as unknown as AppDefinition['pages'][number]);
+    const schemaResult = new AppValidator().validateApp(app);
+
+    const result = await validateAppDefinition(app, () => [], undefined, schemaResult);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ message: 'requires property "steps"' }),
+    );
+    expect(result.errors).not.toContainEqual(
+      expect.objectContaining({ message: expect.stringContaining('Unexpected error') }),
+    );
+  });
+
+  it('should keep checking the app when a container page has no pages', async () => {
+    const app = createTestApp();
+    app.pages.push({
+      name: 'Container',
+      type: 'container',
+    } as unknown as AppDefinition['pages'][number]);
+    app.security = { ...app.security!, default: { role: 'Missing' } };
+    const schemaResult = new AppValidator().validateApp(app);
+
+    const result = await validateAppDefinition(app, () => [], undefined, schemaResult);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: 'does not exist in this app’s roles',
+        path: ['security', 'default', 'role'],
+      }),
+    );
+    expect(result.errors).not.toContainEqual(
+      expect.objectContaining({ message: expect.stringContaining('Unexpected error') }),
+    );
+  });
+
   it('should reject navbar breakpoints without a layout without aborting validation', async () => {
     const app = createTestApp();
     app.layout = {
