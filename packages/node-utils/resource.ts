@@ -281,7 +281,7 @@ export async function processResourceBody(
     ({ prepared, used }, { asset, index }) => {
       const reg = preparedRegularAssets.find(
         (regular) =>
-          regular.asset.filename?.startsWith(asset.filename.replace(thumbnailAssetSuffix, '')) &&
+          regular.asset.filename?.startsWith(asset.filename!.replace(thumbnailAssetSuffix, '')) &&
           !used.includes(regular.asset.id),
       );
       const id = reg ? `${reg.asset.id}-thumbnail` : randomUUID();

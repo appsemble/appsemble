@@ -108,7 +108,7 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@types/busboy": "1.5.4",
+    "@types/busboy": "1.5.5",
     "@types/css-tree": "2.3.11",
     "@types/express-to-koa": "1.0.4",
     "@types/koa-mount": "4.0.5",

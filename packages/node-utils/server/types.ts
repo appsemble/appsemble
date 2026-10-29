@@ -560,13 +560,24 @@ export interface Options {
 }
 
 export class TempFile {
-  readonly filename: string;
+  /**
+   * The name of the uploaded file, if the multipart part supplied one.
+   */
+  readonly filename: string | undefined;
 
   readonly mime: string;
 
   readonly path: string;
 
-  constructor({ filename, mime, path }: { filename: string; mime: string; path: string }) {
+  constructor({
+    filename,
+    mime,
+    path,
+  }: {
+    filename: string | undefined;
+    mime: string;
+    path: string;
+  }) {
     this.filename = filename;
     this.mime = mime;
     this.path = path;
