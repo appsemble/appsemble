@@ -1,7 +1,6 @@
 {
   "name": "@appsemble/appsemble-language-server",
   "version": "0.40.8",
-  "private": true,
   "description": "A language server for Appsemble app definitions",
   "keywords": [
     "app",
@@ -39,12 +38,13 @@
     ".": {
       "ts-source": "./index.ts",
       "default": "./index.js"
-    }
+    },
+    "./worker": "./build/worker.js"
   },
   "scripts": {
     "test": "vitest",
     "start": "tsx server.ts",
-    "prepack": "tsc --noEmit false",
+    "prepack": "tsc --noEmit false && npm run build",
     "build": "tsx ./esbuild.ts"
   },
   "dependencies": {
