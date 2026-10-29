@@ -168,49 +168,56 @@ describe('syncOrganizationBlocks', () => {
   });
 
   it.each`
-    description                                                  | local                        | remoteVersion     | expected
-    ${'a block that does not exist locally'}                     | ${[]}                        | ${'1.0.0'}        | ${['1.0.0']}
-    ${'a newer version of a block'}                              | ${['1.0.0']}                 | ${'1.1.0'}        | ${['1.0.0', '1.1.0']}
-    ${'a release of a local prerelease'}                         | ${['1.0.0-test.1']}          | ${'1.0.0'}        | ${['1.0.0', '1.0.0-test.1']}
-    ${'nothing if the block is up to date'}                      | ${['1.1.0']}                 | ${'1.1.0'}        | ${['1.1.0']}
-    ${'nothing if the remote version is older'}                  | ${['1.1.0']}                 | ${'1.0.0'}        | ${['1.1.0']}
-    ${'nothing if the remote has a prerelease'}                  | ${['1.0.0']}                 | ${'1.0.0-test.1'} | ${['1.0.0']}
-    ${'nothing if the newest local version sorts first as text'} | ${['9.0.0', '10.0.0']}       | ${'10.0.0'}       | ${['10.0.0', '9.0.0']}
-    ${'nothing if a local prerelease of it sorts last as text'}  | ${['1.0.0', '1.0.0-test.1']} | ${'1.0.0'}        | ${['1.0.0', '1.0.0-test.1']}
+    description                                       | version     | local        | expected
+    ${'a block that does not exist locally'}          | ${'1.1.0'}  | ${[]}        | ${['1.1.0']}
+    ${'a version newer than the local versions'}      | ${'1.1.0'}  | ${['1.0.0']} | ${['1.0.0', '1.1.0']}
+    ${'a version older than the local versions'}      | ${'1.1.0'}  | ${['2.0.0']} | ${['1.1.0', '2.0.0']}
+    ${'nothing if the version exists locally'}        | ${'1.1.0'}  | ${['1.1.0']} | ${['1.1.0']}
+    ${'the latest version of a missing block'}        | ${'latest'} | ${[]}        | ${['3.0.0']}
+    ${'the latest version of an outdated block'}      | ${'latest'} | ${['1.0.0']} | ${['1.0.0', '3.0.0']}
+    ${'nothing if the latest version exists locally'} | ${'latest'} | ${['3.0.0']} | ${['3.0.0']}
   `(
     'should synchronize $description',
     async ({
       expected,
       local,
-      remoteVersion,
+      version,
     }: {
       expected: string[];
       local: string[];
-      remoteVersion: string;
+      version: string;
     }) => {
-      for (const version of local) {
-        await BlockVersion.create({ OrganizationId: organizationId, name: blockName, version });
+      for (const localVersion of local) {
+        await BlockVersion.create({
+          OrganizationId: organizationId,
+          name: blockName,
+          version: localVersion,
+        });
       }
       mock
         .onGet(organizationBlocksUrl)
-        .reply(200, [{ name: `@${organizationId}/${blockName}`, version: remoteVersion }]);
-      mockRemoteBlock(remoteVersion);
+        .reply(200, [{ name: `@${organizationId}/${blockName}`, version: '3.0.0' }]);
+      mockRemoteBlock('1.1.0');
+      mockRemoteBlock('3.0.0');
 
-      await syncOrganizationBlocks(organizationId);
+      await syncOrganizationBlocks(organizationId, version);
 
       expect(await getLocalVersions()).toStrictEqual(expected);
     },
   );
 
   it('should skip a block whose version is not found on the remote', async () => {
-    mock
-      .onGet(organizationBlocksUrl)
-      .reply(200, [{ name: `@${organizationId}/${blockName}`, version: '1.0.0' }]);
-    mock.onGet(`${remote}/api/blocks/@${organizationId}/${blockName}/versions/1.0.0`).reply(404);
+    mock.onGet(organizationBlocksUrl).reply(200, [
+      { name: `@${organizationId}/removed`, version: '0.9.0' },
+      { name: `@${organizationId}/${blockName}`, version: '1.0.0' },
+    ]);
+    mock.onGet(`${remote}/api/blocks/@${organizationId}/removed/versions/1.0.0`).reply(404);
+    mockRemoteBlock('1.0.0');
 
-    await syncOrganizationBlocks(organizationId);
+    await syncOrganizationBlocks(organizationId, '1.0.0');
 
-    expect(await getLocalVersions()).toStrictEqual([]);
+    expect(await getLocalVersions()).toStrictEqual(['1.0.0']);
+    expect(await BlockVersion.count({ where: { name: 'removed' } })).toBe(0);
   });
 
   it('should create a missing organization from the remote', async () => {
@@ -228,7 +235,7 @@ describe('syncOrganizationBlocks', () => {
       .onGet(`${remote}/api/blocks/@${id}/${blockName}/versions/1.0.0`)
       .reply(200, { name: `@${id}/${blockName}`, version: '1.0.0', files: [], languages: null });
 
-    await syncOrganizationBlocks(id);
+    await syncOrganizationBlocks(id, '1.0.0');
 
     const organization = await Organization.findByPk(id, { include: [User] });
     expect(organization).toMatchObject({
@@ -247,7 +254,7 @@ describe('syncOrganizationBlocks', () => {
       .reply(200, [{ name: `@${organizationId}/${blockName}`, version: '1.0.0' }]);
     mockRemoteBlock('1.0.0');
 
-    await syncOrganizationBlocks(organizationId);
+    await syncOrganizationBlocks(organizationId, '1.0.0');
 
     expect(await getLocalVersions()).toStrictEqual(['1.0.0']);
     expect(await Organization.findByPk(organizationId)).toBeNull();
@@ -256,6 +263,6 @@ describe('syncOrganizationBlocks', () => {
   it('should fail if the organization does not exist on the remote', async () => {
     mock.onGet(organizationBlocksUrl).reply(404);
 
-    await expect(syncOrganizationBlocks(organizationId)).rejects.toThrow(/404/);
+    await expect(syncOrganizationBlocks(organizationId, '1.0.0')).rejects.toThrow(/404/);
   });
 });

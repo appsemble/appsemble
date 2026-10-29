@@ -27,6 +27,10 @@ spec:
             - sync-organization-blocks
             - --remote
             - {{ required "syncOrganizationBlocks requires remote" .Values.remote | quote }}
+            {{- with .Values.syncOrganizationBlocksVersion }}
+            - --block-version
+            - {{ . | quote }}
+            {{- end }}
             - --organizations
             {{- range .Values.syncOrganizationBlocks }}
             - {{ . | quote }}

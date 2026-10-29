@@ -1,4 +1,4 @@
-import { initS3Client, logger } from '@appsemble/node-utils';
+import { initS3Client, logger, version } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
@@ -8,12 +8,13 @@ import { syncOrganizationBlocks } from '../utils/block.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
 interface AdditionalArguments {
+  blockVersion?: string;
   organizations?: string[];
 }
 
 export const command = 'sync-organization-blocks';
 export const description =
-  'Synchronize the latest block versions of organizations from the remote Appsemble server.';
+  'Synchronize a block version of organizations from the remote Appsemble server.';
 
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs)
@@ -27,10 +28,18 @@ export function builder(yargs: Argv): Argv {
       demandOption: true,
       type: 'string',
       array: true,
+    })
+    .option('block-version', {
+      desc: 'The block version to synchronize, or `latest` for the latest version of each block. Defaults to the version of this server.',
+      type: 'string',
+      default: version,
     });
 }
 
-export async function handler({ organizations = [] }: AdditionalArguments = {}): Promise<void> {
+export async function handler({
+  blockVersion = version,
+  organizations = [],
+}: AdditionalArguments = {}): Promise<void> {
   let db;
 
   try {
@@ -59,8 +68,10 @@ export async function handler({ organizations = [] }: AdditionalArguments = {}):
   });
 
   for (const organizationId of organizations) {
-    logger.info(`Synchronizing blocks of organization ${organizationId} from ${argv.remote}`);
-    await syncOrganizationBlocks(organizationId);
+    logger.info(
+      `Synchronizing blocks of organization ${organizationId} at ${blockVersion} from ${argv.remote}`,
+    );
+    await syncOrganizationBlocks(organizationId, blockVersion);
   }
 
   await db.close();

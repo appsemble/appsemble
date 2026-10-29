@@ -11,7 +11,6 @@ import { type BlockManifest } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 import { Op } from 'sequelize';
-import semver from 'semver';
 
 import { argv } from './argv.js';
 import {
@@ -230,15 +229,20 @@ export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<Blo
 }
 
 /**
- * Synchronize the latest version of each block of an organization from the remote.
+ * Synchronize a version of each block of an organization from the remote.
  *
- * A remote block is synchronized if its version is newer than the newest local version of the
- * block, or if the block does not exist locally. A missing local organization is created from the
- * remote organization, without members.
+ * A block is synchronized if the version does not exist locally. Blocks for which the remote does
+ * not have the version are skipped. A missing local organization is created from the remote
+ * organization, without members.
  *
  * @param organizationId The ID of the organization whose blocks to synchronize.
+ * @param version The block version to synchronize, or `latest` for the latest version of each
+ *   block on the remote.
  */
-export async function syncOrganizationBlocks(organizationId: string): Promise<void> {
+export async function syncOrganizationBlocks(
+  organizationId: string,
+  version: string,
+): Promise<void> {
   if (!(await Organization.findByPk(organizationId, { attributes: ['id'], paranoid: false }))) {
     const {
       data: { description, name, website },
@@ -256,23 +260,17 @@ export async function syncOrganizationBlocks(organizationId: string): Promise<vo
     attributes: ['name', 'version'],
     where: { OrganizationId: organizationId },
   });
-  const latestLocalVersions = new Map<string, string>();
-  for (const { name, version } of localBlocks) {
-    const latestVersion = latestLocalVersions.get(name);
-    if (!latestVersion || semver.gt(version, latestVersion)) {
-      latestLocalVersions.set(name, version);
-    }
-  }
+  const localIds = new Set(localBlocks.map((block) => `${block.name}@${block.version}`));
 
   // Intentionally not using Promise.all here to not overload the remote with requests
   for (const remoteBlock of remoteBlocks) {
     const name = remoteBlock.name.slice(`@${organizationId}/`.length);
-    const latestVersion = latestLocalVersions.get(name);
-    if (latestVersion && !semver.gt(remoteBlock.version, latestVersion)) {
-      logger.verbose(`Block @${organizationId}/${name}@${latestVersion} is up to date`);
+    const blockVersion = version === 'latest' ? remoteBlock.version : version;
+    if (localIds.has(`${name}@${blockVersion}`)) {
+      logger.verbose(`Block @${organizationId}/${name}@${blockVersion} already exists`);
       continue;
     }
-    await syncBlock({ OrganizationId: organizationId, name, version: remoteBlock.version });
+    await syncBlock({ OrganizationId: organizationId, name, version: blockVersion });
   }
 }
 
