@@ -5,11 +5,4 @@ metadata:
   namespace: companion-containers-{{ include "appsemble.fullname" . }}
 spec:
   type: ExternalName
-  externalName: {{ include "appsemble.fullname" . }}.
-{{- $fullname := include "appsemble.fullname" . | quote -}}
-{{- if contains "review" $fullname -}}
-    {{- "review" }}
-{{- else -}}
-    {{ include "appsemble.fullname" . }}
-{{- end -}}
-.svc.cluster.local
+  externalName: {{ include "appsemble.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
