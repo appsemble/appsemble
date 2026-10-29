@@ -5,7 +5,16 @@
     "pages.litter-details": "",
     "pages.litter-list": "",
     "pages.litter-overview": "",
-    "pages.report-litter": ""
+    "pages.report-litter": "",
+    "routes.App-Invite": "",
+    "routes.Edit-Password": "",
+    "routes.Feedback": "",
+    "routes.Group-Invite": "",
+    "routes.Login": "",
+    "routes.Register": "",
+    "routes.Reset-Password": "",
+    "routes.Settings": "",
+    "routes.Verify": ""
   },
   "messageIds": {
     "date": "",
@@ -13,6 +22,7 @@
     "notes": "",
     "notesExample": "",
     "photos": "",
-    "process": ""
+    "process": "",
+    "reportLitter": ""
   }
 }

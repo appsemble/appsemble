@@ -35,6 +35,12 @@ it('should label highlighted fields by their field label', () => {
   expect(screen.getByRole('textbox', { name: 'Name' })).toBeDefined();
 });
 
+it('should name a highlighted field without a label by its field name', () => {
+  renderFilter([{ name: 'process', type: 'enum', enum: [{ value: 'Maintenance' }] }], ['process']);
+
+  expect(screen.getByRole('combobox', { name: 'process' })).toBeDefined();
+});
+
 it('should expose whether the list field options are expanded', () => {
   renderFilter([{ name: 'tags', type: 'list', label: 'Tags', list: [{ value: 'red' }] }], ['tags']);
 

@@ -198,6 +198,7 @@ pages:
         version: 0.40.6
         parameters:
           icon: plus
+          title: { translate: addBicycle }
         actions:
           onClick:
             type: dialog

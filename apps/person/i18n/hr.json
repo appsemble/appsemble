@@ -7,6 +7,7 @@
     "pages.person-registration-form": "Obrazac za registraciju osobe"
   },
   "messageIds": {
+    "addPerson": "Dodaj osobu",
     "description": "Opis",
     "email": "E-pošta",
     "firstName": "Prvo ime",

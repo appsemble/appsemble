@@ -7,6 +7,7 @@
     "pages.notes": "Catatan"
   },
   "messageIds": {
+    "addNote": "Tambah catatan",
     "body": "Isi",
     "cancel": "Batal",
     "configDelete": "Hapus",

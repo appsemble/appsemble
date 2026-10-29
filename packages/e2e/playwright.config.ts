@@ -3,6 +3,9 @@ import { defineConfig, devices } from '@playwright/test';
 const { APPSEMBLE_REVIEW_DOMAIN, APPSEMBLE_STAGING_DOMAIN, CI, CI_MERGE_REQUEST_IID, E2E_HOST } =
   process.env;
 
+// Static UI tests scan fake sites, so their accessibility metrics stay out of the published report.
+const staticOutputDir = 'test-results/static';
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -17,8 +20,12 @@ export default defineConfig({
   // Amount of workers to run tests with
   workers: CI ? 2 : 1,
   // Reporter to use. See https://playwright.dev/docs/test-reporters
-  // Written to the repository root, so attachment paths resolve against the CI job artifacts
-  reporter: [['junit', { outputFile: '../../junit.xml' }]],
+  reporter: [
+    // Written to the repository root, so attachment paths resolve against the CI job artifacts
+    ['junit', { outputFile: '../../junit.xml' }],
+    // CI shards write blob reports, which the `e2e report` job merges into one HTML report
+    CI ? ['blob'] : ['html', { open: 'never' }],
+  ],
   // Prevent the pipeline from timing out
   maxFailures: 6,
   // Overall test timeout - increased for CI stability with cold server starts
@@ -47,18 +54,21 @@ export default defineConfig({
     {
       name: 'static-chromium',
       testDir: './tests/static-ui',
+      outputDir: staticOutputDir,
       use: { ...devices['Desktop Chrome'] },
       fullyParallel: true,
     },
     {
       name: 'static-firefox',
       testDir: './tests/static-ui',
+      outputDir: staticOutputDir,
       use: { ...devices['Desktop Firefox'] },
       fullyParallel: true,
     },
     {
       name: 'static-safari',
       testDir: './tests/static-ui',
+      outputDir: staticOutputDir,
       use: { ...devices['Desktop Safari'] },
       fullyParallel: true,
     },

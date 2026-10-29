@@ -5,7 +5,16 @@
     "pages.litter-details": "Detalji o smeću",
     "pages.litter-list": "Popis smeća",
     "pages.litter-overview": "Pregled Littera",
-    "pages.report-litter": "Prijavite smeće"
+    "pages.report-litter": "Prijavite smeće",
+    "routes.App-Invite": "",
+    "routes.Edit-Password": "",
+    "routes.Feedback": "",
+    "routes.Group-Invite": "",
+    "routes.Login": "",
+    "routes.Register": "",
+    "routes.Reset-Password": "",
+    "routes.Settings": "",
+    "routes.Verify": ""
   },
   "messageIds": {
     "date": "Datum",
@@ -13,6 +22,7 @@
     "notes": "Bilješke",
     "notesExample": "Primjer: U grmlju se nalazi bicikl",
     "photos": "Fotografije",
-    "process": "Proces"
+    "process": "Proces",
+    "reportLitter": ""
   }
 }

@@ -71,6 +71,7 @@ pages:
         version: 0.40.6
         parameters:
           icon: plus
+          title: { translate: addPerson }
         actions:
           onClick:
             to: Person Registration Form
