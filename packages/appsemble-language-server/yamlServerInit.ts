@@ -296,7 +296,7 @@ export class YAMLServerInit {
       this.yamlCacher,
       this.blockManifestCacher,
       this.blockSchemaRequestHandler,
-      this.languageService,
+      this.settingsHandler,
       this.validationHandler,
       this.logger,
     );

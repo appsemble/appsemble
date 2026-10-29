@@ -1,4 +1,3 @@
-import { type LanguageService } from 'yaml-language-server';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -50,8 +49,7 @@ interface Harness {
   settings: SettingsState;
   blockSchemaRequestHandler: BlockSchemaRequestHandler;
   schemaUpdater: () => Promise<boolean>;
-  modifySchemaContent: ReturnType<typeof vi.fn>;
-  resetSchema: ReturnType<typeof vi.fn>;
+  applyLanguageSettings: ReturnType<typeof vi.fn>;
   fetchMock: ReturnType<typeof vi.fn>;
   getCachedBlockVersions: ReturnType<typeof vi.fn>;
 }
@@ -68,9 +66,7 @@ function setup(): Harness {
     'getCachedBlockVersions',
   ) as unknown as ReturnType<typeof vi.fn>;
   const blockSchemaRequestHandler = new BlockSchemaRequestHandler(blockManifestCacher, logger);
-  const modifySchemaContent = vi.fn();
-  const resetSchema = vi.fn();
-  const languageService = { modifySchemaContent, resetSchema } as unknown as LanguageService;
+  const applyLanguageSettings = vi.fn();
   let schemaUpdater: (() => Promise<boolean>) | undefined;
   const validationHandler = {
     setBlockSchemaUpdater: vi.fn((updater: () => Promise<boolean>) => {
@@ -86,7 +82,7 @@ function setup(): Harness {
     new YamlCacher(),
     blockManifestCacher,
     blockSchemaRequestHandler,
-    languageService,
+    { applyLanguageSettings },
     validationHandler,
     logger,
   ).registerHandlers();
@@ -100,8 +96,7 @@ function setup(): Harness {
     settings,
     blockSchemaRequestHandler,
     schemaUpdater,
-    modifySchemaContent,
-    resetSchema,
+    applyLanguageSettings,
     fetchMock,
     getCachedBlockVersions,
   };
@@ -151,8 +146,7 @@ describe('BlockRegistryHandlers', () => {
     expect(await h.schemaUpdater()).toBe(false);
 
     expect(h.fetchMock).toHaveBeenCalledTimes(1);
-    expect(h.modifySchemaContent).toHaveBeenCalledTimes(1);
-    expect(h.resetSchema).toHaveBeenCalledTimes(1);
+    expect(h.applyLanguageSettings).toHaveBeenCalledTimes(1);
   });
 
   it('shares an in-flight schema update between concurrent validation requests', async () => {
@@ -163,7 +157,7 @@ describe('BlockRegistryHandlers', () => {
     expect(await Promise.all([h.schemaUpdater(), h.schemaUpdater()])).toStrictEqual([true, true]);
 
     expect(h.fetchMock).toHaveBeenCalledTimes(1);
-    expect(h.modifySchemaContent).toHaveBeenCalledTimes(1);
+    expect(h.applyLanguageSettings).toHaveBeenCalledTimes(1);
   });
 
   it('ignores blocks whose version is not yet a complete semver', async () => {

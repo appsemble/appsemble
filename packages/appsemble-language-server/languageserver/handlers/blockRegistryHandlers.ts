@@ -1,19 +1,17 @@
 import { getAppBlocks, type IdentifiableBlock, parseBlockName, semver } from '@appsemble/lang-sdk';
 import { isEqual as deepEquals, set } from 'lodash-es';
-import { type LanguageService } from 'yaml-language-server';
-import { MODIFICATION_ACTIONS } from 'yaml-language-server/lib/esm/languageservice/services/yamlSchemaService.js';
-
 import { type BlockSchemaRequestHandler } from '../../BlockSchemaRequestHandler.js';
 import { type Logger } from '../../Logger.js';
 import { type SettingsState } from '../../yamlSettings.js';
 import { type BlockManifestCacher } from '../utils/BlockManifestCacher.js';
 import { type YamlCacher } from '../utils/YamlCacher.js';
+import { type SettingsHandler } from './settingsHandlers.js';
 import { type ValidationHandler } from './validationHandlers.js';
 
 export class BlockRegistryHandlers {
   private yamlSettings: SettingsState;
 
-  private languageService: LanguageService;
+  private readonly settingsHandler: Pick<SettingsHandler, 'applyLanguageSettings'>;
 
   private readonly yamlCacher: YamlCacher;
 
@@ -40,7 +38,7 @@ export class BlockRegistryHandlers {
     yamlCacher: YamlCacher,
     blockManifestCacher: BlockManifestCacher,
     blockSchemaRequestHandler: BlockSchemaRequestHandler,
-    languageService: LanguageService,
+    settingsHandler: Pick<SettingsHandler, 'applyLanguageSettings'>,
     validationHandler: ValidationHandler,
     logger: Logger,
   ) {
@@ -48,7 +46,7 @@ export class BlockRegistryHandlers {
     this.yamlCacher = yamlCacher;
     this.blockManifestCacher = blockManifestCacher;
     this.blockSchemaRequestHandler = blockSchemaRequestHandler;
-    this.languageService = languageService;
+    this.settingsHandler = settingsHandler;
     this.validationHandler = validationHandler;
     this.logger = logger;
   }
@@ -135,16 +133,11 @@ export class BlockRegistryHandlers {
     this.updateAppsembleSchemaConfig(allOf);
     try {
       this.blockSchemaRequestHandler.availableBlockRefs = { allOf };
-      await Promise.resolve(
-        this.languageService.modifySchemaContent({
-          action: MODIFICATION_ACTIONS.add,
-          schema: 'appsemble://schema.json',
-          path: 'definitions/BlockDefinition/allOf',
-          key: '0',
-          content: { allOf },
-        }),
-      );
-      this.languageService.resetSchema('appsemble://schema.json');
+      // The yaml language service resolves references in place on the schemas it has loaded, which
+      // turns self-referencing schemas into cyclic objects, and it cannot reset a referenced schema
+      // whose URI contains an encoded character. Re-applying the settings drops every loaded schema
+      // so each is parsed again from its source instead of re-resolved.
+      this.settingsHandler.applyLanguageSettings();
       this.lastAllOf = allOf;
     } catch (error: unknown) {
       this.logger.error(`Error updating blockSchemaRequestHandler: ${error}`);

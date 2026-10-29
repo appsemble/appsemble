@@ -123,6 +123,17 @@ export class SettingsHandler {
    * Re-creates schema associations and re-validates any open YAML files
    */
   private updateConfiguration(): void {
+    this.applyLanguageSettings();
+    this.validationHandler.handleSettingsUpdate();
+  }
+
+  /**
+   * Configure the language service from the current settings.
+   *
+   * This drops every schema the language service has loaded, so each is loaded again from its
+   * source the next time it is needed.
+   */
+  applyLanguageSettings(): void {
     let languageSettings: LanguageSettings = {
       validate: this.yamlSettings.yamlShouldValidate,
       hover: this.yamlSettings.yamlShouldHover,
@@ -208,8 +219,6 @@ export class SettingsHandler {
     );
 
     this.languageService.configure(languageSettings);
-
-    this.validationHandler.handleSettingsUpdate();
   }
 
   /**

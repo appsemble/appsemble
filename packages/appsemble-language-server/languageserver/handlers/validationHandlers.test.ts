@@ -61,8 +61,6 @@ function setup(): Harness {
 
   const languageService = {
     doValidation: vi.fn(() => Promise.resolve([])),
-    modifySchemaContent: vi.fn(),
-    resetSchema: vi.fn(),
   } as unknown as LanguageService;
 
   vi.stubGlobal(
@@ -86,7 +84,7 @@ function setup(): Harness {
     yamlCacher,
     blockManifestCacher,
     new BlockSchemaRequestHandler(blockManifestCacher, logger),
-    languageService,
+    { applyLanguageSettings: vi.fn() },
     handler,
     logger,
   ).registerHandlers();
