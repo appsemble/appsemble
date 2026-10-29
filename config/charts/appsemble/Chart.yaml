@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.6
-appVersion: 0.40.6
+version: 0.40.7
+appVersion: 0.40.7
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,80 +33,103 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "E2e: Add mailpit fixture allowing you to communicate with the
-        Mailpit API using the mailpit-api package."
+      description: "Block(chart): Add description and a data table that screen reader
+        and keyboard users can use."
     - kind: added
-      description: "Lang-sdk: Add theme.displayFont: a display face next to the body
-        face in theme.font. Both families are emitted on :root as --font-family and
-        --font-family-display."
+      description: "Block(detail-viewer): Add captions to video fields for a WebVTT
+        captions file."
     - kind: added
-      description: "Preact-components: Expose slider progress to themes as the
-        --slider-progress CSS custom property."
+      description: "Block(detail-viewer): Add labelLevel to set the heading level of
+        field labels."
+    - kind: added
+      description: "Block(feed): Add titleLevel to set the heading level of card titles."
+    - kind: added
+      description: "Block(form): Support explicit 12-hour and 24-hour time input controls."
+    - kind: added
+      description: "Block(map): Add markerLabel to give markers an accessible name."
+    - kind: added
+      description: "Block(wordcloud): Add description and a word frequency list for
+        screen readers."
+    - kind: added
+      description: "App: Explain when a new password is rejected because it appears in
+        a data breach."
+    - kind: added
+      description: "E2e: Add resource lifecycle tracking and configurable automatic cleanup."
+    - kind: added
+      description: "E2e: Attach an HTML accessibility report that lists the failing
+        elements and blocks of each page."
+    - kind: added
+      description: "E2e: Write the accessibility scan results as a GitLab accessibility report."
+    - kind: added
+      description: "Scripts: Fail validation when an app or app template pins an
+        outdated block version."
+    - kind: added
+      description: "Server: Add the reject-breached-passwords option to reject new
+        passwords found in known data breaches."
     - kind: changed
-      description: "E2e: Change scope of the giveAppConsent fixture to include all
-        possible scopes."
+      description: "Block(cards): Make the footer button icon optional and show button
+        labels on mobile."
     - kind: changed
-      description: "Preact-components: Focus the first focusable element of a modal
-        when it opens."
-    - kind: changed
-      description: "Preact-components: Render modals as native dialog elements on top
-        of the page."
-    - kind: changed
-      description: "React-components: Focus the first focusable element of a modal
-        when it opens instead of the modal itself."
-    - kind: changed
-      description: "React-components: Render modals as native dialog elements on top
-        of the page."
+      description: "Block(detail-viewer): Render geocoordinates and video labels as
+        level 6 headings instead of level 1."
     - kind: fixed
-      description: "Block(barcode-scan): Label the selects, announce scanned codes and
-        show a focus ring."
+      description: "Block(barcode-scan): Remove the captions track that points to a
+        missing file."
     - kind: fixed
-      description: "Block(cards): Announce errors and empty results, name footer
-        buttons and render links as links."
+      description: "Block(barcode-scan): Translate the selected image texts."
     - kind: fixed
-      description: "Block(data-notifier): Announce new data and hide the collapsed
-        refresh button."
+      description: "Block(cards): Hide card images without alternative text from
+        screen readers."
     - kind: fixed
-      description: "Block(feed): Name the avatar, its status and the reply controls,
-        and show an avatar focus ring."
+      description: "Block(detail-viewer): Use valid bullet point list markup and name
+        the video player and its thumbnail."
     - kind: fixed
-      description: "Block(filter): Label fields, date ranges and the open button, and
-        expose list state."
+      description: "Block(feed): Translate the default button label."
     - kind: fixed
-      description: "Block(form): Name fields and buttons, expose expanded state and
-        announce long submissions."
+      description: "Block(filter): Name fields without a label by their field name for
+        screen readers."
     - kind: fixed
-      description: "Block(list): Make item title and field controls at least 24 by 24 pixels."
+      description: "Block(form): Stop smooth scrolling to a field when the user
+        prefers reduced motion."
     - kind: fixed
-      description: "Block(list): Render items as plain text without a pointer cursor
-        when the list has no click action."
+      description: "Block(form): Translate the add button, option loading error and
+        Markdown toolbar labels."
     - kind: fixed
-      description: "App: Explain invalid or already used email verification links on
-        the verify page."
+      description: "Block(list): Stop smooth scrolling to the linked item when the
+        user prefers reduced motion."
     - kind: fixed
-      description: "App: Show page error recovery when a block script fails to load."
+      description: "Block(map): Launch onMarkerClick when a marker is activated with
+        the keyboard."
     - kind: fixed
-      description: "App: Show page error recovery when a block stylesheet fails to load."
+      description: "Block(paginator): Add a navigation landmark, page status and
+        disabled end buttons."
     - kind: fixed
-      description: "Node-utils: Reserve infrastructure host names for organization identifiers."
+      description: "App: Display messages triggered by controller action callbacks."
     - kind: fixed
-      description: "React-components: Fade in and announce a message assertively only
-        once when a modal opens or closes."
+      description: "App: Expose flow page progress and loading blocks to assistive technology."
     - kind: fixed
-      description: "React-components: Hide the links of the closed side menu from
-        keyboard and screen reader users."
+      description: "App: Give the profile picture camera button an accessible name."
     - kind: fixed
-      description: "React-components: Show messages on top of open modals."
+      description: "App: Keep app member sessions active when switching groups."
     - kind: fixed
-      description: "Server: Fix organization DNS and stagger wildcard certificate renewals."
+      description: "App: Move focus to the page on navigation and flow step changes."
     - kind: fixed
-      description: "Server: Keep no organization when creating it fails, so the same
-        id can be used again."
+      description: "App: Render the page name in the title bar as the H1."
     - kind: fixed
-      description: "Server: Preserve app controller fields omitted from app updates."
+      description: "App: Shorten transitions and stop smooth scrolling when the user
+        prefers reduced motion."
     - kind: fixed
-      description: "Studio: Explain invalid or already used email verification links
-        on the verify page."
+      description: "App: Show the app store link in the side menu in the link color."
+    - kind: fixed
+      description: "E2e: Scan a page that a link redirects to only once."
+    - kind: fixed
+      description: "Lang-sdk: Reject client-side actions in webhooks."
+    - kind: fixed
+      description: "Lang-sdk: Validate blocks in match cases, basic page actions and webhooks."
+    - kind: fixed
+      description: "Preact-components: Stop presenting the static Location marker as a button."
+    - kind: fixed
+      description: "Server: Notify app member roles from server side notify actions."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

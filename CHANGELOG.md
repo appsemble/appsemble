@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.7](https://gitlab.com/appsemble/appsemble/-/releases/0.40.7)] - 2026-10-29
+
+### Added
+
+- Block(`chart`): Add `description` and a data table that screen reader and keyboard users can use.
+- Block(`detail-viewer`): Add `captions` to video fields for a WebVTT captions file.
+- Block(`detail-viewer`): Add `labelLevel` to set the heading level of field labels.
+- Block(`feed`): Add `titleLevel` to set the heading level of card titles.
+- Block(`form`): Support explicit 12-hour and 24-hour time input controls.
+- Block(`map`): Add `markerLabel` to give markers an accessible name.
+- Block(`wordcloud`): Add `description` and a word frequency list for screen readers.
+- App: Explain when a new password is rejected because it appears in a data breach.
+- E2e: Add resource lifecycle tracking and configurable automatic cleanup.
+- E2e: Attach an HTML accessibility report that lists the failing elements and blocks of each page.
+- E2e: Write the accessibility scan results as a GitLab accessibility report.
+- Scripts: Fail validation when an app or app template pins an outdated block version.
+- Server: Add the `reject-breached-passwords` option to reject new passwords found in known data
+  breaches.
+
+### Changed
+
+- Block(`cards`): Make the footer button icon optional and show button labels on mobile.
+- Block(`detail-viewer`): Render geocoordinates and video labels as level 6 headings instead of
+  level 1.
+
+### Fixed
+
+- Block(`barcode-scan`): Remove the captions track that points to a missing file.
+- Block(`barcode-scan`): Translate the selected image texts.
+- Block(`cards`): Hide card images without alternative text from screen readers.
+- Block(`detail-viewer`): Use valid bullet point list markup and name the video player and its
+  thumbnail.
+- Block(`feed`): Translate the default button label.
+- Block(`filter`): Name fields without a label by their field name for screen readers.
+- Block(`form`): Stop smooth scrolling to a field when the user prefers reduced motion.
+- Block(`form`): Translate the add button, option loading error and Markdown toolbar labels.
+- Block(`list`): Stop smooth scrolling to the linked item when the user prefers reduced motion.
+- Block(`map`): Launch `onMarkerClick` when a marker is activated with the keyboard.
+- Block(`paginator`): Add a navigation landmark, page status and disabled end buttons.
+- App: Display messages triggered by controller action callbacks.
+- App: Expose flow page progress and loading blocks to assistive technology.
+- App: Give the profile picture camera button an accessible name.
+- App: Keep app member sessions active when switching groups.
+- App: Move focus to the page on navigation and flow step changes.
+- App: Render the page name in the title bar as the H1.
+- App: Shorten transitions and stop smooth scrolling when the user prefers reduced motion.
+- App: Show the app store link in the side menu in the link color.
+- E2e: Scan a page that a link redirects to only once.
+- Lang-sdk: Reject client-side actions in webhooks.
+- Lang-sdk: Validate blocks in match cases, basic page actions and webhooks.
+- Preact-components: Stop presenting the static `Location` marker as a button.
+- Server: Notify app member roles from server side `notify` actions.
+
 ## \[[0.40.6](https://gitlab.com/appsemble/appsemble/-/releases/0.40.6)] - 2026-10-23
 
 ### Added

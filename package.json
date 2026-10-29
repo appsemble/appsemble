@@ -51,7 +51,7 @@
     "third-party-web": "0.30.0"
   },
   "devDependencies": {
-    "@appsemble/eslint-config": "0.40.6",
+    "@appsemble/eslint-config": "0.40.7",
     "@vitest/coverage-v8": "4.1.12",
     "@vitest/ui": "4.1.12",
     "cspell": "10.4.0",
