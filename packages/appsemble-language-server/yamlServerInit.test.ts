@@ -383,3 +383,21 @@ describe('language service errors', () => {
     );
   });
 });
+
+describe('documents the app validation cannot read', () => {
+  it('replaces diagnostics whose source was removed while an alias has no anchor', async () => {
+    client.open(app([{ ...alpha, parameters: ['icon: 123'] }]));
+    await client.waitForDiagnostics((diagnostics) =>
+      expect(diagnostics.map(({ message }) => message).join('\n')).toMatch(/string/),
+    );
+
+    client.change(app([alpha], ['description: *missingAnchor']));
+
+    const diagnostics = await client.waitForDiagnostics((latest) =>
+      expect(latest.map(({ message }) => message).join('\n')).not.toMatch(/string/),
+    );
+    const aliasDiagnostic = diagnostics.find(({ message }) => message.includes('missingAnchor'));
+    // `description` is the second line of the app definition.
+    expect(aliasDiagnostic?.range.start.line).toBe(1);
+  });
+});

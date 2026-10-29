@@ -2,11 +2,11 @@
  *  Copyright (c) Red Hat, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *-------------------------------------------------------------------------------------------- */
-import { AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
+import { type AppDefinition, AppValidator, validateAppDefinition } from '@appsemble/lang-sdk';
 import { type Connection } from 'vscode-languageserver';
 import { type TextDocument } from 'vscode-languageserver-textdocument';
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types';
-import { isNode, type LineCounter } from 'yaml';
+import { type Alias, type Document, isNode, type LineCounter, visit } from 'yaml';
 import { isKubernetesAssociatedDocument } from 'yaml-language-server/lib/esm/languageservice/parser/isKubernetes.js';
 import { removeDuplicatesObj } from 'yaml-language-server/lib/esm/languageservice/utils/arrUtils.js';
 import { type LanguageService } from 'yaml-language-server/lib/esm/languageservice/yamlLanguageService.js';
@@ -34,6 +34,38 @@ function validatorRangeToDiagnosticRange(
       line: lineEnd.line - 1,
       character: lineEnd.col - 1,
     },
+  };
+}
+
+/**
+ * Describe why a YAML document could not be converted to plain data.
+ *
+ * @param doc The document that failed to convert.
+ * @param counter The line counter of the document.
+ * @param error The error the conversion threw.
+ * @returns A diagnostic at the first alias without an anchor, or at the start of the document.
+ */
+function unconvertibleDocumentDiagnostic(
+  doc: Document,
+  counter: LineCounter,
+  error: unknown,
+): Diagnostic {
+  let unresolvedAlias: Alias | undefined;
+  visit(doc, {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    Alias(key, alias) {
+      if (!alias.resolve(doc)) {
+        unresolvedAlias = alias;
+        return visit.BREAK;
+      }
+    },
+  });
+  return {
+    severity: DiagnosticSeverity.Error,
+    message: error instanceof Error ? error.message : String(error),
+    range: unresolvedAlias?.range
+      ? validatorRangeToDiagnosticRange(counter, unresolvedAlias.range)
+      : { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } },
   };
 }
 
@@ -143,7 +175,18 @@ export class ValidationHandler {
     }
 
     const { counter, doc } = this.yamlCacher.parseOrGetCached(textDocument);
-    const definition = doc.toJS({ maxAliasCount: 10_000 });
+    let definition: AppDefinition;
+    try {
+      definition = doc.toJS({ maxAliasCount: 10_000 });
+    } catch (error: unknown) {
+      // The app validation works on plain data, which a document with an alias that has no anchor
+      // cannot be converted to. Report why, alongside the yaml language service diagnostics.
+      return this.publishDiagnostics(
+        textDocument,
+        [unconvertibleDocumentDiagnostic(doc, counter, error)],
+        diagnosticResults,
+      );
+    }
     this.connection.console.info(`Validating ${textDocument.uri}`);
     const validatorResult = this.appValidator.validateApp(definition);
     const validationResult = await validateAppDefinition(
@@ -171,8 +214,16 @@ export class ValidationHandler {
         } as Diagnostic;
       })
       .filter((x) => x != null);
-    const diagnostics: Diagnostic[] = [...errors];
-    for (const diagnosticItem of diagnosticResults) {
+    return this.publishDiagnostics(textDocument, errors, diagnosticResults);
+  }
+
+  private publishDiagnostics(
+    textDocument: TextDocument,
+    appDiagnostics: Diagnostic[],
+    yamlDiagnostics: Diagnostic[],
+  ): Diagnostic[] {
+    const diagnostics: Diagnostic[] = [...appDiagnostics];
+    for (const diagnosticItem of yamlDiagnostics) {
       // Convert all warnings to errors
       if (diagnosticItem.severity === 2) {
         diagnosticItem.severity = 1;
