@@ -259,7 +259,7 @@ export async function createAppScreenshots(
   const supportedLanguages = await getSupportedLanguages();
 
   for (const screenshot of screenshots) {
-    const { filename } = screenshot;
+    const filename = screenshot.filename!;
     let language = normalizeLocale(filename.slice(0, filename.indexOf('-')));
 
     if (!supportedLanguages.has(language)) {
@@ -281,8 +281,8 @@ export async function createAppScreenshots(
     });
 
     const sortedScreenshots = languageScreenshots.sort((a, b) => {
-      const { filename: aFilename } = a;
-      const { filename: bFilename } = b;
+      const aFilename = a.filename!;
+      const bFilename = b.filename!;
       if (aFilename > bFilename) {
         return 1;
       }
@@ -335,8 +335,9 @@ export async function createAppReadmes(
 
   return AppReadme.bulkCreate(
     await Promise.all(
-      readmes.map(async ({ filename, path }: TempFile) => {
-        const contents = await uploadToBuffer(path);
+      readmes.map(async (readme: TempFile) => {
+        const filename = readme.filename!;
+        const contents = await uploadToBuffer(readme.path);
         let language = normalizeLocale(
           filename.slice(filename.indexOf('.') + 1, filename.lastIndexOf('.')),
         );
