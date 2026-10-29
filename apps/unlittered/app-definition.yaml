@@ -145,6 +145,7 @@ pages:
         version: 0.40.6
         parameters:
           icon: plus
+          title: { translate: reportLitter }
         actions:
           onClick:
             to: Report litter
@@ -272,6 +273,7 @@ pages:
         version: 0.40.6
         parameters:
           icon: plus
+          title: { translate: reportLitter }
         actions:
           onClick:
             type: link

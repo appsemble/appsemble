@@ -7,6 +7,7 @@
     "pages.notes": "Bilješke"
   },
   "messageIds": {
+    "addNote": "Dodaj bilješku",
     "body": "Sadržaj",
     "cancel": "Otkaži",
     "configDelete": "Izbriši",

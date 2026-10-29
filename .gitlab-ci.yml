@@ -883,16 +883,60 @@ e2e node:
       --s3-bucket appsemble
       --s3-access-key appsemble-server
       --s3-secret-key appsemble-server-secret
-    - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+    - npm --workspace @appsemble/e2e run e2e -- $E2E_ARGS
+  variables:
+    E2E_ARGS: --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+  after_script:
+    # GitLab accepts a single file per accessibility report, so the reports of the apps are merged
+    - >
+      node --eval "
+      const { globSync, readFileSync, writeFileSync } = require('node:fs');
+      const results = {};
+      for (const file of globSync('packages/e2e/test-results/gl-accessibility-*.json')) {
+        Object.assign(results, JSON.parse(readFileSync(file, 'utf8')).results);
+      }
+      writeFileSync('packages/e2e/test-results/gl-accessibility.json', JSON.stringify({ results }));
+      "
   parallel: 6
   artifacts:
     expose_as: Playwright videos
     when: always
     paths:
       - packages/e2e/test-results/
+      - packages/e2e/blob-report/
     reports:
+      accessibility: packages/e2e/test-results/gl-accessibility.json
       junit: junit.xml
       metrics: packages/e2e/test-results/accessibility-metrics.txt
+
+# The accessibility widget of a merge request compares its report with the one of the target branch
+e2e accessibility:
+  extends: e2e node
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  parallel: null
+  variables:
+    E2E_ARGS: --project=chromium tests/demo-apps/accessibility.spec.ts
+
+e2e report:
+  stage: end 2 end
+  interruptible: true
+  needs:
+    - npm_ci
+    - e2e node
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+      when: always
+    - if: $CI_COMMIT_TAG
+      when: always
+  script:
+    - cd packages/e2e
+    - npx playwright merge-reports --reporter html blob-report
+  artifacts:
+    expose_as: Playwright report
+    when: always
+    paths:
+      - packages/e2e/playwright-report/
 
 e2e keycloak:
   stage: end 2 end
