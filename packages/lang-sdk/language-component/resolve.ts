@@ -16,29 +16,21 @@ export interface Resolution {
   matched: boolean;
   // The node's own ref-cut errors, including those of a combinator's sibling keywords.
   localErrors?: ValidationError[];
-  // The discriminated (or plain) union this node resolves through, surfaced so a consumer (the GUI
-  // editor's kind switcher) can enumerate every branch and switch kind — even when `comp` merged the
-  // union into a nested `allOf` (the `draftChildSchemas` case), which structural inspection can't see.
-  // Carried up from wherever the union was decided: the discriminator fast-path, a plain oneOf/anyOf,
-  // or the nearest enclosing branch that had one. Absent for a node that resolves through no union.
+  // The union this node resolves through, so a consumer can list its branches and switch kind. A
+  // union inside an `allOf` branch bubbles up to the node. Absent when no union is involved.
   union?: ResolvedUnion;
 }
 
-// One branch of a union: its schema verbatim (a `$ref` stays a `$ref` so the consumer derefs lazily)
-// paired with the component name it declares — the branch's own schema tag, read with no value. This is
-// deliberately NOT an `Identity`: that is the value-directed resolution OUTCOME (which branch a node
-// collapsed to, and how), and it lives on `Resolution.identity`. A branch has only a declared name, so a
-// consumer can label the option and hand `name` straight to the typed cursor's `as(name)` without
-// `$ref`-basename string-matching. Null for an untagged/anonymous branch (e.g. an undeclared basic page).
+// One branch of a union: its schema as written (a `$ref` stays a `$ref`) and the component name it
+// declares, read without a value. Null for an untagged branch. Which branch a value selects is
+// `Resolution.identity`, not this.
 export interface UnionBranch {
   schema: Schema;
   name: string | null;
 }
 
-// A union a node resolves through, as declared: its combinator mode, the declared discriminator (null
-// for a plain/undeclared union), and its branches (schema + resolved identity each). This is the
-// schema-level shape of the union, independent of which branch the current value happens to select — the
-// value-directed choice lives on `Resolution.identity`; this is the whole option space at the slot.
+// A union as declared: its mode, its discriminator (null when it has none), and every branch,
+// independent of the current value.
 export interface ResolvedUnion {
   mode: 'anyOf' | 'oneOf';
   discriminator: Discriminator | null;
@@ -54,10 +46,8 @@ export type DynamicChild = (
   key: string,
 ) => Schema | null;
 
-// The async load half of a value-directed child: fetch whatever the sync `dynamicChild` will then read
-// (e.g. a block manifest), so it can answer synchronously afterwards. Awaited inline by the async
-// descent (`childAsync`/`scanAsync`) right before the sync step — never a prime-everything-first pass.
-// Resolving stays sync (`dynamicChild`); only loading is async, and only this hook is.
+// Loads whatever the sync `dynamicChild` reads (e.g. a block manifest). The async descent
+// (`childAsync`/`scanAsync`) awaits it right before each step.
 export type LoadDynamicChild = (
   parentIdentity: string | null,
   parentValue: unknown,
@@ -82,23 +72,16 @@ export interface ResolveContext {
   dynamicChild?: DynamicChild;
   loadDynamicChild?: LoadDynamicChild;
   draftChildSchemas?: boolean;
-  // Compile-time verdict: can ref-cut local matching always pick this union's branch correctly?
-  // A union it reports false for escalates to full validation when ref-cut matches more than one
-  // branch (see `escalateAmbiguous`). Absent ⇒ every union is trusted (no escalation).
+  // Whether ref-cut matching always picks this union's branch correctly. False lets
+  // `escalateAmbiguous` re-validate ties in full. Absent means every union is trusted.
   refCutSufficient?: (schema: Schema) => boolean;
-  // Optional resolution memo shared across cursors, keyed by value-object identity → schema. `Node`
-  // consults it so a fresh cursor over an unchanged value (a re-render, or an edit elsewhere that
-  // structurally shares this subtree) reuses the prior `Resolution` instead of re-resolving. Keyed by
-  // value identity, so it self-invalidates: an edit mints new value objects for the changed path only.
+  // Resolutions shared across cursors, keyed by value object then schema. An edit creates new value
+  // objects only along the changed path, so unchanged subtrees keep their entries.
   resolutionCache?: WeakMap<object, Map<Schema, Resolution>>;
 }
 
 export function deref(schema: Schema, resolveRef: (ref: string) => Schema): Schema {
   return schema.$ref ? deref(resolveRef(schema.$ref), resolveRef) : schema;
-}
-
-function single(name: string): Identity {
-  return { kind: 'single', name };
 }
 
 // The component name a union branch declares: its own schema tag, read value-independently (not which
@@ -109,46 +92,6 @@ function branchName(branch: Schema, ctx: ResolveContext): string | null {
 
 function unresolved(reason: string, parts: Identity[] = []): Identity {
   return { kind: 'unresolved', name: 'UnresolvedLanguageComponent', parts, reason };
-}
-
-function composite(
-  mode: 'allOf' | 'anyOf' | 'oneOf',
-  tag: SchemaTag | undefined,
-  parts: Identity[],
-): Identity {
-  return { kind: 'composite', mode, name: tag?.name ?? mode, parts };
-}
-
-// A combinator yields an identity only if tagged or it resolved tagged parts; an anonymous
-// combinator over untagged branches is transparent.
-function taggedOrNull(
-  tag: SchemaTag | undefined,
-  parts: Identity[],
-  build: () => Identity,
-): Identity | null {
-  return tag || parts.length ? build() : null;
-}
-
-function compositeOrNull(
-  mode: 'allOf' | 'anyOf' | 'oneOf',
-  tag: SchemaTag | undefined,
-  parts: Identity[],
-): Identity | null {
-  return taggedOrNull(tag, parts, () => composite(mode, tag, parts));
-}
-
-function unresolvedOrNull(
-  reason: string,
-  tag: SchemaTag | undefined,
-  parts: Identity[],
-): Identity | null {
-  return taggedOrNull(tag, parts, () => unresolved(reason, parts));
-}
-
-function identityParts(parts: Resolution[]): Identity[] {
-  return parts
-    .map((part) => part.identity)
-    .filter((identity): identity is Identity => identity != null);
 }
 
 // Does `value` match `schema`'s own (ref-cut) local shape? Never recurses into $ref'd subtrees —
@@ -165,16 +108,12 @@ function matchesLocalShape(
   return { matched: result.valid, errors: result.errors };
 }
 
-// Memoize the ref-cutoff: `stripRefs` each schema once, cached by schema identity, reused across a
-// scan. This is the dominant perf win — without it, resolve validates each node against its full
-// schema and jsonschema follows $refs, re-validating a subtree inside every ancestor (O(N x depth),
-// seconds on a medium app). (A per-(value, schema) memo was tried and didn't help: the costly
-// validations are all distinct.)
+// The ref-cut, computed once per schema. Validating against the full schema would re-validate every
+// referenced subtree inside each ancestor (O(N x depth)); see PERFORMANCE.md.
 export function localShapeFactory(): (schema: Schema) => Schema {
-  // A copy of `schema` with every nested $ref replaced by accept-all, so validating against it
-  // checks only the schema's own shape (the walk visits referenced subtrees). Nested `oneOf` is
-  // relaxed to `anyOf` — accept-all branches make exact-one vacuous, and exclusivity isn't needed
-  // to recognize local shape.
+  // A copy of `schema` with every nested $ref replaced by accept-all, so validating it checks only
+  // the schema's own shape. Nested `oneOf` becomes `anyOf`: with accept-all branches, exactly-one
+  // would always fail.
   function stripRefs(schema: Schema): Schema {
     if (schema.$ref) {
       return {};
@@ -258,11 +197,18 @@ function resolveComposite(
       break;
   }
 
+  const parts = (satisfied ? governing : considered).flatMap((branch) =>
+    branch.identity ? [branch.identity] : [],
+  );
+  // An anonymous combinator over untagged branches is transparent: it has no identity of its own.
+  const transparent = !tag && parts.length === 0;
   if (satisfied) {
-    const identity =
-      mode === 'oneOf' && !tag
-        ? governing[0].identity
-        : compositeOrNull(mode, tag, identityParts(governing));
+    let identity: Identity | null = null;
+    if (mode === 'oneOf' && !tag) {
+      identity = governing[0].identity;
+    } else if (!transparent) {
+      identity = { kind: 'composite', mode, name: tag?.name ?? mode, parts };
+    }
     return {
       identity,
       matched: own.matched,
@@ -272,7 +218,7 @@ function resolveComposite(
     };
   }
   return {
-    identity: unresolvedOrNull(reason, tag, identityParts(considered)),
+    identity: transparent ? null : unresolved(reason, parts),
     matched: false,
     winners: [schema],
     localErrors: own.errors,
@@ -280,9 +226,8 @@ function resolveComposite(
   };
 }
 
-// Leaf/object: own properties govern children regardless of validity. A tagged object keeps its
-// identity even when it fails its constraints — the failure surfaces via localValid + errors, not
-// by erasing the object.
+// A leaf or object node. A tagged one keeps its identity when it fails its constraints; the failure
+// shows in `matched` and `localErrors`.
 function resolveLeaf(
   schema: Schema,
   tag: SchemaTag | undefined,
@@ -291,27 +236,21 @@ function resolveLeaf(
 ): Resolution {
   const { matched, errors } = matchesLocalShape(value, schema, ctx);
   return {
-    identity: tag ? single(tag.name) : null,
+    identity: tag ? { kind: 'single', name: tag.name } : null,
     matched,
     winners: [schema],
     localErrors: errors,
   };
 }
 
-// A normalized discriminator read off a union schema. Standard OpenAPI `discriminator` (one field)
-// and the Appsemble composite extension `x-appsemble-discriminator` (one or more fields) both reduce
-// to this: the field(s) whose values form a routing tag, so a discriminated union resolves by reading
-// the tag and validating ONE branch instead of walking every branch (O(branches) -> O(1)). See
-// `resolve()` below. Only the fast-path lives here; unknown/missing tags fall back to explicit
-// diagnostics or, for `required: false`, the ordinary walk.
+// A union's discriminator, from OpenAPI `discriminator` (one field) or `x-appsemble-discriminator`
+// (one or more fields): the fields whose values select one branch, so only that branch is resolved.
 export interface Discriminator {
   propertyNames: string[];
   mapping?: Record<string, string>;
   separator: string;
   required: boolean;
-  // The tag to assume when the discriminant field is absent, so an untagged branch still resolves in
-  // O(1) instead of falling back to the walk — e.g. a basic page (no `type`) via `default: 'basic'`
-  // mapped to its branch. Absent ⇒ no default (honour `required` / draft-tolerant walk).
+  // The tag to assume when the discriminant field is absent (a basic page has no `type`).
   default?: string;
 }
 
@@ -394,13 +333,9 @@ function pickBranch(
 }
 
 /**
- * Break a ref-cut tie. When a union the compile-time analysis flagged as not ref-cut-separable has
- * more than one branch match locally (over-broad anyOf / ambiguous oneOf), re-validate just those
- * branches with full, ref-following validation and keep only the ones the value actually satisfies —
- * so the flagged node resolves as precisely as a whole-document validator would. Everything else (a
- * sufficient union, an unflagged union, allOf, a single match) is returned untouched, so the fast path
- * is unchanged and only genuine collisions pay. If nothing fully validates the value is incomplete, so
- * the lenient ref-cut set is kept rather than degrade a mid-edit value.
+ * Break a ref-cut tie. When more than one branch of a union that is not ref-cut-sufficient matches
+ * locally, re-validate those branches in full and keep the ones the value satisfies. If none does,
+ * the value is incomplete and the ref-cut matches stay.
  *
  * @param mode The composite mode of the union (`allOf`/`anyOf`/`oneOf`).
  * @param union The union schema being resolved.
@@ -448,9 +383,8 @@ export function resolve(
   const resolved = deref(schema, ctx.resolveRef);
   const tag = schemaTag(resolved);
 
-  // Cycle guard: a combinator branch that $refs an enclosing combinator expands forever (resolve
-  // expands combinators structurally, unbounded by the value). `seen` = ancestor schemas being
-  // resolved; re-entering one stops, with the enclosing schema still governing (`winners: [resolved]`).
+  // Cycle guard: a branch that $refs an enclosing combinator would expand forever. `seen` holds the
+  // ancestor schemas being resolved.
   if (seen.has(resolved)) {
     return {
       identity: tag ? unresolved('cyclic schema reference') : null,
@@ -461,17 +395,12 @@ export function resolve(
   const nested = new Set(seen).add(resolved);
   const resolveBranch = (branch: Schema): Resolution => resolve(branch, value, ctx, nested);
 
-  // The enclosing schema always governs its own children: it may carry a combinator AND its own
-  // `properties`/`items`, so `resolved` is a winner alongside any matched-branch winners.
+  // A combinator node can also have its own `properties`/`items`, so `resolved` is always a winner.
   for (const mode of ['oneOf', 'anyOf', 'allOf'] as const) {
     const branches = resolved[mode];
     if (branches) {
-      // Discriminator fast-path: for a tagged oneOf/anyOf, read the tag and resolve the ONE selected
-      // branch instead of every branch. Same result shape as the walk (via `resolveComposite` on a
-      // single branch), but O(1) and with precise diagnostics for a missing/unknown tag.
       const disc = mode === 'allOf' ? null : readDiscriminator(resolved);
-      // The union this node itself is, surfaced on the resolution so a consumer can enumerate branches
-      // and switch kind. Overrides any deeper union bubbled up from a branch — this direct one governs.
+      // This node's own union takes precedence over one bubbled up from a branch.
       const thisUnion: ResolvedUnion | undefined =
         mode !== 'allOf' && branches.length >= 2
           ? {
@@ -483,66 +412,31 @@ export function resolve(
               })),
             }
           : undefined;
+      // A discriminated union narrows the candidates to the one branch its tag selects; a missing
+      // (with `required`) or unknown tag is a failure at this node.
+      let candidates: Schema[] = branches;
       if (disc) {
-        // An absent tag falls back to the declared `default` (e.g. a basic page ⇒ 'basic'), keeping the
-        // untagged branch O(1); with no default it's absent as before.
+        // An absent tag falls back to the declared `default` (a basic page has no `type`).
         const tagValue = discriminantTag(disc, value) ?? disc.default ?? null;
-        if (tagValue == null) {
-          // A discriminant field is absent (and no default). Tolerate it for drafts (`required: false`)
-          // by falling back to the ordinary walk; otherwise it's an explicit, locatable failure.
-          if (!disc.required) {
-            return {
-              ...resolveComposite(
-                mode,
-                resolved,
-                escalateAmbiguous(
-                  mode,
-                  resolved,
-                  branches,
-                  branches.map(resolveBranch),
-                  value,
-                  ctx,
-                ),
-                tag,
-                value,
-                ctx,
-              ),
-              union: thisUnion,
-            };
-          }
+        const fields = disc.propertyNames.join('+');
+        const picked = tagValue == null ? null : pickBranch(disc, tagValue, branches, ctx);
+        if (picked) {
+          candidates = [picked];
+        } else if (tagValue != null || disc.required) {
+          const reason =
+            tagValue == null ? `missing discriminator ${fields}` : `unknown ${fields}: ${tagValue}`;
           return {
-            identity: unresolvedOrNull(
-              `missing discriminator ${disc.propertyNames.join('+')}`,
-              tag,
-              [],
-            ),
+            identity: tag ? unresolved(reason) : null,
             matched: false,
             winners: [resolved],
             union: thisUnion,
           };
         }
-        const picked = pickBranch(disc, tagValue, branches, ctx);
-        if (!picked) {
-          return {
-            identity: unresolvedOrNull(
-              `unknown ${disc.propertyNames.join('+')}: ${tagValue}`,
-              tag,
-              [],
-            ),
-            matched: false,
-            winners: [resolved],
-            union: thisUnion,
-          };
-        }
-        return {
-          ...resolveComposite(mode, resolved, [resolveBranch(picked)], tag, value, ctx),
-          union: thisUnion,
-        };
       }
       const composed = resolveComposite(
         mode,
         resolved,
-        escalateAmbiguous(mode, resolved, branches, branches.map(resolveBranch), value, ctx),
+        escalateAmbiguous(mode, resolved, candidates, candidates.map(resolveBranch), value, ctx),
         tag,
         value,
         ctx,
@@ -632,17 +526,15 @@ export function resolveAtKey(
   );
 }
 
-// One descent frame: schema + value + path. The walk steps over these transient frames — never a
-// `Node` per document node (perf guardrail, PERFORMANCE.md); `Node`/`boundaryAt` reuse the same step.
+// One descent frame. The walk steps over these instead of allocating a `Node` per document node.
 export interface StepChild {
   schema: Schema;
   value: unknown;
   path: NodePath;
 }
 
-// The single descent step shared by the walk, `Node`, and `boundaryAt`: resolve the child schema at
-// `key` (value-directed then structural) and pair it with the child's value and path; null when no
-// winner owns the key. A free function over plain frames, so the walk allocates no `Node` per node.
+// The descent step shared by the walk, `Node`, and `boundaryAt`: the child schema at `key` with the
+// child's value and path, or null when no winner owns the key.
 export function childNode(
   parentValue: unknown,
   parentPath: NodePath,
@@ -676,13 +568,10 @@ function rawOwnedChild(
   return null;
 }
 
-// The value projected onto its local (ref-cut) shape: the runtime mirror of `stripRefs`. Own inline
-// fields are kept (recursively projected); slots that mount a SEPARATE component — a `$ref` child or
-// a value-directed (`dynamicChild`) child — are blanked to `undefined`; keys outside the vocabulary
-// pass through unchanged; containers (arrays, maps) keep their length/keys. Projects over the same
-// resolved winners `childNode` descends, so it follows combinator resolution (oneOf winner, anyOf
-// matched, allOf all) and never surfaces losing-branch fields. Cheap: one `resolve` per level, no
-// deref of the cut subtrees. For a GUI editor rendering just this component's own editable fields.
+// The value projected onto its ref-cut shape, the runtime mirror of `stripRefs`: inline fields are
+// kept, slots that mount a separate component (`$ref` or `dynamicChild`) become `undefined`, and
+// unknown keys pass through. It follows the same winners as `childNode`, so losing-branch fields
+// never appear.
 export function localValue(schema: Schema, value: unknown, ctx: ResolveContext): unknown {
   if (value == null || typeof value !== 'object') {
     return value;

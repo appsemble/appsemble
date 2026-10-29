@@ -39,23 +39,6 @@ function tagMode(schema: Schema): TagMode | null {
   return structured ? 'single' : null;
 }
 
-// A schema with no object/array/combinator structure — a scalar/enum/const/format/pattern leaf. Such a
-// shape has no children to mount and no identity worth naming, so it must never be a component.
-function isBarePrimitive(schema: Schema): boolean {
-  if (schema.$ref) {
-    return false;
-  }
-  return !(
-    schema.type === 'object' ||
-    schema.type === 'array' ||
-    schema.properties != null ||
-    schema.items != null ||
-    schema.oneOf != null ||
-    schema.anyOf != null ||
-    schema.allOf != null
-  );
-}
-
 /**
  * The names of any tagged component in `schemas` that is a bare primitive — the dialect-sanity guard.
  * A dialect author drops this into their own test suite and asserts it returns `[]`, proving no
@@ -70,7 +53,11 @@ export function findPrimitiveComponents(schemas: Record<string, Schema>): string
   return Object.entries(schemas)
     .filter(
       ([, schema]) =>
-        schema && typeof schema === 'object' && isTagged(schema) && isBarePrimitive(schema),
+        schema &&
+        typeof schema === 'object' &&
+        isTagged(schema) &&
+        !schema.$ref &&
+        tagMode(schema) == null,
     )
     .map(([name]) => name);
 }
