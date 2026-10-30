@@ -173,7 +173,7 @@ function validateUniquePageNames(definition: AppDefinition, report: Report): voi
       }
 
       if (page.type === 'container') {
-        checkPages(page.pages, pagePath);
+        checkPages(page.pages ?? [], pagePath);
       }
     }
   }
@@ -209,7 +209,7 @@ function iterPageParents(
     }
 
     if (page.type === 'container') {
-      iterPageParents(page.pages, onParent, [...pagePath, 'pages']);
+      iterPageParents(page.pages ?? [], onParent, [...pagePath, 'pages']);
     }
   }
 }
@@ -999,7 +999,7 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
       // Flow page
       if (page.type === 'flow') {
         const flowPage = page as FlowPageDefinition;
-        const steps: [SubPageDefinition, Prefix][] = flowPage.steps.map((step, stepId) => [
+        const steps: [SubPageDefinition, Prefix][] = (flowPage.steps ?? []).map((step, stepId) => [
           step,
           [...path, 'steps', stepId],
         ]);
@@ -2582,6 +2582,9 @@ export async function validateAppDefinition(
   const report: Report = (instance, message, path) => {
     result.errors.push(new ValidationError(message, instance, undefined, path));
   };
+  const reportUnexpectedError = (error: unknown): void => {
+    report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
+  };
 
   try {
     // IMPORTANT: Create a deep copy to prevent validation logic from mutating the original definition.
@@ -2601,26 +2604,34 @@ export async function validateAppDefinition(
       blockVersionMap.get(version.name)!.set(version.version, version);
     }
 
-    validateController(clonedDefinition, controllerImplementations, report);
-    validateCronJobs(clonedDefinition, report);
-    validateDefaultPage(clonedDefinition, report);
-    validateHooks(clonedDefinition, report);
-    validateIcons(clonedDefinition, report);
-    validateIconReferences(clonedDefinition, blockVersionMap, report);
-    validateLanguage(clonedDefinition, report);
-    validateResourceReferences(clonedDefinition, report);
-    validateMembersSchema(clonedDefinition, report);
-    validatePageParents(clonedDefinition, report);
-    validatePhoneNumberDefinition(clonedDefinition, report);
-    validateResourceSchemas(clonedDefinition, report);
-    validateSecurity(clonedDefinition, report);
-    validateBlocks(clonedDefinition, blockVersionMap, report);
-    validateActions(clonedDefinition, report);
-    validateEvents(clonedDefinition, blockVersionMap, report);
-    validateUniquePageNames(clonedDefinition, report);
-    validateGridLayout(clonedDefinition, report);
+    // Run each check on its own, so a check that fails does not keep the others from reporting.
+    const check = (validate: () => void): void => {
+      try {
+        validate();
+      } catch (error) {
+        reportUnexpectedError(error);
+      }
+    };
+    check(() => validateController(clonedDefinition, controllerImplementations, report));
+    check(() => validateCronJobs(clonedDefinition, report));
+    check(() => validateDefaultPage(clonedDefinition, report));
+    check(() => validateHooks(clonedDefinition, report));
+    check(() => validateIcons(clonedDefinition, report));
+    check(() => validateIconReferences(clonedDefinition, blockVersionMap, report));
+    check(() => validateLanguage(clonedDefinition, report));
+    check(() => validateResourceReferences(clonedDefinition, report));
+    check(() => validateMembersSchema(clonedDefinition, report));
+    check(() => validatePageParents(clonedDefinition, report));
+    check(() => validatePhoneNumberDefinition(clonedDefinition, report));
+    check(() => validateResourceSchemas(clonedDefinition, report));
+    check(() => validateSecurity(clonedDefinition, report));
+    check(() => validateBlocks(clonedDefinition, blockVersionMap, report));
+    check(() => validateActions(clonedDefinition, report));
+    check(() => validateEvents(clonedDefinition, blockVersionMap, report));
+    check(() => validateUniquePageNames(clonedDefinition, report));
+    check(() => validateGridLayout(clonedDefinition, report));
   } catch (error) {
-    report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
+    reportUnexpectedError(error);
   }
 
   return result;

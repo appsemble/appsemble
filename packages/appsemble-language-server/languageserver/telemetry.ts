@@ -10,11 +10,16 @@ import {
 } from 'yaml-language-server/lib/esm/languageservice/telemetry.js';
 import { convertErrorToTelemetryMsg } from 'yaml-language-server/lib/esm/languageservice/utils/objects.js';
 
+import { type Logger } from '../Logger.js';
+
 export class TelemetryImpl implements Telemetry {
   private readonly connection: Connection;
 
-  constructor(connection: Connection) {
+  private readonly logger: Logger;
+
+  constructor(connection: Connection, logger: Logger) {
     this.connection = connection;
+    this.logger = logger;
   }
 
   send(event: TelemetryEvent): void {
@@ -22,7 +27,9 @@ export class TelemetryImpl implements Telemetry {
   }
 
   sendError(name: string, error: unknown): void {
-    this.send({ name, type: 'track', properties: { error: convertErrorToTelemetryMsg(error) } });
+    const message = convertErrorToTelemetryMsg(error);
+    this.logger.error(`${name}: ${message}`);
+    this.send({ name, type: 'track', properties: { error: message } });
   }
 
   sendTrack(name: string, properties: unknown): void {

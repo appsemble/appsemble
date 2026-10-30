@@ -13,6 +13,7 @@ import { workspaceContext } from 'yaml-language-server/lib/esm/languageservice/s
 import { convertErrorToTelemetryMsg } from 'yaml-language-server/lib/esm/languageservice/utils/objects.js';
 
 import { TelemetryImpl } from './languageserver/telemetry.js';
+import { ConnectionLogger } from './Logger.js';
 import { DefaultSchemaRequestWrapper } from './SchemaRequestWrapper.js';
 import { YAMLServerInit } from './yamlServerInit.js';
 import { SettingsState } from './yamlSettings.js';
@@ -52,7 +53,7 @@ const fileSystem = {
 
 const schemaRequestWrapper = new DefaultSchemaRequestWrapper(connection, yamlSettings, fileSystem);
 
-const telemetry = new TelemetryImpl(connection);
+const telemetry = new TelemetryImpl(connection, new ConnectionLogger(connection));
 
 connection.console.log('Starting Appsemble language server');
 
