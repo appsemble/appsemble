@@ -1,1 +1,1 @@
-Darken the default placeholder color to meet the AA contrast ratio
+Darken the prompt of a list field to meet the AA contrast ratio

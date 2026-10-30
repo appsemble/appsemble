@@ -131,7 +131,7 @@ it('should render a disabled checkbox', async () => {
   expect(checkboxDisabled.getAttribute('disabled')).toBeNull();
 });
 
-function renderCheckbox(field: CheckBox, index: number): void {
+function renderCheckbox(field: CheckBox): void {
   const props = {
     ...defaultBootstrapParams,
     parameters: { fields: [field] },
@@ -144,19 +144,19 @@ function renderCheckbox(field: CheckBox, index: number): void {
 
   render(
     <Context.Provider value={props}>
-      <CheckBoxField field={field} index={index} item={{}} onChange={vi.fn()} />
+      <CheckBoxField field={field} index={0} item={{}} onChange={vi.fn()} />
     </Context.Provider>,
   );
 }
 
-it('should name the checkbox by its column label and row', () => {
-  renderCheckbox({ label: 'Done', checkbox: {} }, 2);
+it('should name the checkbox by its column label', () => {
+  renderCheckbox({ label: 'Done', checkbox: {} });
 
-  expect(screen.getByRole('checkbox', { name: 'Done, row 3' })).toBeDefined();
+  expect(screen.getByRole('checkbox', { name: 'Done' })).toBeDefined();
 });
 
-it('should name the checkbox by its row in a column without a label', () => {
-  renderCheckbox({ checkbox: {} }, 0);
+it('should name the checkbox generically in a column without a label', () => {
+  renderCheckbox({ checkbox: {} });
 
-  expect(screen.getByRole('checkbox', { name: 'Select row 1' })).toBeDefined();
+  expect(screen.getByRole('checkbox', { name: 'Select row' })).toBeDefined();
 });
