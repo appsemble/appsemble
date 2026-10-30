@@ -18,6 +18,7 @@ import {
 import { workspaceContext } from 'yaml-language-server/lib/esm/languageservice/services/schemaRequestHandler.js';
 
 import { TelemetryImpl } from './languageserver/telemetry.js';
+import { ConnectionLogger } from './Logger.js';
 import { YAMLServerInit } from './yamlServerInit.js';
 import { SettingsState } from './yamlSettings.js';
 
@@ -171,7 +172,7 @@ async function startServer(): Promise<Client> {
     new StreamMessageWriter(toClient),
   );
   const settings = new SettingsState();
-  const telemetry = new TelemetryImpl(serverConnection);
+  const telemetry = new TelemetryImpl(serverConnection, new ConnectionLogger(serverConnection));
   new YAMLServerInit(
     serverConnection,
     settings,

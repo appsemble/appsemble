@@ -10,11 +10,16 @@ import {
 } from 'yaml-language-server/lib/esm/languageservice/telemetry.js';
 import { convertErrorToTelemetryMsg } from 'yaml-language-server/lib/esm/languageservice/utils/objects.js';
 
+import { type Logger } from '../Logger.js';
+
 export class TelemetryImpl implements Telemetry {
   private readonly connection: Connection;
 
-  constructor(connection: Connection) {
+  private readonly logger: Logger;
+
+  constructor(connection: Connection, logger: Logger) {
     this.connection = connection;
+    this.logger = logger;
   }
 
   send(event: TelemetryEvent): void {
@@ -23,9 +28,7 @@ export class TelemetryImpl implements Telemetry {
 
   sendError(name: string, error: unknown): void {
     const message = convertErrorToTelemetryMsg(error);
-    // The yaml language service reports its own failures only here, so log them as well, where they
-    // show in the language server output.
-    this.connection.console.error(`${name}: ${message}`);
+    this.logger.error(`${name}: ${message}`);
     this.send({ name, type: 'track', properties: { error: message } });
   }
 
