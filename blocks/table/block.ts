@@ -319,6 +319,11 @@ declare module '@appsemble/sdk' {
     loading: never;
 
     /**
+     * The accessible name of a dropdown that has neither a label nor a column label.
+     */
+    moreOptions: never;
+
+    /**
      * The accessible name of a checkbox in a column without a label.
      */
     selectRow: { row: number };

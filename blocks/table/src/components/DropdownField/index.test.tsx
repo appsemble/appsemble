@@ -6,6 +6,8 @@ import userEvent from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
 
 import { DropdownField as DropdownComponent } from './index.js';
+import { type Dropdown } from '../../../block.js';
+import messages from '../../../i18n/en.json' with { type: 'json' };
 
 type BlockProps = BootstrapParams & { ready: (value: PromiseLike<void> | void) => void };
 
@@ -67,4 +69,46 @@ it('should render a dropdown component', async () => {
   await userEvent.click(testDropdown.getElementsByClassName('dropdown-trigger')[0]);
   await userEvent.click(testDropdown.getElementsByClassName('dropdown-item')[0]);
   expect(onClickMock.mock.calls).toHaveLength(1);
+});
+
+function renderDropdown(field: Dropdown): void {
+  const props = {
+    ...defaultBootstrapParams,
+    parameters: { fields: [field] },
+    utils: {
+      ...defaultBootstrapParams.utils,
+      formatMessage: (message: keyof typeof messages) => messages[message],
+    },
+  } as unknown as BlockProps;
+
+  render(
+    <Context.Provider value={props}>
+      <DropdownComponent field={field} index={0} item={{}} record={{}} repeatedIndex={0} />
+    </Context.Provider>,
+  );
+}
+
+it.each([
+  { label: 'Actions', name: 'Actions' },
+  { label: undefined, name: 'More options' },
+])('should name an icon-only dropdown $name', ({ label, name }) => {
+  renderDropdown({
+    label,
+    dropdown: { icon: 'ellipsis-vertical', options: [{ onClick: 'onClick', label: 'Edit' }] },
+  });
+
+  expect(screen.getByRole('button', { name })).toBeDefined();
+});
+
+it('should name a dropdown by its visible label', () => {
+  renderDropdown({
+    label: 'Actions',
+    dropdown: {
+      icon: 'ellipsis-vertical',
+      label: 'Manage',
+      options: [{ onClick: 'onClick', label: 'Edit' }],
+    },
+  });
+
+  expect(screen.getByRole('button', { name: 'Manage' })).toBeDefined();
 });
