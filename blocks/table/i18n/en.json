@@ -6,5 +6,7 @@
   "enlargeNamedImage": "Enlarge image: {name}",
   "error": "An error occurred when fetching the data",
   "loading": "Loading",
+  "selectNamedRow": "{label}, row {row}",
+  "selectRow": "Select row {row}",
   "submitChecked": "Submit"
 }

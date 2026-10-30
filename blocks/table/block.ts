@@ -317,6 +317,16 @@ declare module '@appsemble/sdk' {
      * The accessible label of the loader shown while data loads.
      */
     loading: never;
+
+    /**
+     * The accessible name of a checkbox in a column without a label.
+     */
+    selectRow: { row: number };
+
+    /**
+     * The accessible name of a checkbox, including its column label.
+     */
+    selectNamedRow: { label: string; row: number };
   }
   interface Parameters {
     /**

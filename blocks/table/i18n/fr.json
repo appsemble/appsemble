@@ -6,5 +6,7 @@
   "enlargeNamedImage": "",
   "error": "Une erreur s'est produite lors de la récupération des données",
   "loading": "",
+  "selectNamedRow": "",
+  "selectRow": "",
   "submitChecked": "Envoyer"
 }

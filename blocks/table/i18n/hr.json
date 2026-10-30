@@ -6,5 +6,7 @@
   "enlargeNamedImage": "",
   "error": "Došlo je do pogreške pri dohvaćanju podataka",
   "loading": "",
+  "selectNamedRow": "",
+  "selectRow": "",
   "submitChecked": "Pošalji"
 }

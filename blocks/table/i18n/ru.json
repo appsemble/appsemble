@@ -6,5 +6,7 @@
   "enlargeNamedImage": "",
   "error": "При получении данных произошла ошибка",
   "loading": "",
+  "selectNamedRow": "",
+  "selectRow": "",
   "submitChecked": "Отправить"
 }

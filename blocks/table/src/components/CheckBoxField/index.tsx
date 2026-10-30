@@ -21,23 +21,30 @@ interface CheckBoxFieldPropsInterface {
 }
 
 export function CheckBoxField({
-  field: { checkbox },
+  field: { checkbox, label },
   index,
   item,
   onChange,
 }: CheckBoxFieldPropsInterface): VNode {
   const {
-    utils: { remap },
+    utils: { formatMessage, remap },
   } = useBlock();
 
   const disabled = useMemo(
     () => Boolean(remap(checkbox.disabled, item, { index })),
     [checkbox.disabled, index, item, remap],
   );
+  const columnLabel = remap(label, {}) as string;
+
   return (
     <span>
       <label className={classNames('checkbox')}>
         <input
+          aria-label={
+            columnLabel
+              ? formatMessage('selectNamedRow', { label: columnLabel, row: index + 1 })
+              : formatMessage('selectRow', { row: index + 1 })
+          }
           disabled={disabled}
           onChange={(event) => onChange(event, event.currentTarget.checked)}
           type="checkbox"

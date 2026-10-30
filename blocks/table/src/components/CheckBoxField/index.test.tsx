@@ -7,6 +7,7 @@ import { expect, it, vi } from 'vitest';
 
 import { CheckBoxField } from './index.js';
 import { type CheckBox } from '../../../block.js';
+import messages from '../../../i18n/en.json' with { type: 'json' };
 
 type BlockProps = BootstrapParams & { ready: (value: PromiseLike<void> | void) => void };
 
@@ -62,6 +63,7 @@ it('should render the checkbox fields', async () => {
   const checkbox = screen.getByRole('checkbox');
   expect(checkbox).toMatchInlineSnapshot(`
     <input
+      aria-label="selectRow"
       type="checkbox"
     />
   `);
@@ -127,4 +129,34 @@ it('should render a disabled checkbox', async () => {
   );
   const checkboxDisabled = screen.getByRole('checkbox');
   expect(checkboxDisabled.getAttribute('disabled')).toBeNull();
+});
+
+function renderCheckbox(field: CheckBox, index: number): void {
+  const props = {
+    ...defaultBootstrapParams,
+    parameters: { fields: [field] },
+    utils: {
+      ...defaultBootstrapParams.utils,
+      formatMessage: (message: keyof typeof messages, values: Record<string, unknown> = {}) =>
+        messages[message].replaceAll(/{(\w+)}/g, (match, key: string) => String(values[key])),
+    },
+  } as unknown as BlockProps;
+
+  render(
+    <Context.Provider value={props}>
+      <CheckBoxField field={field} index={index} item={{}} onChange={vi.fn()} />
+    </Context.Provider>,
+  );
+}
+
+it('should name the checkbox by its column label and row', () => {
+  renderCheckbox({ label: 'Done', checkbox: {} }, 2);
+
+  expect(screen.getByRole('checkbox', { name: 'Done, row 3' })).toBeDefined();
+});
+
+it('should name the checkbox by its row in a column without a label', () => {
+  renderCheckbox({ checkbox: {} }, 0);
+
+  expect(screen.getByRole('checkbox', { name: 'Select row 1' })).toBeDefined();
 });
