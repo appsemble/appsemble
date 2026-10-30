@@ -60,6 +60,7 @@ bootstrap(
       previous,
       requirements,
       skipInitialLoad = false,
+      submitErrorMessage,
       title,
     },
     path,
@@ -314,6 +315,14 @@ bootstrap(
           // eslint-disable-next-line no-console
           console.error(submitActionError);
 
+          if (submitErrorMessage) {
+            setSubmitErrorResult(
+              (utils.remap(submitErrorMessage, values, { error: submitActionError }) as string) ||
+                utils.formatMessage('submitError'),
+            );
+            return;
+          }
+
           let error = '';
           if (typeof submitActionError === 'string') {
             error = submitActionError;
@@ -400,6 +409,7 @@ bootstrap(
       data,
       values,
       thumbnails,
+      submitErrorMessage,
       utils,
     ]);
 

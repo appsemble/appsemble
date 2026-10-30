@@ -1854,5 +1854,14 @@ declare module '@appsemble/sdk' {
      * @default 5000
      */
     longSubmissionDuration?: number;
+
+    /**
+     * The error message that is displayed at the top of the form when the submit action fails.
+     *
+     * The remapper receives the form values as input and the error as the `error` context.
+     * Without this, the form shows the error returned by the action or a generic message. If the
+     * remapper yields nothing, the form shows the generic message.
+     */
+    submitErrorMessage?: Remapper;
   }
 }
