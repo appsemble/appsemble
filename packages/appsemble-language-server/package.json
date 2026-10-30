@@ -24,8 +24,11 @@
     "**/*.js",
     "**/*.js.map",
     "!*.config.js",
+    "!esbuild.*",
+    "!vitest.setup.*",
     "!**/*.test.js",
-    "!**/*.test.d.ts"
+    "!**/*.test.d.ts",
+    "!**/*.test.js.map"
   ],
   "bin": {
     "appsemble-language-server": "./build/server.js"
