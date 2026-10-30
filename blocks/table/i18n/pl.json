@@ -6,5 +6,8 @@
   "enlargeNamedImage": "",
   "error": "Wystąpił błąd podczas pobierania danych",
   "loading": "",
+  "moreOptions": "",
+  "selectNamedRow": "",
+  "selectRow": "",
   "submitChecked": "Prześlij"
 }

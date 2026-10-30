@@ -30,6 +30,11 @@ interface DropdownProps {
   readonly label: ComponentChild;
 
   /**
+   * The accessible name of the menu toggle button, for a button that shows no label.
+   */
+  readonly ariaLabel?: string;
+
+  /**
    * The icon to display next to the label.
    */
   readonly icon?: IconReference;
@@ -46,6 +51,7 @@ interface DropdownProps {
  * Render an aria compliant Bulma dropdown menu.
  */
 export function Dropdown({
+  ariaLabel,
   asButton = true,
   children,
   className,
@@ -87,6 +93,7 @@ export function Dropdown({
           <Button
             aria-expanded={enabled}
             aria-haspopup
+            aria-label={ariaLabel}
             icon={icon}
             onClick={handleClick}
             onKeyDown={onKeyDown}

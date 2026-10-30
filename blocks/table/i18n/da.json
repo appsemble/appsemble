@@ -6,5 +6,8 @@
   "enlargeNamedImage": "",
   "error": "Der opstod en fejl under hentning af dataene",
   "loading": "",
+  "moreOptions": "",
+  "selectNamedRow": "",
+  "selectRow": "",
   "submitChecked": "Indsend"
 }

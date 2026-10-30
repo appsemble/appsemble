@@ -630,6 +630,7 @@ bootstrap(
           className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}
           color="danger"
           role="status"
+          tabIndex={formErrors.some(Boolean) ? 0 : undefined}
         >
           {/* Render the first form error */}
           <span>{formErrors.find(Boolean)}</span>
@@ -638,6 +639,7 @@ bootstrap(
           className={classNames(styles.error, { [styles.hidden]: submitErrorResult == null })}
           color="danger"
           role="alert"
+          tabIndex={submitErrorResult == null ? undefined : 0}
         >
           <span>{submitErrorResult}</span>
         </Message>
