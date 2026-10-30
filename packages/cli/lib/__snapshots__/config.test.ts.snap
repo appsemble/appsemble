@@ -8136,6 +8136,15 @@ This does not trigger if the field has a different action specified.",
     "loading": {
       "description": "The accessible label of the loader shown while data loads.",
     },
+    "moreOptions": {
+      "description": "The accessible name of a dropdown that has neither a label nor a column label.",
+    },
+    "selectNamedRow": {
+      "description": "The accessible name of a checkbox, including its column label.",
+    },
+    "selectRow": {
+      "description": "The accessible name of a checkbox in a column without a label.",
+    },
     "submitChecked": {
       "description": "The text on the button that is used to submit the checked data.",
     },

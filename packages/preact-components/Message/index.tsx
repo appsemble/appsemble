@@ -34,9 +34,21 @@ interface MessageProps {
    * announced politely when the content of an already rendered message changes.
    */
   readonly role?: 'alert' | 'status';
+
+  /**
+   * The tab index of the message element, to let keyboard users scroll a message that overflows.
+   */
+  readonly tabIndex?: number;
 }
 
-export function Message({ children, className, color, header, role }: MessageProps): VNode {
+export function Message({
+  children,
+  className,
+  color,
+  header,
+  role,
+  tabIndex,
+}: MessageProps): VNode {
   const icon = getMessageIcon(color);
 
   return (
@@ -44,6 +56,7 @@ export function Message({ children, className, color, header, role }: MessagePro
       className={classNames('message', className, { [`is-${color}`]: color })}
       data-testid="message-comp"
       role={role}
+      tabIndex={tabIndex}
     >
       {header ? <h6 className="message-header">{header}</h6> : null}
       <div className={classNames('message-body', { [styles.body]: icon })}>
