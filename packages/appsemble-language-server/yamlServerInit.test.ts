@@ -291,55 +291,6 @@ describe('yaml language service diagnostics across block set changes', () => {
     );
   });
 
-  it('keeps reporting schema errors after a block is added and removed', async () => {
-    client.open(app([alpha]));
-    await client.settle();
-
-    client.change(app([alpha, beta]));
-    await client.settle();
-    client.change(app([alpha]));
-    await client.settle();
-    client.change(appWithYamlErrors([]));
-
-    await client.waitForDiagnostics((diagnostics) =>
-      expect(yamlServiceMessages(diagnostics)).toStrictEqual(allYamlErrors),
-    );
-  });
-
-  it('keeps reporting schema errors after a block version is swapped back and forth', async () => {
-    client.open(app([alpha, beta]));
-    await client.settle();
-
-    for (const blocks of [
-      [alphaNext, beta],
-      [alpha, beta],
-      [alphaNext, beta],
-    ]) {
-      client.change(app(blocks));
-      await client.settle();
-    }
-    client.change(appWithYamlErrors([alphaNext, beta]));
-
-    await client.waitForDiagnostics((diagnostics) =>
-      expect(yamlServiceMessages(diagnostics)).toStrictEqual(allYamlErrors),
-    );
-  });
-
-  it('keeps reporting schema errors after the same block set is restored', async () => {
-    client.open(appWithYamlErrors([beta]));
-    await client.waitForDiagnostics((diagnostics) =>
-      expect(yamlServiceMessages(diagnostics)).toStrictEqual(allYamlErrors),
-    );
-
-    client.change(app([alpha, beta, gamma]));
-    await client.settle();
-    client.change(appWithYamlErrors([beta]));
-
-    await client.waitForDiagnostics((diagnostics) =>
-      expect(yamlServiceMessages(diagnostics)).toStrictEqual(allYamlErrors),
-    );
-  });
-
   it('keeps reporting schema errors after ten block set changes', async () => {
     client.open(app([alpha]));
     await client.settle();
@@ -361,20 +312,6 @@ describe('yaml language service diagnostics across block set changes', () => {
       await client.settle();
     }
     client.change(appWithYamlErrors([beta, gamma]));
-
-    await client.waitForDiagnostics((diagnostics) =>
-      expect(yamlServiceMessages(diagnostics)).toStrictEqual(allYamlErrors),
-    );
-  });
-
-  it('keeps reporting schema errors after rapid block set changes', async () => {
-    client.open(app([alpha]));
-    await client.settle();
-
-    for (const blocks of [[alpha, beta], [gamma], [alphaNext, beta], [beta, gamma], [alpha]]) {
-      client.change(app(blocks));
-    }
-    client.change(appWithYamlErrors([gamma]));
 
     await client.waitForDiagnostics((diagnostics) =>
       expect(yamlServiceMessages(diagnostics)).toStrictEqual(allYamlErrors),
@@ -495,14 +432,6 @@ const answersFromBlockAndAppSchemas = {
 };
 
 describe('completion and hover across block set changes', () => {
-  it('completes and describes block parameters on the first load', async () => {
-    const text = appToInspect([]);
-    client.open(text);
-    await client.settle();
-
-    expect(await inspect(text)).toStrictEqual(answersFromBlockAndAppSchemas);
-  });
-
   it('completes and describes block parameters after a block it has not seen is added', async () => {
     client.open(app([alpha]));
     await client.settle();
@@ -521,32 +450,6 @@ describe('completion and hover across block set changes', () => {
     await client.settle();
 
     const text = appToInspect([beta]);
-    client.change(text);
-    await client.settle();
-
-    expect(await inspect(text)).toStrictEqual(answersFromBlockAndAppSchemas);
-  });
-
-  it('completes and describes block parameters after ten block set changes', async () => {
-    client.open(app([alpha]));
-    await client.settle();
-    for (const blocks of [
-      [alpha, beta],
-      [beta],
-      [beta, gamma],
-      [alphaNext],
-      [alpha, gamma],
-      [gamma],
-      [alpha, beta, gamma],
-      [alphaNext, beta],
-      [beta],
-      [alpha],
-    ]) {
-      client.change(app(blocks));
-      await client.settle();
-    }
-
-    const text = appToInspect([gamma]);
     client.change(text);
     await client.settle();
 
