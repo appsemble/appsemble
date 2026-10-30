@@ -1,1 +1,1 @@
-Replace old errors and point at the alias when an alias in an app definition has no anchor
+Replace old errors and point at each alias when aliases in an app definition have no anchor

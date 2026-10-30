@@ -9,6 +9,7 @@ import {
   type CompletionItem,
   type CompletionList,
   type Diagnostic,
+  DiagnosticSeverity,
   type Hover,
   type MessageConnection,
   type Position,
@@ -413,20 +414,31 @@ describe('language service errors', () => {
 });
 
 describe('documents the app validation cannot read', () => {
-  it('replaces diagnostics whose source was removed while an alias has no anchor', async () => {
+  it('replaces diagnostics whose source was removed with an error for each alias without an anchor', async () => {
     client.open(app([{ ...alpha, parameters: ['icon: 123'] }]));
     await client.waitForDiagnostics((diagnostics) =>
       expect(diagnostics.map(({ message }) => message).join('\n')).toMatch(/string/),
     );
 
-    client.change(app([alpha], ['description: *missingAnchor']));
+    client.change(app([alpha], ['description: *firstMissing', 'theme: *secondMissing']));
 
     const diagnostics = await client.waitForDiagnostics((latest) =>
       expect(latest.map(({ message }) => message).join('\n')).not.toMatch(/string/),
     );
-    const aliasDiagnostic = diagnostics.find(({ message }) => message.includes('missingAnchor'));
-    // `description` is the second line of the app definition.
-    expect(aliasDiagnostic?.range.start.line).toBe(1);
+    const aliasErrors = diagnostics.filter(
+      ({ message, severity }) => severity === DiagnosticSeverity.Error && /alias/i.test(message),
+    );
+    // `description` and `theme` are the second and third lines of the app definition.
+    expect(aliasErrors).toStrictEqual([
+      expect.objectContaining({
+        message: expect.stringContaining('firstMissing'),
+        range: expect.objectContaining({ start: expect.objectContaining({ line: 1 }) }),
+      }),
+      expect.objectContaining({
+        message: expect.stringContaining('secondMissing'),
+        range: expect.objectContaining({ start: expect.objectContaining({ line: 2 }) }),
+      }),
+    ]);
   });
 });
 

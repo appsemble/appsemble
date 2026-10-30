@@ -6,7 +6,7 @@ import { type AppDefinition, AppValidator, validateAppDefinition } from '@appsem
 import { type Connection } from 'vscode-languageserver';
 import { type TextDocument } from 'vscode-languageserver-textdocument';
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types';
-import { type Alias, type Document, isNode, type LineCounter, visit } from 'yaml';
+import { type Document, isNode, type LineCounter, visit } from 'yaml';
 import { isKubernetesAssociatedDocument } from 'yaml-language-server/lib/esm/languageservice/parser/isKubernetes.js';
 import { removeDuplicatesObj } from 'yaml-language-server/lib/esm/languageservice/utils/arrUtils.js';
 import { type LanguageService } from 'yaml-language-server/lib/esm/languageservice/yamlLanguageService.js';
@@ -43,30 +43,37 @@ function validatorRangeToDiagnosticRange(
  * @param doc The document that failed to convert.
  * @param counter The line counter of the document.
  * @param error The error the conversion threw.
- * @returns A diagnostic at the first alias without an anchor, or at the start of the document.
+ * @returns A diagnostic for each alias without an anchor, or one at the start of the document if no
+ *   alias is to blame.
  */
-function unconvertibleDocumentDiagnostic(
+function unconvertibleDocumentDiagnostics(
   doc: Document,
   counter: LineCounter,
   error: unknown,
-): Diagnostic {
-  let unresolvedAlias: Alias | undefined;
+): Diagnostic[] {
+  const diagnostics: Diagnostic[] = [];
   visit(doc, {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     Alias(key, alias) {
-      if (!alias.resolve(doc)) {
-        unresolvedAlias = alias;
-        return visit.BREAK;
+      if (!alias.resolve(doc) && alias.range) {
+        diagnostics.push({
+          severity: DiagnosticSeverity.Error,
+          message: `Unresolved alias (the anchor must be set before the alias): ${alias.source}`,
+          range: validatorRangeToDiagnosticRange(counter, alias.range),
+        });
       }
     },
   });
-  return {
-    severity: DiagnosticSeverity.Error,
-    message: error instanceof Error ? error.message : String(error),
-    range: unresolvedAlias?.range
-      ? validatorRangeToDiagnosticRange(counter, unresolvedAlias.range)
-      : { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } },
-  };
+  if (diagnostics.length) {
+    return diagnostics;
+  }
+  return [
+    {
+      severity: DiagnosticSeverity.Error,
+      message: error instanceof Error ? error.message : String(error),
+      range: { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } },
+    },
+  ];
 }
 
 export class ValidationHandler {
@@ -183,7 +190,7 @@ export class ValidationHandler {
       // cannot be converted to. Report why, alongside the yaml language service diagnostics.
       return this.publishDiagnostics(
         textDocument,
-        [unconvertibleDocumentDiagnostic(doc, counter, error)],
+        unconvertibleDocumentDiagnostics(doc, counter, error),
         diagnosticResults,
       );
     }
