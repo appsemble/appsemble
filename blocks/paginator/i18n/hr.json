@@ -1,6 +1,6 @@
 {
-  "navigationLabel": "",
+  "navigationLabel": "Paginacija",
   "nextLabel": "Sljedeća",
-  "pageLabel": "",
+  "pageLabel": "Stranica {page} od {pageCount}",
   "prevLabel": "Prethodna"
 }

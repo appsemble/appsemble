@@ -3,6 +3,6 @@
   "error": "Došlo je do problema pri učitavanju podataka.",
   "loading": "Učitavanje …",
   "unsupported": "Vaš preglednik ne podržava blok oblaka riječi!",
-  "wordFrequency": "",
-  "wordcloud": ""
+  "wordFrequency": "{word}: {count, plural, one {# put} few {# puta} other {# puta}}",
+  "wordcloud": "Oblak riječi"
 }

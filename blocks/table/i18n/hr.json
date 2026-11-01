@@ -1,13 +1,13 @@
 {
-  "closeImage": "",
-  "downloadImage": "",
+  "closeImage": "Zatvori uvećanu sliku",
+  "downloadImage": "Preuzmi u HD-u",
   "emptyMessage": "Nema dostupnih podataka.",
-  "enlargeImage": "",
-  "enlargeNamedImage": "",
+  "enlargeImage": "Uvećaj sliku",
+  "enlargeNamedImage": "Uvećaj sliku: {name}",
   "error": "Došlo je do pogreške pri dohvaćanju podataka",
-  "loading": "",
-  "moreOptions": "",
-  "selectNamedRow": "",
-  "selectRow": "",
+  "loading": "Učitavanje",
+  "moreOptions": "Više opcija",
+  "selectNamedRow": "{label}, redak {row}",
+  "selectRow": "Odaberi redak {row}",
   "submitChecked": "Pošalji"
 }

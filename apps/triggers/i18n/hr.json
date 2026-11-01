@@ -2,18 +2,18 @@
   "app": {
     "description": "Demonstracija okidača resursa",
     "name": "Okidači",
-    "pages.owners-pets": "Omiljene životinje vlasnika",
+    "pages.owners-pets": "Ljubimci vlasnika",
     "pages.owners-pets.tabs.0": "Vlasnici",
     "pages.owners-pets.tabs.1": "Kućni ljubimci",
-    "pages.owners-pets.tabs.2": "Seoski kućni ljubimci",
-    "pages.owners-pets.tabs.3": "Divlje kućne ljubimce"
+    "pages.owners-pets.tabs.2": "Farmski ljubimci",
+    "pages.owners-pets.tabs.3": "Divlji ljubimci"
   },
   "messageIds": {
-    "cancel": "Otkaži",
+    "cancel": "Odustani",
     "configDelete": "Izbriši",
-    "confirmDeleteFarmPet": "Jeste li sigurni da želite izbrisati sljedeću farmsku životinju?",
-    "confirmDeleteHousePet": "Jeste li sigurni da želite izbrisati sljedeću kućnu ljubimicu?",
-    "confirmDeleteOwner": "Jeste li sigurni da želite izbrisati sljedećeg vlasnika?",
-    "confirmDeleteWildPet": "Jeste li sigurni da želite izbrisati sljedeću divlju životinju?"
+    "confirmDeleteFarmPet": "Stvarno želiš izbrisati sljedećeg farmskog ljubimca?",
+    "confirmDeleteHousePet": "Stvarno želiš izbrisati sljedećeg kućnog ljubimica?",
+    "confirmDeleteOwner": "Stvarno želiš izbrisati sljedećeg vlasnika?",
+    "confirmDeleteWildPet": "Stvarno želiš izbrisati sljedećeg divljeg ljubimca?"
   }
 }
