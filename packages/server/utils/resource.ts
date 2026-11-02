@@ -1,6 +1,8 @@
 import {
   type AppDefinition,
   defaultLocale,
+  getAppInheritedRoles,
+  getAppRoles,
   type NotificationDefinition,
   remap,
   type ResourceDefinition,
@@ -24,6 +26,7 @@ import {
 } from 'sequelize';
 import { type Literal } from 'sequelize/types/utils';
 
+import { getAppMemberIdsByRoles } from './appMember.js';
 import { type FieldType, odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 import { sendNotification, type SendNotificationOptions } from './sendNotification.js';
 import {
@@ -87,7 +90,7 @@ async function sendSubscriptionNotifications(
   resourceId: number,
   options: SendNotificationOptions,
 ): Promise<void> {
-  const { AppMember, AppSubscription, ResourceSubscription } = await getAppDB(app.id);
+  const { AppSubscription, ResourceSubscription } = await getAppDB(app.id);
   const to = notification.to || [];
   const roles = to.filter((n) => n !== '$author');
   const author = resourceAppMemberId && to.includes('$author');
@@ -100,15 +103,21 @@ async function sendSubscriptionNotifications(
   const subscriptions: AppSubscription[] = [];
 
   if (roles.length || author) {
+    const { security } = app.definition;
+    // Members whose role inherits a listed role are notified as well.
+    const notifiedRoles = new Set([
+      ...roles,
+      ...getAppRoles(security).filter((role) =>
+        getAppInheritedRoles(security!, [role]).some((inherited) => roles.includes(inherited)),
+      ),
+    ]);
+    const memberIds = [
+      ...(await getAppMemberIdsByRoles(app.id, [...notifiedRoles])),
+      ...(author ? [resourceAppMemberId] : []),
+    ];
     const roleSubscribers = await AppSubscription.findAll({
       attributes: ['id', 'auth', 'p256dh', 'endpoint'],
-      include: [
-        {
-          model: AppMember,
-          attributes: [],
-          required: true,
-        },
-      ],
+      where: { AppMemberId: memberIds },
     });
 
     subscriptions.push(...roleSubscribers);
