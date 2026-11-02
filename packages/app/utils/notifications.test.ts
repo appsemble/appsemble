@@ -39,4 +39,19 @@ describe('getNotificationStrategy', () => {
     expect(getNotificationStrategy(notifications, ['Guest', 'Manager', 'Employee'])).toBe('login');
     expect(getNotificationStrategy(notifications, ['Guest', 'Employee'])).toBe('opt-in');
   });
+
+  it('should rank startup above login', () => {
+    expect(
+      getNotificationStrategy({ default: 'startup', roles: { Manager: 'login' } }, [
+        'Manager',
+        'Employee',
+      ]),
+    ).toBe('startup');
+  });
+
+  it('should apply the default to unlisted roles named after object properties', () => {
+    expect(
+      getNotificationStrategy({ default: 'login', roles: { User: 'none' } }, ['constructor']),
+    ).toBe('login');
+  });
 });

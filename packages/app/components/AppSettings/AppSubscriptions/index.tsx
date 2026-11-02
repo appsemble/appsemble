@@ -160,8 +160,8 @@ export function AppSubscriptions(): ReactNode {
 
   // Members who are still subscribed keep the switch, so they can unsubscribe.
   if (
-    !subscription &&
-    getNotificationStrategy(definition.notifications, appMemberRoles) === 'none'
+    definition.notifications == null ||
+    (!subscription && getNotificationStrategy(definition.notifications, appMemberRoles) === 'none')
   ) {
     return null;
   }

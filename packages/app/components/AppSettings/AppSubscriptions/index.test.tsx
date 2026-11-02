@@ -24,7 +24,9 @@ let mock: MockAdapter;
 function renderSubscriptions(
   appMemberRoles: string[],
   subscription: { endpoint: string } | null,
+  definition: AppDefinition = appDefinition,
 ): void {
+  vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({ definition } as never);
   vi.spyOn(appMemberProvider, 'useAppMember').mockReturnValue({ appMemberRoles } as never);
   vi.spyOn(serviceWorkerRegistrationProvider, 'useServiceWorkerRegistration').mockReturnValue({
     subscription,
@@ -41,9 +43,6 @@ function renderSubscriptions(
 beforeEach(() => {
   mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
   mock.onGet(/\/subscriptions$/).reply(200, {});
-  vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
-    definition: appDefinition,
-  } as never);
 });
 
 afterEach(() => {
@@ -66,5 +65,21 @@ describe('AppSubscriptions', () => {
   it('should let a subscribed member without a notification strategy unsubscribe', async () => {
     renderSubscriptions(['Employee'], { endpoint: 'https://push.example.com' });
     expect(await screen.findByRole('checkbox')).toHaveProperty('checked', true);
+  });
+
+  it('should hide the subscribe checkbox in an app without notifications', async () => {
+    renderSubscriptions(
+      ['Employee'],
+      { endpoint: 'https://push.example.com' },
+      {
+        ...appDefinition,
+        notifications: undefined,
+      },
+    );
+    // Let the subscriptions request settle, after which the checkbox would replace the loader.
+    await new Promise((resolve) => {
+      setTimeout(resolve);
+    });
+    expect(screen.queryByRole('checkbox')).toBeNull();
   });
 });

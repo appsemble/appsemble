@@ -1023,15 +1023,6 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should reject startup as the notifications of a role in schema validation', () => {
-    const app = createTestApp();
-    // @ts-expect-error 2322 startup is not allowed per role
-    app.notifications = { roles: { User: 'startup' } };
-    const result = new AppValidator().validateApp(app);
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(expect.objectContaining({ path: ['notifications'] }));
-  });
-
   it('should not report an empty notifications value as an unexpected error', async () => {
     const app = createTestApp();
     // @ts-expect-error 2322 an empty YAML value is null

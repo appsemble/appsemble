@@ -26,7 +26,7 @@ in the app settings page. After they give permission by flipping the “subscrib
 ready to start receiving push notifications.
 
 To use a different strategy per role, map each role to `login`, `opt-in`, or `none`. Roles that
-aren’t listed use `default`, which is `none` if omitted:
+aren’t listed use `default`, which may also be `startup`, and is `none` if omitted:
 
 ```yaml copy
 notifications:
@@ -35,10 +35,14 @@ notifications:
     Manager: login
 ```
 
-A member with several roles gets the most eager strategy of those roles, in the order `login`,
-`opt-in`, `none`. Only roles assigned to the member count, not roles they inherit. Browsers store
-the push permission per device, not per user: if one user denies it on a shared device, the app
-can’t prompt the next user on that device.
+A member with several roles gets the most eager strategy of those roles, in the order `startup`,
+`login`, `opt-in`, `none`. Only roles assigned to the member count, not roles they inherit. Browsers
+store the push permission per device, not per user: if one user denies it on a shared device, the
+app can’t prompt the next user on that device.
+
+The strategy only controls how the app offers notifications. Members with `none` still receive
+notifications sent to all subscribers if they subscribed before. To reach only certain roles, use
+the [`notify`](../reference/action.mdx#notify) action with `to` set to those roles.
 
 ## Resource notifications
 

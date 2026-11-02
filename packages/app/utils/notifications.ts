@@ -23,7 +23,9 @@ export function getNotificationStrategy(
   }
   const defaultStrategy = notifications.default ?? 'none';
   const strategies = appMemberRoles.length
-    ? appMemberRoles.map((role) => notifications.roles[role] ?? defaultStrategy)
+    ? appMemberRoles.map((role) =>
+        Object.hasOwn(notifications.roles, role) ? notifications.roles[role] : defaultStrategy,
+      )
     : [defaultStrategy];
   return strategiesByEagerness.find((strategy) => strategies.includes(strategy))!;
 }
