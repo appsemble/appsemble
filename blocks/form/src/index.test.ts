@@ -827,66 +827,75 @@ it('should scroll to and focus the error summary at the top after a failed submi
   expect(scrollIntoView.mock.contexts).toStrictEqual([summary]);
 });
 
-it('should keep the empty error live regions in the form without making them scrollable', async () => {
-  vi.spyOn(console, 'error').mockImplementation(() => null);
+/**
+ * Tab through the document until focus wraps around.
+ *
+ * @returns The elements that received focus, in tab order.
+ */
+async function tabStops(): Promise<Element[]> {
+  const stops: Element[] = [];
+  await userEvent.tab();
+  while (!stops.includes(document.activeElement!)) {
+    stops.push(document.activeElement!);
+    await userEvent.tab();
+  }
+  return stops;
+}
+
+/**
+ * Apply the styles of the form block to the document.
+ */
+async function addFormStyles(): Promise<void> {
   const style = document.createElement('style');
   style.textContent = await readFile(join(import.meta.dirname, 'index.module.css'), 'utf8');
   document.head.append(style);
   onTestFinished(() => style.remove());
   // Jsdom drops a stylesheet it can't parse, such as one with nested rules.
   expect(style.sheet).not.toBeNull();
+}
+
+it('should let keyboard users reach the submit error to scroll it only while it is shown', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => null);
+  await addFormStyles();
   const container = await mountForm(
     { fields: [{ label: 'Name', name: 'name', type: 'string' }] },
     { onSubmit: vi.fn().mockRejectedValue('The server is unavailable') },
   );
-  const screen = within(container);
-  const regions = [...screen.getAllByRole('status'), ...screen.getAllByRole('alert')];
+  const alert = within(container).getByRole('alert');
 
-  for (const region of regions) {
-    expect(region.textContent).toBe('');
-    expect(['auto', 'scroll']).not.toContain(getComputedStyle(region).overflow);
-  }
+  expect(alert.textContent).toBe('');
+  expect(getComputedStyle(alert).overflow).toBe('hidden');
+  expect(await tabStops()).not.toContain(alert);
 
   await submitForm(container);
 
   // The alert stays in place, so assistive technology announces the error appearing in it.
-  const alert = screen.getByRole('alert');
-  expect(regions).toContain(alert);
   await waitFor(() => expect(alert.textContent).toBe('The server is unavailable'));
+  expect(await tabStops()).toContain(alert);
 });
 
-it('should let keyboard users reach a shown error message to scroll it, but not hidden ones', async () => {
-  vi.spyOn(console, 'error').mockImplementation(() => null);
+it('should let keyboard users reach a requirement error to scroll it only while it is shown', async () => {
+  const validateName = vi.fn().mockRejectedValueOnce(new Error('Taken')).mockResolvedValue({});
+  await addFormStyles();
   const container = await mountForm(
-    { fields: [{ label: 'Name', name: 'name', type: 'string' }] },
-    { onSubmit: vi.fn().mockRejectedValue('The server is unavailable') },
+    {
+      fields: [{ label: 'Name', name: 'name', type: 'string' }],
+      requirements: [{ action: 'validateName', isValid: ['name'] }],
+    },
+    { validateName },
   );
-  const screen = within(container);
-  const user = userEvent.setup();
-  const status = screen.getAllByRole('status');
-  const alert = screen.getByRole('alert');
-  const tabThroughForm = async (): Promise<(Element | null)[]> => {
-    const focused = [];
-    for (let tab = 0; tab < 8; tab += 1) {
-      await user.tab();
-      focused.push(document.activeElement);
-    }
-    return focused;
-  };
+  const name = getInputByLabel(container, 'Name');
 
-  const tabStopsWhileHidden = await tabThroughForm();
-  for (const region of [...status, alert]) {
-    expect(tabStopsWhileHidden).not.toContain(region);
-  }
+  await userEvent.type(name, 'A');
+  const status = await vi.waitFor(() =>
+    within(container).getByText(messages.formRequirementError).closest('[role="status"]')!,
+  );
+  expect(await tabStops()).toContain(status);
 
-  await submitForm(container);
-  await waitFor(() => expect(alert.textContent).toBe('The server is unavailable'));
-
-  const tabStopsWhileShown = await tabThroughForm();
-  expect(tabStopsWhileShown).toContain(alert);
-  for (const region of status) {
-    expect(tabStopsWhileShown).not.toContain(region);
-  }
+  await userEvent.type(name, 'B');
+  await waitFor(() => expect(status.textContent).toBe(''));
+  expect(getComputedStyle(status).overflow).toBe('hidden');
+  expect(await tabStops()).not.toContain(status);
 });
 
 it('should set the autocomplete attribute of a password field, also while it is visible', async () => {

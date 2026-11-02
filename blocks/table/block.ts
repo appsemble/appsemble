@@ -326,12 +326,7 @@ declare module '@appsemble/sdk' {
     /**
      * The accessible name of a checkbox in a column without a label.
      */
-    selectRow: { row: number };
-
-    /**
-     * The accessible name of a checkbox, including its column label.
-     */
-    selectNamedRow: { label: string; row: number };
+    selectRow: never;
   }
   interface Parameters {
     /**

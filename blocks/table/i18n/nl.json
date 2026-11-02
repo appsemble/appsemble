@@ -7,7 +7,6 @@
   "error": "Er is een fout opgetreden bij het ophalen van de gegevens",
   "loading": "Laden",
   "moreOptions": "Meer opties",
-  "selectNamedRow": "{label}, rij {row}",
-  "selectRow": "Selecteer rij {row}",
+  "selectRow": "Selecteer rij",
   "submitChecked": "Verzenden"
 }

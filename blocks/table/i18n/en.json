@@ -7,7 +7,6 @@
   "error": "An error occurred when fetching the data",
   "loading": "Loading",
   "moreOptions": "More options",
-  "selectNamedRow": "{label}, row {row}",
-  "selectRow": "Select row {row}",
+  "selectRow": "Select row",
   "submitChecked": "Submit"
 }
