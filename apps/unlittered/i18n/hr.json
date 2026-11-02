@@ -1,20 +1,20 @@
 {
   "app": {
     "description": "Aplikacija u kojoj se smeće može prijaviti i prikazati na interaktivnoj karti.",
-    "name": "Bez suvišnih elemenata",
+    "name": "Čišćenje smeća",
     "pages.litter-details": "Detalji o smeću",
     "pages.litter-list": "Popis smeća",
-    "pages.litter-overview": "Pregled Littera",
-    "pages.report-litter": "Prijavite smeće",
-    "routes.App-Invite": "",
-    "routes.Edit-Password": "",
-    "routes.Feedback": "",
-    "routes.Group-Invite": "",
-    "routes.Login": "",
-    "routes.Register": "",
-    "routes.Reset-Password": "",
-    "routes.Settings": "",
-    "routes.Verify": ""
+    "pages.litter-overview": "Pregled smeća",
+    "pages.report-litter": "Prijavi smeće",
+    "routes.App-Invite": "Poziv za aplikaciju",
+    "routes.Edit-Password": "Uredi lozinku",
+    "routes.Feedback": "Povratne informacije",
+    "routes.Group-Invite": "Poziv u grupu",
+    "routes.Login": "Prijava",
+    "routes.Register": "Registriraj se",
+    "routes.Reset-Password": "Resetiraj lozinku",
+    "routes.Settings": "Postavke",
+    "routes.Verify": "Potvrdi"
   },
   "messageIds": {
     "date": "Datum",
@@ -23,6 +23,6 @@
     "notesExample": "Primjer: U grmlju se nalazi bicikl",
     "photos": "Fotografije",
     "process": "Proces",
-    "reportLitter": ""
+    "reportLitter": "Prijavi smeće"
   }
 }

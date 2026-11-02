@@ -1,9 +1,9 @@
 {
-  "captions": "",
-  "closeImage": "",
-  "downloadImage": "",
-  "loading": "",
-  "map": "",
-  "video": "",
-  "videoThumbnail": ""
+  "captions": "Opisi",
+  "closeImage": "Zatvori uvećanu sliku",
+  "downloadImage": "Preuzmi u HD-u",
+  "loading": "Učitavanje",
+  "map": "Karta",
+  "video": "Video",
+  "videoThumbnail": "Minijatura videa"
 }
