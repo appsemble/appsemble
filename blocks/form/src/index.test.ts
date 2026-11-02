@@ -1047,3 +1047,54 @@ it('should announce a submission that takes long in an existing live region', as
     expect(statuses.map((status) => status.textContent)).toContain(messages.longSubmissionWarning),
   );
 });
+
+it.each([
+  {
+    when: 'yields a message',
+    submitErrorMessage: 'Login failed. Check your email address and password.',
+    shown: 'Login failed. Check your email address and password.',
+  },
+  { when: 'is not set', submitErrorMessage: undefined, shown: messages.submitError },
+  { when: 'yields nothing', submitErrorMessage: { prop: 'unknown' }, shown: messages.submitError },
+])(
+  'should show $shown in the alert when the submit action fails and submitErrorMessage $when',
+  async ({ shown, submitErrorMessage }) => {
+    const container = document.createElement('div');
+    const defaultParams = getDefaultBootstrapParams();
+    await mount({
+      ...defaultParams,
+      actions: {
+        onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+        onSubmit: vi.fn().mockRejectedValue(new Error('Invalid credentials')),
+      },
+      events: {
+        emit: { change: vi.fn() },
+        on: {
+          data: vi.fn(() => false),
+          fields: vi.fn(() => false),
+        },
+        off: { fields: vi.fn() },
+      },
+      shadowRoot: container,
+      parameters: {
+        fields: [{ label: 'Email', name: 'email', type: 'string' }],
+        skipInitialLoad: true,
+        submitErrorMessage,
+      },
+      utils: {
+        ...defaultParams.utils,
+        formatMessage: (message: keyof typeof messages) => messages[message],
+      },
+    } as unknown as BootstrapParams);
+
+    const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+    await waitFor(() => expect(submit).toHaveProperty('disabled', false));
+    submit.form?.requestSubmit();
+
+    await waitFor(() =>
+      expect(
+        Array.from(container.querySelectorAll('[role="alert"]'), (alert) => alert.textContent),
+      ).toContain(shown),
+    );
+  },
+);
