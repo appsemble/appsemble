@@ -2784,12 +2784,51 @@ describe('createApp', () => {
       If this is set to \`login\`, the app will request permissions for push notification once the user
       logs in.
 
+      To use a different strategy per role, set \`roles\` to a map of role names to \`login\`, \`opt-in\`, or
+      \`none\`. Roles that aren’t listed use \`default\`. A member with several roles gets the most eager
+      strategy of those roles. Only roles assigned to the member count, not roles they inherit.
+
       > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
       ",
-                    "enum": [
-                      "login",
-                      "opt-in",
-                      "startup",
+                    "oneOf": [
+                      {
+                        "enum": [
+                          "login",
+                          "opt-in",
+                          "startup",
+                        ],
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "default": {
+                            "description": "The strategy for roles that aren’t listed in \`roles\`, and for users without
+      a role. Defaults to \`none\`.",
+                            "enum": [
+                              "login",
+                              "none",
+                              "opt-in",
+                              "startup",
+                            ],
+                          },
+                          "roles": {
+                            "additionalProperties": {
+                              "enum": [
+                                "login",
+                                "none",
+                                "opt-in",
+                              ],
+                            },
+                            "description": "The strategy per role.",
+                            "minProperties": 1,
+                            "type": "object",
+                          },
+                        },
+                        "required": [
+                          "roles",
+                        ],
+                        "type": "object",
+                      },
                     ],
                   },
                   "pages": {

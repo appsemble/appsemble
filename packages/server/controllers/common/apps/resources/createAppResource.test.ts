@@ -1105,6 +1105,53 @@ describe('createAppResource', () => {
     expect(foundResource.dataValues.AuthorId).toBe(member.id);
   });
 
+  it('should only notify app members whose role is or inherits a role listed in the notification hook', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        resources: {
+          ...app.definition.resources,
+          testResource: {
+            ...app.definition.resources!.testResource,
+            create: { hooks: { notification: { to: ['Reader'] } } },
+          },
+        },
+      },
+    });
+    const { AppMember, AppSubscription } = await getAppDB(app.id);
+    // Admin inherits Reader in the example app, Visitor does not.
+    for (const role of ['Reader', 'Admin', 'Visitor']) {
+      const member = await AppMember.create({
+        email: `${role}@example.com`,
+        role,
+        timezone: 'Europe/Amsterdam',
+      });
+      await AppSubscription.create({
+        endpoint: `https://push.example.com/${role}`,
+        p256dh: 'p256dh',
+        auth: 'auth',
+        AppMemberId: member.id,
+      });
+    }
+    const sendNotification = vi.fn();
+    webpush.sendNotification = sendNotification;
+
+    authorizeStudio();
+    await request.post(`/api/apps/${app.id}/resources/testResource`, { foo: 'bar' });
+
+    await vi.waitFor(() =>
+      expect(sendNotification).toHaveBeenCalledWith(
+        expect.objectContaining({ endpoint: 'https://push.example.com/Reader' }),
+        expect.any(String),
+        expect.any(Object),
+      ),
+    );
+    expect(sendNotification.mock.calls.map(([{ endpoint }]) => endpoint).toSorted()).toStrictEqual([
+      'https://push.example.com/Admin',
+      'https://push.example.com/Reader',
+    ]);
+  });
+
   it('should create ephemeral resources in demo apps', async () => {
     authorizeStudio();
     await app.update({
