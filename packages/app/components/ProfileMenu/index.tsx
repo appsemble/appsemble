@@ -89,7 +89,7 @@ export function ProfileMenuItems({ onDemoLogin, onNavigate }: ProfileMenuItemsPr
   const { getAppMessage } = useAppMessages();
   const { appMemberRoles, appMemberSelectedGroup, logout } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
-  const { update } = useServiceWorkerRegistration();
+  const { subscription, update } = useServiceWorkerRegistration();
   const install = usePWAInstall();
 
   const onClickPageName = useCallback(
@@ -112,7 +112,9 @@ export function ProfileMenuItems({ onDemoLogin, onNavigate }: ProfileMenuItemsPr
   const showSettings =
     (layout?.settings ?? 'navbar') === 'navbar' &&
     (enabledSettings?.length ||
-      getNotificationStrategy(definition.notifications, appMemberRoles) === 'opt-in');
+      (definition.notifications != null &&
+        (subscription ||
+          getNotificationStrategy(definition.notifications, appMemberRoles) === 'opt-in')));
   const showFeedback = (layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn;
   const showInstall = (layout?.install ?? 'navbar') === 'navbar' && install;
   const showDebug = (layout?.debug ?? 'hidden') === 'navbar';
