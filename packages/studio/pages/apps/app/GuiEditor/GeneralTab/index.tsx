@@ -176,7 +176,11 @@ export function GeneralTab({
                 labelPosition="top"
                 onChange={onChangeNotificationsOption}
                 options={notificationOptions}
-                value={docRef.current.toJS().notifications || notificationOptions[0]}
+                value={
+                  docRef.current.toJS().notifications?.roles
+                    ? 'roles'
+                    : docRef.current.toJS().notifications || notificationOptions[0]
+                }
               />
             </div>
           )}

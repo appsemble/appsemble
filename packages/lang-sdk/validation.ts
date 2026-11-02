@@ -1626,8 +1626,11 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
     }
   };
 
+  const notificationRoles =
+    notifications && typeof notifications === 'object' ? notifications.roles : undefined;
+
   if (!security) {
-    if (notifications === 'login') {
+    if (notifications === 'login' || notificationRoles) {
       report(notifications, 'only works if security is defined', ['notifications']);
     }
     return;
@@ -1779,6 +1782,12 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
         checkRoles(entry, path);
       }
     });
+  }
+
+  if (notificationRoles) {
+    for (const role of Object.keys(notificationRoles)) {
+      checkRoleExists(role, ['notifications', 'roles', role]);
+    }
   }
 
   const { hideGroupDropdown } = definition.layout ?? {};

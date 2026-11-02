@@ -996,6 +996,48 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should report if notifications is a role map without a security definition', async () => {
+    const app = createTestApp();
+    delete app.security;
+    app.notifications = { roles: { User: 'login' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('only works if security is defined', app.notifications, undefined, [
+        'notifications',
+      ]),
+    ]);
+  });
+
+  it('should validate the roles in notifications exist', async () => {
+    const app = createTestApp();
+    app.notifications = { roles: { User: 'login', Unknown: 'opt-in' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not exist in this app’s roles', 'Unknown', undefined, [
+        'notifications',
+        'roles',
+        'Unknown',
+      ]),
+    ]);
+  });
+
+  it('should not report an empty notifications value as an unexpected error', async () => {
+    const app = createTestApp();
+    // @ts-expect-error 2322 an empty YAML value is null
+    app.notifications = null;
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should accept notifications per role', async () => {
+    const app = createTestApp();
+    app.notifications = { default: 'opt-in', roles: { User: 'login' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(true);
+  });
+
   it('should validate the default role exists', async () => {
     const app = createTestApp();
     app.security!.default!.role = 'Unknown';
