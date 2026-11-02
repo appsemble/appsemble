@@ -25,6 +25,21 @@ By setting the `notifications` property, app members are able to set their notif
 in the app settings page. After they give permission by flipping the “subscribe” switch, they are
 ready to start receiving push notifications.
 
+To use a different strategy per role, map each role to `login`, `opt-in`, or `none`. Roles that
+aren’t listed use `default`, which is `none` if omitted:
+
+```yaml copy
+notifications:
+  default: opt-in
+  roles:
+    Manager: login
+```
+
+A member with several roles gets the most eager strategy of those roles, in the order `login`,
+`opt-in`, `none`. Only roles assigned to the member count, not roles they inherit. Browsers store
+the push permission per device, not per user: if one user denies it on a shared device, the app
+can’t prompt the next user on that device.
+
 ## Resource notifications
 
 As previously mentioned, it’s possible to automate sending out notification when certain events such

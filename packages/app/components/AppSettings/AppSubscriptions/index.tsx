@@ -8,8 +8,10 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { getNotificationStrategy } from '../../../utils/notifications.js';
 import { apiUrl, appId } from '../../../utils/settings.js';
 import { useAppDefinition } from '../../AppDefinitionProvider/index.js';
+import { useAppMember } from '../../AppMemberProvider/index.js';
 import { useServiceWorkerRegistration } from '../../ServiceWorkerRegistrationProvider/index.js';
 
 type ResourceState = Record<string, SubscriptionState>;
@@ -28,6 +30,7 @@ export function AppSubscriptions(): ReactNode {
   const [subscriptions, setSubscriptions] = useState<ResourceState>();
   const [loadingSubscriptions, setLoadingSubscriptions] = useState(true);
   const { definition } = useAppDefinition();
+  const { appMemberRoles } = useAppMember();
   const { requestPermission, subscribe, subscription, unsubscribe } =
     useServiceWorkerRegistration();
 
@@ -155,7 +158,11 @@ export function AppSubscriptions(): ReactNode {
     }
   };
 
-  if (definition.notifications === undefined) {
+  // Members who are still subscribed keep the switch, so they can unsubscribe.
+  if (
+    !subscription &&
+    getNotificationStrategy(definition.notifications, appMemberRoles) === 'none'
+  ) {
     return null;
   }
 
