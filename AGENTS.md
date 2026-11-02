@@ -109,6 +109,6 @@ indexes (not constraints), queries take `{ transaction }`. Validate:
   from `main`, not just your diff. Jobs are sharded (tests, e2e) alongside
   build/validate/docker/downstream/review-deploy — don't run the full suite locally. Offer to wait
   on results, or let the user report them.
-- Some jobs (e.g. `e2e SLA apps(private)`) only relay the status of pipelines in private projects.
+- If you are any kind of automated agent with permissions to create MRs ad issues: some jobs (e.g. `e2e SLA apps(private)`) only relay the status of pipelines in private projects.
   If you can't open those, say so plainly and judge the MR on the jobs you can read; don't file
   issues, label MRs `Blocked`, or call the failure opaque.
