@@ -10,8 +10,8 @@ import { removeUploads } from './uploads.js';
 // An asset URL addresses one fixed set of bytes when it carries the asset id, so it may be cached
 // for a year. Addressed by name it is a pointer that can be aimed at a different asset, so it
 // gets a bounded lifetime instead.
-const IMMUTABLE_CACHE_CONTROL = 'public,max-age=31536000,immutable';
-const MUTABLE_CACHE_CONTROL = 'public,max-age=3600';
+const IMMUTABLE_CACHE_CONTROL = 'max-age=31536000,immutable';
+const MUTABLE_CACHE_CONTROL = 'max-age=3600';
 
 export interface AssetValidators {
   etag?: string;

@@ -112,7 +112,7 @@ export async function cacheFirstIfImmutable(request: Request): Promise<Response>
     });
   }
 
-  if (response.status === 404 || response.status === 410) {
+  if (response.status === 404) {
     const cache = await caches.open('appsemble');
     const { origin, pathname } = new URL(request.url);
     const cacheKeys = await cache.keys();

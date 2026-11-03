@@ -94,7 +94,7 @@ describe('getOriginalAppAsset', () => {
       headers: expect.objectContaining({
         'content-type': 'image/png',
         'content-disposition': 'inline; filename="logo.png"',
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
     expect(Buffer.from(response.data)).toStrictEqual(image);
@@ -131,7 +131,7 @@ describe('getOriginalAppAsset', () => {
       headers: expect.objectContaining({
         'content-type': 'image/png',
         'content-disposition': 'inline; filename="logo.png"',
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
     expect(Buffer.from(response.data)).toStrictEqual(image);
@@ -160,7 +160,7 @@ describe('getOriginalAppAsset', () => {
         'content-type': 'image/svg+xml',
         'content-disposition': 'inline; filename="logo.svg"',
         'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox",
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
     expect(Buffer.from(response.data)).toStrictEqual(svg);
@@ -195,7 +195,7 @@ describe('getOriginalAppAsset', () => {
       headers: expect.objectContaining({
         'content-type': 'image/png',
         'content-disposition': 'inline; filename="logo.png"',
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
     expect(Buffer.from(response.data)).toStrictEqual(image);
@@ -218,7 +218,7 @@ describe('getOriginalAppAsset', () => {
 
     expect(response).toMatchObject({
       status: 200,
-      headers: expect.objectContaining({ 'cache-control': 'public,max-age=3600' }),
+      headers: expect.objectContaining({ 'cache-control': 'max-age=3600' }),
     });
   });
 

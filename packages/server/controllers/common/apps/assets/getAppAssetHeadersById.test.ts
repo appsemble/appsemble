@@ -74,7 +74,7 @@ describe('getAssetHeadersById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.bin"',
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
         'access-control-expose-headers': 'Content-Disposition',
       }),
       data: Buffer.from([]),
@@ -111,7 +111,7 @@ describe('getAssetHeadersById', () => {
 
     expect(response).toMatchObject({
       status: 200,
-      headers: expect.objectContaining({ 'cache-control': 'public,max-age=3600' }),
+      headers: expect.objectContaining({ 'cache-control': 'max-age=3600' }),
     });
   });
 
@@ -129,7 +129,7 @@ describe('getAssetHeadersById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/png',
         'content-disposition': 'inline; filename="logo.png"',
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
       data: '',
     });
@@ -151,7 +151,7 @@ describe('getAssetHeadersById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': `attachment; filename="${asset.id}"`,
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
         'access-control-expose-headers': 'Content-Disposition',
       }),
       data: Buffer.from([]),
@@ -175,7 +175,7 @@ describe('getAssetHeadersById', () => {
       headers: expect.objectContaining({
         'content-type': 'text/plain',
         'content-disposition': `attachment; filename="${asset.id}.txt"`,
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
         'access-control-expose-headers': 'Content-Disposition',
       }),
       data: Buffer.from([]),

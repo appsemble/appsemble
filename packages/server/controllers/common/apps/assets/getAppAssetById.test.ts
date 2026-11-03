@@ -78,7 +78,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.bin"',
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
   });
@@ -101,7 +101,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.mp3"',
-        'cache-control': 'public,max-age=3600',
+        'cache-control': 'max-age=3600',
       }),
     });
   });
@@ -159,11 +159,11 @@ describe('getAppAssetById', () => {
 
     expect(freshResponse).toMatchObject({
       status: 200,
-      headers: expect.objectContaining({ 'cache-control': 'public,max-age=3600' }),
+      headers: expect.objectContaining({ 'cache-control': 'max-age=3600' }),
     });
     expect(cachedResponse).toMatchObject({
       status: 200,
-      headers: expect.objectContaining({ 'cache-control': 'public,max-age=3600' }),
+      headers: expect.objectContaining({ 'cache-control': 'max-age=3600' }),
     });
   });
 
@@ -277,7 +277,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
 
@@ -315,7 +315,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
 
@@ -592,7 +592,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
 
@@ -624,7 +624,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.bin"',
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
   });
@@ -653,7 +653,7 @@ describe('getAppAssetById', () => {
         'content-type': 'image/svg+xml',
         'content-disposition': 'inline; filename="logo.svg"',
         'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox",
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
     // The bytes are streamed through untouched, including the resize params being ignored.
@@ -721,7 +721,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
 
@@ -870,7 +870,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
 
@@ -926,7 +926,7 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'image/jpeg',
         'content-disposition': `inline; filename="${asset.id}.jpeg"`,
-        'cache-control': 'public,max-age=31536000,immutable',
+        'cache-control': 'max-age=31536000,immutable',
       }),
     });
 

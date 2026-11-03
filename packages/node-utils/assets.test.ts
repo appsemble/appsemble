@@ -44,7 +44,7 @@ describe('setAssetHeaders', () => {
 
     const { headers } = await request.get('/');
 
-    expect(headers['cache-control']).toBe('public,max-age=31536000,immutable');
+    expect(headers['cache-control']).toBe('max-age=31536000,immutable');
   });
 
   it('should bound how long a response addressed by asset name may be cached', async () => {
@@ -52,7 +52,7 @@ describe('setAssetHeaders', () => {
 
     const { headers } = await request.get('/');
 
-    expect(headers['cache-control']).toBe('public,max-age=3600');
+    expect(headers['cache-control']).toBe('max-age=3600');
   });
 
   it('should keep headers exposed by earlier middleware exposed', async () => {
