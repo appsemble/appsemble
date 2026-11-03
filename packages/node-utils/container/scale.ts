@@ -39,7 +39,7 @@ export async function stopIdleContainers(interval = 10): Promise<void> {
   logger.verbose('Scaling containers');
 
   try {
-    deployments = await appsApi.listDeploymentForAllNamespaces();
+    deployments = await appsApi.listNamespacedDeployment({ namespace: getContainerNamespace() });
   } catch (error: unknown) {
     handleKubernetesError(error);
     return;
@@ -49,10 +49,7 @@ export async function stopIdleContainers(interval = 10): Promise<void> {
     // @ts-expect-error 2339 Property does not exist on type undefined
     const { annotations, name, namespace } = deployment.metadata;
 
-    if (
-      deployment.metadata?.namespace !== getContainerNamespace() ||
-      deployment.spec?.replicas === 0
-    ) {
+    if (deployment.spec?.replicas === 0) {
       continue;
     }
 
