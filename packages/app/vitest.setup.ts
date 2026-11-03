@@ -23,6 +23,7 @@ window.settings = {
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   definition: null,
   demoMode: false,
+  iconAssetIds: {},
   id: 42,
   languages: ['en', 'nl'],
   logins: [],
