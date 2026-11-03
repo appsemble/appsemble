@@ -66,14 +66,14 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
       logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
 
       const demoAssetsToReseed = await Asset.findAll({
-        attributes: ['id', 'mime', 'filename', 'data', 'name', 'ResourceId', 'ResourceType'],
-        where: { OriginalId: null, seed: true },
+        attributes: ['id', 'mime', 'filename', 'name', 'ResourceId', 'ResourceType'],
+        where: { seed: true },
       });
 
       logger.info(`Reseeding ephemeral assets into demo app ${demoApp.id}.`);
 
       for (const asset of demoAssetsToReseed) {
-        const { data, id, ...values } = asset.dataValues;
+        const { id, ...values } = asset.dataValues;
         const created = await Asset.create({
           ...values,
           ephemeral: true,
