@@ -438,7 +438,7 @@ export type HandlerFunction = (...params: any[]) => Promisable<unknown>;
 
 export type ControllerFunction = (
   params: EventParams,
-) => Promisable<Record<keyof Actions, HandlerFunction>>;
+) => Promisable<Record<string, HandlerFunction>>;
 
 export interface AppsembleControllerEvent extends CustomEvent {
   detail: {
