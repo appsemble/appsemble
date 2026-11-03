@@ -7,6 +7,6 @@
   "error": "Došlo je do pogreške pri dohvaćanju podataka",
   "loading": "Učitavanje",
   "moreOptions": "Više opcija",
-  "selectRow": "Odaberi redak {row}",
+  "selectRow": "Odaberi redak",
   "submitChecked": "Pošalji"
 }
