@@ -1,5 +1,5 @@
 import { type IconRegistry } from '@appsemble/lang-sdk';
-import { getIconAssetUrl } from '@appsemble/web-utils';
+import { type AssetIcon, getIconAsset } from '@appsemble/web-utils';
 import { createContext, type ReactNode, useContext, useMemo } from 'react';
 
 export interface IconContext {
@@ -9,9 +9,9 @@ export interface IconContext {
   registry?: IconRegistry;
 
   /**
-   * Build the URL of an icon asset of the app by its validated asset name.
+   * Get the renderable icon of an asset of the app by its validated asset name.
    */
-  getAssetUrl?: (asset: string) => string;
+  getAsset?: (asset: string) => AssetIcon;
 }
 
 const Context = createContext<IconContext>({});
@@ -55,7 +55,7 @@ export function IconProvider({
   const value = useMemo<IconContext>(
     () => ({
       registry,
-      getAssetUrl: (asset) => getIconAssetUrl(apiUrl, appId, asset, assetIds),
+      getAsset: (asset) => getIconAsset(apiUrl, appId, asset, assetIds),
     }),
     [apiUrl, appId, assetIds, registry],
   );

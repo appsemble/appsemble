@@ -15,7 +15,10 @@ const block = {
   utils: {
     fa,
     resolveIcon: (reference: string) =>
-      resolveIcon(reference, registry, (asset) => `https://example.com/assets/${asset}`),
+      resolveIcon(reference, registry, (asset) => ({
+        type: 'asset',
+        url: `https://example.com/assets/${asset}`,
+      })),
   },
 } as BlockProps;
 

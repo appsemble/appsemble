@@ -330,7 +330,8 @@ bootstrap(({ parameters, utils }) => {
 Blocks written with Preact can use the `Icon` component from `@appsemble/preact-components`, which
 accepts the same references. If a block needs more control, `utils.resolveIcon()` returns either a
 Font Awesome name to pass to `utils.fa()`, the URL of the custom icon image, or an invalid result
-for references which don’t resolve.
+for references which don’t resolve. A custom icon may also carry a `fallbackUrl`; load it when the
+image at `url` fails to load.
 
 Custom icons are rendered as decorative images, so make sure the control containing the icon has an
 accessible name of its own, such as a label or a `title` attribute. Icons which are hardcoded in the

@@ -47,7 +47,17 @@ export interface IconRenderOptions {
  * Invalid references, including registry keys which don’t exist, never produce a URL.
  */
 export type RenderableIcon =
-  { type: 'asset'; url: string } | { type: 'fontawesome'; name: IconName } | { type: 'invalid' };
+  | {
+      type: 'asset';
+      url: string;
+
+      /**
+       * The URL to load when loading `url` fails.
+       */
+      fallbackUrl?: string;
+    }
+  | { type: 'fontawesome'; name: IconName }
+  | { type: 'invalid' };
 
 /**
  * Actions defined on a block.
