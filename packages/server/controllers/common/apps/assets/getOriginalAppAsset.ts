@@ -49,7 +49,6 @@ export async function getOriginalAppAsset(ctx: Context): Promise<void> {
   const { bucket, key } = getAppAssetLocation(appId, asset.id);
   const filename = getAssetFilename(asset.id, asset.filename, asset.mime);
   const stats = await getS3FileStats(bucket, key);
-  const stream = await getS3File(bucket, key);
 
   setAssetHeaders(ctx, {
     mime: asset.mime ?? 'application/octet-stream',
@@ -66,5 +65,11 @@ export async function getOriginalAppAsset(ctx: Context): Promise<void> {
     ctx.set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; sandbox");
   }
 
-  ctx.body = stream;
+  // Koa only reports a request as fresh for a 2xx or 304 status.
+  ctx.status = 200;
+  if (ctx.fresh) {
+    ctx.status = 304;
+    return;
+  }
+  ctx.body = await getS3File(bucket, key);
 }

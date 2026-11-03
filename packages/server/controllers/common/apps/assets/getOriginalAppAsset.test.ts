@@ -221,4 +221,23 @@ describe('getOriginalAppAsset', () => {
       headers: expect.objectContaining({ 'cache-control': 'public,max-age=3600' }),
     });
   });
+
+  it('should answer 304 without a body when a downloaded named asset is unchanged', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+      filename: 'logo.png',
+      name: 'logo',
+    });
+
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, Buffer.from('buffer'));
+
+    const url = `/api/apps/${app.id}/assets/logo/download`;
+    const { headers } = await request.get(url);
+    const response = await request.get(url, { headers: { 'If-None-Match': headers.etag } });
+
+    expect(response.status).toBe(304);
+    expect(response.data).toBe('');
+  });
 });

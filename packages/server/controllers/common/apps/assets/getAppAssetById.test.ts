@@ -167,6 +167,85 @@ describe('getAppAssetById', () => {
     });
   });
 
+  it('should answer 304 without a body when a named asset is unchanged', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      name: 'test-asset',
+    });
+
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, Buffer.from('buffer'));
+
+    const { headers } = await request.get(`/api/apps/${app.id}/assets/test-asset`);
+    const response = await request.get(`/api/apps/${app.id}/assets/test-asset`, {
+      headers: { 'If-None-Match': headers.etag },
+    });
+
+    expect(response.status).toBe(304);
+    expect(response.data).toBe('');
+  });
+
+  it('should send a replaced named asset in full', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const oldAsset = await Asset.create({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      name: 'test-asset',
+    });
+    const oldLocation = getAppAssetLocation(app.id, oldAsset.id);
+    await uploadS3File(oldLocation.bucket, oldLocation.key, Buffer.from('old'));
+    const { headers } = await request.get(`/api/apps/${app.id}/assets/test-asset`);
+
+    await oldAsset.destroy();
+    const newAsset = await Asset.create({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      name: 'test-asset',
+    });
+    const newLocation = getAppAssetLocation(app.id, newAsset.id);
+    await uploadS3File(newLocation.bucket, newLocation.key, Buffer.from('new'));
+
+    const response = await request.get(`/api/apps/${app.id}/assets/test-asset`, {
+      headers: { 'If-None-Match': headers.etag },
+      responseType: 'arraybuffer',
+    });
+
+    expect(response.status).toBe(200);
+    expect(Buffer.from(response.data).toString()).toBe('new');
+  });
+
+  it('should answer 304 without a body when a stored derived image is unchanged', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+      name: 'logo',
+    });
+    const image = await sharp({
+      create: {
+        width: 300,
+        height: 300,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, image);
+
+    // The first request encodes and stores the derivative, the second serves the stored copy.
+    const url = `/api/apps/${app.id}/assets/logo?width=150&height=150`;
+    await request.get(url, { responseType: 'arraybuffer' });
+    const { headers } = await request.get(url, { responseType: 'arraybuffer' });
+    const response = await request.get(url, { headers: { 'If-None-Match': headers.etag } });
+
+    expect(response.status).toBe(304);
+    expect(response.data).toBe('');
+  });
+
   it('should return a full-size jpeg derivative when larger size is specified.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({

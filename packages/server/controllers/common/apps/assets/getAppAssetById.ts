@@ -72,7 +72,6 @@ async function serveCachedDerivedAsset(
   try {
     const { bucket, key } = getAppAssetLocation(appId, cachedAsset.id);
     const stats = await getS3FileStats(bucket, key);
-    const stream = await getS3File(bucket, key);
     const mime = cachedAsset.mime ?? 'application/octet-stream';
     setAssetHeaders(ctx, {
       mime,
@@ -80,7 +79,13 @@ async function serveCachedDerivedAsset(
       immutable,
       ...assetValidators(stats),
     });
-    ctx.body = stream;
+    // Koa only reports a request as fresh for a 2xx or 304 status.
+    ctx.status = 200;
+    if (ctx.fresh) {
+      ctx.status = 304;
+      return true;
+    }
+    ctx.body = await getS3File(bucket, key);
     return true;
   } catch (error) {
     if (!isS3ErrorCode(error, 'NotFound') && !isS3ErrorCode(error, 'NoSuchKey')) {
@@ -246,7 +251,6 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   const sourceFilename = getAssetFilename(sourceAsset.id, sourceAsset.filename, sourceAsset.mime);
   const { bucket, key } = getAppAssetLocation(appId, sourceAsset.id);
   const stats = await getS3FileStats(bucket, key);
-  const stream = await getS3File(bucket, key);
 
   setAssetHeaders(ctx, {
     mime: sourceAsset.mime ?? 'application/octet-stream',
@@ -261,5 +265,11 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     ctx.set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; sandbox");
   }
 
-  ctx.body = stream;
+  // Koa only reports a request as fresh for a 2xx or 304 status.
+  ctx.status = 200;
+  if (ctx.fresh) {
+    ctx.status = 304;
+    return;
+  }
+  ctx.body = await getS3File(bucket, key);
 }
