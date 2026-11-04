@@ -25,6 +25,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import {
   deleteApp,
+  getSeedAssetFiles,
   patchApp,
   publishApp,
   publishSeedAssets,
@@ -289,8 +290,9 @@ describe('app', () => {
     let app: models.App;
     let path: string;
 
-    function publish(assetsClonable = false): Promise<void> {
-      return publishSeedAssets(path, app.toJSON(), testApp.defaults.baseURL!, assetsClonable);
+    async function publish(assetsClonable = false): Promise<void> {
+      const files = await getSeedAssetFiles(join(path, 'assets'));
+      await publishSeedAssets(path, files, app.toJSON(), testApp.defaults.baseURL!, assetsClonable);
     }
 
     async function findAssets(): Promise<models.Asset[]> {

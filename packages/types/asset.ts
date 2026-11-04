@@ -42,5 +42,5 @@ export interface Asset {
   /**
    * The hex encoded SHA-256 hash of the asset content.
    */
-  sha256?: string;
+  sha256?: string | null;
 }

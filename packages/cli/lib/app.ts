@@ -521,7 +521,7 @@ export async function publishSeedAppMembers(path: string, app: App, remote: stri
  *   doesn't exist.
  * @throws AppsembleError if a file normalizes to an empty name, or two files to the same name.
  */
-async function getSeedAssetFiles(assetsPath: string): Promise<Map<string, string> | null> {
+export async function getSeedAssetFiles(assetsPath: string): Promise<Map<string, string> | null> {
   if (!existsSync(assetsPath)) {
     return null;
   }
@@ -549,13 +549,13 @@ async function getSeedAssetFiles(assetsPath: string): Promise<Map<string, string
 
 export async function publishSeedAssets(
   path: string,
+  files: Map<string, string> | null,
   app: App,
   remote: string,
   assetsClonable: boolean,
 ): Promise<void> {
   const assetsPath = join(path, 'assets');
   logger.info(`Publishing seed assets from ${assetsPath}`);
-  const files = await getSeedAssetFiles(assetsPath);
   if (!files) {
     logger.warn(`Missing assets directory in ${path}. Skipping...`);
     return;
@@ -1459,9 +1459,8 @@ export async function publishApp({
     formData.append('totp', totp);
   }
 
-  if (assets && file.isDirectory()) {
-    await getSeedAssetFiles(join(appVariantPath, 'assets'));
-  }
+  const seedAssetFiles =
+    assets && file.isDirectory() ? await getSeedAssetFiles(join(appVariantPath, 'assets')) : null;
 
   let authScope = 'apps:write';
 
@@ -1513,7 +1512,7 @@ export async function publishApp({
 
     // After uploading the app, publish seed resources and assets if they are available
     if (assets) {
-      await publishSeedAssets(appVariantPath, data, remote, assetsClonable);
+      await publishSeedAssets(appVariantPath, seedAssetFiles, data, remote, assetsClonable);
     }
 
     if (resources) {
@@ -1892,9 +1891,8 @@ export async function updateApp({
     formData.append('totp', totp);
   }
 
-  if (assets && file.isDirectory()) {
-    await getSeedAssetFiles(join(appVariantPath, 'assets'));
-  }
+  const seedAssetFiles =
+    assets && file.isDirectory() ? await getSeedAssetFiles(join(appVariantPath, 'assets')) : null;
 
   let authScope = 'apps:write';
 
@@ -1949,7 +1947,7 @@ export async function updateApp({
 
     // After updating the app, publish seed resources and assets if they are available
     if (assets && (data.locked !== 'fullLock' || force)) {
-      await publishSeedAssets(appVariantPath, data, remote, assetsClonable);
+      await publishSeedAssets(appVariantPath, seedAssetFiles, data, remote, assetsClonable);
     }
 
     if (resources && (data.locked !== 'fullLock' || force)) {

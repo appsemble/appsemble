@@ -41,6 +41,7 @@ export const Asset: OpenAPIV3.NonArraySchemaObject = {
     },
     sha256: {
       type: 'string',
+      nullable: true,
       readOnly: true,
       description: 'The hex encoded SHA-256 hash of the asset content.',
     },
