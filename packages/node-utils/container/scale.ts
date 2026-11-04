@@ -3,6 +3,10 @@ import { type V1DeploymentList } from '@kubernetes/client-node';
 
 import { getContainerNamespace, getKubeConfig, handleKubernetesError } from './helpers.js';
 
+// Refreshing at most once a minute keeps the annotation well within the idle interval of
+// `stopIdleContainers` without a Kubernetes API call for every proxied request.
+const ANNOTATION_REFRESH_INTERVAL_MS = 60_000;
+
 export async function scaleDeployment(
   namespace: string,
   deploymentName: string,
@@ -94,13 +98,15 @@ export async function setLastRequestAnnotation(
   deploymentName: string,
 ): Promise<void> {
   const now = new Date();
+  const annotationKey = `${namespace}/${deploymentName}`;
 
-  // Refreshing at most once a minute keeps the annotation well within the idle interval of
-  // `stopIdleContainers` without a Kubernetes API call for every proxied request.
-  if (now.getTime() - (lastRequestAnnotationTimes.get(deploymentName) ?? 0) < 60_000) {
+  if (
+    now.getTime() - (lastRequestAnnotationTimes.get(annotationKey) ?? 0) <
+    ANNOTATION_REFRESH_INTERVAL_MS
+  ) {
     return;
   }
-  lastRequestAnnotationTimes.set(deploymentName, now.getTime());
+  lastRequestAnnotationTimes.set(annotationKey, now.getTime());
 
   const { appsApi } = getKubeConfig();
 
