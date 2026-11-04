@@ -455,6 +455,30 @@ describe('app', () => {
       expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([id]);
     });
 
+    it('deletes nothing if an upload fails', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await writeAsset('bar.txt', 'bar');
+      await publish();
+      const ids = (await findAssets()).map((asset) => asset.id);
+
+      await rm(join(path, 'assets', 'bar.txt'));
+      await writeAsset('broken.png', 'not an image');
+
+      await publish();
+
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual(ids);
+    });
+
+    it('keeps an unchanged clonable asset', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish(true);
+      const [{ id }] = await findAssets();
+
+      await publish(true);
+
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([id]);
+    });
+
     it('replaces all seed assets of a demo app', async () => {
       await app.update({ demoMode: true });
       await writeAsset('foo.txt', 'foo');
@@ -1575,6 +1599,28 @@ describe('app', () => {
         await rm(path, { recursive: true, force: true });
         vi.useFakeTimers();
       }
+    });
+
+    it('should not change the assets of an app without the assets:write scope', async () => {
+      vi.useRealTimers();
+      const { Asset } = await getAppDB(app.id);
+      const { id } = await Asset.create({ name: 'tux', mime: 'text/plain', seed: true });
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+
+      await updateApp({
+        id: app.id,
+        path: resolveFixture('apps/test'),
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        assets: true,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+        force: false,
+      });
+      vi.useFakeTimers();
+
+      expect((await Asset.findAll()).map((asset) => asset.id)).toStrictEqual([id]);
     });
 
     it('should upload the seed assets of a demo app again on every update', async () => {
