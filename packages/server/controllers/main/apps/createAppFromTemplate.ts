@@ -185,7 +185,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
     if (assets) {
       const templateAssets = await TemplateAsset.findAll({ where: { clonable: true } });
       await recordDB.transaction(async (transaction) => {
-        const recordAssets = await RecordAsset.bulkCreate(
+        await RecordAsset.bulkCreate(
           templateAssets.map(({ filename, id, mime, name: assetName, seed, sha256 }) => ({
             id,
             mime,
@@ -200,9 +200,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
           const source = getAppAssetLocation(template.id, templateAsset.id);
           const templateStream = await getS3File(source.bucket, source.key);
           const templateStats = await getS3FileStats(source.bucket, source.key);
-          const createdAsset = recordAssets.find((asset) => asset.name === templateAsset.name);
-          // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-          const target = getAppAssetLocation(record.id, createdAsset.id);
+          const target = getAppAssetLocation(record.id, templateAsset.id);
           await uploadS3File(target.bucket, target.key, templateStream, templateStats.size);
         }
       });

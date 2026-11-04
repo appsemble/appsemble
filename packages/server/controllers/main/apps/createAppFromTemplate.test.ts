@@ -469,6 +469,33 @@ describe('createAppFromTemplate', () => {
     ]);
   });
 
+  it('should copy the content of every unnamed asset', async () => {
+    const [, template] = templates;
+    vi.useRealTimers();
+    const { Asset: TemplateAsset } = await getAppDB(template.id);
+    const contents = new Map<string, string>();
+    for (const content of ['first', 'second']) {
+      const { id } = await TemplateAsset.create({ clonable: true });
+      const { bucket, key } = getAppAssetLocation(template.id, id);
+      await uploadS3File(bucket, key, Buffer.from(content));
+      contents.set(id, content);
+    }
+
+    authorizeStudio();
+    const response = await request.post<AppType>('/api/app-templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      assets: true,
+    });
+
+    for (const [id, content] of contents) {
+      const { bucket, key } = getAppAssetLocation(response.data.id!, id);
+      expect(String(await getS3FileBuffer(bucket, key))).toBe(content);
+    }
+  });
+
   it('should include the app’s styles when cloning an app', async () => {
     const [, template] = templates;
     vi.useRealTimers();
