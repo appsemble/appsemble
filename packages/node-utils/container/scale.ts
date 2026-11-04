@@ -3,6 +3,10 @@ import { type V1DeploymentList } from '@kubernetes/client-node';
 
 import { getContainerNamespace, getKubeConfig, handleKubernetesError } from './helpers.js';
 
+// Refreshing at most once a minute keeps the annotation well within the idle interval of
+// `stopIdleContainers` without a Kubernetes API call for every proxied request.
+const ANNOTATION_REFRESH_INTERVAL_MS = 60_000;
+
 export async function scaleDeployment(
   namespace: string,
   deploymentName: string,
@@ -39,7 +43,7 @@ export async function stopIdleContainers(interval = 10): Promise<void> {
   logger.verbose('Scaling containers');
 
   try {
-    deployments = await appsApi.listDeploymentForAllNamespaces();
+    deployments = await appsApi.listNamespacedDeployment({ namespace: getContainerNamespace() });
   } catch (error: unknown) {
     handleKubernetesError(error);
     return;
@@ -49,10 +53,7 @@ export async function stopIdleContainers(interval = 10): Promise<void> {
     // @ts-expect-error 2339 Property does not exist on type undefined
     const { annotations, name, namespace } = deployment.metadata;
 
-    if (
-      deployment.metadata?.namespace !== getContainerNamespace() ||
-      deployment.spec?.replicas === 0
-    ) {
+    if (deployment.spec?.replicas === 0) {
       continue;
     }
 
@@ -90,53 +91,24 @@ export async function stopIdleContainers(interval = 10): Promise<void> {
   }
 }
 
-export async function waitForPodReadiness(
-  namespace: string,
-  appSelector: string,
-  maxWait = 10_000,
-): Promise<void> {
-  let isReady = false;
-  const interval = 500;
-  let elapsed = 0;
-
-  const { coreApi } = getKubeConfig();
-
-  while (!isReady) {
-    const pods = await coreApi.listNamespacedPod({
-      namespace,
-      labelSelector: `app=${appSelector}`,
-    });
-
-    if (pods.items.length > 0) {
-      isReady = pods.items.every((pod) =>
-        pod.status?.conditions?.some(
-          (condition) => condition.type === 'Ready' && condition.status === 'True',
-        ),
-      );
-    }
-
-    if (!isReady) {
-      logger.silly(`Waiting for ${appSelector} to be ready ...`);
-      await new Promise((resolve) => {
-        setTimeout(resolve, interval);
-      });
-      elapsed += interval;
-
-      if (elapsed >= maxWait) {
-        logger.warn(`Deployment ${appSelector} does not respond`);
-        return;
-      }
-    }
-  }
-}
+const lastRequestAnnotationTimes = new Map<string, number>();
 
 export async function setLastRequestAnnotation(
   namespace: string,
   deploymentName: string,
 ): Promise<void> {
-  const { appsApi } = getKubeConfig();
-
   const now = new Date();
+  const annotationKey = `${namespace}/${deploymentName}`;
+
+  if (
+    now.getTime() - (lastRequestAnnotationTimes.get(annotationKey) ?? 0) <
+    ANNOTATION_REFRESH_INTERVAL_MS
+  ) {
+    return;
+  }
+  lastRequestAnnotationTimes.set(annotationKey, now.getTime());
+
+  const { appsApi } = getKubeConfig();
 
   const patch = [
     {

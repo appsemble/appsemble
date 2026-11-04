@@ -20,7 +20,6 @@ import {
   setLastRequestAnnotation,
   throwKoaError,
   version,
-  waitForPodReadiness,
 } from '@appsemble/node-utils';
 import { type App } from '@appsemble/types';
 import { deserializeResource } from '@appsemble/utils';
@@ -185,7 +184,7 @@ async function handleRequestProxy(
 
   let response;
   const containerUrlPattern = /^http:\/\/(([\da-z-]+).){2}svc.cluster.local/;
-  let isValidCompanionContainer = false;
+  let companionDeployment: string | undefined;
 
   // Block known Kubernetes internal hostnames that don't match the container pattern
   const kubernetesInternalHostnames = [
@@ -206,11 +205,11 @@ async function handleRequestProxy(
       getContainerNamespace(),
     );
 
-    const { appId } = parseServiceUrl(String(proxyUrl));
+    const { appId, deploymentName } = parseServiceUrl(String(proxyUrl));
     if (appId !== String(app.id)) {
       throwKoaError(ctx, 403, 'Forbidden');
     }
-    isValidCompanionContainer = true;
+    companionDeployment = deploymentName;
   } else {
     // Apply SSRF protection for non-companion-container URLs
     // This blocks requests to private IPs, localhost, link-local addresses,
@@ -240,23 +239,34 @@ async function handleRequestProxy(
 
     // If request is sent to a companion container and fails
     // Try to start it anew and retry the request
-    if (isValidCompanionContainer) {
-      const { deploymentName, namespace } = parseServiceUrl(String(proxyUrl));
+    if (companionDeployment) {
       try {
-        await scaleDeployment(namespace, deploymentName, 1);
-        await waitForPodReadiness(
-          namespace,
-          deploymentName,
-          Number.isNaN(Number(process.env.POD_READINESS_TIMEOUT))
-            ? undefined
-            : Number(process.env.POD_READINESS_TIMEOUT),
-        );
+        await scaleDeployment(getContainerNamespace(), companionDeployment, 1);
 
-        response = await axios(axiosConfig);
+        // Until the container listens and its service routes to it, connecting fails. Nothing
+        // reached the container then, so the request is safe to send again.
+        const deadline = Date.now() + (Number(process.env.POD_READINESS_TIMEOUT) || 30_000);
+        for (;;) {
+          try {
+            response = await axios(axiosConfig);
+            break;
+          } catch (error: unknown) {
+            if (
+              !(
+                axios.isAxiosError(error) &&
+                (error.cause as NodeJS.ErrnoException | undefined)?.syscall === 'connect'
+              ) ||
+              Date.now() > deadline
+            ) {
+              throw error;
+            }
+            await new Promise((resolve) => {
+              setTimeout(resolve, 500);
+            });
+          }
+        }
       } catch {
         throwKoaError(ctx, 502, 'Bad Gateway');
-      } finally {
-        await setLastRequestAnnotation(namespace, deploymentName);
       }
     } else {
       logger.error(err);
@@ -264,6 +274,10 @@ async function handleRequestProxy(
       logger.verbose(response);
 
       throwKoaError(ctx, 502, 'Bad Gateway');
+    }
+  } finally {
+    if (companionDeployment) {
+      await setLastRequestAnnotation(getContainerNamespace(), companionDeployment);
     }
   }
 
