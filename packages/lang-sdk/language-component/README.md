@@ -39,9 +39,9 @@ classDiagram
     }
     class LanguageComponentBinding {
       <<interface>>
-      +validate?(node) string[]
-      +complete?(node) string[]
-      +describe?(node) string
+      +validate?(context, ctx) Diagnostic[]
+      +complete?(context, ctx) Completion[]
+      +describe?(context, ctx) string
     }
   }
 
@@ -360,12 +360,15 @@ const bindings = LanguageComponent.bindings([Email]);
 // Dispatch a resolved node's behavior by its identity name.
 const node = LanguageCtx.compile(schemas, 'Email').root('a@other.com');
 // Returns [{ message: 'must be an @example.com address' }] — a Diagnostic, path omitted = on this node.
-bindings.get(node.identity!.name)?.validate?.(node, {});
+const context = ctx.bindingContextFor(node, 'validate');
+context?.binding.validate?.(context, ctx.context);
 ```
 
 Passing the bindings to `compile` (via `CompileOptions.binds`) lets a `MountIndex` dispatch them by
-location: `callBindingAt(path, 'complete')` finds the nearest enclosing component at `path` and runs
-that hook on its node.
+location: `callBindingAt(path, 'complete')` finds the nearest enclosing component at `path` that
+defines the hook and runs it. The hook receives a `BindingContext`: the component's node, its path,
+and `relativePath` from the component to the position. `LanguageCtx.bindingContextFor(node, hook)`
+does the same lookup from a node, so a consumer needs no tree.
 
 ## Annotation
 

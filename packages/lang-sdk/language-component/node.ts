@@ -1,27 +1,38 @@
 import { type Schema } from 'jsonschema';
 
 import { childNode, localValue, resolve, type ResolveContext, type Resolution } from './resolve.js';
-import { type Identity, type NodePath } from './types.js';
+import { type Identity, identityNames, type NodePath } from './types.js';
 
 // A component registry: component name -> the component's value type. The default `C` of an untyped
 // `Node`; a consumer's `interface` registry works directly (indexed access `C[N]` needs no index
 // signature).
 export type Components = Record<string, unknown>;
 
+// A value that may be half-written at any depth: what identity alone promises about it.
+type DeepPartial<T> = T extends readonly (infer E)[]
+  ? readonly DeepPartial<E>[]
+  : T extends object
+    ? { [K in keyof T]?: DeepPartial<T[K]> }
+    : T;
+
+export type Draft<T> = DeepPartial<T> | undefined;
+
 // The value at key `K` of `V`: the element type for an array/tuple, the property type for an object.
 // Array-aware so indexed access does not drag in array method types (`length`, `map`, ...).
-export type ChildValue<V, K extends PropertyKey> = V extends readonly (infer E)[]
-  ? E
-  : K extends keyof V
-    ? V[K]
-    : unknown;
+export type ChildValue<V, K extends PropertyKey> =
+  NonNullable<V> extends readonly (infer E)[]
+    ? E
+    : K extends keyof NonNullable<V>
+      ? NonNullable<V>[K]
+      : unknown;
 
 // The union of a value's child value types, for `children()`. Array-aware, one level, deferred.
-export type ChildValues<V> = V extends readonly (infer E)[]
-  ? E
-  : V extends object
-    ? V[keyof V]
-    : never;
+export type ChildValues<V> =
+  NonNullable<V> extends readonly (infer E)[]
+    ? E
+    : NonNullable<V> extends object
+      ? NonNullable<V>[keyof NonNullable<V>]
+      : never;
 
 /**
  * One document node: a `(comp, val, path)` focus plus its parent. Each focus derives its identity by
@@ -184,21 +195,25 @@ export class Node<V = unknown, C = Components> {
   }
 
   // The nearest node at or above this one whose identity has `name`.
-  nearest<N extends keyof C & string>(name: N): Node<C[N], C> | null {
-    if (this.identity?.name === name) {
-      return this as unknown as Node<C[N], C>;
-    }
-    return this.parent()?.nearest(name) ?? null;
+  nearest<N extends keyof C & string>(name: N): Node<Draft<C[N]>, C> | null {
+    return this.as(name) ?? this.parent()?.nearest(name) ?? null;
   }
 
-  // Whether this node resolves to component `name`. A plain boolean rather than a `this is` guard, whose
+  // Whether this node resolves to component `name`, at any depth of its identity. A plain boolean rather than a `this is` guard, whose
   // self-intersection accumulates on a recursive value type; `as` is the narrowing form.
   is(name: string): boolean {
-    return this.identity?.name === name;
+    return this.identity ? identityNames(this.identity).includes(name) : false;
   }
 
   // This node typed to `name` when it resolves to that component, else null — the handle form of `is`.
-  as<N extends keyof C & string>(name: N): Node<C[N], C> | null {
-    return this.is(name) ? (this as unknown as Node<C[N], C>) : null;
+  // Identity is all it checks, so the value may still be half-written.
+  as<N extends keyof C & string>(name: N): Node<Draft<C[N]>, C> | null {
+    return this.is(name) ? (this as unknown as Node<Draft<C[N]>, C>) : null;
+  }
+
+  // `as`, for a node whose own (ref-cut) shape also passes. Nested components are not checked: reach
+  // them through `child` and ask again.
+  asLocalValid<N extends keyof C & string>(name: N): Node<C[N], C> | null {
+    return this.is(name) && this.localValid ? (this as unknown as Node<C[N], C>) : null;
   }
 }

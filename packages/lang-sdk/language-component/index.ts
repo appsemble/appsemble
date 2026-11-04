@@ -6,6 +6,7 @@ export {
   type UnionCollision,
 } from './distinguishability.js';
 export {
+  type Completion,
   type Diagnostic,
   findPrimitiveComponents,
   LanguageComponent,
@@ -15,7 +16,7 @@ export {
   type RootValue,
 } from './languageComponent.js';
 export { type CompileOptions, LanguageCtx, type ScanValidation } from './languageCtx.js';
-export { type ChildValue, type ChildValues, type Components, Node } from './node.js';
+export { type ChildValue, type ChildValues, type Components, type Draft, Node } from './node.js';
 export {
   type Discriminator,
   type DynamicChild,

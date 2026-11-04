@@ -34,7 +34,7 @@ export interface IncrementalOptions {
 
 // Binding hooks that take the resolved `Node` (dispatched by the walk) — excludes `getExtraAnnotations`,
 // which is keyed by scope, not node, and read via `LanguageCtx.bindingFor`.
-type NodeBindingHook = 'validate' | 'complete' | 'describe';
+export type NodeBindingHook = 'validate' | 'complete' | 'describe';
 
 // A re-walk root: the subtree (schema at a path) to re-analyze after an edit at or below it.
 // Boundaries sit at `$ref` cutoffs (see `Node.boundaryAt`).
@@ -86,48 +86,32 @@ export class MountIndex {
     return this.ctx.root(this.data).cursorAt(path) ?? undefined;
   }
 
-  // The nearest enclosing component at `path` (the longest mounted prefix with a registered
-  // binding), plus its node and the paths around it.
-  bindingContextAt(path: NodePath): BindingContext | undefined {
-    let best: Mount | undefined;
-    for (const mount of this.mounts.values()) {
-      if (
-        this.ctx.binds.has(mount.identity.name) &&
-        pathContains(mount.path, path) &&
-        (!best || mount.path.length > best.path.length)
-      ) {
-        best = mount;
+  // The nearest enclosing component at `path` whose binding has `hook` (any binding when omitted),
+  // plus its node and the paths around it. `path` may run past the document, as a completion for an
+  // element not written yet does: the search starts from the deepest node that exists.
+  bindingContextAt(path: NodePath, hook?: NodeBindingHook): BindingContext | undefined {
+    let node = this.ctx.root(this.data) as Node;
+    for (const key of path) {
+      const next = node.child(key);
+      if (!next) {
+        break;
       }
+      node = next;
     }
-    if (!best) {
-      return undefined;
-    }
-    const node = this.nodeAt(best.path);
-    const binding = this.ctx.binds.get(best.identity.name);
-    if (!node || !binding) {
-      return undefined;
-    }
-    return {
-      node,
-      binding,
-      componentPath: best.path,
-      relativePath: path.slice(best.path.length),
-    };
+    return this.ctx.bindingContextFor(node, hook, path);
   }
 
-  // Dispatch one hook of the nearest enclosing component's binding at `path`. Undefined when no
-  // bound component encloses `path` or that binding does not define the hook. Only the hooks that take
+  // Dispatch one hook of the nearest enclosing component that defines it. Undefined when none does.
+  // Only the hooks that take
   // the resolved `Node` are dispatchable here; `getExtraAnnotations` is read by scope, not by node.
   callBindingAt<Hook extends NodeBindingHook>(
     path: NodePath,
     hook: Hook,
   ): ReturnType<NonNullable<LanguageComponentBinding[Hook]>> | undefined {
-    const context = this.bindingContextAt(path);
+    const context = this.bindingContextAt(path, hook);
     const fn = context?.binding[hook];
     return fn
-      ? (fn(context!.node, this.ctx.context) as ReturnType<
-          NonNullable<LanguageComponentBinding[Hook]>
-        >)
+      ? (fn(context!, this.ctx.context) as ReturnType<NonNullable<LanguageComponentBinding[Hook]>>)
       : undefined;
   }
 }

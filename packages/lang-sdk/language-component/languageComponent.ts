@@ -2,8 +2,8 @@ import { type JSONSchema } from '@ngruychev/json-schema-to-ts';
 import { type Schema } from 'jsonschema';
 
 import { mapValues } from '../mapValues.js';
-import { type Node } from './node.js';
 import { type LocalValue } from './overlay-schema.js';
+import { type BindingContext } from './treeLayer.js';
 import {
   COMPONENT_KEY,
   isTagged,
@@ -88,19 +88,27 @@ export interface LanguageComponentBinding<Ctx = unknown> {
   // `ctx`, or a wrapped `validateAppDefinition` — inline, without a sync cache-and-retry dance.
   // Validation runs off the render path (debounced, on demand), so awaiting is fine; a consumer
   // dispatches it and `await`s the result. A sync check just returns the array.
-  validate?: (node: Node, ctx: Ctx) => Diagnostic[] | Promise<Diagnostic[]>;
-  // Context-aware completion values offered at this node — the candidate strings themselves, not
-  // diagnostics. Async for the same reason (e.g. completing block types or resource names from a remote
-  // reached via `ctx`); requested on demand, never in render.
-  complete?: (node: Node, ctx: Ctx) => string[] | Promise<string[]>;
+  validate?: (context: BindingContext, ctx: Ctx) => Diagnostic[] | Promise<Diagnostic[]>;
+  // Context-aware completions at `context.relativePath` inside this component. Async for the same
+  // reason (e.g. completing block types or resource names from a remote reached via `ctx`);
+  // requested on demand, never in render.
+  complete?: (context: BindingContext, ctx: Ctx) => Completion[] | Promise<Completion[]>;
   // A human-readable label for this node (hover / describe). Sync — may be rendered inline. Gets `ctx`
   // for symmetry (a label may name an environment fact) but a pure-shape label ignores it.
-  describe?: (node: Node, ctx: Ctx) => string;
+  describe?: (context: BindingContext, ctx: Ctx) => string;
   // Open, consumer-specific metadata, namespaced by `scope`. The core engine never reads this — a tool
   // built on top of a DSL (e.g. the GUI editor asking for a `'gui-editor'` icon/color) reads its own
   // scope and the DSL author decides what to return. Returns `unknown`; the consumer asserts the shape
   // it declared for its scope. A method (not a static field) so it can be computed per query.
   getExtraAnnotations?: (scope: string) => unknown;
+}
+
+// One suggestion: what to show and the value to insert, which need not be a string (a GUI may spawn
+// a whole object from it).
+export interface Completion {
+  label: string;
+  value: unknown;
+  detail?: string;
 }
 
 /**

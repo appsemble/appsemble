@@ -45,6 +45,18 @@ describe('phantom-typed define', () => {
     // Types resolve through the recursion and stay exact — neither widened to `unknown` nor blown up.
     expectTypeOf(root.val).toEqualTypeOf<Menu>();
     expectTypeOf(root.child('children')?.child(0)?.val).toEqualTypeOf<Menu | undefined>();
-    expectTypeOf(root.as('Menu')?.val).toEqualTypeOf<Menu | undefined>();
+    expectTypeOf(root.asLocalValid('Menu')?.val).toEqualTypeOf<Menu | undefined>();
+  });
+
+  it('marks a value narrowed by identity alone as possibly half-written, through the cycle', () => {
+    const ctx = LanguageCtx.compileComponents([menu], 'Menu');
+    const root = ctx.root({ label: 'root', children: [] } as Menu);
+    const draft = root.as('Menu');
+
+    expectTypeOf(draft?.val?.label).toEqualTypeOf<string | undefined>();
+    expectTypeOf(draft?.val?.children?.[0]?.children?.[0]?.label).toEqualTypeOf<
+      string | undefined
+    >();
+    expect(draft?.val?.label).toBe('root');
   });
 });

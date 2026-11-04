@@ -8,15 +8,18 @@ import {
   mergeWithDerived,
 } from './dialect.js';
 import {
+  type BindingContext,
   type CompileOptions,
+  type Completion,
   type Diagnostic,
+  type Draft,
   LanguageComponent,
   type LanguageCtx,
   type NodePath,
 } from './language-component/index.js';
 import * as schemas from './schemas/index.js';
 import { type AppDefinition } from './types/core.js';
-import { type ProjectImplementations } from './types/index.js';
+import { PredefinedAppRole, type ProjectImplementations } from './types/index.js';
 import { type BlockVersionsGetter, validateAppDefinition } from './validation.js';
 
 /**
@@ -76,7 +79,7 @@ export function appDefinitionValidationDef(): LanguageComponent<
     'AppDefinition',
     schemas.AppDefinition as Schema,
     {
-      async validate(node, ctx): Promise<Diagnostic[]> {
+      async validate({ node }, ctx): Promise<Diagnostic[]> {
         const result = await validateAppDefinition(
           node.val as AppDefinition,
           ctx.getBlockVersions,
@@ -88,6 +91,39 @@ export function appDefinitionValidationDef(): LanguageComponent<
         }));
       },
     },
+  );
+}
+
+// The roles a page's `roles` list may still name: those the app declares, plus the ones every app
+// has, minus those already listed.
+function completePageRoles({ node, relativePath }: BindingContext): Completion[] {
+  if (relativePath[0] !== 'roles') {
+    return [];
+  }
+  const app = node.nearest('AppDefinition')?.val as Draft<AppDefinition>;
+  const listed = new Set((node.val as { roles?: string[] } | undefined)?.roles);
+  return [...Object.keys(app?.security?.roles ?? {}), '$guest', ...Object.keys(PredefinedAppRole)]
+    .filter((role) => !listed.has(role))
+    .map((role) => ({ label: role, value: role }));
+}
+
+/**
+ * The page components with a binding that completes role names inside `roles`. `define`s, so they
+ * override the bulk-annotated pages by name; pass them into `compileAppsembleDialect`.
+ *
+ * @returns One component per page kind.
+ */
+export function pageRoleCompletionDefs(): LanguageComponent[] {
+  return (
+    [
+      'PageDefinition',
+      'TabsPageDefinition',
+      'FlowPageDefinition',
+      'LoopPageDefinition',
+      'ContainerPageDefinition',
+    ] as const
+  ).map((name) =>
+    LanguageComponent.define(name, schemas[name] as Schema, { complete: completePageRoles }),
   );
 }
 

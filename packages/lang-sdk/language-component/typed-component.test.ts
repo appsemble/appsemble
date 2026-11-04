@@ -48,9 +48,9 @@ describe('typed component definitions', () => {
   it('slices children and narrows by component name', () => {
     const item = root.child('children')?.child(0);
     expectTypeOf(item?.val).toEqualTypeOf<Link | Menu | undefined>();
-    expectTypeOf(item?.as('Link')?.val.href).toEqualTypeOf<string | undefined>();
+    expectTypeOf(item?.asLocalValid('Link')?.val.href).toEqualTypeOf<string | undefined>();
 
-    expect(item?.as('Link')?.val.href).toBe('/');
+    expect(item?.asLocalValid('Link')?.val.href).toBe('/');
     expect(item?.as('Menu')).toBeNull();
   });
 });

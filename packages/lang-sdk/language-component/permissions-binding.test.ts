@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
 import { getAppPossiblePermissions } from '../authorization.js';
-import { LanguageComponent, LanguageCtx, type Node, scan } from './index.js';
+import {
+  type BindingContext,
+  type Completion,
+  LanguageComponent,
+  LanguageCtx,
+  type Node,
+  scan,
+} from './index.js';
 import { type AppDefinition } from '../types/index.js';
 
 /*
@@ -15,7 +22,7 @@ const AppPermissions = LanguageComponent.define(
   'AppPermissions',
   { type: 'array', items: { type: 'string' } },
   {
-    validate(node) {
+    validate({ node }) {
       const app = node.nearest('AppDefinition')?.val as AppDefinition;
       const valid = new Set<string>(getAppPossiblePermissions(app));
       return ((node.val as string[]) ?? []).flatMap((permission, index) =>
@@ -24,10 +31,12 @@ const AppPermissions = LanguageComponent.define(
           : [{ message: `unknown permission: ${permission}`, path: [index] }],
       );
     },
-    complete(node) {
+    complete({ node }) {
       const app = node.nearest('AppDefinition')?.val as AppDefinition;
       const present = new Set((node.val as string[]) ?? []);
-      return getAppPossiblePermissions(app).filter((permission) => !present.has(permission));
+      return getAppPossiblePermissions(app)
+        .filter((permission) => !present.has(permission))
+        .map((permission) => ({ label: permission, value: permission }));
     },
   },
 );
@@ -76,6 +85,16 @@ const app = {
   security: { roles: { Reader: { permissions: ['$resource:note:get', '$resource:bogus:get'] } } },
 };
 
+const at = (node: Node): BindingContext => ({
+  node,
+  binding: AppPermissions.binding as BindingContext['binding'],
+  componentPath: node.path,
+  relativePath: [],
+});
+
+const values = (completions: unknown): unknown[] =>
+  (completions as Completion[]).map(({ value }) => value);
+
 function permissionsNode(): Node {
   const root = LanguageCtx.compile(schemas, 'AppDefinition').root(app);
   const node = root.child('security')?.child('roles')?.child('Reader')?.child('permissions');
@@ -96,7 +115,7 @@ describe('language component binding: app permissions', () => {
 
   it('should flag a permission the app cannot grant', () => {
     // eslint-disable-next-line unicorn/no-useless-undefined -- the binding requires an explicit ctx argument
-    const problems = AppPermissions.binding.validate!(permissionsNode(), undefined);
+    const problems = AppPermissions.binding.validate!(at(permissionsNode()), undefined);
     // The bad permission is at index 1 of the array; the diagnostic pins it there, not on the node.
     expect(problems).toStrictEqual([
       { message: 'unknown permission: $resource:bogus:get', path: [1] },
@@ -105,7 +124,7 @@ describe('language component binding: app permissions', () => {
 
   it('should complete with valid permissions not yet present', () => {
     // eslint-disable-next-line unicorn/no-useless-undefined -- the binding requires an explicit ctx argument
-    const completions = AppPermissions.binding.complete!(permissionsNode(), undefined);
+    const completions = values(AppPermissions.binding.complete!(at(permissionsNode()), undefined));
     // Resource/view/webhook permissions derived from THIS app's definition.
     expect(completions).toContain('$webhook:sync:invoke');
     expect(completions).toContain('$resource:note:get:public');
@@ -145,7 +164,9 @@ describe('language component binding dispatched through the engine at a path', (
     expect(tree.callBindingAt(permissionsPath, 'validate')).toStrictEqual([
       { message: 'unknown permission: $resource:bogus:get', path: [1] },
     ]);
-    expect(tree.callBindingAt(permissionsPath, 'complete')).toContain('$webhook:sync:invoke');
+    expect(values(tree.callBindingAt(permissionsPath, 'complete'))).toContain(
+      '$webhook:sync:invoke',
+    );
   });
 
   it('returns undefined for an absent hook or a path no binding governs', () => {

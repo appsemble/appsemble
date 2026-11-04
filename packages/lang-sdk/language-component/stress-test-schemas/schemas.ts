@@ -254,21 +254,65 @@ export const BadgeListBlockParams = obj('BadgeListBlockParams', [], {
 export const BlockDefinition = obj('BlockDefinition', ['type', 'version'], {
   type: { type: 'string' },
   version: { type: 'string' },
+  onClick: ref('ActionDefinition'),
 });
+
+export const LinkActionDefinition = obj('LinkActionDefinition', ['type', 'to'], {
+  type: { const: 'link' },
+  to: { type: 'string' },
+});
+
+export const DialogActionDefinition = obj('DialogActionDefinition', ['type'], {
+  type: { const: 'dialog' },
+});
+
+// The real action shape: a tagged allOf of shared base properties and an anonymous discriminated
+// union, so the kind of action sits below the node's own name.
+export const ActionDefinition = LanguageComponent.define(
+  'ActionDefinition',
+  {
+    allOf: [
+      { type: 'object', properties: { remapBefore: { type: 'string' } } },
+      {
+        anyOf: refs('LinkActionDefinition', 'DialogActionDefinition'),
+        discriminator: { propertyName: 'type' },
+      } as Schema,
+    ],
+  },
+  {},
+).schema;
 
 export const PageDefinition = obj('PageDefinition', ['name', 'blocks'], {
   name: { type: 'string' },
   blocks: { type: 'array', items: ref('BlockDefinition') },
 });
 
+export const FlowPageDefinition = obj('FlowPageDefinition', ['name', 'type', 'steps'], {
+  name: { type: 'string' },
+  type: { const: 'flow' },
+  steps: { type: 'array', items: ref('PageDefinition') },
+});
+
 export const Root = obj('AppDefinition', ['name', 'defaultPage', 'pages'], {
   name: { type: 'string' },
   defaultPage: { type: 'string' },
-  pages: { type: 'array', items: ref('PageDefinition') },
+  // The real page list: an anonymous union discriminated by `type`, where a basic page has none.
+  pages: {
+    type: 'array',
+    items: {
+      'x-appsemble-discriminator': {
+        propertyNames: ['type'],
+        default: 'basic',
+        mapping: { basic: '#/components/schemas/PageDefinition' },
+      },
+      anyOf: refs('PageDefinition', 'FlowPageDefinition'),
+    } as Schema,
+  },
 });
 
 export const miniSchemas = {
   ActionBranchHost,
+  ActionDefinition,
   AmbiguousButton,
   AmbiguousControl,
   Badge,
@@ -281,18 +325,21 @@ export const miniSchemas = {
   ButtonWidget,
   ConditionalHost,
   Container,
+  DialogActionDefinition,
   DuplicateButtonA,
   DuplicateButtonB,
   DuplicateVariant,
   ExperimentalButton,
   FancyBranch,
   FlexibleThing,
+  FlowPageDefinition,
   Gallery,
   Host,
   IconOrTrackable,
   IconWidget,
   Identified,
   InnerThing,
+  LinkActionDefinition,
   PageDefinition,
   PlainBranch,
   ProductionVariantHost,

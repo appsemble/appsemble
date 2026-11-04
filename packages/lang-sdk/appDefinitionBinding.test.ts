@@ -22,7 +22,7 @@ const app = {
 
 describe('AppDefinition binding wraps validateAppDefinition', () => {
   it('awaits vAD and returns path-bearing diagnostics for a semantic error', async () => {
-    const diagnostics = await def.binding.validate!({ val: app } as never, {
+    const diagnostics = await def.binding.validate!({ node: { val: app } } as never, {
       getBlockVersions: () => [],
     });
 
@@ -34,7 +34,7 @@ describe('AppDefinition binding wraps validateAppDefinition', () => {
 
   it('reaches block manifests through the injected context getter', async () => {
     let asked = false;
-    await def.binding.validate!({ val: app } as never, {
+    await def.binding.validate!({ node: { val: app } } as never, {
       getBlockVersions(blocks) {
         asked = true;
         expect(Array.isArray(blocks)).toBe(true);

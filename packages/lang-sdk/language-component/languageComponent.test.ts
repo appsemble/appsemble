@@ -65,7 +65,7 @@ describe('LanguageComponent.schemas / LanguageComponent.bindings', () => {
 
   it('returns a name-keyed binding map preserving each binding object', () => {
     const first = { describe: () => 'first' };
-    const second = { complete: () => ['second'] };
+    const second = { complete: () => [{ label: 'second', value: 'second' }] };
     const defs = [
       LanguageComponent.define('FirstBinding', { type: 'object' }, first),
       LanguageComponent.define('SecondBinding', { type: 'object' }, second),

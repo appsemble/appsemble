@@ -15,7 +15,8 @@ import {
 import { type Components, Node } from './node.js';
 import { localShapeFactory, type ResolveContext, type ResolveOptions } from './resolve.js';
 import { SchemaRegistry } from './schemaRegistry.js';
-import { COMPONENT_KEY, type NodePath, type ScanHit, schemaTag } from './types.js';
+import { type BindingContext, type NodeBindingHook } from './treeLayer.js';
+import { COMPONENT_KEY, identityNames, type NodePath, type ScanHit, schemaTag } from './types.js';
 
 /**
  * A schema set compiled once and reused across analyses and edits, like a compiled regex: the
@@ -209,6 +210,30 @@ export class LanguageCtx<Root = unknown, C = Components> {
   // its behaviors or `getExtraAnnotations`. Dispatched by the same identity name as the walk's hooks.
   bindingFor(name: string): LanguageComponentBinding | undefined {
     return this.binds.get(name);
+  }
+
+  // The nearest component at or above `node` whose binding has `hook` (any binding when omitted),
+  // and where `path` sits inside it. A node and this context are all a consumer needs: no tree.
+  bindingContextFor(
+    node: Node,
+    hook?: NodeBindingHook,
+    path: NodePath = node.path,
+  ): BindingContext | undefined {
+    for (let current: Node | null = node; current; current = current.parent()) {
+      const { identity } = current;
+      for (const name of identity ? identityNames(identity) : []) {
+        const binding = this.binds.get(name);
+        if (binding && (!hook || binding[hook])) {
+          return {
+            node: current,
+            binding,
+            componentPath: current.path,
+            relativePath: path.slice(current.path.length),
+          };
+        }
+      }
+    }
+    return undefined;
   }
 
   // Whole-document validation — the single ref-following pass that answers the cross-`$ref` question.

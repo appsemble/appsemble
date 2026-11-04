@@ -58,7 +58,7 @@ describe('typed Node (outside consumer, plain value types)', () => {
   });
 
   it('narrows by registry lookup with as/is', () => {
-    const block = root.child('blocks')?.child(0)?.as('BlockDefinition');
+    const block = root.child('blocks')?.child(0)?.asLocalValid('BlockDefinition');
     expectTypeOf(block?.val).toEqualTypeOf<BlockDefinition | undefined>();
     // Typed field access on the narrowed value (BlockDefinition.version is a string).
     expectTypeOf(block?.val?.version).toEqualTypeOf<string | undefined>();

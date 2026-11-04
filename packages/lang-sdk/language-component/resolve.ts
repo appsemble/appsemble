@@ -19,6 +19,8 @@ export interface Resolution {
   // The union this node resolves through, so a consumer can list its branches and switch kind. A
   // union inside an `allOf` branch bubbles up to the node. Absent when no union is involved.
   union?: ResolvedUnion;
+  // A discriminator selected this node's branch, so it keeps its identity while `matched` is false.
+  selected?: boolean;
 }
 
 // One branch of a union: its schema as written (a `$ref` stays a `$ref`) and the component name it
@@ -190,7 +192,7 @@ function resolveComposite(
       reason = 'anyOf matched nothing';
       break;
     case 'allOf':
-      satisfied = matched.length === branches.length;
+      satisfied = branches.every((branch) => branch.matched || branch.selected);
       governing = branches;
       considered = branches;
       reason = 'allOf did not fully match';
@@ -211,10 +213,11 @@ function resolveComposite(
     }
     return {
       identity,
-      matched: own.matched,
+      matched: own.matched && governing.every((branch) => branch.matched),
       winners: [schema, ...governing.flatMap((b) => b.winners)],
-      localErrors: own.errors,
+      localErrors: [...own.errors, ...governing.flatMap((b) => b.localErrors ?? [])],
       union,
+      selected: governing.some((branch) => branch.selected),
     };
   }
   return {
@@ -223,6 +226,29 @@ function resolveComposite(
     winners: [schema],
     localErrors: own.errors,
     union,
+  };
+}
+
+// The branch a discriminator selected governs whether or not the value satisfies it yet: the tag has
+// decided, so a half-written value keeps its identity and child schemas, and the failure shows in
+// `matched` and `localErrors`. An untagged union has no name of its own and passes the branch through.
+function resolveSelected(
+  mode: 'anyOf' | 'oneOf',
+  schema: Schema,
+  branch: Resolution,
+  tag: SchemaTag | undefined,
+  value: unknown,
+  ctx: ResolveContext,
+): Resolution {
+  const own = matchesLocalShape(value, schema, ctx);
+  const parts = branch.identity ? [branch.identity] : [];
+  return {
+    identity: tag ? { kind: 'composite', mode, name: tag.name, parts } : branch.identity,
+    matched: own.matched && branch.matched,
+    winners: [schema, ...branch.winners],
+    localErrors: [...own.errors, ...(branch.localErrors ?? [])],
+    union: branch.union,
+    selected: true,
   };
 }
 
@@ -412,17 +438,25 @@ export function resolve(
               })),
             }
           : undefined;
-      // A discriminated union narrows the candidates to the one branch its tag selects; a missing
-      // (with `required`) or unknown tag is a failure at this node.
-      let candidates: Schema[] = branches;
+      // A discriminated union resolves only the branch its tag selects; a missing (with `required`)
+      // or unknown tag is a failure at this node.
       if (disc) {
         // An absent tag falls back to the declared `default` (a basic page has no `type`).
         const tagValue = discriminantTag(disc, value) ?? disc.default ?? null;
         const fields = disc.propertyNames.join('+');
         const picked = tagValue == null ? null : pickBranch(disc, tagValue, branches, ctx);
         if (picked) {
-          candidates = [picked];
-        } else if (tagValue != null || disc.required) {
+          const selected = resolveSelected(
+            mode as 'anyOf' | 'oneOf',
+            resolved,
+            resolveBranch(picked),
+            tag,
+            value,
+            ctx,
+          );
+          return thisUnion ? { ...selected, union: thisUnion } : selected;
+        }
+        if (tagValue != null || disc.required) {
           const reason =
             tagValue == null ? `missing discriminator ${fields}` : `unknown ${fields}: ${tagValue}`;
           return {
@@ -436,7 +470,7 @@ export function resolve(
       const composed = resolveComposite(
         mode,
         resolved,
-        escalateAmbiguous(mode, resolved, candidates, candidates.map(resolveBranch), value, ctx),
+        escalateAmbiguous(mode, resolved, branches, branches.map(resolveBranch), value, ctx),
         tag,
         value,
         ctx,

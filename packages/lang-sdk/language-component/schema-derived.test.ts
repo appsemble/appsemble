@@ -44,11 +44,11 @@ describe('schema-derived language components', () => {
   it('re-types a referenced node by its own component', () => {
     const item = root.child('children')?.child(0);
     expectTypeOf(item?.val).toEqualTypeOf<unknown>();
-    expectTypeOf(item?.as('Link')?.val).toEqualTypeOf<
+    expectTypeOf(item?.asLocalValid('Link')?.val).toEqualTypeOf<
       { label: string; href: string } | undefined
     >();
 
-    expect(item?.as('Link')?.val.href).toBe('/');
+    expect(item?.asLocalValid('Link')?.val.href).toBe('/');
     expect(item?.as('Menu')).toBeNull();
   });
 

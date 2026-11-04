@@ -79,6 +79,20 @@ export interface UnresolvedIdentity {
   parts: Identity[];
 }
 
+// The component names a node answers to, most specific first: a composite's parts before its own
+// name, leaving out the name of an anonymous combinator. An unresolved identity answers to none; its
+// parts are the candidates the engine refused to choose between.
+export function identityNames(identity: Identity): string[] {
+  if (identity.kind === 'single') {
+    return [identity.name];
+  }
+  if (identity.kind === 'unresolved') {
+    return [];
+  }
+  const parts = identity.parts.flatMap(identityNames);
+  return identity.name === identity.mode ? parts : [...parts, identity.name];
+}
+
 // An Identity mounted at a data path. `localValid` = does the value satisfy its own (ref-cut)
 // schema; `localErrors` = that node's own ref-cut failures (from the walk); `errors` = whole-document
 // errors at or below this path (from `validate`, empty until then). No value stored — read it via
