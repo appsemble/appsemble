@@ -795,4 +795,31 @@ describe('reseedDemoApp', () => {
       }),
     );
   });
+
+  it('should carry the hash of seed assets over to their ephemeral copies', async () => {
+    vi.useRealTimers();
+    authorizeStudio();
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const { Asset } = await getAppDB(appId);
+    const hashed = await Asset.create({ name: 'hashed', seed: true, sha256: 'hash' });
+    const unhashed = await Asset.create({ name: 'unhashed', seed: true });
+    for (const { id } of [hashed, unhashed]) {
+      const { bucket, key } = getAppAssetLocation(appId, id);
+      await uploadS3File(bucket, key, createFixtureStream('standing.png'));
+    }
+
+    await request.post(`/api/apps/${appId}/reseed`);
+
+    const copies = await Asset.findAll({ where: { ephemeral: true }, order: [['name', 'ASC']] });
+    expect(copies.map(({ name, sha256 }) => ({ name, sha256 }))).toStrictEqual([
+      { name: 'hashed', sha256: 'hash' },
+      { name: 'unhashed', sha256: null },
+    ]);
+  });
 });

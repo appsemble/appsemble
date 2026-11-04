@@ -3,11 +3,17 @@ import { mkdir, readdir, readFile, rm, stat } from 'node:fs/promises';
 import { basename, dirname, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
 
-import { type AppDefinition, type AppRole, normalizeBlockName } from '@appsemble/lang-sdk';
+import {
+  type AppDefinition,
+  type AppRole,
+  normalize,
+  normalizeBlockName,
+} from '@appsemble/lang-sdk';
 import {
   applyAppVariant,
   AppsembleError,
   authenticate,
+  hashFile,
   logger,
   opendirSafe,
   preProcessCSV,
@@ -26,6 +32,7 @@ import {
   type AppServiceSecretDefinition,
   type AppTotp,
   type AppVisibility,
+  type Asset,
   type Messages,
   type ProjectBuildConfig,
   type ProjectImplementations,
@@ -506,6 +513,40 @@ export async function publishSeedAppMembers(path: string, app: App, remote: stri
   }
 }
 
+/**
+ * Read the seed asset files of an app.
+ *
+ * @param assetsPath The path to the assets directory.
+ * @returns The absolute file paths by the normalized name of the asset, or null if the directory
+ *   doesn't exist.
+ * @throws AppsembleError if a file normalizes to an empty name, or two files to the same name.
+ */
+async function getSeedAssetFiles(assetsPath: string): Promise<Map<string, string> | null> {
+  if (!existsSync(assetsPath)) {
+    return null;
+  }
+
+  const assetFiles = await readdir(assetsPath);
+  const normalizedPaths = assetFiles.map((assetFile) => normalizePath(join(assetsPath, assetFile)));
+  const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
+
+  const filesByName = new Map<string, string>();
+  for (const file of files) {
+    const name = normalize(parse(file).name);
+    if (!name) {
+      throw new AppsembleError(`Asset file ${basename(file)} normalizes to an empty name`);
+    }
+    const collision = filesByName.get(name);
+    if (collision) {
+      throw new AppsembleError(
+        `Asset files ${basename(collision)} and ${basename(file)} both normalize to ${name}`,
+      );
+    }
+    filesByName.set(name, file);
+  }
+  return filesByName;
+}
+
 export async function publishSeedAssets(
   path: string,
   app: App,
@@ -514,41 +555,61 @@ export async function publishSeedAssets(
 ): Promise<void> {
   const assetsPath = join(path, 'assets');
   logger.info(`Publishing seed assets from ${assetsPath}`);
-
-  if (existsSync(assetsPath)) {
-    logger.info(`Deleting existing seed assets from app ${app.id}`);
-
-    try {
-      await axios.delete(`/api/apps/${app.id}/assets`, {
-        data: [],
-        baseURL: remote,
-        params: { seed: true },
-      });
-
-      const assetFiles = await readdir(assetsPath);
-      const normalizedPaths = assetFiles.map((assetFile) =>
-        normalizePath(join(assetsPath, assetFile)),
-      );
-      const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
-
-      logger.info(`Publishing ${files.length} asset(s)`);
-      for (const assetFilePath of files) {
-        await publishAsset({
-          name: parse(assetFilePath).name,
-          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-          appId: app.id,
-          path: assetFilePath,
-          remote,
-          seed: true,
-          clonable: assetsClonable,
-        });
-      }
-    } catch (error: unknown) {
-      logger.error('Something went wrong when creating assets:');
-      logger.error(error);
-    }
-  } else {
+  const files = await getSeedAssetFiles(assetsPath);
+  if (!files) {
     logger.warn(`Missing assets directory in ${path}. Skipping...`);
+    return;
+  }
+
+  const assetsUrl = `/api/apps/${app.id}/assets`;
+  try {
+    let serverAssets: Asset[] = [];
+    if (app.demoMode) {
+      // The asset endpoints only reach the ephemeral copies of a demo app, and the cleanup job
+      // gives those new ids on every run, so their seed assets can't be compared one by one.
+      logger.info(`Deleting existing seed assets from app ${app.id}`);
+      await axios.delete(assetsUrl, { data: [], baseURL: remote, params: { seed: true } });
+    } else {
+      ({ data: serverAssets } = await axios.get<Asset[]>(assetsUrl, {
+        baseURL: remote,
+        params: { named: true },
+      }));
+    }
+
+    const serverAssetsByName = new Map(serverAssets.map((asset) => [asset.name, asset]));
+    for (const [name, file] of files) {
+      const serverAsset = serverAssetsByName.get(name);
+      if (serverAsset) {
+        if (
+          serverAsset.sha256 === (await hashFile(file)) &&
+          serverAsset.clonable === assetsClonable
+        ) {
+          logger.info(`Keeping unchanged asset ${name}`);
+          continue;
+        }
+        await axios.delete(assetsUrl, { data: [serverAsset.id], baseURL: remote });
+      }
+      await publishAsset({
+        name,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+        appId: app.id,
+        path: file,
+        remote,
+        seed: true,
+        clonable: assetsClonable,
+      });
+    }
+
+    const removedSeedAssetIds = serverAssets
+      .filter(({ name, seed }) => seed && !files.has(name!))
+      .map(({ id }) => id);
+    if (removedSeedAssetIds.length) {
+      logger.info(`Deleting ${removedSeedAssetIds.length} seed asset(s) without a local file`);
+      await axios.delete(assetsUrl, { data: removedSeedAssetIds, baseURL: remote });
+    }
+  } catch (error: unknown) {
+    logger.error('Something went wrong when creating assets:');
+    logger.error(error);
   }
 }
 
@@ -1398,6 +1459,10 @@ export async function publishApp({
     formData.append('totp', totp);
   }
 
+  if (assets && file.isDirectory()) {
+    await getSeedAssetFiles(join(appVariantPath, 'assets'));
+  }
+
   let authScope = 'apps:write';
 
   if (resources) {
@@ -1825,6 +1890,10 @@ export async function updateApp({
   if (totp) {
     logger.info(`Setting TOTP to ${totp}`);
     formData.append('totp', totp);
+  }
+
+  if (assets && file.isDirectory()) {
+    await getSeedAssetFiles(join(appVariantPath, 'assets'));
   }
 
   let authScope = 'apps:write';

@@ -26,6 +26,7 @@ import {
   deleteApp,
   patchApp,
   publishApp,
+  publishSeedAssets,
   publishSeedResources,
   resolveAppIdAndRemote,
   traverseAppDirectory,
@@ -280,6 +281,173 @@ describe('app', () => {
       } finally {
         await rm(path, { recursive: true, force: true });
       }
+    });
+  });
+
+  describe('publishSeedAssets', () => {
+    let app: models.App;
+    let path: string;
+
+    function publish(assetsClonable = false, target = app): Promise<void> {
+      return publishSeedAssets(path, target.toJSON(), testApp.defaults.baseURL!, assetsClonable);
+    }
+
+    async function findAssets(): Promise<models.Asset[]> {
+      const { Asset } = await getAppDB(app.id);
+      return Asset.findAll({ order: [['name', 'ASC']] });
+    }
+
+    function writeAsset(filename: string, content: string): Promise<void> {
+      return writeFile(join(path, 'assets', filename), content);
+    }
+
+    beforeEach(async () => {
+      vi.useRealTimers();
+      await authorizeCLI('assets:write', testApp);
+      app = await App.create({
+        OrganizationId: organization.id,
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+        definition: { name: 'Seed assets', defaultPage: '', pages: [] },
+      });
+      path = await mkdtemp(join(tmpdir(), 'seed-assets-'));
+      await mkdir(join(path, 'assets'));
+    });
+
+    afterEach(async () => {
+      await rm(path, { recursive: true, force: true });
+      vi.useFakeTimers();
+    });
+
+    it('keeps the asset of an unchanged file', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish();
+      const [{ id }] = await findAssets();
+
+      await publish();
+
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([id]);
+    });
+
+    it('replaces the asset of a changed file', async () => {
+      await writeAsset('Foo Bar.txt', 'old');
+      await publish();
+      const [{ id }] = await findAssets();
+
+      await writeAsset('Foo Bar.txt', 'new');
+      await publish();
+
+      const assets = await findAssets();
+      expect(assets).toHaveLength(1);
+      expect(assets[0].id).not.toBe(id);
+      const { bucket, key } = getAppAssetLocation(app.id, assets[0].id);
+      expect(String(await getS3FileBuffer(bucket, key))).toBe('new');
+    });
+
+    it('replaces an asset without a stored hash once', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish();
+      const [legacy] = await findAssets();
+      await legacy.update({ sha256: null });
+
+      await publish();
+      const [replaced] = await findAssets();
+      await publish();
+
+      expect(replaced.id).not.toBe(legacy.id);
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([replaced.id]);
+    });
+
+    it('replaces an asset when its clonable value differs', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish(false);
+      const [{ id }] = await findAssets();
+
+      await publish(true);
+
+      const assets = await findAssets();
+      expect(assets).toHaveLength(1);
+      expect(assets[0].id).not.toBe(id);
+      expect(assets[0].clonable).toBe(true);
+    });
+
+    it('replaces a changed asset that was uploaded in Studio', async () => {
+      const { Asset } = await getAppDB(app.id);
+      const { id } = await Asset.create({ name: 'foo', mime: 'text/plain', seed: false });
+      await writeAsset('foo.txt', 'foo');
+
+      await publish();
+
+      const assets = await findAssets();
+      expect(assets).toHaveLength(1);
+      expect(assets[0].id).not.toBe(id);
+      expect(assets[0].seed).toBe(true);
+    });
+
+    it('deletes seed assets without a local file', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await writeAsset('bar.txt', 'bar');
+      await publish();
+
+      await rm(join(path, 'assets', 'bar.txt'));
+      await publish();
+
+      expect((await findAssets()).map((asset) => asset.name)).toStrictEqual(['foo']);
+    });
+
+    it('keeps non-seed assets without a local file', async () => {
+      const { Asset } = await getAppDB(app.id);
+      const { id } = await Asset.create({ name: 'studio', mime: 'text/plain', seed: false });
+
+      await publish();
+
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([id]);
+    });
+
+    it('changes nothing on the server if two files normalize to the same name', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish();
+      const [{ id }] = await findAssets();
+
+      await writeAsset('foo.txt', 'changed');
+      await writeAsset('FOO.png', 'collision');
+
+      await expect(publish()).rejects.toThrow(
+        /^Asset files (FOO\.png and foo\.txt|foo\.txt and FOO\.png) both normalize to foo$/,
+      );
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([id]);
+    });
+
+    it('changes nothing on the server if a file normalizes to an empty name', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish();
+      const [{ id }] = await findAssets();
+
+      await writeAsset('foo.txt', 'changed');
+      await writeAsset('日本語.txt', 'no name');
+
+      await expect(publish()).rejects.toThrow('Asset file 日本語.txt normalizes to an empty name');
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([id]);
+    });
+
+    it('replaces all seed assets of a demo app', async () => {
+      await app.update({ demoMode: true });
+      await writeAsset('foo.txt', 'foo');
+      await publish();
+      const { Asset } = await getAppDB(app.id);
+      const { id } = (await Asset.findOne({ where: { seed: true } }))!;
+
+      await publish();
+
+      const assets = await findAssets();
+      expect(assets.map(({ ephemeral, seed }) => ({ ephemeral, seed }))).toStrictEqual(
+        expect.arrayContaining([
+          { ephemeral: false, seed: true },
+          { ephemeral: true, seed: false },
+        ]),
+      );
+      expect(assets).toHaveLength(2);
+      expect(assets.map((asset) => asset.id)).not.toContain(id);
     });
   });
 
@@ -656,6 +824,32 @@ describe('app', () => {
           }),
         ),
       ).toStrictEqual([tuxData]);
+    });
+
+    it('should not create the app if two asset files normalize to the same name', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write assets:write', testApp);
+      const path = await mkdtemp(join(tmpdir(), 'asset-collision-'));
+      try {
+        await cp(resolveFixture('apps/test'), path, { recursive: true });
+        await writeFile(join(path, 'assets', 'TUX.txt'), 'collision');
+        await expect(
+          publishApp({
+            path,
+            organization: organization.id,
+            remote: testApp.defaults.baseURL!,
+            clientCredentials,
+            assets: true,
+            // Required defaults
+            visibility: 'unlisted',
+            iconBackground: '#ffffff',
+          }),
+        ).rejects.toThrow('both normalize to tux');
+        expect(await App.count()).toBe(0);
+      } finally {
+        await rm(path, { recursive: true, force: true });
+        vi.useFakeTimers();
+      }
     });
 
     it('should publish app with runtime config', async () => {
@@ -1327,6 +1521,35 @@ describe('app', () => {
         visibility: 'public',
         OrganizationId: organization.id,
       });
+    });
+
+    it('should not update the app if two asset files normalize to the same name', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write assets:write', testApp);
+      const path = await mkdtemp(join(tmpdir(), 'asset-collision-'));
+      const { definition } = app;
+      try {
+        await cp(resolveFixture('apps/test'), path, { recursive: true });
+        await writeFile(join(path, 'assets', 'TUX.txt'), 'collision');
+        await expect(
+          updateApp({
+            id: app.id,
+            path,
+            remote: testApp.defaults.baseURL!,
+            clientCredentials,
+            assets: true,
+            // Required defaults
+            visibility: 'unlisted',
+            iconBackground: '#ffffff',
+            force: false,
+          }),
+        ).rejects.toThrow('both normalize to tux');
+        await app.reload();
+        expect(app.definition).toStrictEqual(definition);
+      } finally {
+        await rm(path, { recursive: true, force: true });
+        vi.useFakeTimers();
+      }
     });
 
     it('should update app', async () => {

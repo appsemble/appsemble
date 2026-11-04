@@ -61,8 +61,18 @@ Assets can also be uploaded alongside an app.
 Executing the `appsemble app publish` command with the `--assets` flag will publish the assets
 currently in the assets directory of the app with their `seed` property set to `true`.
 
-Executing the `appsemble app update` command with the `--assets` flag will replace existing `seed`
-assets with the ones currently in the assets directory of the app.
+Executing the `appsemble app update` command with the `--assets` flag compares the files in the
+assets directory of the app to the named assets of the app. An asset keeps its ID if its content and
+`clonable` value match the local file. A kept asset also keeps its filename and MIME type, so a file
+renamed from `data.txt` to `data.json` with the same content is still served as `text/plain`. Any
+other asset is replaced by the local file, even if it was uploaded in Appsemble Studio. A `seed`
+asset without a local file is deleted, other assets without a local file stay. The command stops
+with an error before changing anything if two files normalize to the same asset name, or if a file
+name normalizes to an empty name.
+
+Demo apps skip this comparison: all of their `seed` assets are deleted and every file in the assets
+directory is uploaded again. The asset API of a demo app only reaches its `ephemeral` copies, which
+get a new ID each time they are reseeded.
 
 `seed` assets and `ephemeral` assets behave the same way as
 [seed resources and ephemeral resources](../guides/sharing-resources.md).

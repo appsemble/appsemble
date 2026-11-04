@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import * as nodeUtils from '@appsemble/node-utils';
 import {
   createFixtureStream,
@@ -100,6 +102,7 @@ describe('createAppAsset', () => {
       mime: 'application/octet-stream',
       name: 'test-asset',
       AppMemberId: null,
+      sha256: createHash('sha256').update(data).digest('hex'),
     });
   });
 

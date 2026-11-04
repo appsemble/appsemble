@@ -28,4 +28,19 @@ export interface Asset {
    * The type of the resource the asset is linked to.
    */
   resourceType?: number;
+
+  /**
+   * Whether the asset is a seed asset.
+   */
+  seed?: boolean;
+
+  /**
+   * Whether the asset is transferred when cloning the app.
+   */
+  clonable?: boolean;
+
+  /**
+   * The hex encoded SHA-256 hash of the asset content.
+   */
+  sha256?: string;
 }

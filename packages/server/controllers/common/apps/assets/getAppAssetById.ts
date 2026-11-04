@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import {
   assertKoaCondition,
   assetValidators,
@@ -226,6 +228,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       const newAsset = await Asset.create({
         name: derivedAssetName,
         mime: derivedMime,
+        sha256: createHash('sha256').update(derivedImage).digest('hex'),
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       });
 

@@ -105,6 +105,7 @@ describe('createAppFromTemplate', () => {
     const asset1 = await Asset.create({
       name: 'test-clonable',
       clonable: true,
+      sha256: 'hash',
     });
     const asset2 = await Asset.create({ name: 'test' });
     vi.useRealTimers();
@@ -463,7 +464,9 @@ describe('createAppFromTemplate', () => {
       const { bucket, key } = getAppAssetLocation(id!, asset.id);
       expect(await getS3FileBuffer(bucket, key)).toStrictEqual(Buffer.from('test'));
     }
-    expect(assets.map((a) => a.name)).toStrictEqual(['test-clonable']);
+    expect(assets.map(({ name, sha256 }) => ({ name, sha256 }))).toStrictEqual([
+      { name: 'test-clonable', sha256: 'hash' },
+    ]);
   });
 
   it('should include the app’s styles when cloning an app', async () => {

@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import { PredefinedAppRole } from '@appsemble/lang-sdk';
 import { createFormData, getAppAssetLocation, getS3FileBuffer } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole, type Resource as ResourceType } from '@appsemble/types';
@@ -585,6 +587,7 @@ describe('createAppResource', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: false,
+        sha256: createHash('sha256').update(assetContent).digest('hex'),
       }),
     ]);
     const { bucket, key } = getAppAssetLocation(app.id, assets[0].id);

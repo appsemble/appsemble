@@ -15,6 +15,7 @@ import { partition } from 'lodash-es';
 import parseDuration from 'parse-duration';
 import { type JsonObject, type JsonValue } from 'type-fest';
 
+import { hashFile } from './assets.js';
 import { preProcessCSV } from './csv.js';
 import {
   type GetAppResourcesParams,
@@ -462,6 +463,10 @@ export async function processResourceBody(
   }
 
   handleValidatorResult(ctx, result, 'Resource validation failed');
+
+  for (const asset of preparedAssets) {
+    asset.sha256 = await hashFile(asset.path);
+  }
 
   return [resource, preparedAssets, knownAssetIds.filter((id) => !reusedAssets.has(id))];
 }
