@@ -6,7 +6,6 @@ import {
   getAppAssetLocation,
   getCompressedFileMeta,
   getS3File,
-  hashFile,
   throwKoaError,
   uploadAssets,
   validateUploadedFile,
@@ -36,7 +35,6 @@ export async function createAppAsset({
   const member = await getCurrentAppMember({ context, app });
   const { Asset, sequelize } = await getAppDB(app.id!);
   const assetId = Asset.build().id;
-  const sha256 = await hashFile(path);
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
@@ -51,7 +49,6 @@ export async function createAppAsset({
           AppId: app.id,
           name,
           AppMemberId: member?.sub,
-          sha256,
           ...getCompressedFileMeta({ filename, mime: validatedMime }),
         },
         { transaction },

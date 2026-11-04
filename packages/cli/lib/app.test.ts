@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { appendFile, cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -288,8 +289,8 @@ describe('app', () => {
     let app: models.App;
     let path: string;
 
-    function publish(assetsClonable = false, target = app): Promise<void> {
-      return publishSeedAssets(path, target.toJSON(), testApp.defaults.baseURL!, assetsClonable);
+    function publish(assetsClonable = false): Promise<void> {
+      return publishSeedAssets(path, app.toJSON(), testApp.defaults.baseURL!, assetsClonable);
     }
 
     async function findAssets(): Promise<models.Asset[]> {
@@ -371,10 +372,32 @@ describe('app', () => {
       expect(assets[0].clonable).toBe(true);
     });
 
+    it('keeps an unchanged asset that was uploaded in Studio', async () => {
+      const { Asset } = await getAppDB(app.id);
+      const { id } = await Asset.create({
+        name: 'foo',
+        mime: 'text/plain',
+        seed: false,
+        sha256: createHash('sha256').update('foo').digest('hex'),
+      });
+      await writeAsset('foo.txt', 'foo');
+
+      await publish();
+
+      expect((await findAssets()).map((asset) => [asset.id, asset.seed])).toStrictEqual([
+        [id, false],
+      ]);
+    });
+
     it('replaces a changed asset that was uploaded in Studio', async () => {
       const { Asset } = await getAppDB(app.id);
-      const { id } = await Asset.create({ name: 'foo', mime: 'text/plain', seed: false });
-      await writeAsset('foo.txt', 'foo');
+      const { id } = await Asset.create({
+        name: 'foo',
+        mime: 'text/plain',
+        seed: false,
+        sha256: createHash('sha256').update('old').digest('hex'),
+      });
+      await writeAsset('foo.txt', 'new');
 
       await publish();
 
@@ -1550,6 +1573,37 @@ describe('app', () => {
         await rm(path, { recursive: true, force: true });
         vi.useFakeTimers();
       }
+    });
+
+    it('should upload the seed assets of a demo app again on every update', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write assets:write', testApp);
+      const update = (): Promise<void> =>
+        updateApp({
+          id: app.id,
+          path: resolveFixture('apps/test'),
+          remote: testApp.defaults.baseURL!,
+          clientCredentials,
+          assets: true,
+          demoMode: true,
+          // Required defaults
+          visibility: 'unlisted',
+          iconBackground: '#ffffff',
+          force: false,
+        });
+      const { Asset } = await getAppDB(app.id);
+      const findSeedAssetIds = async (): Promise<string[]> =>
+        (await Asset.findAll({ where: { seed: true } })).map(({ id }) => id);
+
+      await update();
+      const firstIds = await findSeedAssetIds();
+      await update();
+      const secondIds = await findSeedAssetIds();
+      vi.useFakeTimers();
+
+      expect(firstIds).not.toHaveLength(0);
+      expect(secondIds).toHaveLength(firstIds.length);
+      expect(secondIds.filter((id) => firstIds.includes(id))).toStrictEqual([]);
     });
 
     it('should update app', async () => {

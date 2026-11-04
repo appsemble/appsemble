@@ -329,6 +329,7 @@ describe('createAppAsset', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: true,
+        sha256: createHash('sha256').update('Test asset').digest('hex'),
       }),
     );
   });
@@ -378,6 +379,7 @@ describe('createAppAsset', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: true,
+        sha256: createHash('sha256').update('Test asset').digest('hex'),
       }),
     );
 
@@ -402,6 +404,7 @@ describe('createAppAsset', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: false,
+        sha256: createHash('sha256').update('Test asset').digest('hex'),
       }),
     );
   });
