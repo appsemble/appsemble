@@ -102,4 +102,36 @@ describe('cleanupResourcesAndAssets', () => {
       await readFixture('standing.png'),
     );
   });
+
+  it('points a reseeded resource of a demo app at the reseeded copy it references', async () => {
+    await Organization.create({ id: 'testorganization', name: 'Test Organization' });
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        resources: {
+          survey: { schema: { type: 'object' } },
+          answer: {
+            schema: { type: 'object', properties: { surveyId: { type: 'integer' } } },
+            references: { surveyId: { resource: 'survey' } },
+          },
+        },
+      },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+    });
+    const { Resource } = await getAppDB(appId);
+    await Resource.create({ type: 'survey', seed: true, data: {} });
+    await Resource.create({ type: 'answer', seed: true, data: { $survey: 0 } });
+
+    await cleanupResourcesAndAssets();
+
+    // The command closes the app database, so open it again to read the result.
+    const { Resource: ReopenedResource } = await getAppDB(appId, undefined, undefined, true);
+    const survey = await ReopenedResource.findOne({ where: { type: 'survey', ephemeral: true } });
+    const answer = await ReopenedResource.findOne({ where: { type: 'answer', ephemeral: true } });
+    expect(answer?.data).toMatchObject({ surveyId: survey?.id });
+  });
 });
