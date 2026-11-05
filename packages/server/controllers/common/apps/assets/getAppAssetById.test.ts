@@ -1,6 +1,9 @@
+import { createHash } from 'node:crypto';
+
 import { getAppAssetLocation, getS3FileBuffer, uploadS3File } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import { Op } from 'sequelize';
 import sharp from 'sharp';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -165,6 +168,26 @@ describe('getAppAssetById', () => {
       status: 200,
       headers: expect.objectContaining({ 'cache-control': 'max-age=3600' }),
     });
+  });
+
+  it('should store the hash of a derived image', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({ mime: 'image/png', name: 'logo' });
+    const image = await sharp({
+      create: { width: 300, height: 300, channels: 3, background: { r: 255, g: 0, b: 0 } },
+    })
+      .png()
+      .toBuffer();
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, image);
+
+    const { data } = await request.get<Buffer>(
+      `/api/apps/${app.id}/assets/logo?width=150&height=150`,
+      { responseType: 'arraybuffer' },
+    );
+
+    const derived = await Asset.findOne({ where: { id: { [Op.ne]: asset.id } } });
+    expect(derived!.sha256).toBe(createHash('sha256').update(data).digest('hex'));
   });
 
   it('should answer 304 without a body when a named asset is unchanged', async () => {

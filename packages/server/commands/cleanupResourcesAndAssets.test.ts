@@ -87,7 +87,7 @@ describe('cleanupResourcesAndAssets', () => {
       OrganizationId: 'testorganization',
     });
     const { Asset } = await getAppDB(appId);
-    const { id: seedAssetId } = await Asset.create({ name: 'tasks', seed: true });
+    const { id: seedAssetId } = await Asset.create({ name: 'tasks', seed: true, sha256: 'hash' });
     const seed = getAppAssetLocation(appId, seedAssetId);
     await uploadS3File(seed.bucket, seed.key, createFixtureStream('standing.png'));
 
@@ -96,7 +96,7 @@ describe('cleanupResourcesAndAssets', () => {
     // The command closes the app database, so open it again to read the result.
     const { Asset: ReopenedAsset } = await getAppDB(appId, undefined, undefined, true);
     const copy = await ReopenedAsset.findOne({ where: { ephemeral: true } });
-    expect(copy).toMatchObject({ name: 'tasks', seed: false });
+    expect(copy).toMatchObject({ name: 'tasks', seed: false, sha256: 'hash' });
     const target = getAppAssetLocation(appId, copy!.id);
     expect(await getS3FileBuffer(target.bucket, target.key)).toStrictEqual(
       await readFixture('standing.png'),
