@@ -502,7 +502,7 @@ test node:
   services:
     - name: postgres:17
       alias: postgres
-    - name: valkey/valkey:9.1.2
+    - name: valkey/valkey:9.1.3
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: chrislusf/seaweedfs:4.47
@@ -558,7 +558,7 @@ test node single bucket:
   services:
     - name: postgres:17
       alias: postgres
-    - name: valkey/valkey:9.1.2
+    - name: valkey/valkey:9.1.3
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     # The single-bucket layout: the bucket and a user that can only touch its objects are
@@ -822,7 +822,7 @@ validate snippets:
     # the Helm chart deploy. `test node` covers the bucket-per-app layout and
     # `test node single bucket` covers this layout at the unit level.
     - *seaweedfs-single-bucket
-    - name: valkey/valkey:9.1.2
+    - name: valkey/valkey:9.1.3
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
