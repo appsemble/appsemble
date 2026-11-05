@@ -123,6 +123,7 @@ declare module 'koas-parameters' {
     startIndex: number;
     view: string;
     resources: boolean;
+    named: boolean;
     assets: boolean;
     organizationSubscriptionExpiresWithin: number;
     screenshots: boolean;
@@ -347,7 +348,7 @@ export interface GetAppResourcesParams extends GetAppSubEntityParams {
   type: string;
 }
 
-export interface PreparedAsset extends Pick<Asset, 'filename' | 'id' | 'mime'> {
+export interface PreparedAsset extends Pick<Asset, 'filename' | 'id' | 'mime' | 'sha256'> {
   path: string;
   resource?: Record<string, unknown>;
 }

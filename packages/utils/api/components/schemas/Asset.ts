@@ -29,5 +29,21 @@ export const Asset: OpenAPIV3.NonArraySchemaObject = {
       description:
         'The given name of the asset. Assets may be referenced by their name or ID in the API.',
     },
+    seed: {
+      type: 'boolean',
+      readOnly: true,
+      description: 'Whether the asset is a seed asset.',
+    },
+    clonable: {
+      type: 'boolean',
+      readOnly: true,
+      description: 'Whether the asset is transferred when cloning the app.',
+    },
+    sha256: {
+      type: 'string',
+      nullable: true,
+      readOnly: true,
+      description: 'The hex encoded SHA-256 hash of the asset content.',
+    },
   },
 };

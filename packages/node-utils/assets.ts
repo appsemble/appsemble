@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 
@@ -81,6 +82,20 @@ interface FileMeta {
 
 export function getCompressedFileMeta({ filename, mime }: FileMeta): FileMeta {
   return { filename, mime };
+}
+
+/**
+ * Calculate the SHA-256 hash of a file.
+ *
+ * @param path The path of the file to hash.
+ * @returns The hex encoded hash of the file content.
+ */
+export async function hashFile(path: string): Promise<string> {
+  const hash = createHash('sha256');
+  for await (const chunk of createReadStream(path)) {
+    hash.update(chunk);
+  }
+  return hash.digest('hex');
 }
 
 export interface AssetToUpload {
