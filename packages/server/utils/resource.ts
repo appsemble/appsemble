@@ -429,75 +429,42 @@ export async function reseedResourcesRecursively(
   appDefinition: AppDefinition,
   Resource: ModelStatic<Resource>,
   resourcesToReseed: Resource[],
-  reseededResourcesIds: Record<string, number[]> = {},
-): Promise<Record<string, number[]>> {
-  const groupedResources: Record<string, Resource[]> = {};
+): Promise<void> {
+  const reseededIds: Record<string, number[]> = {};
+  const seededTypes = new Set(resourcesToReseed.map(({ type }) => type));
 
-  for (const resource of resourcesToReseed) {
-    groupedResources[resource.type] = [...(groupedResources[resource.type] ?? []), resource];
-  }
+  const reseedType = async (type: string): Promise<void> => {
+    if (reseededIds[type]) {
+      return;
+    }
+    reseededIds[type] = [];
 
-  let updatedReseededResourcesIds: Record<string, number[]> = { ...reseededResourcesIds };
-  for (const [resourceType, resources] of Object.entries(groupedResources)) {
-    const resourceReferences = appDefinition.resources?.[resourceType]?.references;
-    if (resourceReferences) {
-      for (const [referencedProperty, resourceReference] of Object.entries(resourceReferences)) {
-        const referencedResourceType = resourceReference.resource;
-        const referencedResourcesToReseed = groupedResources[referencedResourceType];
-
-        if (!updatedReseededResourcesIds[referencedResourceType]) {
-          const referencedReseededResourcesIds = await reseedResourcesRecursively(
-            appDefinition,
-            Resource,
-            referencedResourcesToReseed,
-            updatedReseededResourcesIds,
-          );
-
-          updatedReseededResourcesIds = {
-            ...updatedReseededResourcesIds,
-            ...referencedReseededResourcesIds,
-          };
-        }
-
-        if (!updatedReseededResourcesIds[resourceType]) {
-          const reseededResources = [];
-          for (const resource of resources) {
-            reseededResources.push(
-              await Resource.create({
-                ...resource.dataValues,
-                ephemeral: true,
-                seed: false,
-                data: {
-                  ...resource.dataValues.data,
-                  [referencedProperty]:
-                    updatedReseededResourcesIds[referencedResourceType][
-                      resource.dataValues.data[`$${referencedResourceType}`]
-                    ],
-                },
-              }),
-            );
-          }
-          updatedReseededResourcesIds[resourceType] = reseededResources.map(
-            (resource) => resource.id,
-          );
-        }
+    const references = Object.entries(appDefinition.resources?.[type]?.references ?? {});
+    for (const [, { resource: referencedType }] of references) {
+      if (seededTypes.has(referencedType)) {
+        await reseedType(referencedType);
       }
     }
 
-    if (!updatedReseededResourcesIds[resourceType]) {
-      const reseededResources = [];
-      for (const resource of resources) {
-        reseededResources.push(
-          await Resource.create({
-            ...resource.dataValues,
-            ephemeral: true,
-            seed: false,
-          }),
-        );
+    for (const resource of resourcesToReseed.filter((seed) => seed.type === type)) {
+      const data = { ...resource.dataValues.data };
+      for (const [property, { resource: referencedType }] of references) {
+        const index = data[`$${referencedType}`];
+        if (index != null && reseededIds[referencedType]) {
+          data[property] = reseededIds[referencedType][index];
+        }
       }
-      updatedReseededResourcesIds[resourceType] = reseededResources.map((resource) => resource.id);
+      const { id } = await Resource.create({
+        ...resource.dataValues,
+        ephemeral: true,
+        seed: false,
+        data,
+      });
+      reseededIds[type].push(id);
     }
-  }
+  };
 
-  return updatedReseededResourcesIds;
+  for (const type of seededTypes) {
+    await reseedType(type);
+  }
 }

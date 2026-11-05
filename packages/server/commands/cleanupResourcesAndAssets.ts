@@ -27,7 +27,10 @@ export function builder(yargs: Argv): Argv {
 export async function cleanupResourcesAndAssets(): Promise<void> {
   const date = new Date();
 
-  const demoApps = await App.findAll({ attributes: ['id'], where: { demoMode: true } });
+  const demoApps = await App.findAll({
+    attributes: ['id', 'definition'],
+    where: { demoMode: true },
+  });
   for (const demoApp of demoApps) {
     let appDB: Awaited<ReturnType<typeof getAppDB>>;
 
