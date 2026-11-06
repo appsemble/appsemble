@@ -18,7 +18,7 @@ import { type AddressInfo } from 'node:net';
 
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { App, Organization } from '../../models/index.js';
 import { setArgv } from '../argv.js';
@@ -174,14 +174,14 @@ describe('request action SSRF protection', () => {
         httpServer.listen(0, host, () => resolve((httpServer.address() as AddressInfo).port));
       });
 
-    const resolveToLoopback = (loopbackHostname: string): void => {
+    const resolveToLoopback = (...loopbackHostnames: string[]): void => {
       const { lookup } = dns;
       vi.spyOn(dns, 'lookup').mockImplementation(((
         hostname: string,
         options: LookupOptions,
         callback: (err: Error | null, address: LookupAddress[] | string, family?: number) => void,
       ) => {
-        if (hostname !== loopbackHostname) {
+        if (!loopbackHostnames.includes(hostname)) {
           // Node.js connects using the callback API, so the mock forwards to it.
           // eslint-disable-next-line n/prefer-promises/dns
           return lookup(hostname, options, callback);
@@ -257,21 +257,22 @@ describe('request action SSRF protection', () => {
       expect(targetRequests).toBe(0);
     });
 
-    it.each(['x-1.ns.svc.cluster.local.internal.example', 'x-1.ns.svc-cluster-local'])(
-      'should block %s, which only resembles a companion container hostname',
-      async (hostname) => {
-        const port = await listen(target, '127.0.0.1');
-        resolveToLoopback(hostname);
-        await createAppWithAction('ssrfLookalike', `http://${hostname}:${port}/`);
+    it.each([
+      'http://x-1.ns.svc.cluster.local.internal.example',
+      'http://x-1.ns.svc-cluster-local',
+      'https://x-1.ns.svc.cluster.local',
+    ])('should block %s, which only resembles a companion container URL', async (origin) => {
+      const port = await listen(target, '127.0.0.1');
+      resolveToLoopback(new URL(origin).hostname);
+      await createAppWithAction('ssrfLookalike', `${origin}:${port}/`);
 
-        const response = await request.get(
-          '/api/apps/1/actions/pages.0.blocks.0.actions.ssrfLookalike?data={}',
-        );
+      const response = await request.get(
+        '/api/apps/1/actions/pages.0.blocks.0.actions.ssrfLookalike?data={}',
+      );
 
-        expect(response.status).toBe(403);
-        expect(targetRequests).toBe(0);
-      },
-    );
+      expect(response.status).toBe(403);
+      expect(targetRequests).toBe(0);
+    });
 
     it('should block a companion container hostname that is only in the path', async () => {
       await createAppWithAction('ssrfPath', 'http://localhost/x-1.svc.cluster.local');
@@ -294,6 +295,60 @@ describe('request action SSRF protection', () => {
 
       expect(response.status).toBe(200);
       expect(targetRequests).toBe(1);
+    });
+
+    it.each([
+      { name: 'a private IP', hostname: '127.0.0.1' },
+      {
+        name: "another app's companion container",
+        hostname: 'x-2.companion-containers-appsemble.svc.cluster.local',
+      },
+    ])('should not follow a companion container redirect to $name', async ({ hostname }) => {
+      const port = await listen(target, '127.0.0.1');
+      const companion = createHttpServer((req, res) => {
+        res.writeHead(302, { location: `http://${hostname}:${port}/` });
+        res.end();
+      });
+      onTestFinished(() => {
+        companion.close();
+      });
+      const companionPort = await listen(companion, '127.0.0.1');
+      resolveToLoopback('x-1.companion-containers-appsemble.svc.cluster.local', hostname);
+      await createAppWithAction(
+        'companionRedirect',
+        `http://x-1.ns.svc.cluster.local:${companionPort}/`,
+      );
+
+      const response = await request.get(
+        '/api/apps/1/actions/pages.0.blocks.0.actions.companionRedirect?data={}',
+      );
+
+      expect(response.status).toBe(403);
+      expect(targetRequests).toBe(0);
+    });
+
+    it('should follow a companion container redirect on the same host', async () => {
+      const companion = createHttpServer((req, res) => {
+        if (req.url === '/docs/') {
+          res.end('docs');
+          return;
+        }
+        res.writeHead(301, { location: '/docs/' });
+        res.end();
+      });
+      onTestFinished(() => {
+        companion.close();
+      });
+      const port = await listen(companion, '127.0.0.1');
+      resolveToLoopback('x-1.companion-containers-appsemble.svc.cluster.local');
+      await createAppWithAction('companionDocs', `http://x-1.ns.svc.cluster.local:${port}/docs`);
+
+      const response = await request.get(
+        '/api/apps/1/actions/pages.0.blocks.0.actions.companionDocs?data={}',
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.data).toBe('docs');
     });
   });
 

@@ -206,6 +206,12 @@ async function handleRequestProxy(
     }
     proxyUrl.hostname = `${deploymentName}.${getContainerNamespace()}.svc.cluster.local`;
     axiosConfig.url = String(proxyUrl);
+    // Companion requests bypass the SSRF agents, so redirects must stay on the companion host
+    axiosConfig.beforeRedirect = ({ hostname }) => {
+      if (hostname !== proxyUrl.hostname) {
+        throw new Error(`Redirect to ${hostname} is not allowed`);
+      }
+    };
     companionDeployment = deploymentName;
   } else {
     // Apply SSRF protection for non-companion-container URLs
