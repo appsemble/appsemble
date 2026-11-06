@@ -807,7 +807,7 @@ validate snippets:
     APPSEMBLE_SSL_CRT_E2E_SERVICE: $APPSEMBLE_SSL_CRT_E2E
     MAILPIT_URL: 'http://mailpit:8025'
   services:
-    - name: axllent/mailpit:v1.31.6
+    - name: axllent/mailpit:v1.33.0
       alias: mailpit
       variables:
         MP_SMTP_AUTH_ACCEPT_ANY: '1'
