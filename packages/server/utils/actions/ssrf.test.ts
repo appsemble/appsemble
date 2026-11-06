@@ -174,6 +174,27 @@ describe('request action SSRF protection', () => {
         httpServer.listen(0, host, () => resolve((httpServer.address() as AddressInfo).port));
       });
 
+    const resolveToLoopback = (loopbackHostname: string): void => {
+      const { lookup } = dns;
+      vi.spyOn(dns, 'lookup').mockImplementation(((
+        hostname: string,
+        options: LookupOptions,
+        callback: (err: Error | null, address: LookupAddress[] | string, family?: number) => void,
+      ) => {
+        if (hostname !== loopbackHostname) {
+          // Node.js connects using the callback API, so the mock forwards to it.
+          // eslint-disable-next-line n/prefer-promises/dns
+          return lookup(hostname, options, callback);
+        }
+        if (options.all) {
+          return callback(null, [{ address: '127.0.0.1', family: 4 }]);
+        }
+        return callback(null, '127.0.0.1', 4);
+      }) as typeof dns.lookup);
+      // The SSRF agent imports `node:dns` as an ES module.
+      syncBuiltinESMExports();
+    };
+
     beforeEach(() => {
       targetRequests = 0;
       target = createHttpServer((req, res) => {
@@ -191,24 +212,7 @@ describe('request action SSRF protection', () => {
 
     it('should block a hostname that resolves to a private IP', async () => {
       const port = await listen(target, '127.0.0.1');
-      const { lookup } = dns;
-      vi.spyOn(dns, 'lookup').mockImplementation(((
-        hostname: string,
-        options: LookupOptions,
-        callback: (err: Error | null, address: LookupAddress[] | string, family?: number) => void,
-      ) => {
-        if (hostname !== 'internal.example') {
-          // Node.js connects using the callback API, so the mock forwards to it.
-          // eslint-disable-next-line n/prefer-promises/dns
-          return lookup(hostname, options, callback);
-        }
-        if (options.all) {
-          return callback(null, [{ address: '127.0.0.1', family: 4 }]);
-        }
-        return callback(null, '127.0.0.1', 4);
-      }) as typeof dns.lookup);
-      // The SSRF agent imports `node:dns` as an ES module.
-      syncBuiltinESMExports();
+      resolveToLoopback('internal.example');
       await createAppWithAction('ssrfHostname', `http://internal.example:${port}/`);
 
       const response = await request.get(
@@ -236,6 +240,60 @@ describe('request action SSRF protection', () => {
 
       expect(response.status).toBe(403);
       expect(targetRequests).toBe(0);
+    });
+
+    it('should block a private IP behind companion container credentials', async () => {
+      const port = await listen(target, '127.0.0.1');
+      await createAppWithAction(
+        'ssrfCredentials',
+        `http://x-1.ns.svc.cluster.local@127.0.0.1:${port}/`,
+      );
+
+      const response = await request.get(
+        '/api/apps/1/actions/pages.0.blocks.0.actions.ssrfCredentials?data={}',
+      );
+
+      expect(response.status).toBe(403);
+      expect(targetRequests).toBe(0);
+    });
+
+    it.each(['x-1.ns.svc.cluster.local.internal.example', 'x-1.ns.svc-cluster-local'])(
+      'should block %s, which only resembles a companion container hostname',
+      async (hostname) => {
+        const port = await listen(target, '127.0.0.1');
+        resolveToLoopback(hostname);
+        await createAppWithAction('ssrfLookalike', `http://${hostname}:${port}/`);
+
+        const response = await request.get(
+          '/api/apps/1/actions/pages.0.blocks.0.actions.ssrfLookalike?data={}',
+        );
+
+        expect(response.status).toBe(403);
+        expect(targetRequests).toBe(0);
+      },
+    );
+
+    it('should block a companion container hostname that is only in the path', async () => {
+      await createAppWithAction('ssrfPath', 'http://localhost/x-1.svc.cluster.local');
+
+      const response = await request.get(
+        '/api/apps/1/actions/pages.0.blocks.0.actions.ssrfPath?data={}',
+      );
+
+      expect(response.status).toBe(403);
+    });
+
+    it('should forward companion container requests to the companion namespace', async () => {
+      const port = await listen(target, '127.0.0.1');
+      resolveToLoopback('x-1.companion-containers-appsemble.svc.cluster.local');
+      await createAppWithAction('companion', `http://x-1.x.svc.cluster.local:${port}/`);
+
+      const response = await request.get(
+        '/api/apps/1/actions/pages.0.blocks.0.actions.companion?data={}',
+      );
+
+      expect(response.status).toBe(200);
+      expect(targetRequests).toBe(1);
     });
   });
 
