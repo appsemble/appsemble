@@ -97,6 +97,10 @@ export async function setLastRequestAnnotation(
   namespace: string,
   deploymentName: string,
 ): Promise<void> {
+  if (process.env.TEST) {
+    return;
+  }
+
   const now = new Date();
   const annotationKey = `${namespace}/${deploymentName}`;
 
