@@ -4,12 +4,13 @@ import { type EmailActionDefinition } from '@appsemble/lang-sdk';
 import { getAppAssetLocation, uploadS3File, version } from '@appsemble/node-utils';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { type ParameterizedContext } from 'koa';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { App, getAppDB, Organization } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { createTestUser } from '../../../utils/test/authorization.js';
+import { countConnections } from '../../../utils/test/countConnections.js';
 
 let server: Koa;
 let testApp: AxiosTestInstance;
@@ -456,6 +457,20 @@ describe('actions', () => {
   });
 
   describe('handleEmail', () => {
+    async function serveAttachment(
+      body: string,
+      onRequest?: (ctx: ParameterizedContext) => void,
+    ): Promise<string> {
+      const attachmentServer = await createInstance(
+        new Koa().use((ctx) => {
+          onRequest?.(ctx);
+          ctx.body = body;
+        }),
+      );
+      onTestFinished(() => attachmentServer.close());
+      return attachmentServer.defaults.baseURL!;
+    }
+
     beforeEach(async () => {
       await Organization.create({ id: 'org' });
       await App.create({
@@ -634,10 +649,11 @@ describe('actions', () => {
 
     it('should attach URLs', async () => {
       const spy = vi.spyOn(server.context.mailer, 'sendEmail');
+      const baseURL = await serveAttachment('image');
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
         to: 'test@example.com',
         body: 'Body',
-        attachments: ['https://via.placeholder.com/150'],
+        attachments: [new URL('150', baseURL).href],
       });
 
       expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
@@ -657,7 +673,7 @@ describe('actions', () => {
 </html>
 `,
         text: 'Body\n',
-        attachments: [{ path: 'https://via.placeholder.com/150' }],
+        attachments: [{ content: Buffer.from('image'), filename: '150' }],
         app: {
           emailHost: null,
           emailName: null,
@@ -673,6 +689,10 @@ describe('actions', () => {
 
     it('should attach using objects', async () => {
       const spy = vi.spyOn(server.context.mailer, 'sendEmail');
+      let accept: string | undefined;
+      const baseURL = await serveAttachment('a,b', (ctx) => {
+        accept = ctx.get('accept');
+      });
       const buffer = Buffer.from(JSON.stringify({ test: 'test' }));
       const { Asset } = await getAppDB(1);
       const asset = await Asset.create({
@@ -686,7 +706,7 @@ describe('actions', () => {
         body: 'Body',
         attachments: [
           {
-            target: 'https://via.placeholder.com/150',
+            target: baseURL,
             accept: 'text/csv',
             filename: 'example.csv',
           },
@@ -721,11 +741,7 @@ describe('actions', () => {
 `,
         text: 'Body\n',
         attachments: [
-          {
-            filename: 'example.csv',
-            httpHeaders: { accept: 'text/csv' },
-            path: 'https://via.placeholder.com/150',
-          },
+          { content: Buffer.from('a,b'), filename: 'example.csv' },
           { content: buffer, filename: 'test.json' },
         ],
         app: {
@@ -738,7 +754,25 @@ describe('actions', () => {
           id: 1,
         },
       });
+      expect(accept).toBe('text/csv');
       spy.mockRestore();
+    });
+
+    it('should not download attachments from a private address', async () => {
+      vi.stubEnv('VITEST_CONF_ALLOW_PRIVATE_IP_PROXY', '');
+      onTestFinished(() => {
+        vi.unstubAllEnvs();
+      });
+      const target = await countConnections();
+
+      const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
+        to: 'test@example.com',
+        body: 'Body',
+        attachments: [`http://127.0.0.1:${target.port}/metadata`],
+      });
+
+      expect(response.status).toBeGreaterThanOrEqual(400);
+      expect(target.connections).toBe(0);
     });
 
     it('should accept assets from content', async () => {

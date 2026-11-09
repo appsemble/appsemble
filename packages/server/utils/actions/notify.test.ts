@@ -1,6 +1,6 @@
 import { type NotifyActionDefinition } from '@appsemble/lang-sdk';
 import webpush from 'web-push';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { notify } from './notify.js';
 import { App, getAppDB, Organization } from '../../models/index.js';
@@ -83,21 +83,27 @@ describe('notify', () => {
   it('should notify the members of a role', async () => {
     await runNotify('Manager');
 
-    expect(pushedEndpoints).toStrictEqual(['https://push.example/manager']);
+    await vi.waitFor(() => {
+      expect(pushedEndpoints).toStrictEqual(['https://push.example/manager']);
+    });
   });
 
   it('should notify a single member by id', async () => {
     await runNotify(managerId);
 
-    expect(pushedEndpoints).toStrictEqual(['https://push.example/manager']);
+    await vi.waitFor(() => {
+      expect(pushedEndpoints).toStrictEqual(['https://push.example/manager']);
+    });
   });
 
   it('should notify all subscribed members', async () => {
     await runNotify('all');
 
-    expect(pushedEndpoints.toSorted()).toStrictEqual([
-      'https://push.example/manager',
-      'https://push.example/staff',
-    ]);
+    await vi.waitFor(() => {
+      expect(pushedEndpoints.toSorted()).toStrictEqual([
+        'https://push.example/manager',
+        'https://push.example/staff',
+      ]);
+    });
   });
 });

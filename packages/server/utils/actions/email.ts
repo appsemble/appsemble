@@ -3,8 +3,10 @@ import {
   getAppAssetLocation,
   getRemapperContext,
   getS3FileBuffer,
+  getSSRFProtectedAgents,
   throwKoaError,
 } from '@appsemble/node-utils';
+import axios from 'axios';
 import { extension } from 'mime-types';
 import { type SendMailOptions } from 'nodemailer';
 import { Op } from 'sequelize';
@@ -92,10 +94,15 @@ export async function email({
     const attachment = typeof remapped === 'string' ? { target: String(remapped) } : remapped;
     if (isTargetAttachment(attachment)) {
       if (attachment.target.startsWith('http')) {
+        const url = new URL(attachment.target);
+        const { data: content } = await axios.get<Buffer>(attachment.target, {
+          ...(attachment.accept && { headers: { accept: attachment.accept } }),
+          responseType: 'arraybuffer',
+          ...(await getSSRFProtectedAgents({ hostname: url.hostname })),
+        });
         attachments.push({
-          path: attachment.target,
-          ...(attachment.filename && { filename: attachment.filename }),
-          ...(attachment.accept && { httpHeaders: { accept: attachment.accept } }),
+          content,
+          filename: attachment.filename || url.pathname.split('/').pop(),
         });
       } else {
         assetSelectors.push(attachment);
