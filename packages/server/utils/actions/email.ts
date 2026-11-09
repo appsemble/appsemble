@@ -90,6 +90,8 @@ export async function email({
 
   const attachments: SendMailOptions['attachments'] = [];
   const assetSelectors: TargetAttachment[] = [];
+  // Downloaded attachments are buffered in memory, so their combined size is capped.
+  let remainingDownloadSize = 25 * 1024 * 1024;
   for (const remapped of [remap(action.attachments ?? null, data, remapperContext)].flat()) {
     const attachment = typeof remapped === 'string' ? { target: String(remapped) } : remapped;
     if (isTargetAttachment(attachment)) {
@@ -97,9 +99,11 @@ export async function email({
         const url = new URL(attachment.target);
         const { data: content } = await axios.get<Buffer>(attachment.target, {
           ...(attachment.accept && { headers: { accept: attachment.accept } }),
+          maxContentLength: remainingDownloadSize,
           responseType: 'arraybuffer',
           ...(await getSSRFProtectedAgents({ hostname: url.hostname })),
         });
+        remainingDownloadSize -= content.length;
         attachments.push({
           content,
           filename: attachment.filename || url.pathname.split('/').pop(),
