@@ -226,6 +226,9 @@
     "pkey",
     "desec",
     "rrsets",
-    "CREATEDB"
+    "CREATEDB",
+    "Voss",
+    "dockercompose",
+    "languageservice"
   ]
 }

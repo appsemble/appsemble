@@ -123,6 +123,7 @@ declare module 'koas-parameters' {
     startIndex: number;
     view: string;
     resources: boolean;
+    named: boolean;
     assets: boolean;
     organizationSubscriptionExpiresWithin: number;
     screenshots: boolean;
@@ -347,7 +348,7 @@ export interface GetAppResourcesParams extends GetAppSubEntityParams {
   type: string;
 }
 
-export interface PreparedAsset extends Pick<Asset, 'filename' | 'id' | 'mime'> {
+export interface PreparedAsset extends Pick<Asset, 'filename' | 'id' | 'mime' | 'sha256'> {
   path: string;
   resource?: Record<string, unknown>;
 }
@@ -570,13 +571,24 @@ export interface Options {
 }
 
 export class TempFile {
-  readonly filename: string;
+  /**
+   * The name of the uploaded file, if the multipart part supplied one.
+   */
+  readonly filename: string | undefined;
 
   readonly mime: string;
 
   readonly path: string;
 
-  constructor({ filename, mime, path }: { filename: string; mime: string; path: string }) {
+  constructor({
+    filename,
+    mime,
+    path,
+  }: {
+    filename: string | undefined;
+    mime: string;
+    path: string;
+  }) {
     this.filename = filename;
     this.mime = mime;
     this.path = path;

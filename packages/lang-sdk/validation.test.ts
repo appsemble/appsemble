@@ -996,6 +996,48 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should report if notifications is a role map without a security definition', async () => {
+    const app = createTestApp();
+    delete app.security;
+    app.notifications = { roles: { User: 'login' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('only works if security is defined', app.notifications, undefined, [
+        'notifications',
+      ]),
+    ]);
+  });
+
+  it('should validate the roles in notifications exist', async () => {
+    const app = createTestApp();
+    app.notifications = { roles: { User: 'login', Unknown: 'opt-in' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not exist in this app’s roles', 'Unknown', undefined, [
+        'notifications',
+        'roles',
+        'Unknown',
+      ]),
+    ]);
+  });
+
+  it('should not report an empty notifications value as an unexpected error', async () => {
+    const app = createTestApp();
+    // @ts-expect-error 2322 an empty YAML value is null
+    app.notifications = null;
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should accept notifications per role', async () => {
+    const app = createTestApp();
+    app.notifications = { default: 'opt-in', roles: { User: 'login' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(true);
+  });
+
   it('should validate the default role exists', async () => {
     const app = createTestApp();
     app.security!.default!.role = 'Unknown';
@@ -4666,6 +4708,43 @@ describe('validateAppDefinition', () => {
     const result = await validateAppDefinition(app, () => []);
 
     expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should not report an unexpected error for a flow page without steps', async () => {
+    const app = createTestApp();
+    app.pages.push({ name: 'Flow', type: 'flow' } as unknown as AppDefinition['pages'][number]);
+    const schemaResult = new AppValidator().validateApp(app);
+
+    const result = await validateAppDefinition(app, () => [], undefined, schemaResult);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ message: 'requires property "steps"' }),
+    );
+    expect(result.errors).not.toContainEqual(
+      expect.objectContaining({ message: expect.stringContaining('Unexpected error') }),
+    );
+  });
+
+  it('should keep checking the app when a container page has no pages', async () => {
+    const app = createTestApp();
+    app.pages.push({
+      name: 'Container',
+      type: 'container',
+    } as unknown as AppDefinition['pages'][number]);
+    app.security = { ...app.security!, default: { role: 'Missing' } };
+    const schemaResult = new AppValidator().validateApp(app);
+
+    const result = await validateAppDefinition(app, () => [], undefined, schemaResult);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: 'does not exist in this app’s roles',
+        path: ['security', 'default', 'role'],
+      }),
+    );
+    expect(result.errors).not.toContainEqual(
+      expect.objectContaining({ message: expect.stringContaining('Unexpected error') }),
+    );
   });
 
   it('should reject navbar breakpoints without a layout without aborting validation', async () => {

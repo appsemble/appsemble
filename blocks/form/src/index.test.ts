@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 
 import { EventEmitter } from 'node:events';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 import { createEvents, getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type BootstrapParams } from '@appsemble/sdk';
@@ -825,6 +827,77 @@ it('should scroll to and focus the error summary at the top after a failed submi
   expect(scrollIntoView.mock.contexts).toStrictEqual([summary]);
 });
 
+/**
+ * Tab through the document until focus wraps around.
+ *
+ * @returns The elements that received focus, in tab order.
+ */
+async function tabStops(): Promise<Element[]> {
+  const stops: Element[] = [];
+  await userEvent.tab();
+  while (!stops.includes(document.activeElement!)) {
+    stops.push(document.activeElement!);
+    await userEvent.tab();
+  }
+  return stops;
+}
+
+/**
+ * Apply the styles of the form block to the document.
+ */
+async function addFormStyles(): Promise<void> {
+  const style = document.createElement('style');
+  style.textContent = await readFile(join(import.meta.dirname, 'index.module.css'), 'utf8');
+  document.head.append(style);
+  onTestFinished(() => style.remove());
+  // Jsdom drops a stylesheet it can't parse, such as one with nested rules.
+  expect(style.sheet).not.toBeNull();
+}
+
+it('should let keyboard users reach the submit error to scroll it only while it is shown', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => null);
+  await addFormStyles();
+  const container = await mountForm(
+    { fields: [{ label: 'Name', name: 'name', type: 'string' }] },
+    { onSubmit: vi.fn().mockRejectedValue('The server is unavailable') },
+  );
+  const alert = within(container).getByRole('alert');
+
+  expect(alert.textContent).toBe('');
+  expect(getComputedStyle(alert).overflow).toBe('hidden');
+  expect(await tabStops()).not.toContain(alert);
+
+  await submitForm(container);
+
+  // The alert stays in place, so assistive technology announces the error appearing in it.
+  await waitFor(() => expect(alert.textContent).toBe('The server is unavailable'));
+  expect(await tabStops()).toContain(alert);
+});
+
+it('should let keyboard users reach a requirement error to scroll it only while it is shown', async () => {
+  const validateName = vi.fn().mockRejectedValueOnce(new Error('Taken')).mockResolvedValue({});
+  await addFormStyles();
+  const container = await mountForm(
+    {
+      fields: [{ label: 'Name', name: 'name', type: 'string' }],
+      requirements: [{ action: 'validateName', isValid: ['name'] }],
+    },
+    { validateName },
+  );
+  const name = getInputByLabel(container, 'Name');
+
+  await userEvent.type(name, 'A');
+  const status = await vi.waitFor(() =>
+    within(container).getByText(messages.formRequirementError).closest('[role="status"]')!,
+  );
+  expect(await tabStops()).toContain(status);
+
+  await userEvent.type(name, 'B');
+  await waitFor(() => expect(status.textContent).toBe(''));
+  expect(getComputedStyle(status).overflow).toBe('hidden');
+  expect(await tabStops()).not.toContain(status);
+});
+
 it('should set the autocomplete attribute of a password field, also while it is visible', async () => {
   const container = await mountForm({
     fields: [
@@ -983,3 +1056,54 @@ it('should announce a submission that takes long in an existing live region', as
     expect(statuses.map((status) => status.textContent)).toContain(messages.longSubmissionWarning),
   );
 });
+
+it.each([
+  {
+    when: 'yields a message',
+    submitErrorMessage: 'Login failed. Check your email address and password.',
+    shown: 'Login failed. Check your email address and password.',
+  },
+  { when: 'is not set', submitErrorMessage: undefined, shown: messages.submitError },
+  { when: 'yields nothing', submitErrorMessage: { prop: 'unknown' }, shown: messages.submitError },
+])(
+  'should show $shown in the alert when the submit action fails and submitErrorMessage $when',
+  async ({ shown, submitErrorMessage }) => {
+    const container = document.createElement('div');
+    const defaultParams = getDefaultBootstrapParams();
+    await mount({
+      ...defaultParams,
+      actions: {
+        onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+        onSubmit: vi.fn().mockRejectedValue(new Error('Invalid credentials')),
+      },
+      events: {
+        emit: { change: vi.fn() },
+        on: {
+          data: vi.fn(() => false),
+          fields: vi.fn(() => false),
+        },
+        off: { fields: vi.fn() },
+      },
+      shadowRoot: container,
+      parameters: {
+        fields: [{ label: 'Email', name: 'email', type: 'string' }],
+        skipInitialLoad: true,
+        submitErrorMessage,
+      },
+      utils: {
+        ...defaultParams.utils,
+        formatMessage: (message: keyof typeof messages) => messages[message],
+      },
+    } as unknown as BootstrapParams);
+
+    const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+    await waitFor(() => expect(submit).toHaveProperty('disabled', false));
+    submit.form?.requestSubmit();
+
+    await waitFor(() =>
+      expect(
+        Array.from(container.querySelectorAll('[role="alert"]'), (alert) => alert.textContent),
+      ).toContain(shown),
+    );
+  },
+);

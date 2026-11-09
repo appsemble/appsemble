@@ -5925,6 +5925,12 @@ By setting this to \`true\`, this won’t happen.",
         "description": "If this remapper yields true, the submit button will start disabled when the form is invalid instead of waiting until the user has pressed submit",
         "format": "remapper",
       },
+      "submitErrorMessage": {
+        "description": "The error message that is displayed at the top of the form when the submit action fails.
+
+The remapper receives the form values as input and the error as the \`error\` context. Without this, the form shows the error returned by the action or a generic message. If the remapper yields nothing, the form shows the generic message.",
+        "format": "remapper",
+      },
       "title": {
         "description": "Specify a form title",
         "format": "remapper",
@@ -8135,6 +8141,12 @@ This does not trigger if the field has a different action specified.",
     },
     "loading": {
       "description": "The accessible label of the loader shown while data loads.",
+    },
+    "moreOptions": {
+      "description": "The accessible name of a dropdown that has neither a label nor a column label.",
+    },
+    "selectRow": {
+      "description": "The accessible name of a checkbox in a column without a label.",
     },
     "submitChecked": {
       "description": "The text on the button that is used to submit the checked data.",

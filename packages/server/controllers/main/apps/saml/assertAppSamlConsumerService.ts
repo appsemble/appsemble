@@ -1,4 +1,4 @@
-import { assertKoaCondition, logger } from '@appsemble/node-utils';
+import { assertKoaCondition, getSSRFProtectedAgents, logger } from '@appsemble/node-utils';
 import { type SAMLStatus } from '@appsemble/types';
 import { wrapPem } from '@appsemble/utils';
 import { DOMParser, type Element as XmlElement, type Node as XmlNode } from '@xmldom/xmldom';
@@ -103,7 +103,10 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   let idpCertificate: string;
   if (appSamlSecret.entityId) {
     try {
-      const { data } = await axios.get<string>(appSamlSecret.entityId);
+      const { data } = await axios.get<string>(
+        appSamlSecret.entityId,
+        await getSSRFProtectedAgents({ hostname: new URL(appSamlSecret.entityId).hostname }),
+      );
       const metadata = parser.parseFromString(data, 'application/xml');
       const cert = x('X509Certificate', NS.ds, metadata)?.textContent;
       if (cert) {

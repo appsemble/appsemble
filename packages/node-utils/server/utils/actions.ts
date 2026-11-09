@@ -20,7 +20,6 @@ import {
   setLastRequestAnnotation,
   throwKoaError,
   version,
-  waitForPodReadiness,
 } from '@appsemble/node-utils';
 import { type App } from '@appsemble/types';
 import { deserializeResource } from '@appsemble/utils';
@@ -184,8 +183,8 @@ async function handleRequestProxy(
   axiosConfig.decompress = false;
 
   let response;
-  const containerUrlPattern = /^http:\/\/(([\da-z-]+).){2}svc.cluster.local/;
-  let isValidCompanionContainer = false;
+  const containerHostnamePattern = /^(?:[\da-z-]+\.){2}svc\.cluster\.local$/;
+  let companionDeployment: string | undefined;
 
   // Block known Kubernetes internal hostnames that don't match the container pattern
   const kubernetesInternalHostnames = [
@@ -200,17 +199,20 @@ async function handleRequestProxy(
   }
 
   // Restricting access to only the containers defined by the app
-  if (containerUrlPattern.test(String(proxyUrl))) {
-    axiosConfig.url = axiosConfig.url?.replace(
-      axiosConfig.url.split('.')[1],
-      getContainerNamespace(),
-    );
-
-    const { appId } = parseServiceUrl(String(proxyUrl));
+  if (proxyUrl.protocol === 'http:' && containerHostnamePattern.test(proxyUrl.hostname)) {
+    const { appId, deploymentName } = parseServiceUrl(proxyUrl.hostname);
     if (appId !== String(app.id)) {
       throwKoaError(ctx, 403, 'Forbidden');
     }
-    isValidCompanionContainer = true;
+    proxyUrl.hostname = `${deploymentName}.${getContainerNamespace()}.svc.cluster.local`;
+    axiosConfig.url = String(proxyUrl);
+    // Companion requests bypass the SSRF agents, so redirects must stay on the companion host
+    axiosConfig.beforeRedirect = ({ hostname }) => {
+      if (hostname !== proxyUrl.hostname) {
+        throw new Error(`Redirect to ${hostname} is not allowed`);
+      }
+    };
+    companionDeployment = deploymentName;
   } else {
     // Apply SSRF protection for non-companion-container URLs
     // This blocks requests to private IPs, localhost, link-local addresses,
@@ -240,23 +242,34 @@ async function handleRequestProxy(
 
     // If request is sent to a companion container and fails
     // Try to start it anew and retry the request
-    if (isValidCompanionContainer) {
-      const { deploymentName, namespace } = parseServiceUrl(String(proxyUrl));
+    if (companionDeployment) {
       try {
-        await scaleDeployment(namespace, deploymentName, 1);
-        await waitForPodReadiness(
-          namespace,
-          deploymentName,
-          Number.isNaN(Number(process.env.POD_READINESS_TIMEOUT))
-            ? undefined
-            : Number(process.env.POD_READINESS_TIMEOUT),
-        );
+        await scaleDeployment(getContainerNamespace(), companionDeployment, 1);
 
-        response = await axios(axiosConfig);
+        // Until the container listens and its service routes to it, connecting fails. Nothing
+        // reached the container then, so the request is safe to send again.
+        const deadline = Date.now() + (Number(process.env.POD_READINESS_TIMEOUT) || 30_000);
+        for (;;) {
+          try {
+            response = await axios(axiosConfig);
+            break;
+          } catch (error: unknown) {
+            if (
+              !(
+                axios.isAxiosError(error) &&
+                (error.cause as NodeJS.ErrnoException | undefined)?.syscall === 'connect'
+              ) ||
+              Date.now() > deadline
+            ) {
+              throw error;
+            }
+            await new Promise((resolve) => {
+              setTimeout(resolve, 500);
+            });
+          }
+        }
       } catch {
         throwKoaError(ctx, 502, 'Bad Gateway');
-      } finally {
-        await setLastRequestAnnotation(namespace, deploymentName);
       }
     } else {
       logger.error(err);
@@ -264,6 +277,10 @@ async function handleRequestProxy(
       logger.verbose(response);
 
       throwKoaError(ctx, 502, 'Bad Gateway');
+    }
+  } finally {
+    if (companionDeployment) {
+      await setLastRequestAnnotation(getContainerNamespace(), companionDeployment);
     }
   }
 

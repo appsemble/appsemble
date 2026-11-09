@@ -1,7 +1,12 @@
 import { randomBytes } from 'node:crypto';
 
 import { remap, type Remapper } from '@appsemble/lang-sdk';
-import { AppsembleError, basicAuth, throwKoaError } from '@appsemble/node-utils';
+import {
+  AppsembleError,
+  basicAuth,
+  getSSRFProtectedAgents,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import { type TokenResponse, type UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import { addMinutes } from 'date-fns';
@@ -106,6 +111,7 @@ export async function getAccessToken(
         // Some providers only support basic auth,
         authorization: basicAuth(clientId, clientSecret),
       },
+      ...(await getSSRFProtectedAgents({ hostname: new URL(tokenUrl).hostname })),
     },
   );
   return data;
@@ -185,15 +191,19 @@ export async function getUserInfo(
   }
 
   if ((shouldTryNext() || !groups) && userInfoUrl) {
-    const requestConfig = {
-      headers: { authorization: `Bearer ${accessToken}` },
-    };
-    const { data } = await axios.get<UserInfo>(userInfoUrl, requestConfig);
+    const headers = { authorization: `Bearer ${accessToken}` };
+    const { data } = await axios.get<UserInfo>(userInfoUrl, {
+      headers,
+      ...(await getSSRFProtectedAgents({ hostname: new URL(userInfoUrl).hostname })),
+    });
     const actualData: UserInfo = remapper
       ? (remap(remapper, data, null as never) as UserInfo)
       : (data as UserInfo);
     if (!actualData.email && userEmailsUrl) {
-      const { data: emailsData } = await axios.get(userEmailsUrl, requestConfig);
+      const { data: emailsData } = await axios.get(userEmailsUrl, {
+        headers,
+        ...(await getSSRFProtectedAgents({ hostname: new URL(userEmailsUrl).hostname })),
+      });
       if (emailsData.length > 0) {
         actualData.email = emailsData[0].email;
       }

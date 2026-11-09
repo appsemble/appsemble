@@ -161,7 +161,10 @@ export function ServiceWorkerRegistrationProvider({
   const checkForUpdates = useCallback(async () => {
     try {
       const registration = await serviceWorkerRegistrationPromise;
-      if (!registration) {
+      if (
+        !registration ||
+        !(registration.installing || registration.waiting || registration.active)
+      ) {
         return;
       }
 
@@ -174,7 +177,10 @@ export function ServiceWorkerRegistrationProvider({
   const update = useCallback(async () => {
     try {
       const registration = await serviceWorkerRegistrationPromise;
-      if (!registration) {
+      if (
+        !registration ||
+        !(registration.installing || registration.waiting || registration.active)
+      ) {
         return;
       }
 

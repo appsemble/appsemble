@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils';
+import { getSSRFProtectedAgents, logger } from '@appsemble/node-utils';
 import webpush from 'web-push';
 
 import { argv } from './argv.js';
@@ -23,6 +23,7 @@ export async function sendNotification(
     const { auth, endpoint, p256dh } = subscription;
     const { host, protocol } = new URL(argv.host);
     const icon = `${protocol}//${app.path}.${app.OrganizationId}.${host}/icon-96.png`;
+    const { httpsAgent } = await getSSRFProtectedAgents({ hostname: new URL(endpoint).hostname });
 
     await webpush.sendNotification(
       {
@@ -36,6 +37,7 @@ export async function sendNotification(
         ...options,
       }),
       {
+        agent: httpsAgent,
         vapidDetails: {
           // TODO: Make this configurable
           // Important to be in the correct format for apple notifications

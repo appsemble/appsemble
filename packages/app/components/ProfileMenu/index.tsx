@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { usePWAInstall } from 'react-use-pwa-install';
 
 import { checkPagePermissions } from '../../utils/authorization.js';
+import { getNotificationStrategy } from '../../utils/notifications.js';
 import { demoMode, displayAppMemberName, sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -88,7 +89,7 @@ export function ProfileMenuItems({ onDemoLogin, onNavigate }: ProfileMenuItemsPr
   const { getAppMessage } = useAppMessages();
   const { appMemberRoles, appMemberSelectedGroup, logout } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
-  const { update } = useServiceWorkerRegistration();
+  const { subscription, update } = useServiceWorkerRegistration();
   const install = usePWAInstall();
 
   const onClickPageName = useCallback(
@@ -110,7 +111,10 @@ export function ProfileMenuItems({ onDemoLogin, onNavigate }: ProfileMenuItemsPr
   );
   const showSettings =
     (layout?.settings ?? 'navbar') === 'navbar' &&
-    (enabledSettings?.length || definition.notifications === 'opt-in');
+    (enabledSettings?.length ||
+      (definition.notifications != null &&
+        (subscription ||
+          getNotificationStrategy(definition.notifications, appMemberRoles) === 'opt-in')));
   const showFeedback = (layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn;
   const showInstall = (layout?.install ?? 'navbar') === 'navbar' && install;
   const showDebug = (layout?.debug ?? 'hidden') === 'navbar';

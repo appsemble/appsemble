@@ -94,7 +94,7 @@ services:
 
   # A persistent Valkey instance for local development.
   valkey-dev:
-    image: valkey/valkey:9.1.2
+    image: valkey/valkey:9.1.3
     restart: always
     command: valkey-server --requirepass password
     ports:
@@ -102,7 +102,7 @@ services:
 
   # A Valkey instance for faster test runs.
   valkey-test:
-    image: valkey/valkey:9.1.2
+    image: valkey/valkey:9.1.3
     restart: always
     command: valkey-server --requirepass password
     ports:
@@ -110,7 +110,7 @@ services:
 
   # Mailpit instance for testing email delivery
   mailpit:
-    image: axllent/mailpit:v1.31.6
+    image: axllent/mailpit:v1.33.0
     restart: always
     volumes:
       - ./mailpit-data:/data

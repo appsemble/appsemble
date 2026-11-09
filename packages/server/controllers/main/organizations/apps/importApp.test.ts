@@ -1,6 +1,8 @@
+import { createHash } from 'node:crypto';
+
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { getAppAssetLocation, getS3FileBuffer, readFixture } from '@appsemble/node-utils';
-import { PredefinedOrganizationRole } from '@appsemble/types';
+import { type App as AppType, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import JSZip from 'jszip';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -511,6 +513,36 @@ describe('importApp', () => {
     );
     // The faker time is needed for the rest of the tests to pass after using useRealTimers.
     vi.useFakeTimers();
+  });
+
+  it('should store the hash of imported assets', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+    } as AppDefinition;
+    const asset = await readFixture('10x50.png');
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    zip.file('icon.png', await readFixture('nodejs-logo.png'));
+    zip.file('assets/10x50.png', asset);
+    vi.useRealTimers();
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Maintainer },
+      { where: { UserId: user.id } },
+    );
+    authorizeStudio();
+
+    const { data } = await request.post<AppType>(
+      `/api/organizations/${organization.id}/apps/import`,
+      zip.generateNodeStream(),
+      { headers: { 'Content-Type': 'application/zip' } },
+    );
+
+    const { Asset } = await getAppDB(data.id!);
+    expect((await Asset.findAll()).map(({ sha256 }) => sha256)).toStrictEqual([
+      createHash('sha256').update(asset).digest('hex'),
+    ]);
   });
 
   it('should report resource unique conflicts on app import when imported resources contain duplicates', async () => {

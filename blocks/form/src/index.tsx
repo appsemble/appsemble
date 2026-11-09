@@ -60,6 +60,7 @@ bootstrap(
       previous,
       requirements,
       skipInitialLoad = false,
+      submitErrorMessage,
       title,
     },
     path,
@@ -314,6 +315,14 @@ bootstrap(
           // eslint-disable-next-line no-console
           console.error(submitActionError);
 
+          if (submitErrorMessage) {
+            setSubmitErrorResult(
+              (utils.remap(submitErrorMessage, values, { error: submitActionError }) as string) ||
+                utils.formatMessage('submitError'),
+            );
+            return;
+          }
+
           let error = '';
           if (typeof submitActionError === 'string') {
             error = submitActionError;
@@ -400,6 +409,7 @@ bootstrap(
       data,
       values,
       thumbnails,
+      submitErrorMessage,
       utils,
     ]);
 
@@ -630,6 +640,7 @@ bootstrap(
           className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}
           color="danger"
           role="status"
+          tabIndex={formErrors.some(Boolean) ? 0 : undefined}
         >
           {/* Render the first form error */}
           <span>{formErrors.find(Boolean)}</span>
@@ -638,6 +649,7 @@ bootstrap(
           className={classNames(styles.error, { [styles.hidden]: submitErrorResult == null })}
           color="danger"
           role="alert"
+          tabIndex={submitErrorResult == null ? undefined : 0}
         >
           <span>{submitErrorResult}</span>
         </Message>

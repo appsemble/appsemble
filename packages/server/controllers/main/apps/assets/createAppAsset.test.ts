@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import * as nodeUtils from '@appsemble/node-utils';
 import {
   createFixtureStream,
@@ -100,6 +102,7 @@ describe('createAppAsset', () => {
       mime: 'application/octet-stream',
       name: 'test-asset',
       AppMemberId: null,
+      sha256: createHash('sha256').update(data).digest('hex'),
     });
   });
 
@@ -326,6 +329,7 @@ describe('createAppAsset', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: true,
+        sha256: createHash('sha256').update('Test asset').digest('hex'),
       }),
     );
   });
@@ -375,6 +379,7 @@ describe('createAppAsset', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: true,
+        sha256: createHash('sha256').update('Test asset').digest('hex'),
       }),
     );
 
@@ -399,6 +404,7 @@ describe('createAppAsset', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: false,
+        sha256: createHash('sha256').update('Test asset').digest('hex'),
       }),
     );
   });
