@@ -3243,10 +3243,8 @@ describe('app', () => {
 
   describe('writeAppMessages', () => {
     it('should extract messages from app-definition and write to file in i18n directory', async () => {
-      const initialMessages = JSON.parse(
-        String(await readFixture('apps/test-messages/i18n/nl.json')),
-      );
-      expect(initialMessages).toMatchObject({
+      const initialMessages = await readFixture('apps/test-messages/i18n/nl.json');
+      expect(JSON.parse(String(initialMessages))).toMatchObject({
         app: {},
       });
       await writeAppMessages(resolveFixture('apps/test-messages'), ['nl'], [], 'json');
@@ -3258,17 +3256,12 @@ describe('app', () => {
           'pages.test-page': '',
         },
       });
-      await writeFile(
-        resolveFixture('apps/test-messages/i18n/nl.json'),
-        JSON.stringify(initialMessages, null, '\t'),
-      );
+      await writeFile(resolveFixture('apps/test-messages/i18n/nl.json'), initialMessages);
     });
 
     it('should not delete the email messages', async () => {
-      const initialMessages = JSON.parse(
-        String(await readFixture('apps/test-messages/i18n/en.json')),
-      );
-      expect(initialMessages).toMatchObject({
+      const initialMessages = await readFixture('apps/test-messages/i18n/en.json');
+      expect(JSON.parse(String(initialMessages))).toMatchObject({
         app: {
           'emails.appInvite.body': 'test invite body',
           description: '',
@@ -3286,10 +3279,7 @@ describe('app', () => {
           'pages.test-page': 'Test Page',
         },
       });
-      await writeFile(
-        resolveFixture('apps/test-messages/i18n/en.json'),
-        JSON.stringify(initialMessages, null, '\t'),
-      );
+      await writeFile(resolveFixture('apps/test-messages/i18n/en.json'), initialMessages);
     });
 
     it('should throw if the language file does not exist', async () => {
@@ -3311,9 +3301,7 @@ describe('app', () => {
     });
 
     it('should not require route segments in a verified file', async () => {
-      const initialMessages = JSON.parse(
-        String(await readFixture('apps/test-messages/i18n/nl.json')),
-      );
+      const initialMessages = await readFixture('apps/test-messages/i18n/nl.json');
       await writeFile(
         resolveFixture('apps/test-messages/i18n/nl.json'),
         JSON.stringify({
@@ -3330,10 +3318,7 @@ describe('app', () => {
         const messages = JSON.parse(String(await readFixture('apps/test-messages/i18n/nl.json')));
         expect(messages).toMatchObject({ app: { 'routes.Login': '' } });
       } finally {
-        await writeFile(
-          resolveFixture('apps/test-messages/i18n/nl.json'),
-          JSON.stringify(initialMessages, null, '\t'),
-        );
+        await writeFile(resolveFixture('apps/test-messages/i18n/nl.json'), initialMessages);
       }
     });
 
