@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.40.5",
+  "version": "0.40.10",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -40,10 +40,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.40.5",
-    "@appsemble/node-utils": "0.40.5",
-    "@appsemble/types": "0.40.5",
-    "@appsemble/utils": "0.40.5",
+    "@appsemble/lang-sdk": "0.40.10",
+    "@appsemble/node-utils": "0.40.10",
+    "@appsemble/types": "0.40.10",
+    "@appsemble/utils": "0.40.10",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@koa/cors": "^5.0.0",
     "@odata/parser": "^0.2.0",
@@ -146,8 +146,8 @@
     "memfs": "4.80.0",
     "strip-indent": "4.1.1",
     "validate-vat": "0.9.0",
-    "vitest": "4.1.11",
-    "xpath": "0.0.35"
+    "vitest": "4.1.12",
+    "xpath": "0.0.36"
   },
   "peerDependencies": {
     "webpack": "^5"

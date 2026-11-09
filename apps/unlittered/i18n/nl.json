@@ -5,7 +5,16 @@
     "pages.litter-details": "Details over zwerfafval",
     "pages.litter-list": "Lijst met afval",
     "pages.litter-overview": "Overzicht van Litter",
-    "pages.report-litter": "Meld zwerfafval"
+    "pages.report-litter": "Meld zwerfafval",
+    "routes.App-Invite": "App-uitnodiging",
+    "routes.Edit-Password": "Wachtwoord-wijzigen",
+    "routes.Feedback": "Feedback",
+    "routes.Group-Invite": "Groepsuitnodiging",
+    "routes.Login": "Inloggen",
+    "routes.Register": "Registreren",
+    "routes.Reset-Password": "Wachtwoord-herstellen",
+    "routes.Settings": "Instellingen",
+    "routes.Verify": "Verifieren"
   },
   "messageIds": {
     "date": "Datum",
@@ -13,6 +22,7 @@
     "notes": "Opmerkingen",
     "notesExample": "Voorbeeld: Er staat een fiets in de struiken",
     "photos": "Foto's",
-    "process": "Proces"
+    "process": "Proces",
+    "reportLitter": "Meld zwerfafval"
   }
 }

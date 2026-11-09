@@ -15,7 +15,7 @@ export function createVitestConfig({ url }, { css = false } = {}) {
     readFileSync(new URL('tsconfig.json', url)),
   );
 
-  const setupFilesAfterEnv = [];
+  const setupFilesAfterEnv = [fileURLToPath(new URL('jsdom.setup.ts', import.meta.url))];
   const isGitLabCi = process.env.GITLAB_CI === 'true';
   const maxWorkers = process.env.VITEST_MAX_WORKERS ?? (isGitLabCi ? '90%' : '50%');
 

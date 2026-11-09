@@ -122,6 +122,8 @@ export function HeaderComponent({
           >
             {headerHTML}
           </a>
+        ) : actions.onClick.type === 'noop' ? (
+          headerHTML
         ) : actions.onClick.type === 'link' ? (
           <a className={`${styles.item} has-text-left is-block`} href={itemHref}>
             {headerHTML}

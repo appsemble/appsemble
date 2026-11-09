@@ -3,8 +3,10 @@ import {
   getAppAssetLocation,
   getRemapperContext,
   getS3FileBuffer,
+  getSSRFProtectedAgents,
   throwKoaError,
 } from '@appsemble/node-utils';
+import axios from 'axios';
 import { extension } from 'mime-types';
 import { type SendMailOptions } from 'nodemailer';
 import { Op } from 'sequelize';
@@ -88,14 +90,23 @@ export async function email({
 
   const attachments: SendMailOptions['attachments'] = [];
   const assetSelectors: TargetAttachment[] = [];
+  // Downloaded attachments are buffered in memory, so their combined size is capped.
+  let remainingDownloadSize = 25 * 1024 * 1024;
   for (const remapped of [remap(action.attachments ?? null, data, remapperContext)].flat()) {
     const attachment = typeof remapped === 'string' ? { target: String(remapped) } : remapped;
     if (isTargetAttachment(attachment)) {
       if (attachment.target.startsWith('http')) {
+        const url = new URL(attachment.target);
+        const { data: content } = await axios.get<Buffer>(attachment.target, {
+          ...(attachment.accept && { headers: { accept: attachment.accept } }),
+          maxContentLength: remainingDownloadSize,
+          responseType: 'arraybuffer',
+          ...(await getSSRFProtectedAgents({ hostname: url.hostname })),
+        });
+        remainingDownloadSize -= content.length;
         attachments.push({
-          path: attachment.target,
-          ...(attachment.filename && { filename: attachment.filename }),
-          ...(attachment.accept && { httpHeaders: { accept: attachment.accept } }),
+          content,
+          filename: attachment.filename || url.pathname.split('/').pop(),
         });
       } else {
         assetSelectors.push(attachment);

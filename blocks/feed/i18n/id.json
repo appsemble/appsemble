@@ -1,5 +1,7 @@
 {
   "anonymousLabel": "Anonim",
+  "avatar": "",
+  "buttonLabel": "",
   "closeImage": "",
   "downloadImage": "",
   "emptyLabel": "Tidak ada data yang ditampilkan",
@@ -8,5 +10,9 @@
   "moreOptions": "",
   "permissionDeniedLabel": "Hubungi administrator Anda untuk meningkatkan peran Anda jika Anda mengharapkan melihat data di sini",
   "replyErrorMessage": "Terjadi kesalahan saat mencoba mengirim pesan ini.",
-  "replyLabel": "Tinggalkan pesan…"
+  "replyLabel": "Tinggalkan pesan…",
+  "sendReply": "",
+  "statusInProgress": "",
+  "statusOpen": "",
+  "statusResolved": ""
 }

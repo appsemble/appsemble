@@ -2,9 +2,11 @@ import classNames from 'classnames';
 import {
   type ComponentPropsWithoutRef,
   type ElementType,
-  type KeyboardEvent,
   type MouseEvent,
   type ReactNode,
+  type SyntheticEvent,
+  useCallback,
+  useRef,
 } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -48,7 +50,7 @@ interface ModalProps<T extends ElementType> {
   /**
    * A function that will be called when the user closes the modal.
    */
-  readonly onClose?: (event: KeyboardEvent | MouseEvent) => void;
+  readonly onClose?: (event: SyntheticEvent) => void;
 
   /**
    * The title that is displayed at the top of the modal.
@@ -92,7 +94,17 @@ export function Modal<T extends ElementType = 'div'>({
   });
 
   const { formatMessage } = useIntl();
-  const { onKeyDown, ref } = useModalDialog({ closable, isActive, onClose });
+  const dialogProps = useModalDialog({ closable, isActive, onClose });
+  const backgroundRef = useRef<HTMLDivElement>(null);
+
+  const onClick = useCallback(
+    (event: MouseEvent) => {
+      if (closable && event.target === backgroundRef.current) {
+        onClose?.(event);
+      }
+    },
+    [closable, onClose],
+  );
 
   if (!openClass) {
     return null;
@@ -100,21 +112,22 @@ export function Modal<T extends ElementType = 'div'>({
 
   return (
     <ModalDialogContext.Provider value>
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/prefer-tag-over-role */}
-      <div
-        aria-modal="true"
-        className={`is-active modal ${styles.root} ${extraClassName} ${openClass}`}
-        onKeyDown={onKeyDown}
-        ref={ref}
-        role="dialog"
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+      <dialog
+        className={classNames(
+          `is-active modal ${styles.root} ${openClass}`,
+          dialogProps.className,
+          extraClassName,
+        )}
+        onCancel={dialogProps.onCancel}
+        onClick={onClick}
+        onClose={dialogProps.onClose}
+        onKeyDown={dialogProps.onKeyDown}
+        open
+        ref={dialogProps.ref}
         tabIndex={-1}
       >
-        {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-        <div
-          className="modal-background"
-          onClick={closable ? onClose : undefined}
-          role="presentation"
-        />
+        <div className="modal-background" ref={backgroundRef} />
         {/* @ts-expect-error This construct should work */}
         <Component className={classNames('modal-content', className)} {...props}>
           {children}
@@ -127,7 +140,7 @@ export function Modal<T extends ElementType = 'div'>({
             type="button"
           />
         ) : null}
-      </div>
+      </dialog>
     </ModalDialogContext.Provider>
   );
 }

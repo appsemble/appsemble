@@ -1,4 +1,5 @@
 import {
+  BreachedPasswordSimpleFormError,
   Button,
   FileUpload,
   FormButtons,
@@ -173,6 +174,7 @@ export function ProfileSettings(): ReactNode {
         ) : null}
         {enabledSettings.includes('picture') ? (
           <SimpleFormField
+            clickButtonAriaLabel={formatMessage(messages.camera)}
             clickButtonLabel={<Icon icon="camera" size="large" />}
             // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             component={WebcamImageUpload}
@@ -216,6 +218,9 @@ export function ProfileSettings(): ReactNode {
                 defaultValues={{ currentPassword: '', newPassword: '' }}
                 onSubmit={onChangePassword}
               >
+                <BreachedPasswordSimpleFormError>
+                  {() => <FormattedMessage {...messages.submitError} />}
+                </BreachedPasswordSimpleFormError>
                 <SimpleFormField
                   component={PasswordField}
                   label={<FormattedMessage {...messages.oldPassword} />}

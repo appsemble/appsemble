@@ -13,16 +13,17 @@
 
 .error {
   max-height: 192px;
-  overflow: scroll;
+  overflow-y: auto;
   position: sticky;
   top: 64px;
   transition: 150ms;
   z-index: 1;
+}
 
-  &.hidden {
-    margin-bottom: 0;
-    max-height: 0;
-  }
+.error.hidden {
+  margin-bottom: 0;
+  max-height: 0;
+  overflow: hidden;
 }
 
 .dense :global(.help) {

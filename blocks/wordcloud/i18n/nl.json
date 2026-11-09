@@ -2,5 +2,7 @@
   "empty": "Er zijn geen gegevens om weer te geven",
   "error": "Er is een probleem opgetreden bij het laden van de gegevens.",
   "loading": "Bezig met laden…",
-  "unsupported": "Uw browser ondersteunt het wordcloud-blok niet!"
+  "unsupported": "Uw browser ondersteunt het wordcloud-blok niet!",
+  "wordFrequency": "{word}: {count} keer",
+  "wordcloud": "Woordwolk"
 }

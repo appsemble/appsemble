@@ -1,5 +1,6 @@
 import {
   assertKoaCondition,
+  assetValidators,
   getAppAssetLocation,
   getS3File,
   getS3FileStats,
@@ -48,9 +49,15 @@ export async function getOriginalAppAsset(ctx: Context): Promise<void> {
   const { bucket, key } = getAppAssetLocation(appId, asset.id);
   const filename = getAssetFilename(asset.id, asset.filename, asset.mime);
   const stats = await getS3FileStats(bucket, key);
-  const stream = await getS3File(bucket, key);
 
-  setAssetHeaders(ctx, asset.mime ?? 'application/octet-stream', filename, stats);
+  setAssetHeaders(ctx, {
+    mime: asset.mime ?? 'application/octet-stream',
+    filename,
+    // Both the asset id and the asset name resolve here. Only the id keeps addressing these bytes
+    // after the name is pointed at a different asset.
+    immutable: assetId === asset.id,
+    ...assetValidators(stats),
+  });
 
   if (asset.mime?.toLowerCase().split(';', 1)[0].trim() === 'image/svg+xml') {
     // An inline SVG renders as a document on this origin; sandbox it and block all resource loading
@@ -58,5 +65,11 @@ export async function getOriginalAppAsset(ctx: Context): Promise<void> {
     ctx.set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; sandbox");
   }
 
-  ctx.body = stream;
+  // Koa only reports a request as fresh for a 2xx or 304 status.
+  ctx.status = 200;
+  if (ctx.fresh) {
+    ctx.status = 304;
+    return;
+  }
+  ctx.body = await getS3File(bucket, key);
 }

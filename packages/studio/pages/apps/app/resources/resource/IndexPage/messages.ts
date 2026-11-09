@@ -137,8 +137,8 @@ export const messages = defineMessages({
     defaultMessage: 'Ephemeral',
   },
   resourceWarningTitle: {
-    id: 'studio.bEmJ9Y',
-    defaultMessage: 'Deletion Warning',
+    id: 'studio./YHD8C',
+    defaultMessage: 'Deletion warning',
   },
   resourceWarning: {
     id: 'studio.0D+2Vq',

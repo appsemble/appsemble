@@ -8,6 +8,15 @@
   padding: 1rem;
 }
 
+.legend {
+  float: left;
+  width: 100%;
+}
+
+.legend + * {
+  clear: both;
+}
+
 .fieldset-entries-wrapper-grid {
   display: grid;
   grid-column-gap: 1rem;

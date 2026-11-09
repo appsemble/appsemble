@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import { PredefinedAppRole } from '@appsemble/lang-sdk';
 import { createFormData, getAppAssetLocation, getS3FileBuffer } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole, type Resource as ResourceType } from '@appsemble/types';
@@ -585,6 +587,7 @@ describe('createAppResource', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: false,
+        sha256: createHash('sha256').update(assetContent).digest('hex'),
       }),
     ]);
     const { bucket, key } = getAppAssetLocation(app.id, assets[0].id);
@@ -1103,6 +1106,53 @@ describe('createAppResource', () => {
     );
     const foundResource = (await Resource.findByPk(response.data.id))!;
     expect(foundResource.dataValues.AuthorId).toBe(member.id);
+  });
+
+  it('should only notify app members whose role is or inherits a role listed in the notification hook', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        resources: {
+          ...app.definition.resources,
+          testResource: {
+            ...app.definition.resources!.testResource,
+            create: { hooks: { notification: { to: ['Reader'] } } },
+          },
+        },
+      },
+    });
+    const { AppMember, AppSubscription } = await getAppDB(app.id);
+    // Admin inherits Reader in the example app, Visitor does not.
+    for (const role of ['Reader', 'Admin', 'Visitor']) {
+      const member = await AppMember.create({
+        email: `${role}@example.com`,
+        role,
+        timezone: 'Europe/Amsterdam',
+      });
+      await AppSubscription.create({
+        endpoint: `https://push.example.com/${role}`,
+        p256dh: 'p256dh',
+        auth: 'auth',
+        AppMemberId: member.id,
+      });
+    }
+    const sendNotification = vi.fn();
+    webpush.sendNotification = sendNotification;
+
+    authorizeStudio();
+    await request.post(`/api/apps/${app.id}/resources/testResource`, { foo: 'bar' });
+
+    await vi.waitFor(() =>
+      expect(sendNotification).toHaveBeenCalledWith(
+        expect.objectContaining({ endpoint: 'https://push.example.com/Reader' }),
+        expect.any(String),
+        expect.any(Object),
+      ),
+    );
+    expect(sendNotification.mock.calls.map(([{ endpoint }]) => endpoint).toSorted()).toStrictEqual([
+      'https://push.example.com/Admin',
+      'https://push.example.com/Reader',
+    ]);
   });
 
   it('should create ephemeral resources in demo apps', async () => {

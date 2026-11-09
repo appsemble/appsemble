@@ -11,6 +11,7 @@ import {
   getAppAssetLocation,
   getSupportedLanguages,
   handleValidatorResult,
+  hashFile,
   replaceAssetFunctions,
   type TempFile,
   uploadS3File,
@@ -244,6 +245,7 @@ export async function importApp(ctx: Context): Promise<void> {
                 {
                   filename: name,
                   mime: lookup(name),
+                  sha256: await hashFile(tempPath),
                 },
                 { transaction: appTransaction },
               );

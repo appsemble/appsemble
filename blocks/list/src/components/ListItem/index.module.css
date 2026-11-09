@@ -3,13 +3,16 @@
   border: none;
   border-top-right-radius: 20px;
   color: inherit;
-  cursor: pointer;
   font-family: inherit;
   font-size: 100%;
   height: 100%;
   line-height: 1.15;
   position: relative;
   width: 100%;
+}
+
+.clickable {
+  cursor: pointer;
 }
 
 .contentWrapper {

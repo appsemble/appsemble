@@ -11,7 +11,7 @@ import {
 } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type Ref, type VNode } from 'preact';
-import { useCallback, useContext, useEffect, useId, useState } from 'preact/hooks';
+import { useCallback, useContext, useEffect, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { SelectionEntry } from './SelectionEntry/index.js';
@@ -58,7 +58,6 @@ export function SelectionInput({
   const maxItems = getMaxItems(field);
 
   const modal = useToggle();
-  const titleId = useId();
 
   useEffect(() => {
     if ('selection' in field) {
@@ -173,19 +172,21 @@ export function SelectionInput({
       {!readOnly && (!maxItems || selectedOptions.length < maxItems) ? (
         <FormButtons>
           <Button disabled={disabled} icon="plus" onClick={handleModalOpen}>
-            {utils.remap(field.addLabel ?? 'Add', selectedOptions) as string}
+            {
+              utils.remap(
+                field.addLabel ?? utils.formatMessage('addLabel'),
+                selectedOptions,
+              ) as string
+            }
           </Button>
         </FormButtons>
       ) : null}
       {errorAbove ? null : errorMessage}
-      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <ModalCard
-        aria-labelledby={titleId}
         closeButtonLabel={utils.formatMessage('selectionClose')}
         isActive={modal.enabled}
         onClose={modal.disable}
-        role="dialog"
-        title={<span id={titleId}>{utils.remap(field.label, selectedOptions) as string}</span>}
+        title={<span>{utils.remap(field.label, selectedOptions) as string}</span>}
       >
         {!disableSearch && <Input className="mb-2" onChange={handleSearch} />}
         {loading ? (

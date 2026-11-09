@@ -2,9 +2,9 @@
   "app": {
     "app.roles.User": "Korisnik",
     "app.roles.User.description": "Korisnik",
-    "description": "Pokazuje kako renderirati PDF dokumente pomoću pratećih spremnika i predložaka dokumenata.",
+    "description": "Demonstrira kako iscrtati PDF dokumente pomoću pratećih kontejnera i predložaka dokumenata.",
     "name": "PDF",
-    "pages.create-report": "Stvori izvješće"
+    "pages.create-report": "Stvori izvještaj"
   },
   "messageIds": {
     "author": "Autor",

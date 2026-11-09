@@ -131,6 +131,10 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   const description = utils.remap(parameters.description, content);
   const latitude = utils.remap(parameters.marker?.latitude, content);
   const longitude = utils.remap(parameters.marker?.longitude, content);
+  const titleLevel = parameters.titleLevel ?? 4;
+  const Title = `h${titleLevel}` as const;
+  const Subtitle = `h${Math.min(titleLevel + 1, 6) as 2 | 3 | 4 | 5 | 6}` as const;
+  const Author = `h${Math.min(titleLevel + 2, 6) as 3 | 4 | 5 | 6}` as const;
 
   if (parameters.pictureBase?.endsWith('/')) {
     parameters.pictureBase = parameters.pictureBase.slice(0, -1);
@@ -138,24 +142,29 @@ export function Card({ content, onUpdate }: CardProps): VNode {
 
   let color;
   let icon: IconName;
+  let status: string;
 
   // XXX: Standardize this based on app definition
   switch (content?.status) {
     case 'open':
       color = 'has-background-danger';
       icon = 'exclamation';
+      status = utils.formatMessage('statusOpen');
       break;
     case 'in-behandeling':
       color = 'has-background-warning';
       icon = 'cog';
+      status = utils.formatMessage('statusInProgress');
       break;
     case 'opgelost':
       color = 'has-background-success';
       icon = 'check';
+      status = utils.formatMessage('statusResolved');
       break;
     default:
       color = '';
       icon = 'user';
+      status = utils.formatMessage('avatar');
   }
 
   return (
@@ -165,12 +174,15 @@ export function Card({ content, onUpdate }: CardProps): VNode {
           <AvatarWrapper action={actions.onAvatarClick} onAvatarClick={onAvatarClick}>
             <figure className={`image is-48x48 ${color} ${styles.avatarIcon}`}>
               <Icon icon={icon} size="large" />
+              <span className="is-sr-only">{status}</span>
             </figure>
           </AvatarWrapper>
           <header className="media-content">
-            {isPreactChild(title) ? <h4 className="title is-4 is-marginless">{title}</h4> : null}
+            {isPreactChild(title) ? (
+              <Title className="title is-4 is-marginless">{title}</Title>
+            ) : null}
             {isPreactChild(subtitle) ? (
-              <h5 className="subtitle is-5 is-marginless">{subtitle}</h5>
+              <Subtitle className="subtitle is-5 is-marginless">{subtitle}</Subtitle>
             ) : null}
             {isPreactChild(heading) ? <p className="subtitle is-6">{heading}</p> : null}
           </header>
@@ -220,7 +232,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         {isPreactChild(description) ? <p className="content">{description}</p> : null}
         {actions.onButtonClick.type !== 'noop' && (
           <Button className={`${styles.button} mb-4`} onClick={onButtonClick}>
-            {parameters.buttonLabel ?? 'Click'}
+            {parameters.buttonLabel ?? utils.formatMessage('buttonLabel')}
           </Button>
         )}
         {actions.onLoadReply.type !== 'noop' && replies ? (
@@ -240,7 +252,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
 
                 return (
                   <div className="content" key={reply.id}>
-                    <h6 className="is-marginless">{author as string}</h6>
+                    <Author className="is-marginless">{author as string}</Author>
                     <p>{replyContent as string}</p>
                   </div>
                 );
@@ -248,12 +260,14 @@ export function Card({ content, onUpdate }: CardProps): VNode {
             </div>
             <form className="is-flex py-2 px-0" noValidate onSubmit={onSubmit}>
               <Input
+                aria-label={utils.formatMessage('replyLabel')}
                 onChange={onChange}
                 placeholder={utils.formatMessage('replyLabel')}
                 required
                 value={message}
               />
               <Button
+                aria-label={utils.formatMessage('sendReply')}
                 className={`${styles.replyButton} ml-1`}
                 disabled={!valid}
                 icon="paper-plane"

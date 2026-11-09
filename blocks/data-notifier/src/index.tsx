@@ -16,6 +16,7 @@ bootstrap(({ events, parameters: { color = 'dark', id = 'id' }, utils }) => {
 
   const setPending = (newData: Data, msg: keyof Messages, count: number): void => {
     pendingData = newData;
+    messageBody.removeAttribute('inert');
     messageText.textContent = utils.formatMessage(msg, { count });
     messageBody.classList.remove(styles.hidden, 'py-0');
     message.classList.add('my-3');
@@ -23,6 +24,7 @@ bootstrap(({ events, parameters: { color = 'dark', id = 'id' }, utils }) => {
 
   const onClick = (): void => {
     messageBody.classList.add(styles.hidden, 'py-0');
+    messageBody.setAttribute('inert', '');
     message.classList.remove('my-3');
     oldData = pendingData;
     events.emit.data(pendingData);
@@ -71,14 +73,17 @@ bootstrap(({ events, parameters: { color = 'dark', id = 'id' }, utils }) => {
   });
 
   return (
+    // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
     <div
       className={`message mx-3 is-${color} ${styles.message}`}
       ref={(node) => {
         message = node;
       }}
+      role="status"
     >
       <div
         className={`message-body is-clipped is-flex py-0 ${styles.messageBody} ${styles.hidden}`}
+        inert
         ref={(node) => {
           messageBody = node;
         }}

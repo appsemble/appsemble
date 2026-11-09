@@ -3,6 +3,7 @@ export * from './download.js';
 export * from './fa.js';
 export * from './getOneSearchParam.js';
 export * from './icon.js';
+export * from './modalDialog.js';
 export * from './oauth2Login.js';
 export * from './randomString.js';
 export * from './sentry.js';
