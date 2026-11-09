@@ -3,6 +3,8 @@ Appsemble
 # Unrecognized words
 accessor/processor
 anonymize/synthesize
+autoconfig
+autodiscover
 benchmark/mark
 changelog/kitten
 cryptographical/potential
@@ -44,6 +46,7 @@ RABO
 sepa
 predesigned
 codebase
+Pagina
 
 # Technical slang and libraries
 .editorconfig
@@ -245,3 +248,4 @@ BITMIME
 pids
 urandom
 renderable
+networkidle

@@ -8,6 +8,7 @@ import { useCallback, useMemo, useState } from 'preact/hooks';
 import { type InputProps, type StringField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { getMaxLength, getMinLength, isRequired } from '../../utils/requirements.js';
+import { TimeInput } from '../TimeInput/index.js';
 
 type StringInputProps = InputProps<string, StringField>;
 
@@ -33,9 +34,11 @@ export function StringInput({
     setHidePassword((prevValue) => !prevValue);
   }, []);
   const {
+    autocomplete,
     datalistEnabled = false,
     format,
     help,
+    hourCycle,
     icon,
     inline,
     label,
@@ -62,10 +65,16 @@ export function StringInput({
   );
 
   const remappedLabel = utils.remap(label, value) ?? name;
+  const type = format === 'password' && !hidePassword ? 'text' : format;
   const commonProps = {
+    autocomplete,
     control:
       format === 'password' ? (
-        <IconButton icon={hidePassword ? 'eye-slash' : 'eye'} onClick={toggleHidePassword} />
+        <IconButton
+          aria-label={utils.formatMessage(hidePassword ? 'showPassword' : 'hidePassword')}
+          icon={hidePassword ? 'eye-slash' : 'eye'}
+          onClick={toggleHidePassword}
+        />
       ) : undefined,
     className: classNames('appsemble-string', className),
     disabled,
@@ -87,6 +96,14 @@ export function StringInput({
     errorLinkRef,
   };
 
+  if (format === 'time' && hourCycle !== undefined) {
+    const cycle = utils.remap(hourCycle, formValues);
+    if (cycle !== 'h12' && cycle !== 'h23') {
+      throw new TypeError('A time field hourCycle must resolve to h12 or h23');
+    }
+    return <TimeInput {...commonProps} hourCycle={cycle} value={value as string} />;
+  }
+
   return multiline ? (
     <TextAreaField {...commonProps} />
   ) : datalistEnabled && datalist.length > 0 ? (
@@ -97,14 +114,10 @@ export function StringInput({
         ))}
       </datalist>
       {/* @ts-expect-error strictNullChecks */}
-      <InputField {...commonProps} list={`${name}-datalist`} type={format} />
+      <InputField {...commonProps} list={`${name}-datalist`} type={type} />
     </>
   ) : (
     // @ts-expect-error strictNullChecks
-    <InputField
-      {...commonProps}
-      type={format === 'password' && !hidePassword ? 'text' : format}
-      value={value as string}
-    />
+    <InputField {...commonProps} type={type} value={value as string} />
   );
 }

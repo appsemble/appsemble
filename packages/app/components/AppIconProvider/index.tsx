@@ -1,7 +1,7 @@
 import { IconProvider } from '@appsemble/react-components';
 import { type ReactNode } from 'react';
 
-import { apiUrl, appId } from '../../utils/settings.js';
+import { apiUrl, appId, iconAssetIds } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 interface AppIconProviderProps {
@@ -17,7 +17,7 @@ export function AppIconProvider({ children }: AppIconProviderProps): ReactNode {
   const { definition } = useAppDefinition();
 
   return (
-    <IconProvider apiUrl={apiUrl} appId={appId} registry={definition.icons}>
+    <IconProvider apiUrl={apiUrl} appId={appId} assetIds={iconAssetIds} registry={definition.icons}>
       {children}
     </IconProvider>
   );

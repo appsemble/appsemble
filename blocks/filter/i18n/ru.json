@@ -1,5 +1,11 @@
 {
   "clearLabel": "Очистить",
+  "closeLabel": "",
+  "fromLabel": "",
   "modalTitle": "Фильтр",
-  "submitLabel": "Фильтр"
+  "openLabel": "",
+  "sliderMaximum": "",
+  "sliderMinimum": "",
+  "submitLabel": "Фильтр",
+  "toLabel": ""
 }

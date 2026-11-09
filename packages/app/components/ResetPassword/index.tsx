@@ -1,4 +1,4 @@
-import { ResetPassword as ResetPasswordForm, Title } from '@appsemble/react-components';
+import { ResetPassword as ResetPasswordForm } from '@appsemble/react-components';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -6,7 +6,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
-import { BuiltinPage, useBuiltinPageTitleArea } from '../BuiltinPage/index.js';
+import { BuiltinPage } from '../BuiltinPage/index.js';
 
 export function ResetPassword(): ReactNode {
   const [success, setSuccess] = useState(false);
@@ -15,20 +15,15 @@ export function ResetPassword(): ReactNode {
     setSuccess(true);
   }, []);
   const { lang } = useParams<{ lang: string }>();
-  const hasTitleArea = useBuiltinPageTitleArea();
 
   return (
     <BuiltinPage
       narrow
       page="reset-password"
+      showTitle
       state={success ? 'success' : 'form'}
       title={messages.title}
     >
-      {hasTitleArea ? null : (
-        <Title>
-          <FormattedMessage {...messages.title} />
-        </Title>
-      )}
       <ResetPasswordForm onSubmit={onSubmit} />
       {success ? (
         <div className="my-4 is-flex is-justify-content-center">

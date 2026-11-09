@@ -3,6 +3,7 @@
 exports[`should render the component 1`] = `
 <div>
   <button
+    aria-pressed="false"
     class="button"
     name="test name"
     type="button"

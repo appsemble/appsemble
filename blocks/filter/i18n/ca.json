@@ -1,5 +1,11 @@
 {
   "clearLabel": "",
+  "closeLabel": "",
+  "fromLabel": "",
   "modalTitle": "",
-  "submitLabel": ""
+  "openLabel": "",
+  "sliderMaximum": "",
+  "sliderMinimum": "",
+  "submitLabel": "",
+  "toLabel": ""
 }

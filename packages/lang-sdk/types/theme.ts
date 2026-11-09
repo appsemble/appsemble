@@ -70,4 +70,12 @@ export interface Theme {
    * block's shadow DOM, so tokens defined once are usable in core, shared, and block styles.
    */
   variables?: Record<string, string>;
+
+  /**
+   * A second font family the app loads, exposed as the `--font-family-display` custom property for
+   * the CSS of the app and its blocks.
+   *
+   * This falls back to the body font.
+   */
+  displayFont?: FontDefinition;
 }

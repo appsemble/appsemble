@@ -1,5 +1,11 @@
 {
   "clearLabel": "Duidelijk",
+  "closeLabel": "Sluit filter",
+  "fromLabel": "Van",
   "modalTitle": "Filter",
-  "submitLabel": "Filter"
+  "openLabel": "Filter openen",
+  "sliderMaximum": "Maximum",
+  "sliderMinimum": "Minimum",
+  "submitLabel": "Filter",
+  "toLabel": "Tot"
 }

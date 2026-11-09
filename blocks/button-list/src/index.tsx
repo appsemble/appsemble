@@ -18,6 +18,7 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
         light,
         onClick = 'onClick',
         outlined,
+        pressed,
         rounded,
         size = 'normal',
         title,
@@ -51,10 +52,17 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
             document.createTextNode('')
           );
         };
+        const updatePressed = (newData: unknown): void => {
+          if (pressed !== undefined) {
+            node.setAttribute('aria-pressed', String(Boolean(utils.remap(pressed, newData))));
+          }
+        };
+        updatePressed(data);
         let currentText = createNode(data);
         let currentData = data;
         node.append(currentText);
         events.on.data((newData) => {
+          updatePressed(newData);
           const newText = createNode(newData);
           const hidden = utils.remap(hide, newData);
           if (hidden) {

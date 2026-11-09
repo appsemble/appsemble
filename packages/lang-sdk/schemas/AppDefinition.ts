@@ -30,7 +30,27 @@ This will be displayed on the app store.
       description: 'Properties related to the layout of the app.',
     },
     notifications: {
-      enum: ['login', 'opt-in', 'startup'],
+      oneOf: [
+        { enum: ['login', 'opt-in', 'startup'] },
+        {
+          type: 'object',
+          required: ['roles'],
+          additionalProperties: false,
+          properties: {
+            default: {
+              enum: ['login', 'none', 'opt-in', 'startup'],
+              description: `The strategy for roles that aren’t listed in \`roles\`, and for users without
+a role. Defaults to \`none\`.`,
+            },
+            roles: {
+              type: 'object',
+              minProperties: 1,
+              description: 'The strategy per role.',
+              additionalProperties: { enum: ['login', 'none', 'opt-in'] },
+            },
+          },
+        },
+      ],
       description: `The strategy to use for apps to subscribe to push notifications.
 
 If specified, push notifications can be sent to subscribed users via the _Notifications_ tab in the
@@ -39,6 +59,10 @@ receiving push notifications by pressing the subscribe button in the App setting
 to \`startup\` will cause Appsemble to immediately request for the permission upon opening the app.
 If this is set to \`login\`, the app will request permissions for push notification once the user
 logs in.
+
+To use a different strategy per role, set \`roles\` to a map of role names to \`login\`, \`opt-in\`, or
+\`none\`. Roles that aren’t listed use \`default\`. A member with several roles gets the most eager
+strategy of those roles. Only roles assigned to the member count, not roles they inherit.
 
 > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
 `,

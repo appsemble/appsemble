@@ -40,6 +40,8 @@ spec:
                       key: stripe-api-secret-key
                 {{- end }}
 {{ include "appsemble.stripeWebhookSecret" . | indent 16 }}
+                - name: HOST
+                  value: {{ include "appsemble.host" . }}
                 {{- if hasPrefix "review-" (include "appsemble.fullname" .) }}
                 - name: SMTP_HOST
                   value: "{{ include "appsemble.fullname" . }}-mailpit-smtp"

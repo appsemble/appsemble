@@ -2,16 +2,16 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   modalTitle: {
-    id: 'studio.5WC1DB',
-    defaultMessage: 'Webhook Secret',
+    id: 'studio.UKaRLd',
+    defaultMessage: 'Webhook secret',
   },
   docs: {
     id: 'studio.9PjpLU',
     defaultMessage: 'Learn more in the <link>documentation</link>',
   },
   webhookNameLabel: {
-    id: 'studio.gxnmW0',
-    defaultMessage: 'Webhook Name',
+    id: 'studio.DTcSV4',
+    defaultMessage: 'Webhook name',
   },
   webhookNameHelp: {
     id: 'studio.j8zOYp',

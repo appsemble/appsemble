@@ -2,14 +2,19 @@ import classNames from 'classnames';
 import {
   type ComponentPropsWithoutRef,
   type ElementType,
-  type KeyboardEvent,
   type MouseEvent,
   type ReactNode,
+  type SyntheticEvent,
   useCallback,
+  useId,
+  useRef,
 } from 'react';
+import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { useAnimation } from '../index.js';
+import { ModalDialogContext, useModalDialog } from '../useModalDialog/index.js';
+import { messages } from '../useModalDialog/messages.js';
 
 interface ModalCardProps<T extends ElementType> {
   /**
@@ -18,12 +23,13 @@ interface ModalCardProps<T extends ElementType> {
   readonly children?: ReactNode;
 
   /**
-   * Whether the user is allowed to click on the close button or outside of the modal to close it.
+   * Whether the user is allowed to close the modal using the close button, by clicking outside of
+   * it, or by pressing escape.
    */
   readonly closable?: boolean;
 
   /**
-   * The aria label to apply on the close button.
+   * The aria label to apply on the close button. Defaults to a translated "Close".
    */
   readonly closeButtonLabel?: string;
 
@@ -40,7 +46,7 @@ interface ModalCardProps<T extends ElementType> {
   /**
    * A function that will be called when the user closes the modal.
    */
-  readonly onClose?: (event: KeyboardEvent | MouseEvent) => void;
+  readonly onClose?: (event: SyntheticEvent) => void;
 
   /**
    * The title that is displayed at the top of the modal.
@@ -91,13 +97,18 @@ export function ModalCard<T extends ElementType = 'div'>({
     closing: styles.closing,
   });
 
-  const onKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+  const { formatMessage } = useIntl();
+  const titleId = useId();
+  const dialogProps = useModalDialog({ closable, isActive, onClose });
+  const backgroundRef = useRef<HTMLDivElement>(null);
+
+  const onClick = useCallback(
+    (event: MouseEvent) => {
+      if (closable && event.target === backgroundRef.current) {
         onClose?.(event);
       }
     },
-    [onClose],
+    [closable, onClose],
   );
 
   if (!openClass) {
@@ -105,32 +116,49 @@ export function ModalCard<T extends ElementType = 'div'>({
   }
 
   return (
-    <div className={classNames(`is-active modal ${styles.root} ${openClass}`, wrapperClassName)}>
-      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-      <div
-        className="modal-background"
-        onClick={closable ? onClose : undefined}
-        onKeyDown={closable ? onKeyDown : undefined}
-        role="presentation"
-      />
-      {/* @ts-expect-error This should be fine */}
-      <Component className={classNames('modal-card', cardClassName)} {...props}>
-        <div className="modal-card-head">
-          <p className="modal-card-title">{title}</p>
-          {closable ? (
-            <button
-              aria-label={closeButtonLabel}
-              className="delete is-large"
-              onClick={onClose}
-              type="button"
-            />
+    <ModalDialogContext.Provider value>
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+      <dialog
+        aria-labelledby={title ? titleId : undefined}
+        className={classNames(
+          `is-active modal ${styles.root} ${openClass}`,
+          dialogProps.className,
+          wrapperClassName,
+        )}
+        onCancel={dialogProps.onCancel}
+        onClick={onClick}
+        onClose={dialogProps.onClose}
+        onKeyDown={dialogProps.onKeyDown}
+        open
+        ref={dialogProps.ref}
+        tabIndex={-1}
+      >
+        <div className="modal-background" ref={backgroundRef} />
+        {/* @ts-expect-error This should be fine */}
+        <Component className={classNames('modal-card', cardClassName)} {...props}>
+          {title || closable ? (
+            <div className="modal-card-head">
+              {title ? (
+                <h2 className="modal-card-title" id={titleId}>
+                  {title}
+                </h2>
+              ) : null}
+              {closable ? (
+                <button
+                  aria-label={closeButtonLabel ?? formatMessage(messages.close)}
+                  className="delete is-large ml-auto"
+                  onClick={onClose}
+                  type="button"
+                />
+              ) : null}
+            </div>
           ) : null}
-        </div>
-        <div className={classNames('modal-card-body', className)}>{children}</div>
-        <div className={classNames('modal-card-foot', 'p-0', styles.footer)}>
-          {footer || <div className={styles['footer-placeholder']} />}
-        </div>
-      </Component>
-    </div>
+          <div className={classNames('modal-card-body', styles.body, className)}>{children}</div>
+          <div className={classNames('modal-card-foot', 'p-0', styles.footer)}>
+            {footer || <div className={styles['footer-placeholder']} />}
+          </div>
+        </Component>
+      </dialog>
+    </ModalDialogContext.Provider>
   );
 }

@@ -1,8 +1,8 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.40.4/config/assets/logo.svg) Appsemble End 2 End Tests
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.40.10/config/assets/logo.svg) Appsemble End 2 End Tests
 
 > Run end 2 end tests on an Appsemble environment and provide Appsemble fixtures
 
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.40.4/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.40.4)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.40.10/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.40.10)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -95,6 +95,28 @@ export const test = base.extend<object>({
 });
 ```
 
+## Resource lifecycle tracking
+
+Resources created using `createTestResource` are tracked and automatically deleted at the end of the
+test by default.
+
+Set `trackBrowserResources` to `true` to also track resources created by browser `POST` requests:
+
+```ts
+test.use({ trackBrowserResources: true });
+```
+
+Set `autoCleanupResources` to `false` to preserve all tracked resources after the test. This can be
+useful when inspecting resources created by a failed test.
+
+```ts
+test.use({ autoCleanupResources: false });
+```
+
+> **Note:** Only resources created by browser `POST` requests and resources created using the
+> `createTestResource` are tracked. Resources created using other methods like webhooks do not get
+> tracked.
+
 ## Contributing
 
 When writing end-to-end tests, have a look at the
@@ -102,5 +124,5 @@ When writing end-to-end tests, have a look at the
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.40.4/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.40.10/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

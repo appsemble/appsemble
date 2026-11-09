@@ -309,7 +309,6 @@ export function DateTimeField({
     altFormat,
     altInput,
     confirmLabel,
-    disable,
     disableMobile,
     disabled,
     enableTime,

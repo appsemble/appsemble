@@ -10,6 +10,16 @@ declare module '@appsemble/sdk' {
 
   interface Messages {
     /**
+     * The accessible name of the select that chooses the barcode type.
+     */
+    barcodeType: never;
+
+    /**
+     * The accessible name of the select that chooses the patch size.
+     */
+    patchSize: never;
+
+    /**
      * This message is displayed if the data is empty.
      */
     empty: never;
@@ -25,6 +35,11 @@ declare module '@appsemble/sdk' {
     loading: never;
 
     /**
+     * This message is displayed while no image is selected.
+     */
+    noImage: never;
+
+    /**
      * The accessible name of the button that removes the selected image.
      */
     removeImage: never;
@@ -33,6 +48,11 @@ declare module '@appsemble/sdk' {
      * The accessible name of the control that selects an image to scan.
      */
     selectImage: never;
+
+    /**
+     * The alternative text of the selected image.
+     */
+    selectedImage: never;
 
     /**
      * The accessible name of the button that stops the camera scanner.

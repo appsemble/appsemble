@@ -30,6 +30,11 @@ interface DropdownProps {
   readonly label: ComponentChild;
 
   /**
+   * The accessible name of the menu toggle button, for a button that shows no label.
+   */
+  readonly ariaLabel?: string;
+
+  /**
    * The icon to display next to the label.
    */
   readonly icon?: IconReference;
@@ -46,6 +51,7 @@ interface DropdownProps {
  * Render an aria compliant Bulma dropdown menu.
  */
 export function Dropdown({
+  ariaLabel,
   asButton = true,
   children,
   className,
@@ -84,21 +90,29 @@ export function Dropdown({
     >
       <div className="dropdown-trigger">
         {asButton ? (
-          <Button aria-haspopup icon={icon} onClick={handleClick} onKeyDown={onKeyDown}>
+          <Button
+            aria-expanded={enabled}
+            aria-haspopup
+            aria-label={ariaLabel}
+            icon={icon}
+            onClick={handleClick}
+            onKeyDown={onKeyDown}
+          >
             {label}
           </Button>
         ) : (
-          // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
-          <div
+          <button
+            aria-expanded={enabled}
             aria-haspopup
+            className={styles.trigger}
             onClick={handleClick}
             onKeyDown={onKeyDown}
-            role="button"
-            tabIndex={-1}
+            type="button"
           >
             {/* @ts-expect-error strictNullChecks not assignable to type */}
             <Icon className={iconClassName} icon={icon} />
-          </div>
+            <span className="is-sr-only">{label}</span>
+          </button>
         )}
       </div>
       <div

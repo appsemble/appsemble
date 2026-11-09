@@ -1,11 +1,25 @@
 import { type ActionError } from '@appsemble/lang-sdk';
 import { bootstrap } from '@appsemble/preact';
-import { Button, Form, FormButtons, Message } from '@appsemble/preact-components';
+import {
+  Button,
+  Form,
+  FormButtons,
+  FormComponentHelpPositionContext,
+  Message,
+} from '@appsemble/preact-components';
 import { identity } from '@appsemble/utils';
 import classNames from 'classnames';
 import { recursive } from 'merge';
 import { type VNode } from 'preact';
-import { type MutableRef, useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import {
+  type MutableRef,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'preact/hooks';
 
 import { FormInput } from './components/FormInput/index.js';
 import styles from './index.module.css';
@@ -16,7 +30,7 @@ import { generateDefaultValues } from './utils/generateDefaultValues.js';
 import { isFormValid } from './utils/validity.js';
 
 const goToRef = (ref: MutableRef<any>): void => {
-  ref?.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  ref?.current?.scrollIntoView({ block: 'center' });
   ref?.current?.focus({ preventScroll: true });
 };
 
@@ -36,14 +50,17 @@ bootstrap(
       disabled,
       startDisabled = false,
       display = 'flex',
+      errorSummaryPosition = 'bottom',
       fields: initialFields,
       fullWidth = false,
+      helpPosition = 'below',
       hideErrorSummary = false,
       hideSubmitButton = false,
       longSubmissionDuration = 5000,
       previous,
       requirements,
       skipInitialLoad = false,
+      submitErrorMessage,
       title,
     },
     path,
@@ -149,6 +166,29 @@ bootstrap(
     );
     const errorLink = firstFieldErrorLink?.element;
 
+    const sortedFieldErrorLinks = Object.values(fieldErrorLinks)
+      .filter(
+        (fieldErrorLink): fieldErrorLink is NonNullable<typeof fieldErrorLink> =>
+          fieldErrorLink != null,
+      )
+      .sort(({ ref: { current: a } }, { ref: { current: b } }) => {
+        if (!a || !b) {
+          return Number(!a) - Number(!b);
+        }
+        return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+      });
+
+    const errorSummaryRef = useRef<HTMLElement>(null);
+    const errorSummaryTitleId = useId();
+    const [failedSubmitCount, setFailedSubmitCount] = useState(0);
+
+    useEffect(() => {
+      if (failedSubmitCount) {
+        errorSummaryRef.current?.scrollIntoView({ block: 'start' });
+        errorSummaryRef.current?.focus({ preventScroll: true });
+      }
+    }, [failedSubmitCount]);
+
     const lock = useRef<symbol>();
 
     const onChange = useCallback((name: string, value: Values) => {
@@ -244,6 +284,8 @@ bootstrap(
 
           if (firstFieldErrorLink && utils.remap(hideErrorSummary, values)) {
             goToRef(firstFieldErrorLink.ref);
+          } else if (errorSummaryPosition === 'top') {
+            setFailedSubmitCount((count) => count + 1);
           }
 
           if (!hasTriedToSubmit) {
@@ -272,6 +314,14 @@ bootstrap(
           // Log the error to the console for troubleshooting.
           // eslint-disable-next-line no-console
           console.error(submitActionError);
+
+          if (submitErrorMessage) {
+            setSubmitErrorResult(
+              (utils.remap(submitErrorMessage, values, { error: submitActionError }) as string) ||
+                utils.formatMessage('submitError'),
+            );
+            return;
+          }
 
           let error = '';
           if (typeof submitActionError === 'string') {
@@ -352,12 +402,14 @@ bootstrap(
       formErrors,
       firstFieldErrorLink,
       hideErrorSummary,
+      errorSummaryPosition,
       longSubmissionDuration,
       hasTriedToSubmit,
       actions,
       data,
       values,
       thumbnails,
+      submitErrorMessage,
       utils,
     ]);
 
@@ -466,18 +518,25 @@ bootstrap(
     }, [lastChanged, debouncedRequest, values, autofill]);
 
     useEffect(() => {
-      // If a listener is present, wait until data has been received
+      // If a listener or an onLoad action is present, wait until data has been received
       const hasListener = events.on.data(receiveData);
-      if (actions.onLoad?.type !== 'noop') {
+      const hasOnLoad = actions.onLoad?.type !== 'noop';
+      if (hasOnLoad) {
         (async () => {
-          const result = (await actions?.onLoad?.({ ...pageParameters })) as Values;
-          if (result) {
-            receiveData(result);
+          try {
+            const result = (await actions?.onLoad?.({ ...pageParameters })) as Values;
+            if (result) {
+              receiveData(result);
+            }
+          } finally {
+            if (!hasListener) {
+              setDataLoading(false);
+            }
           }
         })();
       }
       if (!skipInitialLoad || !initialLoad.current) {
-        setDataLoading(hasListener);
+        setDataLoading(hasListener || hasOnLoad);
       } else {
         initialLoad.current = false;
       }
@@ -569,13 +628,19 @@ bootstrap(
         data-path={path}
         onSubmit={onSubmit}
       >
-        {loading ? <progress className="progress is-small is-primary" /> : null}
+        {loading ? (
+          <progress
+            aria-label={utils.formatMessage('loading')}
+            className="progress is-small is-primary"
+          />
+        ) : null}
         {title ? <div className="title">{utils.remap(title, data) as string}</div> : null}
         {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <Message
           className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}
           color="danger"
           role="status"
+          tabIndex={formErrors.some(Boolean) ? 0 : undefined}
         >
           {/* Render the first form error */}
           <span>{formErrors.find(Boolean)}</span>
@@ -584,44 +649,74 @@ bootstrap(
           className={classNames(styles.error, { [styles.hidden]: submitErrorResult == null })}
           color="danger"
           role="alert"
+          tabIndex={submitErrorResult == null ? undefined : 0}
         >
           <span>{submitErrorResult}</span>
         </Message>
-        <div className={getFieldsContainerClass()}>
-          {fields
-            .filter((f) => f.type === 'enum' || show(f))
-            .map((f) => (
-              <FormInput
-                addThumbnail={addThumbnail}
-                className={`mb-4 ${f.type === 'enum' && !show(f) ? 'is-hidden' : ''} ${classNames({
-                  [styles.dense]: dense,
-                  [styles['column-span']]:
-                    ['fieldset', 'tags', 'file', 'selection', 'markdown'].includes(f.type) ||
-                    (f as StringField).multiline,
-                })}`}
-                disabled={
-                  dataLoading ||
-                  submitting ||
-                  Boolean(utils.remap(f.disabled, values[f.name], { values }))
-                }
-                display={display}
-                error={errors[f.name]}
-                field={f}
-                formDataLoading={dataLoading}
-                formValues={values}
-                hasTriedToSubmit={hasTriedToSubmit}
-                key={f.name}
-                name={f.name}
-                onChange={onChange}
-                readOnly={Boolean(utils.remap(f.readOnly, values[f.name], { values }))}
-                removeThumbnail={removeThumbnail}
-                setFieldErrorLink={setFieldErrorLink}
-                setFieldsReady={setFieldsReady}
-              />
-            ))}
-        </div>
+        {errorSummaryPosition === 'top' &&
+        sortedFieldErrorLinks.length > 0 &&
+        hasTriedToSubmit &&
+        !utils.remap(hideErrorSummary, values) ? (
+          <section
+            aria-labelledby={errorSummaryTitleId}
+            className={styles['error-summary']}
+            ref={errorSummaryRef}
+            tabIndex={-1}
+          >
+            <Message color="danger">
+              <div className={styles['error-link-container']}>
+                <p id={errorSummaryTitleId}>{utils.formatMessage('fixErrors')}</p>
+                <ul>
+                  {sortedFieldErrorLinks.map(({ element }) => (
+                    <li key={element.key}>{element}</li>
+                  ))}
+                </ul>
+              </div>
+            </Message>
+          </section>
+        ) : null}
+        <FormComponentHelpPositionContext.Provider value={helpPosition}>
+          <div className={getFieldsContainerClass()}>
+            {fields
+              .filter((f) => f.type === 'enum' || show(f))
+              .map((f) => (
+                <FormInput
+                  addThumbnail={addThumbnail}
+                  className={`mb-4 ${f.type === 'enum' && !show(f) ? 'is-hidden' : ''} ${classNames(
+                    {
+                      [styles.dense]: dense,
+                      [styles['column-span']]:
+                        ['fieldset', 'tags', 'file', 'selection', 'markdown'].includes(f.type) ||
+                        (f as StringField).multiline,
+                    },
+                  )}`}
+                  disabled={
+                    dataLoading ||
+                    submitting ||
+                    Boolean(utils.remap(f.disabled, values[f.name], { values }))
+                  }
+                  display={display}
+                  error={errors[f.name]}
+                  field={f}
+                  formDataLoading={dataLoading}
+                  formValues={values}
+                  hasTriedToSubmit={hasTriedToSubmit}
+                  key={f.name}
+                  name={f.name}
+                  onChange={onChange}
+                  readOnly={Boolean(utils.remap(f.readOnly, values[f.name], { values }))}
+                  removeThumbnail={removeThumbnail}
+                  setFieldErrorLink={setFieldErrorLink}
+                  setFieldsReady={setFieldsReady}
+                />
+              ))}
+          </div>
+        </FormComponentHelpPositionContext.Provider>
 
-        {errorLink && hasTriedToSubmit && !utils.remap(hideErrorSummary, values) ? (
+        {errorSummaryPosition === 'bottom' &&
+        errorLink &&
+        hasTriedToSubmit &&
+        !utils.remap(hideErrorSummary, values) ? (
           <div
             className={classNames(
               styles['error-link-container'],
@@ -634,17 +729,13 @@ bootstrap(
           </div>
         ) : null}
 
-        {longSubmission &&
-        !(formErrors.some(Boolean) || !isFormValid(errors)) &&
-        !submitErrorResult ? (
-          <div
-            className={classNames(
-              'is-flex is-flex-direction-column is-justify-content-flex-start text-left',
-            )}
-          >
+        <output className="is-flex is-flex-direction-column is-justify-content-flex-start text-left">
+          {longSubmission &&
+          !(formErrors.some(Boolean) || !isFormValid(errors)) &&
+          !submitErrorResult ? (
             <span>{utils.formatMessage('longSubmissionWarning')}</span>
-          </div>
-        ) : null}
+          ) : null}
+        </output>
 
         <FormButtons className="mt-2">
           {previous ? (

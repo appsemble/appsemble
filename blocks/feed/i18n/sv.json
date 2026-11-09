@@ -1,7 +1,18 @@
 {
   "anonymousLabel": "",
+  "avatar": "",
+  "buttonLabel": "",
+  "closeImage": "",
+  "downloadImage": "",
   "emptyLabel": "",
+  "loading": "",
+  "map": "",
+  "moreOptions": "",
   "permissionDeniedLabel": "",
   "replyErrorMessage": "",
-  "replyLabel": ""
+  "replyLabel": "",
+  "sendReply": "",
+  "statusInProgress": "",
+  "statusOpen": "",
+  "statusResolved": ""
 }

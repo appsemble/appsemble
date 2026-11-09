@@ -9,5 +9,8 @@
     "pages.inventory": "Voorraad",
     "pages.sale-history": "Verkoopgeschiedenis",
     "pages.sell-bicycle": "Fiets verkopen"
+  },
+  "messageIds": {
+    "addBicycle": "Fiets toevoegen"
   }
 }

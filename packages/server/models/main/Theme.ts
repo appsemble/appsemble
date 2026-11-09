@@ -10,7 +10,10 @@ import {
 } from 'sequelize-typescript';
 
 @Table({ tableName: 'Theme', paranoid: false, updatedAt: false })
-export class Theme extends Model implements Omit<ThemeType, 'font' | 'tileLayer' | 'variables'> {
+export class Theme
+  extends Model
+  implements Omit<ThemeType, 'displayFont' | 'font' | 'tileLayer' | 'variables'>
+{
   @AllowNull(false)
   @Column(DataType.STRING)
   declare bulmaVersion: string;
@@ -59,6 +62,16 @@ export class Theme extends Model implements Omit<ThemeType, 'font' | 'tileLayer'
   @Default('{}')
   @Column(DataType.TEXT)
   declare variables: string;
+
+  @AllowNull(false)
+  @Default('')
+  @Column(DataType.STRING)
+  declare displayFontFamily: string;
+
+  @AllowNull(false)
+  @Default('')
+  @Column(DataType.STRING)
+  declare displayFontSource: string;
 
   @AllowNull(false)
   @Column(DataType.TEXT)

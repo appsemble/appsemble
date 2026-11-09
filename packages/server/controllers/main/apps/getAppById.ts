@@ -149,7 +149,6 @@ export async function getAppById(ctx: Context): Promise<void> {
       'googleAnalyticsID',
       'metaPixelID',
       'msClarityID',
-      'OrganizationId',
       'OrganizationName',
       'sentryDsn',
       'sentryEnvironment',

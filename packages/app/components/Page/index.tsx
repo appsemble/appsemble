@@ -101,7 +101,6 @@ export function Page(): ReactNode {
 
   const [dialog, setDialog] = useState<ShowDialogParams | undefined>();
   const stepRef = useRef<unknown>();
-  const tabRef = useRef<unknown>();
   const url = `/${lang}`;
 
   const permissionError = useCallback(
@@ -185,7 +184,11 @@ export function Page(): ReactNode {
   useEffect(() => () => abortController.abort(), [abortController]);
 
   const remapWithContext = useCallback(
-    (mappers: Remapper, input: any, { history = [], ...context }: Record<string, any> = {}) =>
+    (
+      mappers: Remapper,
+      input: any,
+      { history = [], tabName, ...context }: Record<string, any> = {},
+    ) =>
       remap(mappers, input, {
         appId,
         url: window.location.href,
@@ -206,8 +209,7 @@ export function Page(): ReactNode {
         locale: lang,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         stepRef,
-        // @ts-expect-error 2322 unknown is not assignable to type (strictNullChecks)
-        tabRef,
+        tabName,
       }),
     [
       getAppMessage,
@@ -271,7 +273,6 @@ export function Page(): ReactNode {
             `appsemble-group-${appId}-appMemberSelectedGroup`,
             JSON.stringify(selectedGroup),
           );
-          navigate(0);
           return selectedGroup;
         },
         getAppMemberSelectedGroup: () => appMemberSelectedGroup,
@@ -401,6 +402,7 @@ export function Page(): ReactNode {
 
     return (
       <main
+        aria-label={pageName}
         className={classNames(styles.root, {
           // A grid that places the bottom navigation flows around it, so it needs no clearance.
           [styles.hasBottomNavigation]:
@@ -408,6 +410,7 @@ export function Page(): ReactNode {
         })}
         data-path={prefix}
         data-path-index={prefixIndex}
+        tabIndex={-1}
       >
         <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
         {/* A grid layout that names a breadcrumbs area renders the trail there, and a tabs page
@@ -430,7 +433,6 @@ export function Page(): ReactNode {
             remap={remapWithContext}
             showDialog={showDialog}
             showShareDialog={showShareDialog}
-            tabRef={tabRef}
           />
         ) : (
           // The switch is used to enforce an exact path.

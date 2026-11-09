@@ -10,16 +10,16 @@ export const messages = defineMessages({
     defaultMessage: 'Profile',
   },
   displayName: {
-    id: 'app.pwlQEY',
-    defaultMessage: 'Display Name',
+    id: 'app.dOQCL8',
+    defaultMessage: 'Display name',
   },
   displayNameHelp: {
     id: 'app.VL5z0t',
     defaultMessage: 'This is the name that displays for other users.',
   },
   saveProfile: {
-    id: 'app.Wd+wHl',
-    defaultMessage: 'Save Profile',
+    id: 'app.ZBVds5',
+    defaultMessage: 'Save profile',
   },
   submitSuccess: {
     id: 'app.3zjiGZ',
@@ -38,16 +38,16 @@ export const messages = defineMessages({
     defaultMessage: 'Select a file',
   },
   pictureDescription: {
-    id: 'app.KGZ3lm',
-    defaultMessage: 'The public picture to use for your profile.',
+    id: 'app.FGdxVQ',
+    defaultMessage: 'The picture to use for your public profile.',
   },
   camera: {
     id: 'app.J6ywQ3',
     defaultMessage: 'Camera',
   },
   clickPicture: {
-    id: 'app.Z7RWBU',
-    defaultMessage: 'Click a Picture',
+    id: 'app.+Ekyh5',
+    defaultMessage: 'Click a picture',
   },
   clickDescription: {
     id: 'app.1krH2X',
@@ -63,32 +63,32 @@ export const messages = defineMessages({
     defaultMessage: 'Preferred language for this app',
   },
   phoneNumber: {
-    id: 'app.mXiD5u',
-    defaultMessage: 'Phone Number',
+    id: 'app.jdJhOL',
+    defaultMessage: 'Phone number',
   },
   supported: {
     id: 'app.kxImXw',
     defaultMessage: 'Supported',
   },
   oldPassword: {
-    id: 'app.J+buBa',
-    defaultMessage: 'Old Password',
+    id: 'app.SViZJR',
+    defaultMessage: 'Old password',
   },
   newPassword: {
-    id: 'app.Ev6SEF',
-    defaultMessage: 'New Password',
+    id: 'app.fTHhSB',
+    defaultMessage: 'New password',
   },
   changePassword: {
-    id: 'app.QiKKFz',
-    defaultMessage: 'Change Password',
+    id: 'app.L4nXIc',
+    defaultMessage: 'Change password',
   },
   updatedEmail: {
-    id: 'app.t+2d4F',
-    defaultMessage: 'Updated Email',
+    id: 'app.EkHtkg',
+    defaultMessage: 'Updated email',
   },
   changeEmail: {
-    id: 'app.lo21n8',
-    defaultMessage: 'Update Email Address',
+    id: 'app.EI6y9l',
+    defaultMessage: 'Change email address',
   },
   password: {
     id: 'app.5sg7KC',

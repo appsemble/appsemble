@@ -26,7 +26,10 @@ export function mergeThemes(...themes: Partial<Theme>[]): Theme {
   if (variableMaps.length) {
     result.variables = Object.assign({}, ...variableMaps.map((theme) => theme.variables));
   }
-  result.font.source ||= 'google';
+  result.font = { ...result.font, source: result.font.source || 'google' };
+  if (result.displayFont) {
+    result.displayFont = { ...result.displayFont, source: result.displayFont.source || 'google' };
+  }
   return result;
 }
 
@@ -37,11 +40,15 @@ export function mergeThemes(...themes: Partial<Theme>[]): Theme {
  * @returns The URL to the Bulma theme.
  */
 export function createThemeURL(theme: Theme): string {
-  const { font, variables, ...rest } = theme;
+  const { displayFont, font, variables, ...rest } = theme;
   const params = new URLSearchParams({
     ...rest,
     fontFamily: font.family,
     fontSource: font.source ?? '',
+    ...(displayFont && {
+      displayFontFamily: displayFont.family,
+      displayFontSource: displayFont.source ?? '',
+    }),
   });
   if (variables && Object.keys(variables).length) {
     // Serialize with sorted keys for cacheability.

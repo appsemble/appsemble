@@ -5,29 +5,40 @@ export const key = '0.40.6';
 
 /**
  * Summary:
- * - Add column `variables` to table `Theme`
+ * - Add columns `displayFontFamily` and `displayFontSource` to table `Theme`
  */
 
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.info('Add column `variables` to table `Theme`');
+  logger.info('Add column `displayFontFamily` to table `Theme`');
   await queryInterface.addColumn(
     'Theme',
-    'variables',
-    { type: DataTypes.TEXT, allowNull: false, defaultValue: '{}' },
+    'displayFontFamily',
+    { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+    { transaction },
+  );
+
+  logger.info('Add column `displayFontSource` to table `Theme`');
+  await queryInterface.addColumn(
+    'Theme',
+    'displayFontSource',
+    { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
     { transaction },
   );
 }
 
 /**
  * Summary:
- * - Remove column `variables` from table `Theme`
+ * - Remove columns `displayFontFamily` and `displayFontSource` from table `Theme`
  */
 
 export async function down(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.info('Remove column `variables` from table `Theme`');
-  await queryInterface.removeColumn('Theme', 'variables', { transaction });
+  logger.info('Remove column `displayFontFamily` from table `Theme`');
+  await queryInterface.removeColumn('Theme', 'displayFontFamily', { transaction });
+
+  logger.info('Remove column `displayFontSource` from table `Theme`');
+  await queryInterface.removeColumn('Theme', 'displayFontSource', { transaction });
 }

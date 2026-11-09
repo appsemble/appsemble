@@ -16,6 +16,7 @@ import { type Sequelize } from 'sequelize';
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from 'vitest';
 
 import { dropAndCloseAllAppDBs } from './models/index.js';
+import { mockPwnedPasswords } from './utils/test/pwnedPasswords.js';
 import { getRootDB, setupTestDatabase } from './utils/test/testSchema.js';
 import { getValkeyClient, initValkeyClient } from './utils/valkey.js';
 
@@ -68,6 +69,7 @@ beforeEach(async () => {
   await dropAndCloseAllAppDBs();
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
   vi.useRealTimers();
+  mockPwnedPasswords([]);
   await clearAllS3Buckets();
   await getValkeyClient()?.flushdb();
 });

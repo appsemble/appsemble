@@ -136,12 +136,17 @@ declare module '@appsemble/sdk' {
     anonymousLabel: never;
 
     /**
+     * The text of the button when no `buttonLabel` is set.
+     */
+    buttonLabel: never;
+
+    /**
      * The error message shown when an error occurs while submitting a reply.
      */
     replyErrorMessage: never;
 
     /**
-     * The placeholder text used for the reply input.
+     * The placeholder text and accessible label of the reply input.
      */
     replyLabel: never;
 
@@ -154,6 +159,56 @@ declare module '@appsemble/sdk' {
      * The label that’s displayed when feed data cannot be loaded due to missing permissions.
      */
     permissionDeniedLabel: never;
+
+    /**
+     * The accessible label for closing an enlarged image.
+     */
+    closeImage: never;
+
+    /**
+     * The accessible label for downloading the original image.
+     */
+    downloadImage: never;
+
+    /**
+     * The accessible label of the loader shown while data loads.
+     */
+    loading: never;
+
+    /**
+     * The accessible name of a map.
+     */
+    map: never;
+
+    /**
+     * The accessible name of a dropdown without a label.
+     */
+    moreOptions: never;
+
+    /**
+     * The accessible name of an avatar of a feed item without a known status.
+     */
+    avatar: never;
+
+    /**
+     * The accessible name of the status icon of an open feed item.
+     */
+    statusOpen: never;
+
+    /**
+     * The accessible name of the status icon of a feed item that is in progress.
+     */
+    statusInProgress: never;
+
+    /**
+     * The accessible name of the status icon of a resolved feed item.
+     */
+    statusResolved: never;
+
+    /**
+     * The accessible label of the button that submits a reply.
+     */
+    sendReply: never;
   }
 
   interface Parameters {
@@ -178,6 +233,15 @@ declare module '@appsemble/sdk' {
      * The title displayed on the card.
      */
     title?: Remapper;
+
+    /**
+     * The heading level of the title.
+     *
+     * The subtitle and the reply authors use the levels below it, down to 6.
+     *
+     * @default 4
+     */
+    titleLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 
     /**
      * The subtitle displayed on the card.

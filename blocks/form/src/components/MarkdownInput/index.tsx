@@ -109,7 +109,13 @@ export function MarkdownInput({
       );
       crepe.editor
         .config((ctx) => {
-          ctx.set(editorViewOptionsCtx, { editable: () => true });
+          ctx.set(editorViewOptionsCtx, {
+            editable: () => true,
+            attributes: {
+              'aria-labelledby': `${name}-label`,
+              'aria-multiline': 'true',
+            },
+          });
         })
         // Github-flavored Markdown
         .use(gfm)
@@ -200,20 +206,42 @@ export function MarkdownInput({
       help={help}
       icon={icon}
       label={remappedLabel as string}
+      labelId={`${name}-label`}
+      optionalLabel={utils.formatMessage('optionalLabel')}
       required={isRequired(field, utils, formValues)}
       tag={tag}
     >
       <div className={classNames('is-flex is-flex-direction-row', styles.gap)}>
-        <button className="button" onClick={toggleBold} title="Bold" type="button">
+        <button
+          className="button"
+          onClick={toggleBold}
+          title={utils.formatMessage('markdownBold')}
+          type="button"
+        >
           <Icon icon="bold" />
         </button>
-        <button className="button" onClick={toggleItalic} title="Italic" type="button">
+        <button
+          className="button"
+          onClick={toggleItalic}
+          title={utils.formatMessage('markdownItalic')}
+          type="button"
+        >
           <Icon icon="italic" />
         </button>
-        <button className="button" onClick={toggleStrikethrough} title="Strike out" type="button">
+        <button
+          className="button"
+          onClick={toggleStrikethrough}
+          title={utils.formatMessage('markdownStrikethrough')}
+          type="button"
+        >
           <Icon icon="strikethrough" />
         </button>
-        <button className="button" onClick={toggleLink} title="Add link" type="button">
+        <button
+          className="button"
+          onClick={toggleLink}
+          title={utils.formatMessage('markdownLink')}
+          type="button"
+        >
           <Icon icon="link" />
         </button>
       </div>

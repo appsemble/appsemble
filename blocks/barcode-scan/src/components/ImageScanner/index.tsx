@@ -81,14 +81,11 @@ export function ImageScanner({
 
   return (
     <div className={styles.imageScannerWrapper}>
-      <label
-        aria-label={utils.formatMessage('selectImage')}
-        className={styles.fileLabel}
-        for="fileInput"
-      >
+      <label className={styles.fileLabel} for="fileInput">
         <Icon className={styles.barcode} icon="barcode" />
         <input
-          className={styles.hiddenInput}
+          aria-label={utils.formatMessage('selectImage')}
+          className="is-sr-only"
           id="fileInput"
           onChange={handleFileChange}
           ref={inputRef}
@@ -99,7 +96,7 @@ export function ImageScanner({
 
       {selectedImage ? (
         <div className={styles.imageContainer}>
-          <img alt="Selected" src={selectedImage as string} />
+          <img alt={utils.formatMessage('selectedImage')} src={selectedImage as string} />
           <button
             aria-label={utils.formatMessage('removeImage')}
             className={styles.close}
@@ -110,7 +107,7 @@ export function ImageScanner({
           </button>
         </div>
       ) : (
-        <div>No Image found </div>
+        <div>{utils.formatMessage('noImage')}</div>
       )}
     </div>
   );

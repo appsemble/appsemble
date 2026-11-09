@@ -222,7 +222,10 @@ build docker image:
   stage: build
   script:
     - CACHE_IMAGE="$CI_REGISTRY_IMAGE/cache:$CI_COMMIT_REF_SLUG"
-    - docker buildx create --use
+    # Buildx refuses to create a builder from the TLS environment the docker image sets for dind,
+    # so the builder runs on a context created from it.
+    - docker context create ci
+    - docker buildx create --use ci
     - docker buildx build
       -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
       --cache-from "type=registry,ref=$CACHE_IMAGE"
@@ -378,6 +381,7 @@ pack:
     - npm --pack-destination build --workspace @appsemble/types pack
     - npm --pack-destination build --workspace @appsemble/sdk pack
     - npm --pack-destination build --workspace @appsemble/lang-sdk pack
+    - npm --pack-destination build --workspace @appsemble/appsemble-language-server pack
     - npm --pack-destination build --workspace @appsemble/preact pack
     - npm --pack-destination build --workspace @appsemble/utils pack
     - npm --pack-destination build --workspace @appsemble/node-utils pack
@@ -465,7 +469,7 @@ prettier:
 # Verify the committed Mermaid SVGs are in sync with the diagrams in the docs.
 mermaid svgs:
   extends: .npm
-  image: mcr.microsoft.com/playwright:v1.63.0-noble
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   stage: test
   script:
     - npm run render-mermaid
@@ -497,7 +501,7 @@ test node:
   services:
     - name: postgres:17
       alias: postgres
-    - name: valkey/valkey:9.1.2
+    - name: valkey/valkey:9.1.3
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: chrislusf/seaweedfs:4.47
@@ -553,7 +557,7 @@ test node single bucket:
   services:
     - name: postgres:17
       alias: postgres
-    - name: valkey/valkey:9.1.2
+    - name: valkey/valkey:9.1.3
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     # The single-bucket layout: the bucket and a user that can only touch its objects are
@@ -607,6 +611,8 @@ test node single bucket:
     - files=$(grep -rlw -E "$exports" --include='*.test.ts' --exclude-dir=node_modules packages/cli packages/server | grep -vxF packages/server/commands/backupProductionData.test.ts)
     - test -n "$files"
     - echo "$files"
+    # The service health check passes on any port SeaweedFS exposes, and those open before S3 does.
+    - until (echo > "/dev/tcp/$S3_HOST/$S3_PORT") 2>/dev/null; do sleep 1; done
     - npm test -- --no-file-parallelism $files
   artifacts:
     reports:
@@ -772,9 +778,8 @@ validate snippets:
 #  End 2 End Stage                                                                               #
 ###################################################################################################
 
-e2e node:
-  stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.63.0-noble
+# The Appsemble server built in this pipeline, with its seeded dependencies, as GitLab services.
+.appsemble service:
   interruptible: true
   needs:
     - build docker image
@@ -799,7 +804,13 @@ e2e node:
     E2E_HOST: 'https://appsemble:9999'
     APPSEMBLE_SSL_KEY_E2E_SERVICE: $APPSEMBLE_SSL_KEY_E2E
     APPSEMBLE_SSL_CRT_E2E_SERVICE: $APPSEMBLE_SSL_CRT_E2E
+    MAILPIT_URL: 'http://mailpit:8025'
   services:
+    - name: axllent/mailpit:v1.33.0
+      alias: mailpit
+      variables:
+        MP_SMTP_AUTH_ACCEPT_ANY: '1'
+        MP_SMTP_AUTH_ALLOW_INSECURE: '1'
     - name: '$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG'
       alias: database
       variables:
@@ -810,7 +821,7 @@ e2e node:
     # the Helm chart deploy. `test node` covers the bucket-per-app layout and
     # `test node single bucket` covers this layout at the unit level.
     - *seaweedfs-single-bucket
-    - name: valkey/valkey:9.1.2
+    - name: valkey/valkey:9.1.3
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
@@ -846,6 +857,17 @@ e2e node:
         S3_ACCESS_KEY: appsemble-server
         S3_SECRET_KEY: appsemble-server-secret
         E2E: true
+        SMTP_HOST: mailpit
+        SMTP_PORT: 1025
+        SMTP_SECURE: 'false'
+        SMTP_USER: Appsemble
+        SMTP_PASS: password
+        SMTP_FROM: localdev@appsemble.com
+
+e2e node:
+  extends: .appsemble service
+  stage: end 2 end
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   script:
     - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d > /tmp/appsemble.crt
     - export NODE_EXTRA_CA_CERTS=/tmp/appsemble.crt
@@ -862,19 +884,64 @@ e2e node:
       --s3-bucket appsemble
       --s3-access-key appsemble-server
       --s3-secret-key appsemble-server-secret
-    - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+    - npm --workspace @appsemble/e2e run e2e -- $E2E_ARGS
+  variables:
+    E2E_ARGS: --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+  after_script:
+    # GitLab accepts a single file per accessibility report, so the reports of the apps are merged
+    - >
+      node --eval "
+      const { globSync, readFileSync, writeFileSync } = require('node:fs');
+      const results = {};
+      for (const file of globSync('packages/e2e/test-results/gl-accessibility-*.json')) {
+        Object.assign(results, JSON.parse(readFileSync(file, 'utf8')).results);
+      }
+      writeFileSync('packages/e2e/test-results/gl-accessibility.json', JSON.stringify({ results }));
+      "
   parallel: 6
   artifacts:
     expose_as: Playwright videos
     when: always
     paths:
       - packages/e2e/test-results/
+      - packages/e2e/blob-report/
     reports:
-      junit: packages/e2e/results.xml
+      accessibility: packages/e2e/test-results/gl-accessibility.json
+      junit: junit.xml
+      metrics: packages/e2e/test-results/accessibility-metrics.txt
+
+# The accessibility widget of a merge request compares its report with the one of the target branch
+e2e accessibility:
+  extends: e2e node
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  parallel: null
+  variables:
+    E2E_ARGS: --project=chromium tests/demo-apps/accessibility.spec.ts
+
+e2e report:
+  stage: end 2 end
+  interruptible: true
+  needs:
+    - npm_ci
+    - e2e node
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+      when: always
+    - if: $CI_COMMIT_TAG
+      when: always
+  script:
+    - cd packages/e2e
+    - npx playwright merge-reports --reporter html blob-report
+  artifacts:
+    expose_as: Playwright report
+    when: always
+    paths:
+      - packages/e2e/playwright-report/
 
 e2e keycloak:
   stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.63.0-noble
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   interruptible: true
   needs:
     - build docker image
@@ -889,6 +956,7 @@ e2e keycloak:
     matrix:
       - KEYCLOAK_PROTOCOL: oidc
       - KEYCLOAK_PROTOCOL: saml
+      - KEYCLOAK_PROTOCOL: entra-broker
   variables:
     FF_NETWORK_PER_BUILD: 'true'
     DATABASE_HOST: database
@@ -979,7 +1047,7 @@ e2e keycloak:
     paths:
       - packages/e2e/test-results/
     reports:
-      junit: packages/e2e/results.xml
+      junit: junit.xml
 
 # Apps under SLA are supported through Appsemble core changes
 e2e SLA apps:
@@ -1391,6 +1459,10 @@ update dependencies:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_SLUG"
+      --set "dns.provider=desec"
+      --set "dns.zone=appsemble.review"
+      --set "dns.secret=appsemble-review-dns"
+      --set "dns.targets={95.217.175.187,2a01:4f9:c01d:441::1}"
       --set "ingress.clusterIssuer=acme-issuer-review"
       --set "ingress.enabled=true"
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
@@ -1414,6 +1486,7 @@ update dependencies:
       --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.review}"
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
+      --set "rejectBreachedPasswords=true"
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
       --set "seaweedfs.fullnameOverride=review-$CI_MERGE_REQUEST_IID-seaweedfs"
@@ -1521,6 +1594,10 @@ staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=staging"
+      --set "dns.provider=desec"
+      --set "dns.zone=appsemble.eu"
+      --set "dns.secret=appsemble-staging-dns"
+      --set "dns.targets={128.140.28.148,2a01:4f8:c01e:5dd::1}"
       --set "ingress.clusterIssuer=acme-issuer-staging"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.eu"
@@ -1552,6 +1629,7 @@ staging:
       --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.en}"
       --set "sentry.environment=staging"
+      --set "rejectBreachedPasswords=true"
       --set "sentry.secret=sentry"
       --set "quotas.appEmail.enabled=true"
       --set "quotas.appEmail.dailyLimit=10"
@@ -1652,6 +1730,10 @@ production:
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts=\"true\""
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts-include-subdomains=\"true\""
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/hsts-max-age=\"31536000\""
+      --set "dns.provider=desec"
+      --set "dns.zone=appsemble.app"
+      --set "dns.secret=appsemble-production-dns"
+      --set "dns.targets={91.98.15.190,2a01:4f8:c01e:3fc4::1}"
       --set "ingress.clusterIssuer=acme-issuer-prod"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
@@ -1673,6 +1755,7 @@ production:
       --set "prometheusRule.enabled=true"
       --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
       --set "sentry.environment=production"
+      --set "rejectBreachedPasswords=true"
       --set "sentry.secret=sentry"
       --set "quotas.appEmail.enabled=true"
       --set "quotas.appEmail.dailyLimit=10"
@@ -1787,37 +1870,47 @@ provision production:
 #  Performance Stage                                                                               #
 ###################################################################################################
 
-#
-# --- Disabled for now ---
-#
-# lighthouse:
-#   interruptible: true
-#   stage: performance
-#   extends: .npm
-#   image: $CI_REGISTRY/appsemble/docker-node-chrome
-#   needs:
-#     - npm_ci
-#     - job: provision review
-#       optional: true
-#     - job: provision staging
-#       optional: true
-#     - job: provision production
-#       optional: true
-#   rules:
-#     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-#     - if: $CI_COMMIT_TAG
-#   variables:
-#     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
-#     APPSEMBLE_STAGING_DOMAIN: 'appsemble.eu'
-#   script:
-#     - npm run scripts -- wait-for-ssl
-#     - npx -- lhci collect
-#     - npx -- lhci assert
-#   artifacts:
-#     expose_as: Lighthouse reports
-#     when: always
-#     paths:
-#       - .lighthouseci
+lighthouse:
+  extends: .appsemble service
+  stage: performance
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'staging'
+  # Performance scores depend on the machine, so run on the group's own runners rather than the
+  # shared ones. These runners may run other jobs at the same time, so only compare scores within
+  # one pipeline.
+  tags:
+    - dcentralize
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
+  allow_failure: true
+  script:
+    - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d > /tmp/appsemble.crt
+    - export NODE_EXTRA_CA_CERTS=/tmp/appsemble.crt
+    - npm run appsemble -- config set context e2e
+    - npm run appsemble -- config set remote 'https://appsemble:9999'
+    - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
+      --s3-host s3
+      --s3-port 8333
+      --s3-secure=false
+      --s3-bucket appsemble
+      --s3-access-key appsemble-server
+      --s3-secret-key appsemble-server-secret
+    - npm run scripts -- update-subscription --organizationId appsemble --subscriptionPlan enterprise
+    - npm ci --prefix config/lighthouse
+    - npm run appsemble -- app publish --resources apps/*
+    - |
+      APPSEMBLE_IP=$(getent ahostsv4 appsemble | awk 'NR == 1 { print $1 }')
+      for host in $(node -e 'fetch("https://appsemble:9999/api/apps").then((r) => r.json()).then((apps) => console.log(apps.map((app) => `${app.path}.${app.OrganizationId}.appsemble`).join("\n")))'); do
+        echo "$APPSEMBLE_IP $host" >> /etc/hosts
+        URL_ARGS="$URL_ARGS --url https://$host:9999"
+      done
+      config/lighthouse/node_modules/.bin/lhci collect $URL_ARGS
+    - config/lighthouse/node_modules/.bin/lhci assert
+  artifacts:
+    expose_as: Lighthouse reports
+    when: always
+    paths:
+      - .lighthouseci
 
 ###################################################################################################
 #  Cleanup Stage                                                                                  #
@@ -1833,6 +1926,10 @@ cleanup review environments:
     - if: $CI_COMMIT_BRANCH == 'main'
       when: manual
   allow_failure: true
+  # The review agent only serves jobs in a review/* environment.
+  environment:
+    name: review/cleanup
+    action: access
   variables:
     GIT_STRATEGY: fetch
   script:

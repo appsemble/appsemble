@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { FormComponent, Icon, type SharedFormComponentProps } from '@appsemble/preact-components';
+import { FormComponent, Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -10,8 +10,7 @@ import styles from './index.module.css';
 import { type GeoCoordinatesField, type InputProps } from '../../../block.js';
 import { isRequired } from '../../utils/requirements.js';
 
-type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField> &
-  SharedFormComponentProps;
+type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField>;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.
@@ -127,14 +126,16 @@ export function GeoCoordinatesInput({
       error={dirty ? error : null}
       icon={icon}
       label={label ? (utils.remap(label, {}) as string) : name}
+      labelId={`${name}-label`}
       name={name}
       optionalLabel={utils.formatMessage('optionalLabel')}
       required={required}
       tag={utils.remap(tag, {}) as string}
     >
-      <div
+      <fieldset
+        aria-labelledby={`${name}-label`}
         className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}
-        ref={errorLinkRef as unknown as Ref<HTMLDivElement>}
+        ref={errorLinkRef as unknown as Ref<HTMLFieldSetElement>}
       >
         <div
           className={styles.map}
@@ -160,7 +161,7 @@ export function GeoCoordinatesInput({
             icon="crosshairs"
           />
         </button>
-      </div>
+      </fieldset>
     </FormComponent>
   );
 }

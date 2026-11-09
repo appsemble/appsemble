@@ -6,11 +6,11 @@ export const messages = defineMessages({
     defaultMessage: 'Resend verification email',
   },
   resendVerificationSent: {
-    id: 'studio.LElVj7',
-    defaultMessage: 'Resent verification mail',
+    id: 'studio.CwtqIN',
+    defaultMessage: 'Resent verification email',
   },
   resendVerificationError: {
-    id: 'studio.u+okAv',
-    defaultMessage: 'Something went wrong when sending the verification mail.',
+    id: 'studio.DD5lQj',
+    defaultMessage: 'Something went wrong when sending the verification email.',
   },
 });

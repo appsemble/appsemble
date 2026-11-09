@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.40.4/config/assets/logo.svg) Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.40.10/config/assets/logo.svg) Appsemble Server
 
 > The official Appsemble Docker image
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.40.4/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.40.4)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.40.10/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.40.10)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -81,6 +81,7 @@ passed as a command line parameter instead, if desired.
 | `DAILY_APP_EMAIL_QUOTA`         | `10`         | The maximum number of emails an app can send per day without a custom mail server configured.                          |
 | `ENABLE_APP_EMAIL_QUOTA_ALERTS` | `false`      | If specified, alerts will be sent to the Appsemble administrator when an app exceeds its daily quota.                  |
 | `DISABLE_REGISTRATION`          | `false`      | If specified, user registration will be disabled on the server                                                         |
+| `REJECT_BREACHED_PASSWORDS`     | `false`      | If specified, new passwords that appear in the Have I Been Pwned Pwned Passwords data set are rejected.                |
 | `HOST`                          |              | The external host on which the server is available. This should include the protocol, hostname, and optionally port.   |
 | `REMOTE`                        | `null`       | A remote Appsemble server to connect to in order to synchronize blocks.                                                |
 
@@ -146,11 +147,11 @@ Check the `read_user` scope, and click _Save application_.
 To be able to send emails from your local environment, you need to set up or connect to an SMTP
 server.
 
-A project that provides an email testing environment for developers is
-[Mailpit](https://github.com/axllent/mailpit). It acts as an SMTP server where you can view and test
-captured emails.
+[Mailpit](https://github.com/axllent/mailpit) is set up locally to provide an email testing
+environment. It acts as an SMTP server where you can view and test captured emails. Mailpit can be
+accessed on http://localhost:8025.
 
-For connecting to the SMTP server, you need to obtain the following settings:
+To connect to an SMTP server, you need to obtain the following settings:
 
 - Host
 - Port
@@ -202,5 +203,5 @@ With the Stripe CLI you can expose an endpoint on your machine that will receive
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.40.4/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.40.10/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

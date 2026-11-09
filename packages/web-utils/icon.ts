@@ -10,6 +10,11 @@ import { fa } from './fa.js';
  */
 export type IconSizeModifier = NonNullable<IconRenderOptions['iconSize']>;
 
+/**
+ * A renderable icon showing an app asset.
+ */
+export type AssetIcon = Extract<RenderableIcon, { type: 'asset' }>;
+
 const sizeModifierMap: Partial<Record<BulmaSize, IconSizeModifier>> = {
   medium: 'lg',
   large: '2x',
@@ -67,15 +72,33 @@ export function getMessageIcon(color?: BulmaColor): IconName | undefined {
 }
 
 /**
- * Build the URL of an icon asset.
+ * Get an icon asset of an app.
+ *
+ * The icon is addressed by id when its id is known, because the asset served under an id never
+ * changes, so it can be cached for good. The name URL is then its fallback, because the id goes
+ * stale when the asset is replaced. Otherwise the icon is addressed by name.
  *
  * @param apiUrl The base URL of the Appsemble API.
  * @param appId The ID of the app owning the asset.
  * @param asset The validated name of the asset.
- * @returns The URL the asset is served from.
+ * @param assetIds The asset ids of the app’s icon assets, by asset name.
+ * @returns The renderable icon of the asset.
  */
-export function getIconAssetUrl(apiUrl: string, appId: number, asset: string): string {
-  return `${apiUrl}/api/apps/${appId}/assets/${encodeURIComponent(asset)}`;
+export function getIconAsset(
+  apiUrl: string,
+  appId: number,
+  asset: string,
+  assetIds?: Record<string, string>,
+): AssetIcon {
+  const assetsUrl = `${apiUrl}/api/apps/${appId}/assets`;
+  const url = `${assetsUrl}/${encodeURIComponent(asset)}`;
+  return assetIds && Object.hasOwn(assetIds, asset)
+    ? {
+        type: 'asset',
+        url: `${assetsUrl}/${encodeURIComponent(assetIds[asset])}`,
+        fallbackUrl: url,
+      }
+    : { type: 'asset', url };
 }
 
 /**
@@ -86,20 +109,20 @@ export function getIconAssetUrl(apiUrl: string, appId: number, asset: string): s
  *
  * @param reference The icon reference to resolve.
  * @param registry The icon registry of the app owning the reference.
- * @param getAssetUrl A function to build the URL of an asset by name.
+ * @param getAsset A function to get the renderable icon of an asset by name.
  * @returns The renderable icon.
  */
 export function resolveIcon(
   reference: IconReference | string,
   registry?: IconRegistry,
-  getAssetUrl?: (asset: string) => string,
+  getAsset?: (asset: string) => AssetIcon,
 ): RenderableIcon {
   const resolved = resolveIconReference(reference, registry);
   if (resolved.type === 'fontawesome') {
     return resolved;
   }
-  if (resolved.type === 'asset' && getAssetUrl) {
-    return { type: 'asset', url: getAssetUrl(resolved.asset) };
+  if (resolved.type === 'asset' && getAsset) {
+    return getAsset(resolved.asset);
   }
   return { type: 'invalid' };
 }
@@ -120,7 +143,8 @@ export function applyIconImageStyle(img: HTMLImageElement): void {
  * Create a DOM element rendering an icon.
  *
  * The result is an `.icon` wrapper containing either a Font Awesome glyph or an image. A failed
- * image is hidden, leaving the wrapper in place.
+ * image loads the fallback URL of the icon, if any, and is hidden when that fails too, leaving the
+ * wrapper in place.
  *
  * @param icon The resolved icon to render.
  * @param options Rendering options.
@@ -149,8 +173,14 @@ export function createIconElement(
     const img = document.createElement('img');
     img.alt = '';
     applyIconImageStyle(img);
+    let { fallbackUrl } = icon;
     img.addEventListener('error', () => {
-      img.hidden = true;
+      if (fallbackUrl) {
+        img.src = fallbackUrl;
+        fallbackUrl = undefined;
+      } else {
+        img.hidden = true;
+      }
     });
     img.src = icon.url;
     wrapper.append(img);

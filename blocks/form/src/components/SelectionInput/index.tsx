@@ -2,6 +2,7 @@ import { FormattedMessage, useBlock } from '@appsemble/preact';
 import {
   Button,
   FormButtons,
+  FormComponentHelpPositionContext,
   Input,
   Loader,
   Message,
@@ -10,7 +11,7 @@ import {
 } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type Ref, type VNode } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback, useContext, useEffect, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { SelectionEntry } from './SelectionEntry/index.js';
@@ -38,6 +39,7 @@ export function SelectionInput({
   readOnly,
 }: SelectionInputProps): VNode {
   const { actions, events, utils } = useBlock();
+  const errorAbove = useContext(FormComponentHelpPositionContext) === 'above';
   const {
     allowRemovalFromModal = false,
     disableSearch = false,
@@ -140,6 +142,8 @@ export function SelectionInput({
     setFilteredOptions(filtered);
   }, [getOptionsFilteredBySelection, options, searchString, selectedOptions]);
 
+  const errorMessage = dirty && error ? <p className="help is-danger">{error}</p> : null;
+
   return (
     <div
       className={classNames('appsemble-selection mb-4', className, styles['selection-wrapper'])}
@@ -154,6 +158,7 @@ export function SelectionInput({
           </span>
         )}
       </div>
+      {errorAbove ? errorMessage : null}
       <div>
         {selectedOptions.map((option) => (
           <SelectionEntry
@@ -167,15 +172,25 @@ export function SelectionInput({
       {!readOnly && (!maxItems || selectedOptions.length < maxItems) ? (
         <FormButtons>
           <Button disabled={disabled} icon="plus" onClick={handleModalOpen}>
-            {utils.remap(field.addLabel ?? 'Add', selectedOptions) as string}
+            {
+              utils.remap(
+                field.addLabel ?? utils.formatMessage('addLabel'),
+                selectedOptions,
+              ) as string
+            }
           </Button>
         </FormButtons>
       ) : null}
-      {dirty && error ? <p className="help is-danger">{error}</p> : null}
-      <ModalCard isActive={modal.enabled} onClose={modal.disable}>
+      {errorAbove ? null : errorMessage}
+      <ModalCard
+        closeButtonLabel={utils.formatMessage('selectionClose')}
+        isActive={modal.enabled}
+        onClose={modal.disable}
+        title={<span>{utils.remap(field.label, selectedOptions) as string}</span>}
+      >
         {!disableSearch && <Input className="mb-2" onChange={handleSearch} />}
         {loading ? (
-          <Loader />
+          <Loader label={utils.formatMessage('loading')} />
         ) : optionsError ? (
           <Message className="mt-4 mr-6 mb-4 ml-5" color="danger">
             <span>

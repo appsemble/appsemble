@@ -1,6 +1,7 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { SideMenuProvider } from '@appsemble/react-components';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { type ComponentProps } from 'react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -62,14 +63,14 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-function renderAppBar(): void {
+function renderAppBar(props: ComponentProps<typeof AppBar> = {}): void {
   render(
     <IntlProvider locale="en" messages={{}}>
       <AppIconProvider>
         <MemoryRouter initialEntries={['/en/Home']}>
           <SideMenuProvider base={null} bottom={null}>
             <Routes>
-              <Route element={<AppBar />} path="/:lang/*" />
+              <Route element={<AppBar {...props} />} path="/:lang/*" />
             </Routes>
           </SideMenuProvider>
         </MemoryRouter>
@@ -104,7 +105,7 @@ describe('AppBar top navigation', () => {
     renderAppBar();
 
     expect(screen.getByAltText('app-logo')).not.toBeNull();
-    expect(screen.getByRole('heading', { name: 'Test App' })).not.toBeNull();
+    expect(screen.getByText('Test App')).not.toBeNull();
     expect(screen.getByRole('link', { name: 'Reports' }).getAttribute('href')).toBe('/en/reports');
   });
 
@@ -136,7 +137,7 @@ describe('AppBar top navigation', () => {
     renderAppBar();
 
     const logo = screen.getByAltText('app-logo');
-    const name = screen.getByRole('heading', { name: 'Test App' });
+    const name = screen.getByText('Test App');
     const navigation = screen.getByRole('link', { name: 'Reports' });
     const navbarGrid = logo.parentElement?.parentElement?.parentElement;
 
@@ -195,7 +196,7 @@ describe('AppBar top navigation', () => {
     );
 
     const logo = screen.getByAltText('app-logo');
-    const name = screen.getByRole('heading', { name: 'Test App' });
+    const name = screen.getByText('Test App');
     const navigation = screen.getByRole('link', { name: 'Reports' });
     const navbarGrid = logo.parentElement?.parentElement?.parentElement;
 
@@ -313,6 +314,47 @@ describe('AppBar top navigation', () => {
       'grid-template-areas: "logo name navigation controls"',
     );
     expect(document.head.textContent).not.toContain('grid-template-areas: "main"');
+  });
+});
+
+describe('AppBar title', () => {
+  it('should show the app name as text when the title bar shows the app name', () => {
+    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+      definition: { ...appDefinition, layout: { login: 'hidden', titleBarText: 'appName' } },
+      demoMode: false,
+      revision: 1,
+      blockManifests: [],
+    });
+
+    renderAppBar({ children: 'Reports' });
+
+    expect(screen.getByText('Test App')).not.toBeNull();
+    expect(screen.queryByRole('heading')).toBeNull();
+  });
+
+  it('should show the page name as the level 1 heading when the title bar shows the page name', () => {
+    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+      definition: { ...appDefinition, layout: { login: 'hidden', titleBarText: 'pageName' } },
+      demoMode: false,
+      revision: 1,
+      blockManifests: [],
+    });
+
+    renderAppBar({ children: 'Reports' });
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Reports' })).not.toBeNull();
+  });
+
+  it('should render no heading when the page hides its name', () => {
+    renderAppBar({ children: 'Reports', hideName: true });
+
+    expect(screen.queryByRole('heading')).toBeNull();
+  });
+
+  it('should render no heading when the page renders its own', () => {
+    renderAppBar({ children: 'Reports', hasPageHeading: true });
+
+    expect(screen.queryByRole('heading')).toBeNull();
   });
 });
 

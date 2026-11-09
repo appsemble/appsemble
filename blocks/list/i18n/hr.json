@@ -1,5 +1,9 @@
 {
+  "closeImage": "Zatvori uvećanu sliku",
+  "downloadImage": "Preuzmi u HD-u",
   "error": "Došlo je do pogreške pri dohvaćanju podataka.",
-  "noData": "Nema dostupnih podataka.",
-  "toggleList": ""
+  "loading": "Učitavanje",
+  "moreOptions": "Više opcija",
+  "noData": "Nema podataka.",
+  "toggleList": "Prikaži ili sakrij stavke"
 }
