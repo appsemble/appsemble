@@ -19,7 +19,17 @@ under the MIT license.
 
 ## Usage
 
-<!-- TODO: write -->
+Start the language server over standard input and output:
+
+```sh
+npx @appsemble/appsemble-language-server --stdio
+```
+
+The server needs a transport argument: `--stdio`, `--node-ipc` or `--socket=<port>`. Editors pass
+one when they start it.
+
+To run the language server in a browser, start `@appsemble/appsemble-language-server/worker` as a
+web worker and connect a language client to it.
 
 ## Building
 
