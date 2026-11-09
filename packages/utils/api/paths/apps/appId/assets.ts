@@ -12,6 +12,13 @@ export const pathItems: OpenAPIV3.PathItemObject = {
       { $ref: '#/components/parameters/$skip' },
       { $ref: '#/components/parameters/$top' },
       { $ref: '#/components/parameters/seed' },
+      {
+        name: 'named',
+        in: 'query',
+        description:
+          'Return only the named, non-ephemeral assets, with their `id`, `name`, `seed`, `clonable` and `sha256`.',
+        schema: { type: 'boolean' },
+      },
     ],
     responses: {
       200: {
@@ -23,7 +30,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
-    security: [{ studio: [] }, {}],
+    security: [{ studio: [] }, { cli: ['assets:write'] }, {}],
   },
   post: {
     tags: ['common', 'app', 'asset'],

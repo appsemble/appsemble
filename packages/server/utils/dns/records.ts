@@ -134,6 +134,7 @@ function getSubname(host: string, zone: string): string {
  * @param provider The DNS provider to write the resource record sets to.
  */
 async function writeRRsets(rrsets: RRset[], { token, zone }: Provider): Promise<void> {
+  const deadline = Date.now() + 60_000;
   for (let index = 0; index < rrsets.length; index += bulkSize) {
     const chunk = rrsets.slice(index, index + bulkSize);
     for (let retries = 0; ; retries += 1) {
@@ -152,6 +153,9 @@ async function writeRRsets(rrsets: RRset[], { token, zone }: Provider): Promise<
         }
         const seconds = Number(error.response.headers['retry-after']);
         const retryAfter = Number.isFinite(seconds) ? seconds : 1;
+        if (Date.now() + retryAfter * 1000 >= deadline) {
+          throw error;
+        }
         logger.warn(`Rate limited by the deSEC API. Retrying in ${retryAfter} seconds`);
         await sleep(retryAfter * 1000);
       }

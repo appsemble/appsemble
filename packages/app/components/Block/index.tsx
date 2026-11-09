@@ -7,10 +7,15 @@ import {
   type PageDefinition,
   type Remapper,
 } from '@appsemble/lang-sdk';
-import { Title, useIsInModalDialog, useMessages } from '@appsemble/react-components';
+import {
+  Title,
+  trackShadowModalDialogs,
+  useIsInModalDialog,
+  useMessages,
+} from '@appsemble/react-components';
 import { type BlockUtils } from '@appsemble/sdk';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
-import { createIconElement, fa, resolveIcon } from '@appsemble/web-utils';
+import { createIconElement, fa, getIconAsset, resolveIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -23,7 +28,7 @@ import { callBootstrap, getBlockFileURL } from '../../utils/bootstrapper.js';
 import { createEvents } from '../../utils/events.js';
 import { injectCSS } from '../../utils/injectCSS.js';
 import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
-import { apiUrl, appId, appUpdated } from '../../utils/settings.js';
+import { apiUrl, appId, appUpdated, iconAssetIds } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -125,6 +130,7 @@ export function Block({
     abortController.current = new AbortController();
   }
   const [initialized, setInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error>();
   const pushNotifications = useServiceWorkerRegistration();
   const isInModalDialog = useIsInModalDialog();
@@ -163,6 +169,9 @@ export function Block({
     setInitialized(true);
 
     const shadowRoot = div?.attachShadow({ mode: 'open' });
+    if (div) {
+      cleanups.current.push(trackShadowModalDialogs(div));
+    }
 
     // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
     const events = createEvents(ee, pageReady, manifest.events, block.events);
@@ -209,7 +218,6 @@ export function Block({
           `appsemble-group-${appId}-appMemberSelectedGroup`,
           JSON.stringify(selectedGroup),
         );
-        navigate(0);
         return selectedGroup;
       },
       getAppMemberSelectedGroup: () => appMemberSelectedGroup,
@@ -239,7 +247,9 @@ export function Block({
       },
       fa,
       resolveIcon(reference) {
-        return resolveIcon(reference, appDefinition.icons, utils.asset);
+        return resolveIcon(reference, appDefinition.icons, (asset) =>
+          getIconAsset(apiUrl, appId, asset, iconAssetIds),
+        );
       },
       icon(reference, options) {
         return createIconElement(utils.resolveIcon(reference), options);
@@ -258,6 +268,11 @@ export function Block({
 
     (async () => {
       if (shadowRoot) {
+        // The reduced motion rule of the app stylesheet doesn't reach into the shadow root.
+        const reducedMotionStyle = document.createElement('style');
+        reducedMotionStyle.textContent =
+          '@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; } }';
+        shadowRoot.append(reducedMotionStyle);
         await Promise.all(
           [
             bulmaUrl,
@@ -290,6 +305,7 @@ export function Block({
         pathIndex: prefixIndex,
       });
 
+      setIsLoading(false);
       ready(block);
     })().catch(setError);
   }, [
@@ -364,6 +380,7 @@ export function Block({
 
       const float = (
         <div
+          aria-busy={isLoading}
           className={classNames(`is-flex ${styles.root} ${styles.float}`, {
             [styles.top]: position.includes('top'),
             [styles.bottom]: position.includes('bottom'),
@@ -389,6 +406,7 @@ export function Block({
 
     return (
       <div
+        aria-busy={isLoading}
         className={`is-flex ${styles.root} ${layout === 'grow' ? styles.grow : styles.static}`}
         data-block={blockName}
         data-path={prefix}

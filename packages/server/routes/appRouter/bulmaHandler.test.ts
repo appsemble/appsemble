@@ -48,4 +48,72 @@ describe('bulmaHandler', () => {
     await request.get(`/bulma/${bulmaVersion}/bulma.min.css?primaryColor=%23654321`);
     await vi.waitFor(async () => expect(await Theme.count()).toBe(2));
   });
+
+  it('should expose the body font as both font custom properties by default', async () => {
+    const response = await request.get(bulmaUrl);
+    expect(response.status).toBe(200);
+    expect(response.data).toContain("--font-family: 'Open Sans', sans-serif");
+    expect(response.data).toContain("--font-family-display: 'Open Sans', sans-serif");
+  });
+
+  it('should import and expose a google display font', async () => {
+    const response = await request.get(
+      `/bulma/${bulmaVersion}/bulma.min.css?displayFontFamily=Baloo+2&displayFontSource=google`,
+    );
+    expect(response.status).toBe(200);
+    expect(response.data).toContain(
+      '@import"https://fonts.googleapis.com/css?display=swap&family=Baloo+2"',
+    );
+    expect(response.data).toContain("--font-family: 'Open Sans', sans-serif");
+    expect(response.data).toContain("--font-family-display: 'Baloo 2', sans-serif");
+
+    const theme = await vi.waitFor(async () => {
+      const persisted = await Theme.findOne();
+      expect(persisted).not.toBeNull();
+      return persisted;
+    });
+    expect(theme!.displayFontFamily).toBe('Baloo 2');
+    expect(theme!.displayFontSource).toBe('google');
+  });
+
+  it('should persist a display font without a source as a google font', async () => {
+    const response = await request.get(`${bulmaUrl}&displayFontFamily=Baloo+2`);
+    expect(response.status).toBe(200);
+    expect(response.data).toContain(
+      '@import"https://fonts.googleapis.com/css?display=swap&family=Baloo+2"',
+    );
+
+    const theme = await vi.waitFor(async () => {
+      const persisted = await Theme.findOne();
+      expect(persisted).not.toBeNull();
+      return persisted;
+    });
+    expect(theme!.displayFontSource).toBe('google');
+  });
+
+  it('should persist themes with different display fonts separately', async () => {
+    await request.get(`${bulmaUrl}&displayFontFamily=Baloo+2&displayFontSource=google`);
+    await vi.waitFor(async () => expect(await Theme.count()).toBe(1));
+    await request.get(`${bulmaUrl}&displayFontFamily=Lato&displayFontSource=google`);
+    await vi.waitFor(async () => expect(await Theme.count()).toBe(2));
+  });
+
+  it('should import a google font once when the display font equals the body font', async () => {
+    const response = await request.get(
+      `/bulma/${bulmaVersion}/bulma.min.css?fontFamily=Lato&fontSource=google&displayFontFamily=Lato&displayFontSource=google`,
+    );
+    expect(response.status).toBe(200);
+    expect(response.data.match(/@import"https:\/\/fonts\.googleapis\.com[^"]*"/g)).toStrictEqual([
+      '@import"https://fonts.googleapis.com/css?display=swap&family=Lato"',
+    ]);
+  });
+
+  it('should not import a custom display font from google fonts', async () => {
+    const response = await request.get(
+      `/bulma/${bulmaVersion}/bulma.min.css?displayFontFamily=Comic+Sans&displayFontSource=custom`,
+    );
+    expect(response.status).toBe(200);
+    expect(response.data).not.toContain('family=Comic+Sans');
+    expect(response.data).toContain("--font-family-display: 'Comic Sans', sans-serif");
+  });
 });

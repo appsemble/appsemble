@@ -1,9 +1,21 @@
+import { type AddressInfo, createServer as createTcpServer, type Socket } from 'node:net';
+
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
 import { type ImapFlow, type MailboxLockObject } from 'imapflow';
 import { type Transporter } from 'nodemailer';
-import { afterAll, afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type Mock,
+  onTestFinished,
+  vi,
+} from 'vitest';
 
 import { Mailer } from './Mailer.js';
 import { App, AppMessages, Organization, OrganizationMember, User } from '../../models/index.js';
@@ -11,6 +23,7 @@ import { type Argv, argv, setArgv } from '../argv.js';
 import { createServer } from '../createServer.js';
 import { encrypt } from '../crypto.js';
 import { createTestUser } from '../test/authorization.js';
+import { countConnections } from '../test/countConnections.js';
 
 let mailer: Mailer;
 
@@ -1004,6 +1017,99 @@ _Test App_
       await expect(() => mailer.sendEmail(email)).rejects.toThrow(
         'Unable to determine the sender or recipient of the message.',
       );
+    });
+  });
+
+  describe('app SMTP settings', () => {
+    function sendAppEmail(emailHost: string, emailPort: number): Promise<void> {
+      return mailer.sendEmail({
+        to: 'test@example.com',
+        subject: 'Test',
+        text: 'Test',
+        html: '<p>Test</p>',
+        app: {
+          id: 1,
+          demoMode: false,
+          emailHost,
+          emailName: 'Test',
+          emailPassword: encrypt('secret', baseArgv.aesSecret!),
+          emailPort,
+          emailSecure: false,
+          emailUser: 'user@example.com',
+        },
+      });
+    }
+
+    beforeEach(() => {
+      vi.stubEnv('VITEST_CONF_ALLOW_PRIVATE_IP_PROXY', '');
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it.each(['127.0.0.1', 'localhost'])(
+      'should not connect to an SMTP server at %s',
+      async (emailHost) => {
+        const target = await countConnections();
+
+        await expect(sendAppEmail(emailHost, target.port)).rejects.toThrow(/is not allowed/);
+        expect(target.connections).toBe(0);
+      },
+    );
+
+    it('should reject an invalid SMTP port', async () => {
+      vi.stubEnv('SSRF_ALLOW_IP_ADDRESS_LIST', '127.0.0.1');
+
+      await expect(sendAppEmail('127.0.0.1', 70_000)).rejects.toThrow(/Port should be/);
+    });
+
+    it('should send email through an SMTP server on an allowed address', async () => {
+      vi.stubEnv('SSRF_ALLOW_IP_ADDRESS_LIST', '127.0.0.1');
+      let message = '';
+      const sockets: Socket[] = [];
+      const smtpServer = createTcpServer((socket) => {
+        sockets.push(socket);
+        let receivingData = false;
+        socket.write('220 localhost ESMTP\r\n');
+        socket.on('data', (chunk) => {
+          if (receivingData) {
+            message += chunk;
+            if (message.endsWith('\r\n.\r\n')) {
+              receivingData = false;
+              socket.write('250 OK\r\n');
+            }
+            return;
+          }
+          switch (String(chunk).slice(0, 4).toUpperCase()) {
+            case 'EHLO':
+              socket.write('250-localhost\r\n250 AUTH PLAIN\r\n');
+              break;
+            case 'AUTH':
+              socket.write('235 OK\r\n');
+              break;
+            case 'DATA':
+              receivingData = true;
+              socket.write('354 OK\r\n');
+              break;
+            default:
+              socket.write('250 OK\r\n');
+          }
+        });
+      });
+      onTestFinished(() => {
+        for (const socket of sockets) {
+          socket.destroy();
+        }
+        smtpServer.close();
+      });
+      await new Promise<void>((resolve) => {
+        smtpServer.listen(0, '127.0.0.1', resolve);
+      });
+
+      await sendAppEmail('127.0.0.1', (smtpServer.address() as AddressInfo).port);
+
+      expect(message).toContain('Subject: Test');
     });
   });
 });

@@ -10,6 +10,7 @@ export const {
   displayInstallationPrompt,
   e2e,
   enableSelfRegistration,
+  iconAssetIds,
   id: appId,
   languages,
   logins,

@@ -9,6 +9,11 @@ import styles from './index.module.css';
 import { type FilterValue, type FilterValues } from '../block.js';
 import { toOData } from './utils/toOData.js';
 
+/**
+ * Field types that render a single labelable control with the field name as its id.
+ */
+const fieldTypesWithControlId = new Set(['boolean', 'date', 'enum', 'list', 'string']);
+
 export function FilterBlock({
   actions,
   events,
@@ -172,9 +177,17 @@ export function FilterBlock({
             )}
             key={highlightedField.name}
           >
-            {highlightedField.label ? (
-              <label className="label">{utils.remap(highlightedField.label, {}) as string}</label>
-            ) : null}
+            <label
+              className={classNames('label', { 'is-sr-only': !highlightedField.label })}
+              htmlFor={
+                fieldTypesWithControlId.has(highlightedField.type)
+                  ? highlightedField.name
+                  : undefined
+              }
+              id={`${highlightedField.name}-label`}
+            >
+              {(utils.remap(highlightedField.label, {}) as string) ?? highlightedField.name}
+            </label>
             <div className="control">
               <FieldComponent
                 field={highlightedField}
@@ -196,6 +209,7 @@ export function FilterBlock({
         {showModal ? (
           <>
             <Button
+              aria-label={utils.formatMessage('openLabel')}
               className={classNames(
                 'mx-2 my-2',
                 { 'is-primary': true },
@@ -226,9 +240,13 @@ export function FilterBlock({
                 (field) =>
                   highlightedFields.includes(field) || (
                     <div className="field" key={field.name}>
-                      {field.label ? (
-                        <label className="label">{utils.remap(field.label, {}) as string}</label>
-                      ) : null}
+                      <label
+                        className={classNames('label', { 'is-sr-only': !field.label })}
+                        htmlFor={fieldTypesWithControlId.has(field.type) ? field.name : undefined}
+                        id={`${field.name}-label`}
+                      >
+                        {(utils.remap(field.label, {}) as string) ?? field.name}
+                      </label>
                       <div className="control">
                         <FieldComponent
                           field={field}

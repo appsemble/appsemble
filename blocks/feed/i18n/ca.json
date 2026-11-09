@@ -1,5 +1,7 @@
 {
   "anonymousLabel": "",
+  "avatar": "",
+  "buttonLabel": "",
   "closeImage": "",
   "downloadImage": "",
   "emptyLabel": "",
@@ -8,5 +10,9 @@
   "moreOptions": "",
   "permissionDeniedLabel": "",
   "replyErrorMessage": "",
-  "replyLabel": ""
+  "replyLabel": "",
+  "sendReply": "",
+  "statusInProgress": "",
+  "statusOpen": "",
+  "statusResolved": ""
 }

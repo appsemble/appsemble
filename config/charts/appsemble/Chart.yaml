@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.5
-appVersion: 0.40.5
+version: 0.40.10
+appVersion: 0.40.10
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -27,109 +27,101 @@ dependencies:
     repository: https://seaweedfs.github.io/seaweedfs/helm
     condition: seaweedfs.enabled
   - name: valkey
-    version: 0.12.0
+    version: 0.12.1
     repository: https://valkey.io/valkey-helm
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(button-list): Add data-driven pressed state for toggle buttons."
+      description: "Block(form): Add submitErrorMessage to show a custom message when
+        the submit action fails."
     - kind: added
-      description: "Block(footer): Render the copyright as a link when its remapper
-        returns a label and link."
+      description: "App: Allow configuring the notifications strategy per role."
     - kind: added
-      description: "Block(form): Add autocomplete to string and number fields to set
-        the HTML autocomplete attribute."
+      description: "Appsemble-language-server: Publish the language server to npm."
     - kind: added
-      description: "Block(form): Add errorSummaryPosition to list every invalid field
-        at the top of the form."
+      description: "Preact-components: Add ariaLabel to Dropdown to name a toggle
+        button that shows no label."
     - kind: added
-      description: "Block(form): Add helpPosition to show help and errors between the
-        label and the input."
+      description: "Preact-components: Add tabIndex to Message to let keyboard users
+        scroll a message that overflows."
     - kind: added
-      description: "Block(form): Add labelTextFormat: markdown to render boolean field
-        label text as Markdown."
-    - kind: added
-      description: "Block(table): Add alt to image fields."
-    - kind: added
-      description: "Cli: Delete app variant message keys patched to null."
-    - kind: added
-      description: "E2e: Add scanAppAccessibility fixture to score app accessibility
-        with axe-core."
-    - kind: added
-      description: "Preact-components: Add FormComponentHelpPositionContext to render
-        help above form controls."
+      description: "Server: Store a hash of asset content and add a named filter to
+        the asset listing."
     - kind: changed
-      description: "App: Leave app definition validation out of the app bundle, which
-        makes it a third smaller."
-    - kind: changed
-      description: "App: Preload the font stylesheet and the app messages from the HTML."
-    - kind: changed
-      description: "Lang-sdk: Prefix prototype property names with # in the xml.parse remapper."
+      description: "Cli: Upload only new and changed seed assets when updating an app."
     - kind: fixed
-      description: "Block(cards): Open cards with the keyboard."
+      description: "Block(filter): Darken the prompt of a list field to meet the AA
+        contrast ratio."
     - kind: fixed
-      description: "Block(form): Disable the fields until the onLoad action has
-        finished, so the loaded data does not overwrite user input."
+      description: "Block(form): Let keyboard users scroll error messages, and stop
+        hidden ones from scrolling."
     - kind: fixed
-      description: "Block(form): Give the password visibility toggle an accessible name."
+      description: "Block(form): Stop filterable enum fields from re-rendering continuously."
     - kind: fixed
-      description: "Block(form): Label form selection dialogs and their choice controls."
+      description: "Block(table): Name each checkbox by its column label."
     - kind: fixed
-      description: "Block(form): Show and hide password fields that have a datalist."
+      description: "Block(table): Name icon-only dropdowns by their column label."
     - kind: fixed
-      description: "Block(form): Validate required and prohibited requirements of
-        boolean fields."
+      description: "App: Request custom icon assets by id so browsers cache them."
     - kind: fixed
-      description: "Block(list): Expose button titles as accessible names for list actions."
+      description: "App: Wait for the app controller to initialize before running
+        controller actions."
     - kind: fixed
-      description: "Block(table): Sort columns and open clickable cells with the keyboard."
+      description: "Appsemble-language-server: Keep reporting schema errors after the
+        blocks used in an app change."
     - kind: fixed
-      description: "App: Initialize blocks with the current viewport mode."
+      description: "Appsemble-language-server: Replace old errors and point at each
+        alias when aliases in an app definition have no anchor."
     - kind: fixed
-      description: "App: Make the dialog action keyboard and screen reader accessible."
+      description: "Appsemble-language-server: Show errors from YAML validation, hover
+        and completion in the language server output."
     - kind: fixed
-      description: "App: Open mailto:, tel: and sms: links without leaving a blank tab behind."
+      description: "Lang-sdk: Stop reporting an unexpected error for a flow page
+        without steps or a container page without pages."
     - kind: fixed
-      description: "App: Render the repeated app name in the title bar as text, not a heading."
+      description: "Sdk: Allow controller handler names to differ from configured action names."
     - kind: fixed
-      description: "App: Resolve tab.name to the opened tab, not the first tab, when
-        the tab list loads as it opens."
+      description: "Server: Copy the content of every unnamed asset when creating an
+        app from a template."
     - kind: fixed
-      description: "App: Show float blocks in a dialog on top of the dialog."
+      description: "Server: Fix reseeding demo resources with multiple or unseeded references."
     - kind: fixed
-      description: "Cli: Keep patching variant messages after a language without messages."
+      description: "Server: Fix restoring the seed assets of demo apps in the nightly cleanup."
     - kind: fixed
-      description: "Preact-components: Add accessible names and states to loaders,
-        dropdowns, radio groups and sliders."
+      description: "Server: Fix restoring the seed resources of demo apps in the
+        nightly cleanup."
     - kind: fixed
-      description: "Preact-components: Keep an open date picker open when its disabled
-        dates are recalculated."
+      description: "Server: Fix stopping idle companion containers and starting them
+        on the next request."
     - kind: fixed
-      description: "React-components: Announce Loader to screen readers as a loading status."
+      description: "Server: Fix the Studio View app link of unlisted apps for users
+        outside the organization."
     - kind: fixed
-      description: "React-components: Make Modal and ModalCard accessible modal
-        dialogs with focus management."
+      description: "Server: Fix the demo app member cleanup failing on instances with
+        many apps."
+    - kind: fixed
+      description: "Server: Notify only the roles and author listed in resource hook
+        notifications."
+    - kind: fixed
+      description: "Server: Show the underlying error in database connection error messages."
+    - kind: fixed
+      description: "Service-worker: Remove cached named assets when the server reports
+        them missing."
     - kind: security
-      description: "Block(form): Update the markdown editor and KaTeX to patch a KaTeX
-        trust bypass."
+      description: "Node-utils: Block companion container redirects to other hosts."
     - kind: security
-      description: "Cli: Update postcss-preset-env to v10."
+      description: "Node-utils: Block request action URLs that only resemble companion
+        container URLs."
     - kind: security
-      description: "Lang-sdk: Update fast-xml-parser to patch entity expansion vulnerabilities."
+      description: "Server: Block app login, push and SMTP connections to private addresses."
     - kind: security
-      description: "Node-utils: Update webpack-dev-middleware to patch a path
-        traversal vulnerability."
+      description: "Server: Block client credentials token requests to private addresses."
     - kind: security
-      description: "Server: Escape HTML in the inline settings script of apps and the studio."
+      description: "Server: Block email action attachment downloads from private addresses."
     - kind: security
-      description: "Server: Update dependencies to patch known vulnerabilities."
-    - kind: security
-      description: "Webpack-config: Update css-minimizer-webpack-plugin to v8 to fix
-        serialize-javascript advisories."
-    - kind: security
-      description: "Webpack-core: Update css-minimizer-webpack-plugin to v8 to fix
-        serialize-javascript advisories."
+      description: "Server: Limit email action attachments downloaded from links to 25
+        MiB per email."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

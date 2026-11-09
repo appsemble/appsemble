@@ -34,6 +34,16 @@
       ],
       "depNameTemplate": "@playwright/test",
       "datasourceTemplate": "npm"
+    },
+    {
+      "description": "Track the 'lighthouse' job's mcr.microsoft.com/playwright image tag against the @playwright/test npm version",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.gitlab-ci\\.yml$/"],
+      "matchStrings": [
+        "\\nlighthouse:[\\s\\S]*?mcr\\.microsoft\\.com/playwright:v(?<currentValue>\\d+\\.\\d+\\.\\d+)-noble"
+      ],
+      "depNameTemplate": "@playwright/test",
+      "datasourceTemplate": "npm"
     }
   ],
   "packageRules": [

@@ -273,7 +273,6 @@ export function Page(): ReactNode {
             `appsemble-group-${appId}-appMemberSelectedGroup`,
             JSON.stringify(selectedGroup),
           );
-          navigate(0);
           return selectedGroup;
         },
         getAppMemberSelectedGroup: () => appMemberSelectedGroup,
@@ -403,6 +402,7 @@ export function Page(): ReactNode {
 
     return (
       <main
+        aria-label={pageName}
         className={classNames(styles.root, {
           // A grid that places the bottom navigation flows around it, so it needs no clearance.
           [styles.hasBottomNavigation]:
@@ -410,6 +410,7 @@ export function Page(): ReactNode {
         })}
         data-path={prefix}
         data-path-index={prefixIndex}
+        tabIndex={-1}
       >
         <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
         {/* A grid layout that names a breadcrumbs area renders the trail there, and a tabs page

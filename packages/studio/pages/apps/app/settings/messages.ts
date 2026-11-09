@@ -135,8 +135,8 @@ export const messages = defineMessages({
     defaultMessage: 'This needs to be a valid Meta Pixel ID',
   },
   msClarityIDLabel: {
-    id: 'studio.ZUMv1d',
-    defaultMessage: 'MS Clarity Project ID',
+    id: 'studio.+gcqF7',
+    defaultMessage: 'MS Clarity project ID',
   },
   msClarityIDDescription: {
     id: 'studio.u4ctdO',
@@ -144,8 +144,8 @@ export const messages = defineMessages({
       'If this is specified, MS Clarity will be applied to your app. For more information, please refer to the <link>documentation</link>.',
   },
   msClarityError: {
-    id: 'studio.4e71es',
-    defaultMessage: 'This needs to be a valid MS Clarity Project ID',
+    id: 'studio.YorHyj',
+    defaultMessage: 'This needs to be a valid MS Clarity project ID',
   },
   saveChanges: {
     id: 'studio.X0ha1a',
@@ -255,8 +255,8 @@ export const messages = defineMessages({
       'The name displayed for emails sent for this app. The email address won’t change.',
   },
   displayAppMemberNameLabel: {
-    id: 'studio.xWGGQF',
-    defaultMessage: 'Display App Member Name',
+    id: 'studio.aVzfKh',
+    defaultMessage: 'Display app member name',
   },
   displayAppMemberNameDescription: {
     id: 'studio.ipo4aU',
@@ -264,24 +264,24 @@ export const messages = defineMessages({
       "Whether to display the logged in app member's name in the title bar, if the name is not available email is displayed",
   },
   displayInstallationPromptLabel: {
-    id: 'studio.rQb2kK',
-    defaultMessage: 'Prompt App Install',
+    id: 'studio.PzoRtl',
+    defaultMessage: 'Prompt app install',
   },
   displayInstallationPromptDescription: {
     id: 'studio.L5Cie6',
     defaultMessage: 'Whether to display installation prompts to the users of the app',
   },
   skipGroupInvitesLabel: {
-    id: 'studio.vIs3fn',
-    defaultMessage: 'Skip Group Invites',
+    id: 'studio.pm8anK',
+    defaultMessage: 'Skip group invites',
   },
   skipGroupInvitesDescription: {
     id: 'studio.UGq/Er',
     defaultMessage: 'Whether to skip sending group invite emails and add group members directly',
   },
   supportedLanguages: {
-    id: 'studio.KLr1Qo',
-    defaultMessage: 'Supported Languages',
+    id: 'studio.Xu3qea',
+    defaultMessage: 'Supported languages',
   },
   supportedLanguagesHelp: {
     id: 'studio.q+JBOt',

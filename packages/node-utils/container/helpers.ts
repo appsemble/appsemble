@@ -150,20 +150,20 @@ export async function deleteResource(
 }
 
 /**
- * Accepts a url used to call a companion container.
+ * Accepts a hostname used to call a companion container.
  *
- * @param url Url for internal communication to a container.
+ * @param hostname Hostname for internal communication to a container.
  * @returns the metadata used to form the url.
  * @example input: `containername-appname-1.companion-containers.svc.cluster.local`
  * result: containername-appname-1, 1, appname, appsemble, appsemble-or-namespace
  */
-export function parseServiceUrl(url: string): {
+export function parseServiceUrl(hostname: string): {
   deploymentName: string;
   appId: string;
   appName: string;
   namespace: string;
 } {
-  const elements = url.replace('http://', '').split('.');
+  const elements = hostname.split('.');
 
   const deploymentName = elements[0];
   const namespace = elements[1];

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { appendFile, cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -24,8 +25,10 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import {
   deleteApp,
+  getSeedAssetFiles,
   patchApp,
   publishApp,
+  publishSeedAssets,
   publishSeedResources,
   resolveAppIdAndRemote,
   traverseAppDirectory,
@@ -280,6 +283,220 @@ describe('app', () => {
       } finally {
         await rm(path, { recursive: true, force: true });
       }
+    });
+  });
+
+  describe('publishSeedAssets', () => {
+    let app: models.App;
+    let path: string;
+
+    async function publish(assetsClonable = false): Promise<void> {
+      const files = await getSeedAssetFiles(join(path, 'assets'));
+      await publishSeedAssets(path, files, app.toJSON(), testApp.defaults.baseURL!, assetsClonable);
+    }
+
+    async function findAssets(): Promise<models.Asset[]> {
+      const { Asset } = await getAppDB(app.id);
+      return Asset.findAll({ order: [['name', 'ASC']] });
+    }
+
+    function writeAsset(filename: string, content: string): Promise<void> {
+      return writeFile(join(path, 'assets', filename), content);
+    }
+
+    beforeEach(async () => {
+      vi.useRealTimers();
+      await authorizeCLI('assets:write', testApp);
+      app = await App.create({
+        OrganizationId: organization.id,
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+        definition: { name: 'Seed assets', defaultPage: '', pages: [] },
+      });
+      path = await mkdtemp(join(tmpdir(), 'seed-assets-'));
+      await mkdir(join(path, 'assets'));
+    });
+
+    afterEach(async () => {
+      await rm(path, { recursive: true, force: true });
+      vi.useFakeTimers();
+    });
+
+    it('keeps the asset of an unchanged file', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish();
+      const [{ id }] = await findAssets();
+
+      await publish();
+
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([id]);
+    });
+
+    it('replaces the asset of a changed file', async () => {
+      await writeAsset('Foo Bar.txt', 'old');
+      await publish();
+      const [{ id }] = await findAssets();
+
+      await writeAsset('Foo Bar.txt', 'new');
+      await publish();
+
+      const assets = await findAssets();
+      expect(assets).toHaveLength(1);
+      expect(assets[0].id).not.toBe(id);
+      const { bucket, key } = getAppAssetLocation(app.id, assets[0].id);
+      expect(String(await getS3FileBuffer(bucket, key))).toBe('new');
+    });
+
+    it('replaces an asset without a stored hash once', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish();
+      const [legacy] = await findAssets();
+      await legacy.update({ sha256: null });
+
+      await publish();
+      const [replaced] = await findAssets();
+      await publish();
+
+      expect(replaced.id).not.toBe(legacy.id);
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([replaced.id]);
+    });
+
+    it('replaces an asset when its clonable value differs', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish(false);
+      const [{ id }] = await findAssets();
+
+      await publish(true);
+
+      const assets = await findAssets();
+      expect(assets).toHaveLength(1);
+      expect(assets[0].id).not.toBe(id);
+      expect(assets[0].clonable).toBe(true);
+    });
+
+    it('keeps an unchanged asset that was uploaded in Studio', async () => {
+      const { Asset } = await getAppDB(app.id);
+      const { id } = await Asset.create({
+        name: 'foo',
+        mime: 'text/plain',
+        seed: false,
+        sha256: createHash('sha256').update('foo').digest('hex'),
+      });
+      await writeAsset('foo.txt', 'foo');
+
+      await publish();
+
+      expect((await findAssets()).map((asset) => [asset.id, asset.seed])).toStrictEqual([
+        [id, false],
+      ]);
+    });
+
+    it('replaces a changed asset that was uploaded in Studio', async () => {
+      const { Asset } = await getAppDB(app.id);
+      const { id } = await Asset.create({
+        name: 'foo',
+        mime: 'text/plain',
+        seed: false,
+        sha256: createHash('sha256').update('old').digest('hex'),
+      });
+      await writeAsset('foo.txt', 'new');
+
+      await publish();
+
+      const assets = await findAssets();
+      expect(assets).toHaveLength(1);
+      expect(assets[0].id).not.toBe(id);
+      expect(assets[0].seed).toBe(true);
+    });
+
+    it('deletes seed assets without a local file', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await writeAsset('bar.txt', 'bar');
+      await publish();
+
+      await rm(join(path, 'assets', 'bar.txt'));
+      await publish();
+
+      expect((await findAssets()).map((asset) => asset.name)).toStrictEqual(['foo']);
+    });
+
+    it('keeps non-seed assets without a local file', async () => {
+      const { Asset } = await getAppDB(app.id);
+      const { id } = await Asset.create({ name: 'studio', mime: 'text/plain', seed: false });
+
+      await publish();
+
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([id]);
+    });
+
+    it('changes nothing on the server if two files normalize to the same name', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish();
+      const [{ id }] = await findAssets();
+
+      await writeAsset('foo.txt', 'changed');
+      await writeAsset('FOO.png', 'collision');
+
+      await expect(publish()).rejects.toThrow(
+        /^Asset files (FOO\.png and foo\.txt|foo\.txt and FOO\.png) both normalize to foo$/,
+      );
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([id]);
+    });
+
+    it('changes nothing on the server if a file normalizes to an empty name', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish();
+      const [{ id }] = await findAssets();
+
+      await writeAsset('foo.txt', 'changed');
+      await writeAsset('日本語.txt', 'no name');
+
+      await expect(publish()).rejects.toThrow('Asset file 日本語.txt normalizes to an empty name');
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([id]);
+    });
+
+    it('deletes nothing if an upload fails', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await writeAsset('bar.txt', 'bar');
+      await publish();
+      const ids = (await findAssets()).map((asset) => asset.id);
+
+      await rm(join(path, 'assets', 'bar.txt'));
+      await writeAsset('broken.png', 'not an image');
+
+      await publish();
+
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual(ids);
+    });
+
+    it('keeps an unchanged clonable asset', async () => {
+      await writeAsset('foo.txt', 'foo');
+      await publish(true);
+      const [{ id }] = await findAssets();
+
+      await publish(true);
+
+      expect((await findAssets()).map((asset) => asset.id)).toStrictEqual([id]);
+    });
+
+    it('replaces all seed assets of a demo app', async () => {
+      await app.update({ demoMode: true });
+      await writeAsset('foo.txt', 'foo');
+      await publish();
+      const { Asset } = await getAppDB(app.id);
+      const { id } = (await Asset.findOne({ where: { seed: true } }))!;
+
+      await publish();
+
+      const assets = await findAssets();
+      expect(assets.map(({ ephemeral, seed }) => ({ ephemeral, seed }))).toStrictEqual(
+        expect.arrayContaining([
+          { ephemeral: false, seed: true },
+          { ephemeral: true, seed: false },
+        ]),
+      );
+      expect(assets).toHaveLength(2);
+      expect(assets.map((asset) => asset.id)).not.toContain(id);
     });
   });
 
@@ -656,6 +873,32 @@ describe('app', () => {
           }),
         ),
       ).toStrictEqual([tuxData]);
+    });
+
+    it('should not create the app if two asset files normalize to the same name', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write assets:write', testApp);
+      const path = await mkdtemp(join(tmpdir(), 'asset-collision-'));
+      try {
+        await cp(resolveFixture('apps/test'), path, { recursive: true });
+        await writeFile(join(path, 'assets', 'TUX.txt'), 'collision');
+        await expect(
+          publishApp({
+            path,
+            organization: organization.id,
+            remote: testApp.defaults.baseURL!,
+            clientCredentials,
+            assets: true,
+            // Required defaults
+            visibility: 'unlisted',
+            iconBackground: '#ffffff',
+          }),
+        ).rejects.toThrow('both normalize to tux');
+        expect(await App.count()).toBe(0);
+      } finally {
+        await rm(path, { recursive: true, force: true });
+        vi.useFakeTimers();
+      }
     });
 
     it('should publish app with runtime config', async () => {
@@ -1327,6 +1570,88 @@ describe('app', () => {
         visibility: 'public',
         OrganizationId: organization.id,
       });
+    });
+
+    it('should not update the app if two asset files normalize to the same name', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write assets:write', testApp);
+      const path = await mkdtemp(join(tmpdir(), 'asset-collision-'));
+      const { definition } = app;
+      try {
+        await cp(resolveFixture('apps/test'), path, { recursive: true });
+        await writeFile(join(path, 'assets', 'TUX.txt'), 'collision');
+        await expect(
+          updateApp({
+            id: app.id,
+            path,
+            remote: testApp.defaults.baseURL!,
+            clientCredentials,
+            assets: true,
+            // Required defaults
+            visibility: 'unlisted',
+            iconBackground: '#ffffff',
+            force: false,
+          }),
+        ).rejects.toThrow('both normalize to tux');
+        await app.reload();
+        expect(app.definition).toStrictEqual(definition);
+      } finally {
+        await rm(path, { recursive: true, force: true });
+        vi.useFakeTimers();
+      }
+    });
+
+    it('should not change the assets of an app without the assets:write scope', async () => {
+      vi.useRealTimers();
+      const { Asset } = await getAppDB(app.id);
+      const { id } = await Asset.create({ name: 'tux', mime: 'text/plain', seed: true });
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+
+      await updateApp({
+        id: app.id,
+        path: resolveFixture('apps/test'),
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        assets: true,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+        force: false,
+      });
+      vi.useFakeTimers();
+
+      expect((await Asset.findAll()).map((asset) => asset.id)).toStrictEqual([id]);
+    });
+
+    it('should upload the seed assets of a demo app again on every update', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write assets:write', testApp);
+      const update = (): Promise<void> =>
+        updateApp({
+          id: app.id,
+          path: resolveFixture('apps/test'),
+          remote: testApp.defaults.baseURL!,
+          clientCredentials,
+          assets: true,
+          demoMode: true,
+          // Required defaults
+          visibility: 'unlisted',
+          iconBackground: '#ffffff',
+          force: false,
+        });
+      const { Asset } = await getAppDB(app.id);
+      const findSeedAssetIds = async (): Promise<string[]> =>
+        (await Asset.findAll({ where: { seed: true } })).map(({ id }) => id);
+
+      await update();
+      const firstIds = await findSeedAssetIds();
+      await update();
+      const secondIds = await findSeedAssetIds();
+      vi.useFakeTimers();
+
+      expect(firstIds).not.toHaveLength(0);
+      expect(secondIds).toHaveLength(firstIds.length);
+      expect(secondIds.filter((id) => firstIds.includes(id))).toStrictEqual([]);
     });
 
     it('should update app', async () => {
@@ -2918,10 +3243,8 @@ describe('app', () => {
 
   describe('writeAppMessages', () => {
     it('should extract messages from app-definition and write to file in i18n directory', async () => {
-      const initialMessages = JSON.parse(
-        String(await readFixture('apps/test-messages/i18n/nl.json')),
-      );
-      expect(initialMessages).toMatchObject({
+      const initialMessages = await readFixture('apps/test-messages/i18n/nl.json');
+      expect(JSON.parse(String(initialMessages))).toMatchObject({
         app: {},
       });
       await writeAppMessages(resolveFixture('apps/test-messages'), ['nl'], [], 'json');
@@ -2933,17 +3256,12 @@ describe('app', () => {
           'pages.test-page': '',
         },
       });
-      await writeFile(
-        resolveFixture('apps/test-messages/i18n/nl.json'),
-        JSON.stringify(initialMessages, null, '\t'),
-      );
+      await writeFile(resolveFixture('apps/test-messages/i18n/nl.json'), initialMessages);
     });
 
     it('should not delete the email messages', async () => {
-      const initialMessages = JSON.parse(
-        String(await readFixture('apps/test-messages/i18n/en.json')),
-      );
-      expect(initialMessages).toMatchObject({
+      const initialMessages = await readFixture('apps/test-messages/i18n/en.json');
+      expect(JSON.parse(String(initialMessages))).toMatchObject({
         app: {
           'emails.appInvite.body': 'test invite body',
           description: '',
@@ -2961,10 +3279,7 @@ describe('app', () => {
           'pages.test-page': 'Test Page',
         },
       });
-      await writeFile(
-        resolveFixture('apps/test-messages/i18n/en.json'),
-        JSON.stringify(initialMessages, null, '\t'),
-      );
+      await writeFile(resolveFixture('apps/test-messages/i18n/en.json'), initialMessages);
     });
 
     it('should throw if the language file does not exist', async () => {
@@ -2986,9 +3301,7 @@ describe('app', () => {
     });
 
     it('should not require route segments in a verified file', async () => {
-      const initialMessages = JSON.parse(
-        String(await readFixture('apps/test-messages/i18n/nl.json')),
-      );
+      const initialMessages = await readFixture('apps/test-messages/i18n/nl.json');
       await writeFile(
         resolveFixture('apps/test-messages/i18n/nl.json'),
         JSON.stringify({
@@ -3005,10 +3318,7 @@ describe('app', () => {
         const messages = JSON.parse(String(await readFixture('apps/test-messages/i18n/nl.json')));
         expect(messages).toMatchObject({ app: { 'routes.Login': '' } });
       } finally {
-        await writeFile(
-          resolveFixture('apps/test-messages/i18n/nl.json'),
-          JSON.stringify(initialMessages, null, '\t'),
-        );
+        await writeFile(resolveFixture('apps/test-messages/i18n/nl.json'), initialMessages);
       }
     });
 

@@ -1,11 +1,11 @@
 import {
   AsyncButton,
+  BreachedPasswordSimpleFormError,
   Button,
   Message,
   PasswordField,
   PasswordStrengthIndicator,
   SimpleForm,
-  SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
   useData,
@@ -164,7 +164,7 @@ export function AppInvite(): ReactNode {
             <FormattedMessage {...messages.accept} />
           </SimpleSubmit>
         </div>
-        <SimpleFormError>
+        <BreachedPasswordSimpleFormError>
           {({ error }) =>
             axios.isAxiosError(error) && error.response?.status === 409 ? (
               <FormattedMessage {...messages.emailConflict} />
@@ -172,7 +172,7 @@ export function AppInvite(): ReactNode {
               <FormattedMessage {...messages.submissionError} />
             )
           }
-        </SimpleFormError>
+        </BreachedPasswordSimpleFormError>
       </SimpleForm>
     </BuiltinPage>
   );

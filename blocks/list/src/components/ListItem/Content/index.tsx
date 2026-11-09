@@ -71,7 +71,9 @@ export function ContentComponent({
             return (
               // There is nothing that is guaranteed to be unique in these items.
               <div className={`${styles.fieldWrapper} is-flex`} key={0}>
-                {actions.onClick.type === 'link' ? (
+                {actions.onClick.type === 'noop' ? (
+                  contentHTML(field, label, value)
+                ) : actions.onClick.type === 'link' ? (
                   <a className={`${styles.item} has-text-left is-block`} href={itemHref}>
                     {contentHTML(field, label, value)}
                   </a>

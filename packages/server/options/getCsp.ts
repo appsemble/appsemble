@@ -1,8 +1,14 @@
-import { baseTheme } from '@appsemble/lang-sdk';
+import { baseTheme, iterApp, type Theme } from '@appsemble/lang-sdk';
 import { type ContentSecurityPolicy, type GetCspParams } from '@appsemble/node-utils';
 
 import { getBlockAssetPublicOrigin } from '../utils/blockAssets.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
+
+function usesGoogleFont(theme: Partial<Theme> | undefined): boolean {
+  return [theme?.font, theme?.displayFont].some(
+    (font) => font != null && (font.source ?? baseTheme.font.source) === 'google',
+  );
+}
 
 function getCustomDirectiveSources(app: GetCspParams['app'], directive: string): string[] {
   return app.definition.contentSecurityPolicy?.[directive] ?? [];
@@ -22,7 +28,14 @@ export function getCsp({
   );
 
   const hasStrictContentSecurityPolicy = Boolean(app.definition.contentSecurityPolicy);
-  const fontSource = app.definition.theme?.font?.source ?? baseTheme.font.source;
+  // Page and block themes are merged over the app theme, so each of them can load a google font.
+  const usesGoogleFonts =
+    app.definition.theme?.font == null ||
+    usesGoogleFont(app.definition.theme) ||
+    iterApp(app.definition, {
+      onPage: (page) => usesGoogleFont(page.theme),
+      onBlock: (block) => usesGoogleFont(block.theme),
+    });
   const objectSrc = getCustomDirectiveSources(app, 'object-src');
   const requiresDynamicScripts = Boolean(app.msClarityID) || Boolean(app.metaPixelID);
   const blockAssetsOrigin = getBlockAssetPublicOrigin() ?? false;
@@ -114,7 +127,7 @@ export function getCsp({
       "'self'",
       "'unsafe-inline'",
       blockAssetsOrigin,
-      fontSource === 'google' ? 'https://fonts.googleapis.com' : false,
+      usesGoogleFonts ? 'https://fonts.googleapis.com' : false,
       ...getCustomDirectiveSources(app, 'style-src'),
     ],
     'font-src': hasStrictContentSecurityPolicy
@@ -122,7 +135,7 @@ export function getCsp({
           "'self'",
           'data:',
           blockAssetsOrigin,
-          fontSource === 'google' ? 'https://fonts.gstatic.com' : false,
+          usesGoogleFonts ? 'https://fonts.gstatic.com' : false,
           ...getCustomDirectiveSources(app, 'font-src'),
         ]
       : ['*', 'data:', blockAssetsOrigin],

@@ -1,5 +1,5 @@
 import { type IconRegistry } from '@appsemble/lang-sdk';
-import { getIconAssetUrl } from '@appsemble/web-utils';
+import { type AssetIcon, getIconAsset } from '@appsemble/web-utils';
 import { createContext, type ReactNode, useContext, useMemo } from 'react';
 
 export interface IconContext {
@@ -9,9 +9,9 @@ export interface IconContext {
   registry?: IconRegistry;
 
   /**
-   * Build the URL of an icon asset of the app by its validated asset name.
+   * Get the renderable icon of an asset of the app by its validated asset name.
    */
-  getAssetUrl?: (asset: string) => string;
+  getAsset?: (asset: string) => AssetIcon;
 }
 
 const Context = createContext<IconContext>({});
@@ -28,6 +28,11 @@ interface IconProviderProps {
   readonly appId: number;
 
   /**
+   * The asset ids of the app’s icon assets, by asset name.
+   */
+  readonly assetIds?: Record<string, string>;
+
+  /**
    * The `icons` registry of the app definition.
    */
   readonly registry: IconRegistry | undefined;
@@ -40,13 +45,19 @@ interface IconProviderProps {
  *
  * Outside a provider, Font Awesome icons still render and registry references resolve as invalid.
  */
-export function IconProvider({ apiUrl, appId, children, registry }: IconProviderProps): ReactNode {
+export function IconProvider({
+  apiUrl,
+  appId,
+  assetIds,
+  children,
+  registry,
+}: IconProviderProps): ReactNode {
   const value = useMemo<IconContext>(
     () => ({
       registry,
-      getAssetUrl: (asset) => getIconAssetUrl(apiUrl, appId, asset),
+      getAsset: (asset) => getIconAsset(apiUrl, appId, asset, assetIds),
     }),
-    [apiUrl, appId, registry],
+    [apiUrl, appId, assetIds, registry],
   );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
