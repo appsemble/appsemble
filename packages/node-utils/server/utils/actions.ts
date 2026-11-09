@@ -183,7 +183,7 @@ async function handleRequestProxy(
   axiosConfig.decompress = false;
 
   let response;
-  const containerUrlPattern = /^http:\/\/(([\da-z-]+).){2}svc.cluster.local/;
+  const containerHostnamePattern = /^(?:[\da-z-]+\.){2}svc\.cluster\.local$/;
   let companionDeployment: string | undefined;
 
   // Block known Kubernetes internal hostnames that don't match the container pattern
@@ -199,16 +199,19 @@ async function handleRequestProxy(
   }
 
   // Restricting access to only the containers defined by the app
-  if (containerUrlPattern.test(String(proxyUrl))) {
-    axiosConfig.url = axiosConfig.url?.replace(
-      axiosConfig.url.split('.')[1],
-      getContainerNamespace(),
-    );
-
-    const { appId, deploymentName } = parseServiceUrl(String(proxyUrl));
+  if (proxyUrl.protocol === 'http:' && containerHostnamePattern.test(proxyUrl.hostname)) {
+    const { appId, deploymentName } = parseServiceUrl(proxyUrl.hostname);
     if (appId !== String(app.id)) {
       throwKoaError(ctx, 403, 'Forbidden');
     }
+    proxyUrl.hostname = `${deploymentName}.${getContainerNamespace()}.svc.cluster.local`;
+    axiosConfig.url = String(proxyUrl);
+    // Companion requests bypass the SSRF agents, so redirects must stay on the companion host
+    axiosConfig.beforeRedirect = ({ hostname }) => {
+      if (hostname !== proxyUrl.hostname) {
+        throw new Error(`Redirect to ${hostname} is not allowed`);
+      }
+    };
     companionDeployment = deploymentName;
   } else {
     // Apply SSRF protection for non-companion-container URLs
