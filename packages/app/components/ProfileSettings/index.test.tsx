@@ -1,5 +1,5 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -68,6 +68,7 @@ describe('ProfileDropdown', () => {
       </IntlProvider>,
     );
     expect(container.getElementsByClassName('field')).toMatchSnapshot();
+    expect(screen.getByRole('button', { name: 'Camera' })).toBeDefined();
   });
 
   it('should render phoneNumber field', () => {

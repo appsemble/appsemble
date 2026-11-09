@@ -1610,6 +1610,34 @@ describe('patchApp', () => {
     `);
   });
 
+  it('should preserve the app controller when updating its domain', async () => {
+    const controllerCode = '() => ({})';
+    const controllerImplementations = '{}';
+    const app = await App.create({
+      path: 'foo',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      controllerCode,
+      controllerImplementations,
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ domain: 'appsemble.app' }),
+    );
+
+    expect(response.status).toBe(200);
+    const { data } = await request.get(`/api/apps/${app.id}`);
+    expect(data).toMatchObject({
+      domain: 'appsemble.app',
+      controllerCode,
+      controllerImplementations,
+    });
+  });
+
   it('should set the app domain to null', async () => {
     const app = await App.create(
       {
@@ -2132,12 +2160,51 @@ describe('patchApp', () => {
       If this is set to \`login\`, the app will request permissions for push notification once the user
       logs in.
 
+      To use a different strategy per role, set \`roles\` to a map of role names to \`login\`, \`opt-in\`, or
+      \`none\`. Roles that aren’t listed use \`default\`. A member with several roles gets the most eager
+      strategy of those roles. Only roles assigned to the member count, not roles they inherit.
+
       > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
       ",
-                    "enum": [
-                      "login",
-                      "opt-in",
-                      "startup",
+                    "oneOf": [
+                      {
+                        "enum": [
+                          "login",
+                          "opt-in",
+                          "startup",
+                        ],
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "default": {
+                            "description": "The strategy for roles that aren’t listed in \`roles\`, and for users without
+      a role. Defaults to \`none\`.",
+                            "enum": [
+                              "login",
+                              "none",
+                              "opt-in",
+                              "startup",
+                            ],
+                          },
+                          "roles": {
+                            "additionalProperties": {
+                              "enum": [
+                                "login",
+                                "none",
+                                "opt-in",
+                              ],
+                            },
+                            "description": "The strategy per role.",
+                            "minProperties": 1,
+                            "type": "object",
+                          },
+                        },
+                        "required": [
+                          "roles",
+                        ],
+                        "type": "object",
+                      },
                     ],
                   },
                   "pages": {
@@ -2318,12 +2385,51 @@ describe('patchApp', () => {
       If this is set to \`login\`, the app will request permissions for push notification once the user
       logs in.
 
+      To use a different strategy per role, set \`roles\` to a map of role names to \`login\`, \`opt-in\`, or
+      \`none\`. Roles that aren’t listed use \`default\`. A member with several roles gets the most eager
+      strategy of those roles. Only roles assigned to the member count, not roles they inherit.
+
       > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
       ",
-                    "enum": [
-                      "login",
-                      "opt-in",
-                      "startup",
+                    "oneOf": [
+                      {
+                        "enum": [
+                          "login",
+                          "opt-in",
+                          "startup",
+                        ],
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "default": {
+                            "description": "The strategy for roles that aren’t listed in \`roles\`, and for users without
+      a role. Defaults to \`none\`.",
+                            "enum": [
+                              "login",
+                              "none",
+                              "opt-in",
+                              "startup",
+                            ],
+                          },
+                          "roles": {
+                            "additionalProperties": {
+                              "enum": [
+                                "login",
+                                "none",
+                                "opt-in",
+                              ],
+                            },
+                            "description": "The strategy per role.",
+                            "minProperties": 1,
+                            "type": "object",
+                          },
+                        },
+                        "required": [
+                          "roles",
+                        ],
+                        "type": "object",
+                      },
                     ],
                   },
                   "pages": {

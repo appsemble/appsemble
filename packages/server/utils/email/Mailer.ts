@@ -1,7 +1,10 @@
+import { type Socket } from 'node:net';
+
 import {
   EmailError,
   EmailQuotaExceededError,
   getAppsembleMessages,
+  getSSRFProtectedAgents,
   getSupportedLanguages,
   logger,
 } from '@appsemble/node-utils';
@@ -151,7 +154,31 @@ type MailerArgs = Partial<
     | 'smtpSecure'
     | 'smtpUser'
   >
->;
+> &
+  Pick<SMTPTransportOptions, 'getSocket'>;
+
+/**
+ * Connect to an app's SMTP server through the SSRF protected agent, so a host that resolves to a
+ * private address is refused before a connection is made.
+ *
+ * @param options The SMTP transport options holding the host and port to connect to.
+ * @param callback Called with the connected socket, or the error that prevented connecting.
+ */
+function getSSRFProtectedSocket(
+  { host, port }: SMTPTransportOptions,
+  callback: (error: Error | null, socketOptions?: { connection: Socket }) => void,
+): void {
+  getSSRFProtectedAgents({ hostname: host })
+    .then(({ httpAgent }) => {
+      const socket = httpAgent.createConnection({ host, port: Number(port) }) as Socket;
+      socket.once('error', callback);
+      socket.once('connect', () => {
+        socket.off('error', callback);
+        callback(null, { connection: socket });
+      });
+    })
+    .catch(callback);
+}
 
 /**
  * A class to simplify sending emails.
@@ -186,6 +213,7 @@ export class Mailer {
   private imapUser: string;
 
   constructor({
+    getSocket,
     imapHost,
     imapPass,
     imapPort,
@@ -207,6 +235,7 @@ export class Mailer {
           host: smtpHost,
           secure: smtpSecure,
           auth,
+          getSocket,
           ...(logger.isVerboseEnabled() ? { debug: true, logger: true } : {}),
         } as SMTPTransportOptions,
         { from: smtpFrom },
@@ -470,6 +499,7 @@ export class Mailer {
     if (hasOwnEmail) {
       const smtpPass = decrypt(app.emailPassword!, argv.aesSecret);
       const mailer = new Mailer({
+        getSocket: getSSRFProtectedSocket,
         smtpFrom: from,
         smtpHost: app.emailHost,
         smtpPass,

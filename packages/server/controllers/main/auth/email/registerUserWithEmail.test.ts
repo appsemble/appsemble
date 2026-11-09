@@ -5,11 +5,12 @@ import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 import { Redis } from 'ioredis';
 import type Koa from 'koa';
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { EmailAuthorization, User } from '../../../../models/index.js';
-import { setArgv } from '../../../../utils/argv.js';
+import { setArgv, updateArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
+import { mockPwnedPasswords } from '../../../../utils/test/pwnedPasswords.js';
 import { getValkeyClient } from '../../../../utils/valkey.js';
 
 vi.mock('../../../../utils/valkey.js', async (importOriginal) => {
@@ -21,7 +22,7 @@ let server: Koa;
 
 describe('registerUserWithEmail', () => {
   beforeAll(async () => {
-    setArgv({ host: 'http://localhost', secret: 'test' });
+    setArgv({ host: 'http://localhost', rejectBreachedPasswords: true, secret: 'test' });
     server = await createServer();
     await setTestApp(server);
   });
@@ -189,6 +190,65 @@ describe('registerUserWithEmail', () => {
         "statusCode": 409,
       }
     `);
+  });
+
+  it('should not register with a breached password', async () => {
+    mockPwnedPasswords(['12345678']);
+
+    const response = await request.post('/api/auth/email/register', {
+      email: 'test@example.com',
+      password: '12345678',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "breachedPassword": true,
+        },
+        "error": "Bad Request",
+        "message": "This password has appeared in a known data breach. Choose a different password.",
+        "statusCode": 400,
+      }
+    `);
+    expect(await EmailAuthorization.findByPk('test@example.com')).toBeNull();
+  });
+
+  it('should register when the breached password check is unreachable', async () => {
+    vi.stubGlobal('fetch', () => Promise.reject(new TypeError('fetch failed')));
+
+    const response = await request.post('/api/auth/email/register', {
+      email: 'test@example.com',
+      password: '12345678',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    expect(response.status).toBe(201);
+  });
+
+  describe('with the breached password check disabled', () => {
+    beforeAll(() => {
+      updateArgv({ rejectBreachedPasswords: false });
+    });
+
+    afterAll(() => {
+      updateArgv({ rejectBreachedPasswords: true });
+    });
+
+    it('should register with a breached password', async () => {
+      mockPwnedPasswords(['12345678']);
+
+      const response = await request.post('/api/auth/email/register', {
+        email: 'test@example.com',
+        password: '12345678',
+        timezone: 'Europe/Amsterdam',
+      });
+
+      expect(response.status).toBe(201);
+    });
   });
 
   it('should not rate limit while Valkey is unavailable', async () => {

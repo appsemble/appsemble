@@ -86,3 +86,9 @@ it('should not render an image for the crosshairs icons without an override', ()
 
   expect(screen.queryAllByAltText('')).toStrictEqual([]);
 });
+
+it('should group the map controls under the field label', () => {
+  renderGeoCoordinatesInput();
+
+  expect(screen.getByRole('group', { name: /^Location/ })).toBeDefined();
+});

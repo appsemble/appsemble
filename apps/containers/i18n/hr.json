@@ -1,7 +1,7 @@
 {
   "app": {
-    "description": "",
-    "name": "",
-    "pages.test": ""
+    "description": "Aplikacija koja prikazuje funkciju pratećih kontejnera",
+    "name": "Kontejneri",
+    "pages.test": "Test"
   }
 }

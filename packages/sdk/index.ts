@@ -47,7 +47,17 @@ export interface IconRenderOptions {
  * Invalid references, including registry keys which don’t exist, never produce a URL.
  */
 export type RenderableIcon =
-  { type: 'asset'; url: string } | { type: 'fontawesome'; name: IconName } | { type: 'invalid' };
+  | {
+      type: 'asset';
+      url: string;
+
+      /**
+       * The URL to load when loading `url` fails.
+       */
+      fallbackUrl?: string;
+    }
+  | { type: 'fontawesome'; name: IconName }
+  | { type: 'invalid' };
 
 /**
  * Actions defined on a block.
@@ -428,7 +438,7 @@ export type HandlerFunction = (...params: any[]) => Promisable<unknown>;
 
 export type ControllerFunction = (
   params: EventParams,
-) => Promisable<Record<keyof Actions, HandlerFunction>>;
+) => Promisable<Record<string, HandlerFunction>>;
 
 export interface AppsembleControllerEvent extends CustomEvent {
   detail: {

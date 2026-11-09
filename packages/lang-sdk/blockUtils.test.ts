@@ -86,6 +86,25 @@ describe('getAppBlocks', () => {
       { type: '@appsemble/bar', version: '0.0.1' },
     ]);
   });
+
+  it('should ignore incomplete block references', () => {
+    const result = getAppBlocks({
+      name: '',
+      defaultPage: '',
+      pages: [
+        {
+          name: '',
+          blocks: [
+            { type: null, version: '0.0.0' },
+            { type: 'foo', version: null },
+            { type: 'bar', version: '0.0.1' },
+          ],
+        },
+      ],
+    } as never);
+
+    expect(result).toStrictEqual([{ type: '@appsemble/bar', version: '0.0.1' }]);
+  });
 });
 
 describe('prefixBlockURL', () => {

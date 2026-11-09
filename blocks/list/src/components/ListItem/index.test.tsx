@@ -176,3 +176,26 @@ it('should trigger the click action only when its button is activated from the k
   await userEvent.keyboard('{Enter}');
   expect(onClickMock).toHaveBeenCalledExactlyOnceWith({ id: 2 }, { index: 0 });
 });
+
+it('should not render item buttons without a click action', () => {
+  render(
+    <Context.Provider
+      value={{
+        ...defaultBootstrapParams,
+        parameters: {
+          item: {
+            header: { title: 'Item title' },
+            content: { fields: [{ value: 'Item field' }] },
+          },
+        },
+        actions: { onClick: { type: 'noop' } as Action, onDrop: { type: 'noop' } as Action },
+      }}
+    >
+      <ListItem index={0} item={{ id: 3 }} />
+    </Context.Provider>,
+  );
+
+  expect(screen.getByText('Item title')).toBeDefined();
+  expect(screen.getByText('Item field')).toBeDefined();
+  expect(screen.queryByRole('button')).toBeNull();
+});

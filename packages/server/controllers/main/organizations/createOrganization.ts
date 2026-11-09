@@ -1,17 +1,13 @@
-import {
-  assertKoaCondition,
-  organizationBlocklist,
-  throwKoaError,
-  uploadToBuffer,
-} from '@appsemble/node-utils';
+import { assertKoaCondition, organizationBlocklist, uploadToBuffer } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { type Context } from 'koa';
-import { Op, UniqueConstraintError } from 'sequelize';
+import { Op } from 'sequelize';
 
 import {
   EmailAuthorization,
   Organization,
   OrganizationMember,
+  transactional,
   User,
 } from '../../../models/index.js';
 
@@ -73,62 +69,70 @@ export async function createOrganization(ctx: Context): Promise<void> {
     'This organization id is not allowed.',
   );
 
-  try {
-    const organization = await Organization.create({
-      id,
-      name,
-      email,
-      description,
-      locale,
-      website,
-      icon: icon ? await uploadToBuffer(icon.path) : null,
-      vatIdNumber,
-      city,
-      countryCode,
-      houseNumber,
-      streetName,
-      zipCode,
-      invoiceReference,
-    });
+  assertKoaCondition(
+    (await Organization.count({ where: { id }, paranoid: false })) === 0,
+    ctx,
+    409,
+    `Another organization with the id “${id}” already exists`,
+  );
 
-    await OrganizationMember.create({
-      OrganizationId: organization.id,
-      UserId: user.id,
-      role: PredefinedOrganizationRole.Owner,
-    });
+  const organization = await transactional(async (transaction) => {
+    const created = await Organization.create(
+      {
+        id,
+        name,
+        email,
+        description,
+        locale,
+        website,
+        icon: icon ? await uploadToBuffer(icon.path) : null,
+        vatIdNumber,
+        city,
+        countryCode,
+        houseNumber,
+        streetName,
+        zipCode,
+        invoiceReference,
+      },
+      { transaction },
+    );
 
-    ctx.body = {
-      id: organization.id,
-      name: organization.name,
-      iconUrl: icon
-        ? `/api/organizations/${organization.id}/icon?updated=${organization.created.toISOString()}`
-        : null,
-      description: organization.description,
-      website: organization.website,
-      locale: organization.locale,
-      email: organization.email,
-      members: [
-        {
-          id: user.id,
-          name: user.name,
-          primaryEmail: user.primaryEmail,
-          role: PredefinedOrganizationRole.Owner,
-        },
-      ],
-      invites: [],
-      vatIdNumber: organization.vatIdNumber,
-      streetName: organization.streetName,
-      houseNumber: organization.houseNumber,
-      city: organization.city,
-      zipCode: organization.zipCode,
-      countryCode: organization.countryCode,
-      invoiceReference: organization.invoiceReference,
-    };
-  } catch (error: unknown) {
-    if (error instanceof UniqueConstraintError) {
-      throwKoaError(ctx, 409, `Another organization with the id “${id}” already exists`);
-    }
+    await OrganizationMember.create(
+      {
+        OrganizationId: created.id,
+        UserId: user.id,
+        role: PredefinedOrganizationRole.Owner,
+      },
+      { transaction },
+    );
+    return created;
+  });
 
-    throw error;
-  }
+  ctx.body = {
+    id: organization.id,
+    name: organization.name,
+    iconUrl: icon
+      ? `/api/organizations/${organization.id}/icon?updated=${organization.created.toISOString()}`
+      : null,
+    description: organization.description,
+    website: organization.website,
+    locale: organization.locale,
+    email: organization.email,
+    members: [
+      {
+        id: user.id,
+        name: user.name,
+        primaryEmail: user.primaryEmail,
+        role: PredefinedOrganizationRole.Owner,
+      },
+    ],
+    invites: [],
+    vatIdNumber: organization.vatIdNumber,
+    streetName: organization.streetName,
+    houseNumber: organization.houseNumber,
+    city: organization.city,
+    zipCode: organization.zipCode,
+    countryCode: organization.countryCode,
+    invoiceReference: organization.invoiceReference,
+  };
 }

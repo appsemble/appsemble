@@ -58,6 +58,9 @@ export function getAppBlocks(definition: AppDefinition): IdentifiableBlock[] {
 
   iterApp(definition, {
     onBlock({ type, version }) {
+      if (typeof type !== 'string' || typeof version !== 'string') {
+        return;
+      }
       const name = normalizeBlockName(type);
       const asString = `${name}@${version}`;
       if (!visited.has(asString)) {

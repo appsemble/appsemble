@@ -66,3 +66,26 @@ it('should keep an empty box when the image fails and reset when the URL changes
     'https://example.com/api/apps/42/assets/other-logo',
   );
 });
+
+it('should load the name URL when the id URL fails', () => {
+  const { container } = render(
+    <IconProvider
+      apiUrl="https://example.com"
+      appId={42}
+      assetIds={{ 'company-logo': '0f2793d9' }}
+      registry={{ logo: { asset: 'company-logo' } }}
+    >
+      <Icon icon="icon:logo" />
+    </IconProvider>,
+  );
+  const img = container.querySelector('img')!;
+  expect(img.getAttribute('src')).toBe('https://example.com/api/apps/42/assets/0f2793d9');
+
+  fireEvent.error(img);
+  expect(container.querySelector('img')?.getAttribute('src')).toBe(
+    'https://example.com/api/apps/42/assets/company-logo',
+  );
+
+  fireEvent.error(container.querySelector('img')!);
+  expect(container.innerHTML).toBe('<span class="icon asset"></span>');
+});

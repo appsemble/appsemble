@@ -45,3 +45,8 @@
   height: 224px !important;
   object-fit: fill;
 }
+
+.linkFooter {
+  border-top: none;
+  padding: 0 0.75rem 0.75rem;
+}

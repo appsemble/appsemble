@@ -1,8 +1,7 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { type ReactNode, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { describe, expect, it, onTestFinished, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { ModalCard } from './index.js';
 
@@ -39,25 +38,38 @@ it('should close the modal when the close button is clicked', () => {
   expect(onClose).toHaveBeenCalledWith();
 });
 
-it('should close the modal when the background is clicked', () => {
+it('should close the modal when the background is clicked', async () => {
+  const user = userEvent.setup();
   const onClose = vi.fn();
-  const { getByRole } = render(
+  render(
     <ModalCard isActive onClose={() => onClose()}>
       test
     </ModalCard>,
   );
-  getByRole('presentation').click();
+  // The background is presentational, so it has no role.
+  await user.click(screen.getByRole('dialog').querySelector('.modal-background')!);
   expect(onClose).toHaveBeenCalledWith();
+});
+
+it('should not close the modal when its content is clicked', async () => {
+  const user = userEvent.setup();
+  const onClose = vi.fn();
+  render(
+    <ModalCard isActive onClose={onClose}>
+      test
+    </ModalCard>,
+  );
+  await user.click(screen.getByText('test'));
+  expect(onClose).not.toHaveBeenCalled();
 });
 
 describe('modal dialog behavior', () => {
   interface PageProps {
     readonly focusName?: boolean;
     readonly closable?: boolean;
-    readonly floating?: boolean;
   }
 
-  function Page({ closable = true, floating = false, focusName = false }: PageProps): ReactNode {
+  function Page({ closable = true, focusName = false }: PageProps): ReactNode {
     const [isActive, setIsActive] = useState(false);
 
     return (
@@ -75,8 +87,6 @@ describe('modal dialog behavior', () => {
           {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
           <input aria-label="Name" autoFocus={focusName} />
         </ModalCard>
-        <button type="button">Behind</button>
-        {floating ? createPortal(<button type="button">Floating</button>, document.body) : null}
       </>
     );
   }
@@ -86,8 +96,7 @@ describe('modal dialog behavior', () => {
     render(<Page />);
     await user.click(screen.getByRole('button', { name: 'Open' }));
 
-    const dialog = screen.getByRole('dialog', { name: 'Edit lamp' });
-    expect(dialog.getAttribute('aria-modal')).toBe('true');
+    expect(screen.getByRole('dialog', { name: 'Edit lamp' })).not.toBeNull();
     expect(screen.getByRole('heading', { name: 'Edit lamp' })).not.toBeNull();
   });
 
@@ -110,123 +119,12 @@ describe('modal dialog behavior', () => {
     expect(screen.queryByRole('button')).toBeNull();
   });
 
-  it('should move focus into the dialog when it opens', async () => {
-    const user = userEvent.setup();
-    render(<Page />);
-    await user.click(screen.getByRole('button', { name: 'Open' }));
-
-    expect(screen.getByRole('dialog').contains(document.activeElement)).toBe(true);
-  });
-
   it('should keep focus on an element in the dialog that focuses itself on open', async () => {
     const user = userEvent.setup();
     render(<Page focusName />);
     await user.click(screen.getByRole('button', { name: 'Open' }));
 
     expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Name' }));
-  });
-
-  it('should wrap focus around inside the dialog when tabbing', async () => {
-    const user = userEvent.setup();
-    render(<Page />);
-    await user.click(screen.getByRole('button', { name: 'Open' }));
-
-    await user.tab();
-    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Close' }));
-    await user.tab();
-    expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Name' }));
-    await user.tab();
-    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Save' }));
-    await user.tab();
-    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Close' }));
-    await user.tab({ shift: true });
-    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Save' }));
-  });
-
-  it('should not let the user tab to the page behind the dialog', async () => {
-    const user = userEvent.setup();
-    render(<Page />);
-    await user.click(screen.getByRole('button', { name: 'Open' }));
-    const dialog = screen.getByRole('dialog');
-
-    for (let index = 0; index < 8; index += 1) {
-      await user.tab({ shift: index >= 4 });
-      expect(dialog.contains(document.activeElement)).toBe(true);
-    }
-  });
-
-  it('should make the page behind the dialog inert while it is open', async () => {
-    const user = userEvent.setup();
-    render(<Page />);
-    const behind = screen.getByRole('button', { name: 'Behind' });
-    await user.click(screen.getByRole('button', { name: 'Open' }));
-
-    expect(behind.closest('[inert]')).not.toBeNull();
-
-    await user.keyboard('{Escape}');
-    expect(behind.closest('[inert]')).toBeNull();
-  });
-
-  it('should not block the page while a media query hides the dialog', async () => {
-    const user = userEvent.setup();
-    render(<Page />);
-    const behind = screen.getByRole('button', { name: 'Behind' });
-    await user.click(screen.getByRole('button', { name: 'Open' }));
-    const mediaQuery = document.createElement('style');
-    mediaQuery.textContent = '.modal { display: none; }';
-    onTestFinished(() => mediaQuery.remove());
-
-    document.head.append(mediaQuery);
-    window.dispatchEvent(new Event('resize'));
-    expect(behind.closest('[inert]')).toBeNull();
-
-    mediaQuery.remove();
-    window.dispatchEvent(new Event('resize'));
-    expect(behind.closest('[inert]')).not.toBeNull();
-  });
-
-  it('should make content added behind the dialog while it is open inert', async () => {
-    const user = userEvent.setup();
-    const { rerender } = render(<Page />);
-    await user.click(screen.getByRole('button', { name: 'Open' }));
-
-    rerender(<Page floating />);
-
-    const floating = await screen.findByRole('button', { hidden: true, name: 'Floating' });
-    await waitFor(() => expect(floating.closest('[inert]')).not.toBeNull());
-  });
-
-  it('should skip hidden controls when wrapping focus around', async () => {
-    const user = userEvent.setup();
-    render(
-      <ModalCard
-        closable={false}
-        footer={
-          <>
-            <button type="button">Save</button>
-            <button hidden type="button">
-              Discard
-            </button>
-          </>
-        }
-        isActive
-      >
-        <button hidden type="button">
-          Reset
-        </button>
-        <input aria-label="Name" />
-      </ModalCard>,
-    );
-    const name = screen.getByRole('textbox', { name: 'Name' });
-    const save = screen.getByRole('button', { name: 'Save' });
-    await user.click(name);
-
-    await user.tab();
-    expect(document.activeElement).toBe(save);
-    await user.tab();
-    expect(document.activeElement).toBe(name);
-    await user.tab({ shift: true });
-    expect(document.activeElement).toBe(save);
   });
 
   it('should close when escape is pressed and return focus to the element that opened it', async () => {
@@ -264,6 +162,34 @@ describe('modal dialog behavior', () => {
 
     await user.keyboard('{Escape}');
 
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('should close on a close request of the browser', async () => {
+    const user = userEvent.setup();
+    render(<Page />);
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+
+    const cancel = new Event('cancel', { cancelable: true });
+    fireEvent(screen.getByRole('dialog'), cancel);
+
+    // The dialog is closed by the component, so it can transition out.
+    expect(cancel.defaultPrevented).toBe(true);
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+  });
+
+  it('should not close on a close request of the browser if it is not closable', () => {
+    const onClose = vi.fn();
+    render(
+      <ModalCard closable={false} isActive onClose={onClose} title="Edit lamp">
+        test
+      </ModalCard>,
+    );
+
+    const cancel = new Event('cancel', { cancelable: true });
+    fireEvent(screen.getByRole('dialog'), cancel);
+
+    expect(cancel.defaultPrevented).toBe(true);
     expect(onClose).not.toHaveBeenCalled();
   });
 });

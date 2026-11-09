@@ -27,3 +27,25 @@ body {
   max-width: 196px;
   width: 50%;
 }
+
+/* Navigation focuses main by script. It isn't a control, so it only shows a ring when the
+   browser decides the focus should be visible, such as after keyboard input. */
+main:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Scripts scroll without a behavior of their own, so they follow the user's motion preference. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Block shadow roots get the same rule from the Block component. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}

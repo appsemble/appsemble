@@ -50,6 +50,7 @@ export function FileInput({
   const required = isRequired(field, utils, formValues);
   const remappedLabel = utils.remap(label, value) ?? name;
   const shownError = dirty ? error : null;
+  const labelId = `${name}-label`;
 
   const [fileEntriesReady, setFileEntriesReady] = useState<Record<string, boolean>>({});
 
@@ -95,6 +96,7 @@ export function FileInput({
       help={utils.remap(help, {}) as string}
       inline={repeated ? undefined : inline}
       label={remappedLabel as string}
+      labelId={labelId}
       optionalLabel={utils.formatMessage('optionalLabel')}
       required={required}
       tag={utils.remap(tag, {}) as string}
@@ -120,6 +122,7 @@ export function FileInput({
                   handleFileEntryReady={handleFileEntryReady}
                   // eslint-disable-next-line react/no-array-index-key
                   key={index}
+                  labelId={labelId}
                   name={`${name}.${index}`}
                   onChange={handleInput}
                   removeThumbnail={removeThumbnail}
@@ -138,6 +141,7 @@ export function FileInput({
               // FIXME
               formValues={null}
               handleFileEntryReady={handleFileEntryReady}
+              labelId={labelId}
               name={`${name}.${(value as string[]).length}`}
               onChange={handleInput}
               removeThumbnail={removeThumbnail}
@@ -154,6 +158,7 @@ export function FileInput({
             formDataLoading={formDataLoading}
             formValues={value as Values}
             handleFileEntryReady={handleFileEntryReady}
+            labelId={labelId}
             name={name}
             onChange={onChange}
             removeThumbnail={removeThumbnail}

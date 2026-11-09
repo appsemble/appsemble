@@ -175,7 +175,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
             bottom={
               <div className="py-2 is-flex is-justify-content-center">
                 <a
-                  className="has-text-grey"
+                  className="has-text-link"
                   href={`${apiUrl}/apps/${appId}`}
                   rel="noopener noreferrer"
                   target="_blank"

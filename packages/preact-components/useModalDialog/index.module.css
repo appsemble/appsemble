@@ -1,0 +1,16 @@
+.dialog {
+  /* Bulma styles the modal, so the browser styles of the dialog element are reset. */
+  background-color: transparent;
+  border: none;
+  color: inherit;
+  height: auto;
+  margin: 0;
+  max-height: none;
+  max-width: none;
+  padding: 0;
+  width: auto;
+
+  &::backdrop {
+    background-color: transparent;
+  }
+}

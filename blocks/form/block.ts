@@ -996,9 +996,8 @@ interface ActionEnumField extends AbstractEnumField {
   action: string;
 
   /**
-   * This message is displayed if the options failed to load.
-   *
-   * @default "Error loading options"
+   * This message is displayed if the options failed to load. Defaults to a message in the app
+   * language.
    */
   loadError?: Remapper;
 }
@@ -1018,9 +1017,8 @@ interface EventEnumField extends AbstractEnumField {
   event: string;
 
   /**
-   * This message is displayed if the options failed to load.
-   *
-   * @default "Error loading options"
+   * This message is displayed if the options failed to load. Defaults to a message in the app
+   * language.
    */
   loadError?: Remapper;
 }
@@ -1074,9 +1072,8 @@ export interface AbstractSelectionField extends AbstractField, InlineField {
   requirements?: SelectionRequirement[];
 
   /**
-   * The label to show on the button for adding a new entry.
-   *
-   * @default 'Add'
+   * The label to show on the button for adding a new entry. Defaults to "Add" in the app
+   * language.
    */
   addLabel?: Remapper;
 
@@ -1374,6 +1371,16 @@ export interface StringField extends AbstractField, InlineField {
   format?: 'email' | 'password' | 'time' | 'url';
 
   /**
+   * The hour cycle used to display and edit a `time` field.
+   *
+   * Use `h12` for hours 1–12 with AM/PM, or `h23` for hours 0–23.
+   * A remapper receives all form values and must return either value.
+   * Stored values remain `HH:mm`, independently of the browser locale.
+   * If omitted, the native browser time input is used.
+   */
+  hourCycle?: 'h12' | 'h23' | Remapper;
+
+  /**
    * Whether the string field should be multiline or not.
    *
    * @default false
@@ -1425,9 +1432,8 @@ export interface Fieldset extends AbstractField {
   repeated?: boolean;
 
   /**
-   * The label to show on the button for adding a new entry for repeated fields.
-   *
-   * @default 'Add'
+   * The label to show on the button for adding a new entry for repeated fields. Defaults to "Add"
+   * in the app language.
    */
   addLabel?: Remapper;
 
@@ -1655,6 +1661,7 @@ declare module '@appsemble/sdk' {
   }
 
   interface Messages {
+    addLabel: never;
     confirmLabel: never;
     submitLabel: never;
     submitError: never;
@@ -1674,12 +1681,17 @@ declare module '@appsemble/sdk' {
     selectionSelected: { option: number | string };
     fixErrors: never;
     longSubmissionWarning: never;
+    removeEntry: { index: number };
     removeFile: never;
     resetLocation: never;
     closeImage: never;
     closeVideo: never;
     downloadImage: never;
     loading: never;
+    markdownBold: never;
+    markdownItalic: never;
+    markdownLink: never;
+    markdownStrikethrough: never;
     sliderMaximum: never;
     sliderMinimum: never;
   }
@@ -1842,5 +1854,14 @@ declare module '@appsemble/sdk' {
      * @default 5000
      */
     longSubmissionDuration?: number;
+
+    /**
+     * The error message that is displayed at the top of the form when the submit action fails.
+     *
+     * The remapper receives the form values as input and the error as the `error` context.
+     * Without this, the form shows the error returned by the action or a generic message. If the
+     * remapper yields nothing, the form shows the generic message.
+     */
+    submitErrorMessage?: Remapper;
   }
 }

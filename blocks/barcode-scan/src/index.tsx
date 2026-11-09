@@ -18,6 +18,7 @@ bootstrap(
       type,
     },
     ready,
+    utils,
   }) => {
     useEffect(() => {
       ready();
@@ -83,19 +84,25 @@ bootstrap(
 
     return (
       <div className={styles.wrapper}>
-        {showBarcode ? <div>Barcode: {barcode}</div> : null}
+        {showBarcode ? <output className="is-block">Barcode: {barcode}</output> : null}
 
         <div className={styles.comboBoxes}>
           {barcodeType === 'multiple' ? (
             <MultipleOptions
               array={codeTypeList}
+              label={utils.formatMessage('barcodeType')}
               onChange={handleBarcodeTypeChange}
               value={codeType}
             />
           ) : null}
 
           {patchSize === 'multiple' ? (
-            <MultipleOptions array={patchSizeList} onChange={handlePatchSizeChange} value={pSize} />
+            <MultipleOptions
+              array={patchSizeList}
+              label={utils.formatMessage('patchSize')}
+              onChange={handlePatchSizeChange}
+              value={pSize}
+            />
           ) : null}
         </div>
 

@@ -145,9 +145,8 @@ export function CameraScanner({
 
       {scanning.enabled ? (
         <div className={styles.videoContainer}>
-          <video id="interactive" ref={videoRef}>
-            <track class="viewport" kind="captions" label="English" src="captions.vtt" />
-          </video>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption -- A live camera feed has no captions */}
+          <video id="interactive" ref={videoRef} />
           <canvas ref={drawingCanvasRef} />
           {videoPlaying ? (
             <button

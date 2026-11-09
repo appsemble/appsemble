@@ -2,6 +2,165 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.10](https://gitlab.com/appsemble/appsemble/-/releases/0.40.10)] - 2026-11-09
+
+### Added
+
+- Block(`form`): Add `submitErrorMessage` to show a custom message when the submit action fails.
+- App: Allow configuring the `notifications` strategy per role.
+- Appsemble-language-server: Publish the language server to npm.
+- Preact-components: Add `ariaLabel` to `Dropdown` to name a toggle button that shows no label.
+- Preact-components: Add `tabIndex` to `Message` to let keyboard users scroll a message that
+  overflows.
+- Server: Store a hash of asset content and add a `named` filter to the asset listing.
+
+### Changed
+
+- Cli: Upload only new and changed seed assets when updating an app.
+
+### Fixed
+
+- Block(`filter`): Darken the prompt of a list field to meet the AA contrast ratio.
+- Block(`form`): Let keyboard users scroll error messages, and stop hidden ones from scrolling.
+- Block(`form`): Stop filterable enum fields from re-rendering continuously.
+- Block(`table`): Name each checkbox by its column label.
+- Block(`table`): Name icon-only dropdowns by their column label.
+- App: Request custom icon assets by id so browsers cache them.
+- App: Wait for the app controller to initialize before running controller actions.
+- Appsemble-language-server: Keep reporting schema errors after the blocks used in an app change.
+- Appsemble-language-server: Replace old errors and point at each alias when aliases in an app
+  definition have no anchor.
+- Appsemble-language-server: Show errors from YAML validation, hover and completion in the language
+  server output.
+- Lang-sdk: Stop reporting an unexpected error for a flow page without steps or a container page
+  without pages.
+- Sdk: Allow controller handler names to differ from configured action names.
+- Server: Copy the content of every unnamed asset when creating an app from a template.
+- Server: Fix reseeding demo resources with multiple or unseeded references.
+- Server: Fix restoring the seed assets of demo apps in the nightly cleanup.
+- Server: Fix restoring the seed resources of demo apps in the nightly cleanup.
+- Server: Fix stopping idle companion containers and starting them on the next request.
+- Server: Fix the Studio View app link of unlisted apps for users outside the organization.
+- Server: Fix the demo app member cleanup failing on instances with many apps.
+- Server: Notify only the roles and author listed in resource hook notifications.
+- Server: Show the underlying error in database connection error messages.
+- Service-worker: Remove cached named assets when the server reports them missing.
+
+### Security
+
+- Node-utils: Block companion container redirects to other hosts.
+- Node-utils: Block request action URLs that only resemble companion container URLs.
+- Server: Block app login, push and SMTP connections to private addresses.
+- Server: Block client credentials token requests to private addresses.
+- Server: Block email action attachment downloads from private addresses.
+- Server: Limit email action attachments downloaded from links to 25 MiB per email.
+
+## \[[0.40.9](https://gitlab.com/appsemble/appsemble/-/releases/0.40.9)] - 2026-10-29
+
+## \[[0.40.8](https://gitlab.com/appsemble/appsemble/-/releases/0.40.8)] - 2026-10-29
+
+### Fixed
+
+- Server: Fix companion container access when the Helm release namespace differs from its name.
+- Server: Fix the cleanup, subscription charge and container scaling Helm cron jobs.
+
+## \[[0.40.7](https://gitlab.com/appsemble/appsemble/-/releases/0.40.7)] - 2026-10-29
+
+### Added
+
+- Block(`chart`): Add `description` and a data table that screen reader and keyboard users can use.
+- Block(`detail-viewer`): Add `captions` to video fields for a WebVTT captions file.
+- Block(`detail-viewer`): Add `labelLevel` to set the heading level of field labels.
+- Block(`feed`): Add `titleLevel` to set the heading level of card titles.
+- Block(`form`): Support explicit 12-hour and 24-hour time input controls.
+- Block(`map`): Add `markerLabel` to give markers an accessible name.
+- Block(`wordcloud`): Add `description` and a word frequency list for screen readers.
+- App: Explain when a new password is rejected because it appears in a data breach.
+- E2e: Add resource lifecycle tracking and configurable automatic cleanup.
+- E2e: Attach an HTML accessibility report that lists the failing elements and blocks of each page.
+- E2e: Write the accessibility scan results as a GitLab accessibility report.
+- Scripts: Fail validation when an app or app template pins an outdated block version.
+- Server: Add the `reject-breached-passwords` option to reject new passwords found in known data
+  breaches.
+
+### Changed
+
+- Block(`cards`): Make the footer button icon optional and show button labels on mobile.
+- Block(`detail-viewer`): Render geocoordinates and video labels as level 6 headings instead of
+  level 1.
+
+### Fixed
+
+- Block(`barcode-scan`): Remove the captions track that points to a missing file.
+- Block(`barcode-scan`): Translate the selected image texts.
+- Block(`cards`): Hide card images without alternative text from screen readers.
+- Block(`detail-viewer`): Use valid bullet point list markup and name the video player and its
+  thumbnail.
+- Block(`feed`): Translate the default button label.
+- Block(`filter`): Name fields without a label by their field name for screen readers.
+- Block(`form`): Stop smooth scrolling to a field when the user prefers reduced motion.
+- Block(`form`): Translate the add button, option loading error and Markdown toolbar labels.
+- Block(`list`): Stop smooth scrolling to the linked item when the user prefers reduced motion.
+- Block(`map`): Launch `onMarkerClick` when a marker is activated with the keyboard.
+- Block(`paginator`): Add a navigation landmark, page status and disabled end buttons.
+- App: Display messages triggered by controller action callbacks.
+- App: Expose flow page progress and loading blocks to assistive technology.
+- App: Give the profile picture camera button an accessible name.
+- App: Keep app member sessions active when switching groups.
+- App: Move focus to the page on navigation and flow step changes.
+- App: Render the page name in the title bar as the H1.
+- App: Shorten transitions and stop smooth scrolling when the user prefers reduced motion.
+- App: Show the app store link in the side menu in the link color.
+- E2e: Scan a page that a link redirects to only once.
+- Lang-sdk: Reject client-side actions in webhooks.
+- Lang-sdk: Validate blocks in match cases, basic page actions and webhooks.
+- Preact-components: Stop presenting the static `Location` marker as a button.
+- Server: Notify app member roles from server side `notify` actions.
+
+## \[[0.40.6](https://gitlab.com/appsemble/appsemble/-/releases/0.40.6)] - 2026-10-23
+
+### Added
+
+- E2e: Add `mailpit` fixture allowing you to communicate with the Mailpit API using the
+  `mailpit-api` package.
+- Lang-sdk: Add `theme.displayFont`: a display face next to the body face in `theme.font`. Both
+  families are emitted on `:root` as `--font-family` and `--font-family-display`.
+- Preact-components: Expose slider progress to themes as the `--slider-progress` CSS custom
+  property.
+
+### Changed
+
+- E2e: Change `scope` of the `giveAppConsent` fixture to include all possible scopes.
+- Preact-components: Focus the first focusable element of a modal when it opens.
+- Preact-components: Render modals as native dialog elements on top of the page.
+- React-components: Focus the first focusable element of a modal when it opens instead of the modal
+  itself.
+- React-components: Render modals as native dialog elements on top of the page.
+
+### Fixed
+
+- Block(`barcode-scan`): Label the selects, announce scanned codes and show a focus ring.
+- Block(`cards`): Announce errors and empty results, name footer buttons and render links as links.
+- Block(`data-notifier`): Announce new data and hide the collapsed refresh button.
+- Block(`feed`): Name the avatar, its status and the reply controls, and show an avatar focus ring.
+- Block(`filter`): Label fields, date ranges and the open button, and expose list state.
+- Block(`form`): Name fields and buttons, expose expanded state and announce long submissions.
+- Block(`list`): Make item title and field controls at least 24 by 24 pixels.
+- Block(`list`): Render items as plain text without a pointer cursor when the list has no click
+  action.
+- App: Explain invalid or already used email verification links on the verify page.
+- App: Show page error recovery when a block script fails to load.
+- App: Show page error recovery when a block stylesheet fails to load.
+- Node-utils: Reserve infrastructure host names for organization identifiers.
+- React-components: Fade in and announce a message assertively only once when a modal opens or
+  closes.
+- React-components: Hide the links of the closed side menu from keyboard and screen reader users.
+- React-components: Show messages on top of open modals.
+- Server: Fix organization DNS and stagger wildcard certificate renewals.
+- Server: Keep no organization when creating it fails, so the same id can be used again.
+- Server: Preserve app controller fields omitted from app updates.
+- Studio: Explain invalid or already used email verification links on the verify page.
+
 ## \[[0.40.5](https://gitlab.com/appsemble/appsemble/-/releases/0.40.5)] - 2026-10-16
 
 ### Added

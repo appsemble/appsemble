@@ -200,4 +200,44 @@ describe('getOriginalAppAsset', () => {
     });
     expect(Buffer.from(response.data)).toStrictEqual(image);
   });
+
+  it('should not mark an asset downloaded by name as immutable', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+      filename: 'logo.png',
+      name: 'logo',
+    });
+
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, Buffer.from('buffer'));
+
+    const response = await request.get(`/api/apps/${app.id}/assets/logo/download`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({ 'cache-control': 'max-age=3600' }),
+    });
+  });
+
+  it('should answer 304 without a body when a downloaded named asset is unchanged', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+      filename: 'logo.png',
+      name: 'logo',
+    });
+
+    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    await uploadS3File(bucket, key, Buffer.from('buffer'));
+
+    const url = `/api/apps/${app.id}/assets/logo/download`;
+    const { headers } = await request.get(url);
+    const response = await request.get(url, { headers: { 'If-None-Match': headers.etag } });
+
+    expect(response.status).toBe(304);
+    expect(response.data).toBe('');
+  });
 });

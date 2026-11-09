@@ -330,7 +330,8 @@ bootstrap(({ parameters, utils }) => {
 Blocks written with Preact can use the `Icon` component from `@appsemble/preact-components`, which
 accepts the same references. If a block needs more control, `utils.resolveIcon()` returns either a
 Font Awesome name to pass to `utils.fa()`, the URL of the custom icon image, or an invalid result
-for references which don’t resolve.
+for references which don’t resolve. A custom icon may also carry a `fallbackUrl`; load it when the
+image at `url` fails to load.
 
 Custom icons are rendered as decorative images, so make sure the control containing the icon has an
 accessible name of its own, such as a label or a `title` attribute. Icons which are hardcoded in the
@@ -340,7 +341,7 @@ block, for example a chevron to collapse a section, can keep using `IconName` an
 
 To get a better idea of how blocks work, or for inspiration of what blocks can be created, please
 have a look at the
-[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.40.5/blocks).
+[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.40.10/blocks).
 For example, if you want to create a block to display a set of dynamically loaded data, have a look
 at the `table` or `tiles` block. If you’re interested in displaying a single entity, have a look at
 the `detail-viewer` or `stats` block. If you would like to create a block to process data based on
