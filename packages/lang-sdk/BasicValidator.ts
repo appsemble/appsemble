@@ -9,6 +9,7 @@ import { type JsonObject } from 'type-fest';
 
 import { isValidIconReference } from './icons.js';
 import { schemas as allSchemas, type BlockDefinition } from './index.js';
+import { skipBaseResolutionForSchemasWithoutId } from './jsonschemaBaseResolution.js';
 import { escapeJsonPointer } from './jsonPointer.js';
 import { has } from './miscellaneous.js';
 
@@ -44,6 +45,7 @@ export class BaseValidatorFactory {
   }
 
   build(): Validator {
+    skipBaseResolutionForSchemasWithoutId();
     const validator = new Validator();
 
     for (const [key, format] of Object.entries({

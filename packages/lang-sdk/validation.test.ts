@@ -178,6 +178,60 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should validate block parameters in match case actions', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      parameters: { foo: 'bar' },
+      actions: {
+        onClick: {
+          type: 'match',
+          match: [
+            {
+              case: true,
+              action: {
+                type: 'dialog',
+                blocks: [{ type: 'test', version: '1.2.3', parameters: {} }],
+              },
+            },
+          ],
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        parameters: {
+          type: 'object',
+          required: ['foo'],
+          properties: { foo: { type: 'string' } },
+        },
+        actions: { onClick: {} },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('requires property "foo"', {}, undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onClick',
+        'match',
+        0,
+        'action',
+        'blocks',
+        0,
+        'parameters',
+      ]),
+    ]);
+  });
+
   it('should validate missing block parameters', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
@@ -940,6 +994,48 @@ describe('validateAppDefinition', () => {
         'notifications',
       ]),
     ]);
+  });
+
+  it('should report if notifications is a role map without a security definition', async () => {
+    const app = createTestApp();
+    delete app.security;
+    app.notifications = { roles: { User: 'login' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('only works if security is defined', app.notifications, undefined, [
+        'notifications',
+      ]),
+    ]);
+  });
+
+  it('should validate the roles in notifications exist', async () => {
+    const app = createTestApp();
+    app.notifications = { roles: { User: 'login', Unknown: 'opt-in' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not exist in this app’s roles', 'Unknown', undefined, [
+        'notifications',
+        'roles',
+        'Unknown',
+      ]),
+    ]);
+  });
+
+  it('should not report an empty notifications value as an unexpected error', async () => {
+    const app = createTestApp();
+    // @ts-expect-error 2322 an empty YAML value is null
+    app.notifications = null;
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should accept notifications per role', async () => {
+    const app = createTestApp();
+    app.notifications = { default: 'opt-in', roles: { User: 'login' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(true);
   });
 
   it('should validate the default role exists', async () => {
@@ -2546,6 +2642,41 @@ describe('validateAppDefinition', () => {
         undefined,
         ['webhooks', 'patchPerson', 'action', 'optimistic'],
       ),
+    ]);
+  });
+
+  it('should not require resource permissions for webhook actions', async () => {
+    const app = createTestApp();
+    delete app.security;
+    app.webhooks = {
+      createPerson: {
+        schema: { type: 'object' },
+        action: { type: 'resource.create', resource: 'person' },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should reject client-side actions in webhook actions', async () => {
+    const app = createTestApp();
+    app.webhooks = {
+      createPerson: {
+        schema: { type: 'object' },
+        action: { type: 'flow.next' },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('action type is not supported for webhooks', 'flow.next', undefined, [
+        'webhooks',
+        'createPerson',
+        'action',
+        'type',
+      ]),
     ]);
   });
 
@@ -4577,6 +4708,43 @@ describe('validateAppDefinition', () => {
     const result = await validateAppDefinition(app, () => []);
 
     expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should not report an unexpected error for a flow page without steps', async () => {
+    const app = createTestApp();
+    app.pages.push({ name: 'Flow', type: 'flow' } as unknown as AppDefinition['pages'][number]);
+    const schemaResult = new AppValidator().validateApp(app);
+
+    const result = await validateAppDefinition(app, () => [], undefined, schemaResult);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ message: 'requires property "steps"' }),
+    );
+    expect(result.errors).not.toContainEqual(
+      expect.objectContaining({ message: expect.stringContaining('Unexpected error') }),
+    );
+  });
+
+  it('should keep checking the app when a container page has no pages', async () => {
+    const app = createTestApp();
+    app.pages.push({
+      name: 'Container',
+      type: 'container',
+    } as unknown as AppDefinition['pages'][number]);
+    app.security = { ...app.security!, default: { role: 'Missing' } };
+    const schemaResult = new AppValidator().validateApp(app);
+
+    const result = await validateAppDefinition(app, () => [], undefined, schemaResult);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: 'does not exist in this app’s roles',
+        path: ['security', 'default', 'role'],
+      }),
+    );
+    expect(result.errors).not.toContainEqual(
+      expect.objectContaining({ message: expect.stringContaining('Unexpected error') }),
+    );
   });
 
   it('should reject navbar breakpoints without a layout without aborting validation', async () => {

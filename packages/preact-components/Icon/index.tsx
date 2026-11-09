@@ -50,8 +50,12 @@ export function Icon({
   const {
     utils: { fa, resolveIcon },
   } = useBlock();
-  const [failedUrl, setFailedUrl] = useState<string>();
+  const [failedUrls, setFailedUrls] = useState<string[]>([]);
   const resolved = resolveIcon(icon);
+  const src =
+    resolved.type === 'asset'
+      ? [resolved.url, resolved.fallbackUrl].find((url) => url && !failedUrls.includes(url))
+      : undefined;
 
   return (
     <Component
@@ -63,14 +67,14 @@ export function Icon({
       {resolved.type === 'fontawesome' ? (
         <i className={classNames(fa(resolved.name), iconSize && `fa-${iconSize}`)} />
       ) : null}
-      {resolved.type === 'asset' && resolved.url !== failedUrl ? (
+      {src ? (
         // The error handler only tracks loading failures, it doesn’t make the image interactive.
         // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
         <img
           alt=""
           className={styles.image}
-          onError={() => setFailedUrl(resolved.url)}
-          src={resolved.url}
+          onError={() => setFailedUrls((urls) => [...urls, src])}
+          src={src}
         />
       ) : null}
     </Component>

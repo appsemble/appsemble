@@ -10,7 +10,6 @@ import {
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import styles from './index.module.css';
 import { messages } from './messages.js';
 import { RolesInheritanceList } from './RolesInheritanceList/index.js';
 import { useApp } from '../../../index.js';
@@ -421,7 +420,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
                 value={key}
               />
               <ModalCard
-                cardClassName={styles.modal}
                 component={Form}
                 footer={
                   <>
@@ -494,7 +492,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
                 isActive={modalDeleteRole.enabled}
                 onClose={onCloseDeleteRole}
                 title={formatMessage(messages.deleteRole)}
-                wrapperClassName={styles.card}
               >
                 <>
                   <p className="is-size-4">{formatMessage(messages.deleteRoleReferences)}</p>

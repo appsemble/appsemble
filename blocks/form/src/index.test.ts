@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 
 import { EventEmitter } from 'node:events';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 import { createEvents, getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type BootstrapParams } from '@appsemble/sdk';
@@ -157,8 +159,9 @@ it('should wait for pending validation actions before submitting', async () => {
 
 it('should load the markdown editor when a markdown field is rendered', async () => {
   const container = document.createElement('div');
+  const defaultParams = getDefaultBootstrapParams();
   const params = {
-    ...getDefaultBootstrapParams(),
+    ...defaultParams,
     actions: {
       onLoad: Object.assign(vi.fn(), { type: 'noop' }),
       onSubmit: vi.fn(),
@@ -175,6 +178,10 @@ it('should load the markdown editor when a markdown field is rendered', async ()
     parameters: {
       fields: [{ label: 'Description', name: 'description', type: 'markdown' }],
       skipInitialLoad: true,
+    },
+    utils: {
+      ...defaultParams.utils,
+      formatMessage: (message: keyof typeof messages) => messages[message],
     },
   } as unknown as BootstrapParams;
 
@@ -611,7 +618,10 @@ const fieldsWithHelp = [
   },
 ];
 
-async function mountForm(parameters: Record<string, unknown>): Promise<HTMLElement> {
+async function mountForm(
+  parameters: Record<string, unknown>,
+  actions: Record<string, unknown> = {},
+): Promise<HTMLElement> {
   const container = document.createElement('div');
   // Focus only moves to elements that are attached to the document.
   document.body.append(container);
@@ -622,6 +632,7 @@ async function mountForm(parameters: Record<string, unknown>): Promise<HTMLEleme
     actions: {
       onLoad: Object.assign(vi.fn(), { type: 'noop' }),
       onSubmit: vi.fn(),
+      ...actions,
     },
     events: {
       emit: { change: vi.fn() },
@@ -635,7 +646,9 @@ async function mountForm(parameters: Record<string, unknown>): Promise<HTMLEleme
     parameters: { skipInitialLoad: true, ...parameters },
     utils: {
       ...defaultParams.utils,
-      formatMessage: (message: keyof typeof messages) => messages[message],
+      addCleanup: onTestFinished,
+      formatMessage: (message: keyof typeof messages, values: Record<string, unknown> = {}) =>
+        messages[message].replaceAll(/{(\w+)}/g, (match, key: string) => String(values[key])),
     },
   } as unknown as BootstrapParams);
   return container;
@@ -826,6 +839,77 @@ it('should scroll to and focus the error summary at the top after a failed submi
   expect(scrollIntoView.mock.contexts).toStrictEqual([summary]);
 });
 
+/**
+ * Tab through the document until focus wraps around.
+ *
+ * @returns The elements that received focus, in tab order.
+ */
+async function tabStops(): Promise<Element[]> {
+  const stops: Element[] = [];
+  await userEvent.tab();
+  while (!stops.includes(document.activeElement!)) {
+    stops.push(document.activeElement!);
+    await userEvent.tab();
+  }
+  return stops;
+}
+
+/**
+ * Apply the styles of the form block to the document.
+ */
+async function addFormStyles(): Promise<void> {
+  const style = document.createElement('style');
+  style.textContent = await readFile(join(import.meta.dirname, 'index.module.css'), 'utf8');
+  document.head.append(style);
+  onTestFinished(() => style.remove());
+  // Jsdom drops a stylesheet it can't parse, such as one with nested rules.
+  expect(style.sheet).not.toBeNull();
+}
+
+it('should let keyboard users reach the submit error to scroll it only while it is shown', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => null);
+  await addFormStyles();
+  const container = await mountForm(
+    { fields: [{ label: 'Name', name: 'name', type: 'string' }] },
+    { onSubmit: vi.fn().mockRejectedValue('The server is unavailable') },
+  );
+  const alert = within(container).getByRole('alert');
+
+  expect(alert.textContent).toBe('');
+  expect(getComputedStyle(alert).overflow).toBe('hidden');
+  expect(await tabStops()).not.toContain(alert);
+
+  await submitForm(container);
+
+  // The alert stays in place, so assistive technology announces the error appearing in it.
+  await waitFor(() => expect(alert.textContent).toBe('The server is unavailable'));
+  expect(await tabStops()).toContain(alert);
+});
+
+it('should let keyboard users reach a requirement error to scroll it only while it is shown', async () => {
+  const validateName = vi.fn().mockRejectedValueOnce(new Error('Taken')).mockResolvedValue({});
+  await addFormStyles();
+  const container = await mountForm(
+    {
+      fields: [{ label: 'Name', name: 'name', type: 'string' }],
+      requirements: [{ action: 'validateName', isValid: ['name'] }],
+    },
+    { validateName },
+  );
+  const name = getInputByLabel(container, 'Name');
+
+  await userEvent.type(name, 'A');
+  const status = await vi.waitFor(() =>
+    within(container).getByText(messages.formRequirementError).closest('[role="status"]')!,
+  );
+  expect(await tabStops()).toContain(status);
+
+  await userEvent.type(name, 'B');
+  await waitFor(() => expect(status.textContent).toBe(''));
+  expect(getComputedStyle(status).overflow).toBe('hidden');
+  expect(await tabStops()).not.toContain(status);
+});
+
 it('should set the autocomplete attribute of a password field, also while it is visible', async () => {
   const container = await mountForm({
     fields: [
@@ -1006,3 +1090,128 @@ it('keeps inline choices disabled when the field is disabled', async () => {
     expect((screen.getByRole('button', { name }) as HTMLButtonElement).disabled).toBe(true);
   }
 });
+
+it('should name a fieldset after its label and its remove buttons after the entry', async () => {
+  const container = await mountForm({
+    fields: [
+      {
+        fields: [{ label: 'Name', name: 'name', type: 'string' }],
+        label: 'People',
+        name: 'people',
+        repeated: true,
+        type: 'fieldset',
+      },
+    ],
+  });
+  const screen = within(container);
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+  const group = screen.getByRole('group', { name: /^People/ });
+  expect(within(group).getByRole('button', { name: 'Remove entry 1' })).toBeDefined();
+});
+
+it('should expose whether the options of a filterable enum are expanded', async () => {
+  const container = await mountForm({
+    fields: [
+      { enum: [{ value: 'red' }], filter: true, label: 'Color', name: 'color', type: 'enum' },
+    ],
+  });
+  const screen = within(container);
+  const combobox = screen.getByRole('combobox', { name: /^Color/, expanded: false });
+
+  await waitFor(() => expect(combobox).toHaveProperty('disabled', false));
+  await userEvent.click(combobox);
+
+  expect(screen.getByRole('combobox', { expanded: true })).toBe(combobox);
+  expect(screen.getByRole('option', { name: 'red', selected: false })).toBeDefined();
+});
+
+it('should label the markdown editor and file inputs by their field label', async () => {
+  const container = await mountForm({
+    fields: [
+      { label: 'Description', name: 'description', type: 'markdown' },
+      { emptyFileLabel: 'Upload photo', label: 'Photo', name: 'photo', type: 'file' },
+    ],
+  });
+  const screen = within(container);
+
+  await waitFor(() => expect(screen.getByRole('textbox', { name: /^Description/ })).toBeDefined());
+  expect(screen.getByLabelText(/^Photo.*Upload photo$/)).toHaveProperty('type', 'file');
+});
+
+it('should label the progress bar while the form data loads', async () => {
+  const container = await mountForm(
+    { fields: [{ label: 'Name', name: 'name', type: 'string' }], skipInitialLoad: false },
+    { onLoad: Object.assign(() => new Promise(vi.fn()), { type: 'resource.get' }) },
+  );
+
+  await waitFor(() =>
+    expect(within(container).getByRole('progressbar', { name: 'Loading' })).toBeDefined(),
+  );
+});
+
+it('should announce a submission that takes long in an existing live region', async () => {
+  const container = await mountForm(
+    { fields: [{ label: 'Name', name: 'name', type: 'string' }], longSubmissionDuration: 0 },
+    { onSubmit: () => new Promise(vi.fn()) },
+  );
+  const statuses = within(container).getAllByRole('status');
+
+  await submitForm(container);
+
+  await waitFor(() =>
+    expect(statuses.map((status) => status.textContent)).toContain(messages.longSubmissionWarning),
+  );
+});
+
+it.each([
+  {
+    when: 'yields a message',
+    submitErrorMessage: 'Login failed. Check your email address and password.',
+    shown: 'Login failed. Check your email address and password.',
+  },
+  { when: 'is not set', submitErrorMessage: undefined, shown: messages.submitError },
+  { when: 'yields nothing', submitErrorMessage: { prop: 'unknown' }, shown: messages.submitError },
+])(
+  'should show $shown in the alert when the submit action fails and submitErrorMessage $when',
+  async ({ shown, submitErrorMessage }) => {
+    const container = document.createElement('div');
+    const defaultParams = getDefaultBootstrapParams();
+    await mount({
+      ...defaultParams,
+      actions: {
+        onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+        onSubmit: vi.fn().mockRejectedValue(new Error('Invalid credentials')),
+      },
+      events: {
+        emit: { change: vi.fn() },
+        on: {
+          data: vi.fn(() => false),
+          fields: vi.fn(() => false),
+        },
+        off: { fields: vi.fn() },
+      },
+      shadowRoot: container,
+      parameters: {
+        fields: [{ label: 'Email', name: 'email', type: 'string' }],
+        skipInitialLoad: true,
+        submitErrorMessage,
+      },
+      utils: {
+        ...defaultParams.utils,
+        formatMessage: (message: keyof typeof messages) => messages[message],
+      },
+    } as unknown as BootstrapParams);
+
+    const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+    await waitFor(() => expect(submit).toHaveProperty('disabled', false));
+    submit.form?.requestSubmit();
+
+    await waitFor(() =>
+      expect(
+        Array.from(container.querySelectorAll('[role="alert"]'), (alert) => alert.textContent),
+      ).toContain(shown),
+    );
+  },
+);

@@ -23,6 +23,8 @@ test.describe('Organizations', () => {
     await page.getByRole('button', { name: 'Add members' }).click();
     await page.getByRole('textbox', { name: 'Email' }).fill(email);
     await page.locator('form').getByRole('button', { name: 'Add members' }).click();
+    // The page can be used while the dialog transitions out, so wait until it's gone.
+    await expect(page.getByRole('dialog')).toBeHidden();
     const memberRow = page.getByRole('row', { name: email });
     await expect(memberRow).toBeVisible();
 
@@ -38,6 +40,8 @@ test.describe('Organizations', () => {
     await page.getByRole('button', { name: 'Add members' }).click();
     await page.getByRole('textbox', { name: 'Email' }).fill(email);
     await page.locator('form').getByRole('button', { name: 'Add members' }).click();
+    // The page can be used while the dialog transitions out, so wait until it's gone.
+    await expect(page.getByRole('dialog')).toBeHidden();
     const memberRow = page.getByRole('row', { name: email });
     await expect(memberRow).toBeVisible();
 

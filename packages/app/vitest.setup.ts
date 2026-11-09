@@ -23,6 +23,7 @@ window.settings = {
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   definition: null,
   demoMode: false,
+  iconAssetIds: {},
   id: 42,
   languages: ['en', 'nl'],
   logins: [],
@@ -55,3 +56,16 @@ window.matchMedia = (query) => {
     dispatchEvent: () => false,
   };
 };
+
+// Jsdom implements no user activation. Tests start like a page the user hasn't interacted with, and
+// mock `hasBeenActive` to simulate interaction.
+Object.defineProperty(navigator, 'userActivation', {
+  value: {
+    get hasBeenActive() {
+      return false;
+    },
+    get isActive() {
+      return false;
+    },
+  },
+});

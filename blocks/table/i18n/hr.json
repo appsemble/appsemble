@@ -1,8 +1,12 @@
 {
-  "closeImage": "",
-  "downloadImage": "",
+  "closeImage": "Zatvori uvećanu sliku",
+  "downloadImage": "Preuzmi u HD-u",
   "emptyMessage": "Nema dostupnih podataka.",
+  "enlargeImage": "Uvećaj sliku",
+  "enlargeNamedImage": "Uvećaj sliku: {name}",
   "error": "Došlo je do pogreške pri dohvaćanju podataka",
-  "loading": "",
+  "loading": "Učitavanje",
+  "moreOptions": "Više opcija",
+  "selectRow": "Odaberi redak",
   "submitChecked": "Pošalji"
 }

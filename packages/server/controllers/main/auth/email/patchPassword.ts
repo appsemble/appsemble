@@ -3,6 +3,7 @@ import { compare, hash } from 'bcrypt';
 import { type Context } from 'koa';
 
 import { User } from '../../../../models/index.js';
+import { assertPasswordNotBreached } from '../../../../utils/breachedPassword.js';
 
 export async function patchPassword(ctx: Context): Promise<void> {
   const { user } = ctx;
@@ -14,6 +15,7 @@ export async function patchPassword(ctx: Context): Promise<void> {
   const passwordsMatch = await compare(currentPassword, userToChange.password!);
   assertKoaCondition(passwordsMatch, ctx, 401, 'Old password is incorrect.');
 
+  await assertPasswordNotBreached(ctx, newPassword);
   const hashedNewPassword = await hash(newPassword, 10);
   await userToChange.update({ password: hashedNewPassword });
 }

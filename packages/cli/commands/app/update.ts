@@ -99,7 +99,7 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('assets', {
       describe:
-        'Whether the assets from the `assets` directory should replace the seed assets of the app being updated.',
+        'Whether the assets of the app being updated should be synced with the `assets` directory. Unchanged assets are kept.',
       type: 'boolean',
       default: false,
     })

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { type MutableRef, useCallback, useContext } from 'preact/hooks';
+import { type MutableRef, useCallback, useContext, useLayoutEffect, useRef } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { FormComponentContext } from '../FormComponent/index.js';
@@ -34,11 +34,23 @@ export interface SliderProps extends Omit<
   readonly errorLinkRef?: MutableRef<HTMLElement>;
 }
 
+function updateProgress(input: HTMLInputElement): void {
+  const min = Number(input.min || 0);
+  const max = Number(input.max || 100);
+  const progress = max > min ? ((input.valueAsNumber - min) / (max - min)) * 100 : 0;
+  input.style.setProperty('--slider-progress', `${progress}%`);
+}
+
 /**
  * A Bulma styled form input element.
  */
 export const Slider = forwardRef<HTMLInputElement, SliderProps>(
   ({ errorLinkRef, error, hasIcon, name, onChange, readOnly, id = name, ...props }, ref) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+    useLayoutEffect(() => {
+      updateProgress(inputRef.current!);
+    });
+
     const handleChange = useCallback(
       (event: JSX.TargetedEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
@@ -48,6 +60,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
     );
 
     const combinedRef = useCombinedRefs(
+      inputRef,
       ref as MutableRef<HTMLElement>,
       errorLinkRef as MutableRef<HTMLElement>,
     );
@@ -65,6 +78,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
         id={id}
         name={name}
         onChange={handleChange}
+        onInput={(event) => updateProgress(event.currentTarget)}
         readOnly={readOnly}
         ref={combinedRef}
         type="range"

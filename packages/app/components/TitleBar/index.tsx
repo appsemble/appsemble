@@ -7,7 +7,11 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
-import { shouldHideGroupDropdown, shouldShowMenu } from '../../utils/layout.js';
+import {
+  shouldHideGroupDropdown,
+  shouldShowMenu,
+  titleBarShowsPageName,
+} from '../../utils/layout.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -33,6 +37,11 @@ const NAVBAR_DEFAULT_LAYOUT_WITHOUT_LOGO = {
 
 interface AppBarProps {
   readonly children?: ReactNode;
+
+  /**
+   * Whether the page renders its name as an H1 of its own, so the title bar shows it as text.
+   */
+  readonly hasPageHeading?: boolean;
   readonly hideName?: boolean;
 }
 
@@ -41,7 +50,7 @@ interface AppBarProps {
  *
  * This displays the app name,
  */
-export function AppBar({ children, hideName }: AppBarProps): ReactNode {
+export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): ReactNode {
   const { definition, demoMode } = useAppDefinition();
   const { appMemberGroups, appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn } =
     useAppMember();
@@ -99,6 +108,8 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
   const displayAppName = (definition?.layout?.titleBarText || 'pageName') === 'appName';
 
+  const pageName = titleBarShowsPageName(definition, hideName) ? children : null;
+
   if (definition.layout?.hideTitleBar) {
     return null;
   }
@@ -125,12 +136,16 @@ export function AppBar({ children, hideName }: AppBarProps): ReactNode {
     </Link>
   ) : null;
 
-  // The app name repeats on every page, so it isn't a heading that precedes each page's own H1.
-  const nameNode = displayAppName ? (
-    <p className="navbar-item title is-4 mb-0">{appName}</p>
-  ) : (
-    <h2 className="navbar-item title is-4 mb-0">{!hideName && (children || appName)}</h2>
-  );
+  // The page name is the H1 of the page, unless the page renders one of its own. The app name
+  // repeats on every page, so it isn't a heading.
+  const nameNode =
+    pageName && !hasPageHeading ? (
+      <h1 className="navbar-item title is-4 mb-0">{pageName}</h1>
+    ) : (
+      <p className="navbar-item title is-4 mb-0">
+        {pageName || (hideName && !displayAppName ? null : appName)}
+      </p>
+    );
 
   const headerTagNode =
     headerTagHide || !headerTagText ? null : (

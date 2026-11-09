@@ -103,12 +103,18 @@ npm start -- --help
 
 A new account can be registered by going to `http://localhost:9999/register`. Later you can login on
 `http://localhost:9999/login`. You can use any email address as long as it satisfies the email
-format of `user@email-provider.ext`. As the email is sent from the localhost environment, it is
-actually not received by the user instead the email containing the verification link will be printed
-in the server logs. You need to click this link in order to verify you email and use your account.
-If you connect your localhost environment to an SMTP server, this email will be sent normally and
-you will receive the verification link. Similarly, if you login using `GitHub`, `Gitlab` or
-`Google`, you will be authenticated from your account.
+format of `user@email-provider.ext`.
+
+Registering an account sends out a confirmation email containing a verification link. You need to
+click this link in order to verify your email and unlock the full capabilities of your account.
+
+> **Note:** Local emails are printed in the server's console and sent out using the defined SMTP
+> connection. If you haven't defined an SMTP connection it will be sent to the local
+> [Mailpit](https://github.com/axllent/mailpit) instance, which can be found on
+> http://localhost:8025.
+
+Similarly, if you log in using `GitHub`, `Gitlab` or `Google`, you will be authenticated from that
+account.
 
 To login using the Appsemble CLI, run the following command.
 

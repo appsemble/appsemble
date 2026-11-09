@@ -41,15 +41,21 @@ export function DropdownField({
   repeatedIndex,
 }: DropdownFieldProps): VNode {
   const {
-    utils: { remap },
+    utils: { formatMessage, remap },
   } = useBlock();
   const alignment = field.dropdown.alignment || 'right';
+  const dropdownLabel = remap(field.dropdown.label, item, { index, repeatedIndex }) as string;
 
   return (
     <Dropdown
+      ariaLabel={
+        dropdownLabel
+          ? undefined
+          : (remap(field.label, {}) as string) || formatMessage('moreOptions')
+      }
       className={classNames({ 'is-right': alignment === 'right' })}
       icon={field.dropdown.icon}
-      label={remap(field.dropdown.label, item, { index, repeatedIndex }) as string}
+      label={dropdownLabel}
     >
       {field.dropdown.options.map((option, i) => {
         const label = remap(option.label, item, { index, repeatedIndex });

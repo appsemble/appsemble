@@ -69,6 +69,36 @@ describe('queryAppAssets', () => {
     `);
   });
 
+  it('should return only named non-ephemeral assets when filtering on named', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const seedAsset = await Asset.create({ name: 'a', seed: true, sha256: 'hash-a' });
+    const studioAsset = await Asset.create({ name: 'b', clonable: true });
+    await Asset.create({ mime: 'application/octet-stream' });
+    await Asset.create({ name: 'c', ephemeral: true });
+
+    authorizeStudio();
+    const response = await request.get<AssetType[]>(`/api/apps/${app.id}/assets?named=true`);
+
+    expect(response.data).toStrictEqual([
+      { id: seedAsset.id, name: 'a', seed: true, clonable: false, sha256: 'hash-a' },
+      { id: studioAsset.id, name: 'b', seed: false, clonable: true, sha256: null },
+    ]);
+  });
+
+  it('should return only the ephemeral copies of a demo app when filtering on named', async () => {
+    await app.update({ demoMode: true });
+    const { Asset } = await getAppDB(app.id);
+    await Asset.create({ name: 'a', seed: true });
+    const copy = await Asset.create({ name: 'a', ephemeral: true });
+
+    authorizeStudio();
+    const response = await request.get<AssetType[]>(`/api/apps/${app.id}/assets?named=true`);
+
+    expect(response.data).toStrictEqual([
+      { id: copy.id, name: 'a', seed: false, clonable: false, sha256: null },
+    ]);
+  });
+
   it('should fetch all of the app’s assets', async () => {
     const { Asset, Resource } = await getAppDB(app.id);
     const resource = await Resource.create({

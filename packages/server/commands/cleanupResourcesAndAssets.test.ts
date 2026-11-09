@@ -1,8 +1,15 @@
-import { logger } from '@appsemble/node-utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  createFixtureStream,
+  getAppAssetLocation,
+  getS3FileBuffer,
+  logger,
+  readFixture,
+  uploadS3File,
+} from '@appsemble/node-utils';
+import { describe, expect, it, vi } from 'vitest';
 
 import { cleanupResourcesAndAssets } from './cleanupResourcesAndAssets.js';
-import { App, getAppDB } from '../models/index.js';
+import { App, getAppDB, Organization } from '../models/index.js';
 
 vi.mock('@appsemble/node-utils', async (importOriginal) => {
   const actual = (await importOriginal()) as any;
@@ -17,13 +24,13 @@ vi.mock('@appsemble/node-utils', async (importOriginal) => {
   };
 });
 
-vi.mock('../models/index.js', () => ({
-  App: {
-    findAll: vi.fn(),
-  },
-  getAppDB: vi.fn(),
-  initDB: vi.fn(),
-}));
+vi.mock('../models/index.js', async (importOriginal) => {
+  const actual = (await importOriginal()) as any;
+  return {
+    ...actual,
+    getAppDB: vi.fn(actual.getAppDB),
+  };
+});
 
 describe('cleanupResourcesAndAssets', () => {
   const appDB = {
@@ -41,9 +48,9 @@ describe('cleanupResourcesAndAssets', () => {
     },
   };
 
-  beforeEach(() => {
+  it('skips an app whose getAppDB fails and still cleans up the other apps', async () => {
     // The command queries demo apps first, then regular apps.
-    vi.mocked(App.findAll).mockImplementation((options: any) =>
+    vi.spyOn(App, 'findAll').mockImplementation((options: any) =>
       Promise.resolve(options?.where?.demoMode ? [] : ([{ id: 1 }, { id: 2 }, { id: 3 }] as any)),
     );
     vi.mocked(getAppDB).mockImplementation((appId: number) =>
@@ -57,9 +64,7 @@ describe('cleanupResourcesAndAssets', () => {
     appDB.Resource.findAll.mockResolvedValue([]);
     appDB.Resource.destroy.mockResolvedValue(0);
     appDB.sequelize.close.mockImplementation(() => Promise.resolve());
-  });
 
-  it('skips an app whose getAppDB fails and still cleans up the other apps', async () => {
     expect(await cleanupResourcesAndAssets()).toBeUndefined();
 
     expect(getAppDB).toHaveBeenCalledTimes(3);
@@ -70,5 +75,63 @@ describe('cleanupResourcesAndAssets', () => {
     expect(appDB.Asset.destroy).toHaveBeenCalledTimes(2);
     expect(appDB.Resource.destroy).toHaveBeenCalledTimes(2);
     expect(appDB.sequelize.close).toHaveBeenCalledTimes(2);
+  });
+
+  it('reseeds the seed assets of a demo app as ephemeral copies', async () => {
+    await Organization.create({ id: 'testorganization', name: 'Test Organization' });
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+    });
+    const { Asset } = await getAppDB(appId);
+    const { id: seedAssetId } = await Asset.create({ name: 'tasks', seed: true, sha256: 'hash' });
+    const seed = getAppAssetLocation(appId, seedAssetId);
+    await uploadS3File(seed.bucket, seed.key, createFixtureStream('standing.png'));
+
+    await cleanupResourcesAndAssets();
+
+    // The command closes the app database, so open it again to read the result.
+    const { Asset: ReopenedAsset } = await getAppDB(appId, undefined, undefined, true);
+    const copy = await ReopenedAsset.findOne({ where: { ephemeral: true } });
+    expect(copy).toMatchObject({ name: 'tasks', seed: false, sha256: 'hash' });
+    const target = getAppAssetLocation(appId, copy!.id);
+    expect(await getS3FileBuffer(target.bucket, target.key)).toStrictEqual(
+      await readFixture('standing.png'),
+    );
+  });
+
+  it('points a reseeded resource of a demo app at the reseeded copy it references', async () => {
+    await Organization.create({ id: 'testorganization', name: 'Test Organization' });
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        resources: {
+          survey: { schema: { type: 'object' } },
+          answer: {
+            schema: { type: 'object', properties: { surveyId: { type: 'integer' } } },
+            references: { surveyId: { resource: 'survey' } },
+          },
+        },
+      },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+    });
+    const { Resource } = await getAppDB(appId);
+    await Resource.create({ type: 'survey', seed: true, data: {} });
+    await Resource.create({ type: 'answer', seed: true, data: { $survey: 0 } });
+
+    await cleanupResourcesAndAssets();
+
+    // The command closes the app database, so open it again to read the result.
+    const { Resource: ReopenedResource } = await getAppDB(appId, undefined, undefined, true);
+    const survey = await ReopenedResource.findOne({ where: { type: 'survey', ephemeral: true } });
+    const answer = await ReopenedResource.findOne({ where: { type: 'answer', ephemeral: true } });
+    expect(answer?.data).toMatchObject({ surveyId: survey?.id });
   });
 });

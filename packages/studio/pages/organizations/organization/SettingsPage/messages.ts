@@ -54,8 +54,8 @@ export const messages = defineMessages({
     defaultMessage: 'Successfully deleted organization.',
   },
   delete: {
-    id: 'studio./8v8/t',
-    defaultMessage: 'Delete Organization',
+    id: 'studio.MMTG5C',
+    defaultMessage: 'Delete organization',
   },
   deleteHelp: {
     id: 'studio.xbYTxC',
@@ -97,8 +97,8 @@ export const messages = defineMessages({
     defaultMessage: 'A short description about the organization',
   },
   notMatchingOrgIds: {
-    id: 'studio.wTuNvs',
-    defaultMessage: 'Please enter the correct Organisation Id.',
+    id: 'studio.tPai3N',
+    defaultMessage: 'Please enter the correct organization ID.',
   },
   website: {
     id: 'studio.JkLHGw',
@@ -190,7 +190,7 @@ export const messages = defineMessages({
     defaultMessage: 'Preferred language',
   },
   preferredLanguageHelp: {
-    id: 'studio.bL6DuQ',
-    defaultMessage: 'The preferred language to use for Organization related emails.',
+    id: 'studio.RHDyf2',
+    defaultMessage: 'The preferred language to use for organization related emails.',
   },
 });

@@ -51,12 +51,10 @@ export interface Button {
   /**
    * An FontAwesome icon to display inside of the button.
    *
-   * This is the only thing visible on mobile so it's required
-   *
    * This can also be an `icon:<key>` reference to an icon from the app’s `icons`
    * registry.
    */
-  icon: IconReference;
+  icon?: IconReference;
 
   /**
    * When set to true, the ‘light’ set of Bulma colors are used.
@@ -252,5 +250,10 @@ declare module '@appsemble/sdk' {
      * The accessible label of the loader shown while data loads.
      */
     loading: never;
+
+    /**
+     * The accessible label of a clickable card that has no text and no image alt.
+     */
+    openCard: never;
   }
 }

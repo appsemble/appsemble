@@ -18,34 +18,25 @@ exports[`should render a list with data from a data-loader 1`] = `
           <div
             class="item has-text-left is-flex is-flex-direction-column my-1 py-2 pl-3 pr-2"
             id=".item.1"
-            role="button"
-            tabindex="-1"
           >
             <div
               class="headerWrapper is-flex"
-              role="button"
-              tabindex="-1"
             >
               <div
                 class="is-flex image"
               >
                 <div />
-                <button
-                  class="item has-text-left is-block"
-                  type="button"
+                <div
+                  class="is-flex is-justify-content-space-between is-align-items-center"
                 >
-                  <div
-                    class="is-flex is-justify-content-space-between is-align-items-center"
-                  >
-                    <div>
-                      <h4
-                        class="title"
-                      >
-                        test
-                      </h4>
-                    </div>
+                  <div>
+                    <h4
+                      class="title"
+                    >
+                      test
+                    </h4>
                   </div>
-                </button>
+                </div>
               </div>
             </div>
           </div>
@@ -62,34 +53,25 @@ exports[`should render a list with data from a data-loader 1`] = `
           <div
             class="item has-text-left is-flex is-flex-direction-column my-1 py-2 pl-3 pr-2"
             id=".item.2"
-            role="button"
-            tabindex="-1"
           >
             <div
               class="headerWrapper is-flex"
-              role="button"
-              tabindex="-1"
             >
               <div
                 class="is-flex image"
               >
                 <div />
-                <button
-                  class="item has-text-left is-block"
-                  type="button"
+                <div
+                  class="is-flex is-justify-content-space-between is-align-items-center"
                 >
-                  <div
-                    class="is-flex is-justify-content-space-between is-align-items-center"
-                  >
-                    <div>
-                      <h4
-                        class="title"
-                      >
-                        test
-                      </h4>
-                    </div>
+                  <div>
+                    <h4
+                      class="title"
+                    >
+                      test
+                    </h4>
                   </div>
-                </button>
+                </div>
               </div>
             </div>
           </div>

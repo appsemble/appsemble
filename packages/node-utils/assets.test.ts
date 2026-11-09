@@ -4,9 +4,11 @@ import type { Readable } from 'node:stream';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { request, setTestApp } from 'axios-test-instance';
+import Koa from 'koa';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { uploadAssets } from './assets.js';
+import { type AssetHeaderOptions, setAssetHeaders, uploadAssets } from './assets.js';
 import { logger } from './logger.js';
 import * as s3 from './s3.js';
 
@@ -21,6 +23,48 @@ async function withTempFile(contents: Buffer, fn: (path: string) => Promise<void
     await rm(dir, { force: true, recursive: true });
   }
 }
+
+describe('setAssetHeaders', () => {
+  let options: AssetHeaderOptions;
+
+  beforeAll(async () => {
+    const app = new Koa();
+    app.use((ctx) => {
+      // Stand in for the CORS middleware, which exposes these on every API response before the
+      // asset controllers run.
+      ctx.set('Access-Control-Expose-Headers', 'ETag, X-Appsemble-Version');
+      setAssetHeaders(ctx, options);
+      ctx.body = '';
+    });
+    await setTestApp(app);
+  });
+
+  it('should let a response addressed by asset id be cached indefinitely', async () => {
+    options = { mime: 'image/png', immutable: true };
+
+    const { headers } = await request.get('/');
+
+    expect(headers['cache-control']).toBe('max-age=31536000,immutable');
+  });
+
+  it('should bound how long a response addressed by asset name may be cached', async () => {
+    options = { mime: 'image/png', immutable: false };
+
+    const { headers } = await request.get('/');
+
+    expect(headers['cache-control']).toBe('max-age=3600');
+  });
+
+  it('should keep headers exposed by earlier middleware exposed', async () => {
+    options = { mime: 'image/png', immutable: true };
+
+    const { headers } = await request.get('/');
+
+    expect(headers['access-control-expose-headers']).toBe(
+      'ETag, X-Appsemble-Version, Content-Disposition',
+    );
+  });
+});
 
 describe('uploadAssets', () => {
   afterEach(() => {

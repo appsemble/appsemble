@@ -2,7 +2,11 @@
   "closeImage": "",
   "downloadImage": "",
   "emptyMessage": "",
+  "enlargeImage": "",
+  "enlargeNamedImage": "",
   "error": "",
   "loading": "",
+  "moreOptions": "",
+  "selectRow": "",
   "submitChecked": ""
 }

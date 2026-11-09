@@ -4,11 +4,11 @@ import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import {
+  BreachedPasswordSimpleFormError,
   CheckboxField,
   FormButtons,
   PasswordField,
   SimpleForm,
-  SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
 } from '../index.js';
@@ -37,7 +37,7 @@ export function Register({ onRegister, phoneNumberDefinition }: RegisterProps): 
       defaultValues={{ email: '', name: '', password: '', subscribed: false }}
       onSubmit={onRegister}
     >
-      <SimpleFormError>
+      <BreachedPasswordSimpleFormError>
         {({ error }) =>
           axios.isAxiosError(error) && error.response?.status === 409 ? (
             <FormattedMessage {...messages.emailConflict} />
@@ -45,7 +45,7 @@ export function Register({ onRegister, phoneNumberDefinition }: RegisterProps): 
             <FormattedMessage {...messages.registerFailed} />
           )
         }
-      </SimpleFormError>
+      </BreachedPasswordSimpleFormError>
       <SimpleFormField
         autoComplete="name"
         help={<FormattedMessage {...messages.nameHelp} />}

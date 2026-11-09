@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { Fragment, type VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
+import styles from './index.module.css';
 import { type Button } from '../../../block.js';
 
 interface ButtonComponentProps {
@@ -66,16 +67,7 @@ export function ButtonComponent({
     'is-outlined': outlined,
   });
   const remappedTitle = remap(title, item, { index }) as string;
-  if (hide) {
-    return null;
-  }
-
-  const content = (
-    <Fragment>
-      {icon ? <Icon icon={icon} size={isMobile ? 'small' : size} /> : null}
-      {label && !isMobile ? <span>{remap(label, item, { index }) as string}</span> : null}
-    </Fragment>
-  );
+  const remappedLabel = remap(label, item, { index }) as string;
 
   const onClick = useCallback(
     (event: MouseEvent) => {
@@ -89,6 +81,44 @@ export function ButtonComponent({
     },
     [action, disabled, item, index],
   );
+
+  if (hide) {
+    return null;
+  }
+
+  const content = (
+    <Fragment>
+      {icon ? <Icon icon={icon} size={isMobile ? 'small' : size} /> : null}
+      {label ? <span>{remappedLabel}</span> : null}
+    </Fragment>
+  );
+
+  if (action.type === 'link') {
+    const linkContent = (
+      <>
+        {icon ? <Icon icon={icon} /> : null}
+        {label ? <span>{remappedLabel}</span> : null}
+      </>
+    );
+    return (
+      <div className="card-footer-item is-justify-content-flex-start">
+        {disabled ? (
+          <span className={classNames(styles.link, styles.disabled)} title={remappedTitle}>
+            {linkContent}
+          </span>
+        ) : (
+          <a
+            className={styles.link}
+            href={action.href(item)}
+            onClick={onClick}
+            title={remappedTitle}
+          >
+            {linkContent}
+          </a>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="card-footer-item">

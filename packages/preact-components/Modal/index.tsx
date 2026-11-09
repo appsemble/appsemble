@@ -1,9 +1,10 @@
 import classNames from 'classnames';
 import { type ComponentChildren, type ComponentProps, type VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { useCallback, useRef } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type ElementType, useAnimation } from '../index.js';
+import { useModalDialog } from '../useModalDialog/index.js';
 
 interface ModalProps<T extends ElementType> {
   /**
@@ -12,7 +13,8 @@ interface ModalProps<T extends ElementType> {
   readonly children?: ComponentChildren;
 
   /**
-   * Whether the user is allowed to click on the close button or outside of the modal to close it.
+   * Whether the user is allowed to close the modal using the close button, by clicking outside of
+   * it, or by pressing escape.
    */
   readonly closable?: boolean;
 
@@ -61,11 +63,16 @@ export function Modal<T extends ElementType = 'div'>({
     closing: styles.closing,
   });
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      event.stopPropagation();
-      if (closable && event.key === 'Escape') {
-        onClose?.(event);
+  const dialogProps = useModalDialog({ closable, isActive, onClose });
+  const backgroundRef = useRef<HTMLDivElement>(null);
+
+  const handleClick = useCallback(
+    (event: MouseEvent) => {
+      if (event.target === backgroundRef.current) {
+        event.stopPropagation();
+        if (closable) {
+          onClose?.(event);
+        }
       }
     },
     [closable, onClose],
@@ -86,14 +93,18 @@ export function Modal<T extends ElementType = 'div'>({
   }
 
   return (
-    <div className={`is-active modal ${styles.root} ${openClass}`}>
-      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-      <div
-        className="modal-background"
-        onClick={handleClose}
-        onKeyDown={handleKeyDown}
-        role="presentation"
-      />
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+    <dialog
+      className={classNames(`is-active modal ${styles.root} ${openClass}`, dialogProps.className)}
+      onCancel={dialogProps.onCancel}
+      onClick={handleClick}
+      onClose={dialogProps.onClose}
+      onKeyDown={dialogProps.onKeyDown}
+      open
+      ref={dialogProps.ref}
+      tabIndex={-1}
+    >
+      <div className="modal-background" ref={backgroundRef} />
       {/* @ts-expect-error This construct should work */}
       <Component className={classNames('modal-content', className)} {...props}>
         {children}
@@ -106,6 +117,7 @@ export function Modal<T extends ElementType = 'div'>({
           type="button"
         />
       ) : null}
-    </div>
+      <slot name={dialogProps.slot} />
+    </dialog>
   );
 }

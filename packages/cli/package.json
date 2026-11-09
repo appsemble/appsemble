@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.40.4",
+  "version": "0.40.10",
   "description": "The CLI for developing with Appsemble apps and blocks",
   "keywords": [
     "app",
@@ -44,10 +44,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.40.4",
-    "@appsemble/types": "0.40.4",
-    "@appsemble/lang-sdk": "0.40.4",
-    "@appsemble/utils": "0.40.4",
+    "@appsemble/node-utils": "0.40.10",
+    "@appsemble/types": "0.40.10",
+    "@appsemble/lang-sdk": "0.40.10",
+    "@appsemble/utils": "0.40.10",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@inquirer/prompts": "^8.0.0",
     "axios": "^1.0.0",
@@ -78,8 +78,8 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@appsemble/types": "0.40.4",
-    "@appsemble/server": "0.40.4",
+    "@appsemble/types": "0.40.10",
+    "@appsemble/server": "0.40.10",
     "@types/concat-stream": "2.0.3",
     "@types/normalize-path": "3.0.2",
     "@types/postcss-import": "14.0.3",
@@ -93,7 +93,7 @@
     "sequelize": "6.37.8",
     "titleize": "4.0.0",
     "untildify": "6.0.0",
-    "vitest": "4.1.11",
+    "vitest": "4.1.12",
     "yoctocolors-cjs": "2.1.3"
   },
   "optionalDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/form",
-  "version": "0.40.4",
+  "version": "0.40.10",
   "sideEffects": [
     "*.css"
   ],
@@ -20,12 +20,12 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.40.4",
-    "@appsemble/preact-components": "0.40.4",
-    "@appsemble/sdk": "0.40.4",
-    "@appsemble/utils": "0.40.4",
-    "@appsemble/types": "0.40.4",
-    "@appsemble/lang-sdk": "0.40.4",
+    "@appsemble/preact": "0.40.10",
+    "@appsemble/preact-components": "0.40.10",
+    "@appsemble/sdk": "0.40.10",
+    "@appsemble/utils": "0.40.10",
+    "@appsemble/types": "0.40.10",
+    "@appsemble/lang-sdk": "0.40.10",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@milkdown/crepe": "^7.22.2",
@@ -37,16 +37,20 @@
     "leaflet": "~1.9.0",
     "merge": "^2.0.0",
     "preact": "^10.0.0",
+    "rehype-react": "^8.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.0",
     "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "unified": "^11.0.5",
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
-    "@appsemble/block-interaction-tests": "0.40.4",
-    "@testing-library/preact": "3.2.4",
-    "@testing-library/user-event": "14.6.7",
+    "@appsemble/block-interaction-tests": "0.40.10",
+    "@testing-library/preact": "3.2.6",
+    "@testing-library/user-event": "14.6.8",
     "intl-messageformat": "11.2.15",
-    "vitest": "4.1.11"
+    "vitest": "4.1.12"
   }
 }
