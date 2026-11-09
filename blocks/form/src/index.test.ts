@@ -1041,8 +1041,8 @@ async function mountInlineSelection(disabled = false): Promise<HTMLElement> {
     },
     events: {
       emit: { change: noop },
-      on: { data: () => false, fields: () => false },
-      off: { data: noop, fields: noop },
+      on: { data: () => false, fields: () => false, submit: () => false },
+      off: { data: noop, fields: noop, submit: noop },
     },
   } as unknown as BootstrapParams);
   container.append(output);
