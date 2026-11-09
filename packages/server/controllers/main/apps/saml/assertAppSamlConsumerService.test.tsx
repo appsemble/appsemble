@@ -10,6 +10,7 @@ import { type CreateSamlResponseOptions } from '../../../../types/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
+import { countConnections } from '../../../../utils/test/countConnections.js';
 
 let app: App;
 let secret: AppSamlSecret;
@@ -213,6 +214,7 @@ describe('assertAppSamlConsumerService', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
   });
 
   afterAll(() => {
@@ -311,6 +313,26 @@ describe('assertAppSamlConsumerService', () => {
       status: 302,
       data: 'Redirecting to /saml/response/invalidstatuscode.',
     });
+  });
+
+  it('should not fetch IdP metadata from a private address', async () => {
+    vi.stubEnv('VITEST_CONF_ALLOW_PRIVATE_IP_PROXY', '');
+    const target = await countConnections();
+    await secret.update({ entityId: `http://127.0.0.1:${target.port}/metadata.xml` });
+
+    const response = await request.post(
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
+      new URLSearchParams({
+        SAMLResponse: createSamlResponse(),
+        RelayState: 'http://localhost',
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 302,
+      data: 'Redirecting to /saml/response/badsignature.',
+    });
+    expect(target.connections).toBe(0);
   });
 
   it('should synchronize app member roles from mapped SAML groups', async () => {
