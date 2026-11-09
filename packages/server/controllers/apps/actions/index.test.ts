@@ -775,6 +775,21 @@ describe('actions', () => {
       expect(target.connections).toBe(0);
     });
 
+    it('should not send attachments downloaded from URLs exceeding 25 MiB combined', async () => {
+      const spy = vi.spyOn(server.context.mailer, 'sendEmail');
+      onTestFinished(() => spy.mockRestore());
+      const baseURL = await serveAttachment('a'.repeat(13 * 1024 * 1024));
+
+      const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
+        to: 'test@example.com',
+        body: 'Body',
+        attachments: [new URL('a', baseURL).href, new URL('b', baseURL).href],
+      });
+
+      expect(response.status).toBeGreaterThanOrEqual(400);
+      expect(spy).not.toHaveBeenCalled();
+    });
+
     it('should accept assets from content', async () => {
       const spy = vi.spyOn(server.context.mailer, 'sendEmail');
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
