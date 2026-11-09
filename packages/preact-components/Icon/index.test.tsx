@@ -1,5 +1,5 @@
 import { type BlockProps, Context } from '@appsemble/preact';
-import { fa, resolveIcon } from '@appsemble/web-utils';
+import { fa, getIconAsset, resolveIcon } from '@appsemble/web-utils';
 import { fireEvent, render } from '@testing-library/preact';
 import { type ComponentChildren, type VNode } from 'preact';
 import { expect, it } from 'vitest';
@@ -12,7 +12,10 @@ const block = {
   utils: {
     fa,
     resolveIcon: (reference: string) =>
-      resolveIcon(reference, registry, (asset) => `https://example.com/assets/${asset}`),
+      resolveIcon(reference, registry, (asset) => ({
+        type: 'asset',
+        url: `https://example.com/assets/${asset}`,
+      })),
   },
 } as BlockProps;
 
@@ -51,4 +54,31 @@ it('should keep an empty box when the image fails and reset when the URL changes
   expect(container.querySelector('img')?.getAttribute('src')).toBe(
     'https://example.com/assets/other-logo',
   );
+});
+
+it('should load the name URL when the id URL fails', () => {
+  const idBlock = {
+    utils: {
+      fa,
+      resolveIcon: (reference: string) =>
+        resolveIcon(reference, registry, (asset) =>
+          getIconAsset('https://example.com', 42, asset, { 'company-logo': '0f2793d9' }),
+        ),
+    },
+  } as BlockProps;
+  const { container } = render(
+    <Context.Provider value={idBlock}>
+      <Icon icon="icon:logo" />
+    </Context.Provider>,
+  );
+  const img = container.querySelector('img')!;
+  expect(img.getAttribute('src')).toBe('https://example.com/api/apps/42/assets/0f2793d9');
+
+  fireEvent.error(img);
+  expect(container.querySelector('img')?.getAttribute('src')).toBe(
+    'https://example.com/api/apps/42/assets/company-logo',
+  );
+
+  fireEvent.error(container.querySelector('img')!);
+  expect(container.innerHTML).toBe('<span class="icon asset"></span>');
 });

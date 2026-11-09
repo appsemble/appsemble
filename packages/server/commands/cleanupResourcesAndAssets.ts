@@ -27,7 +27,10 @@ export function builder(yargs: Argv): Argv {
 export async function cleanupResourcesAndAssets(): Promise<void> {
   const date = new Date();
 
-  const demoApps = await App.findAll({ attributes: ['id'], where: { demoMode: true } });
+  const demoApps = await App.findAll({
+    attributes: ['id', 'definition'],
+    where: { demoMode: true },
+  });
   for (const demoApp of demoApps) {
     let appDB: Awaited<ReturnType<typeof getAppDB>>;
 
@@ -66,14 +69,14 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
       logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
 
       const demoAssetsToReseed = await Asset.findAll({
-        attributes: ['id', 'mime', 'filename', 'data', 'name', 'ResourceId', 'ResourceType'],
-        where: { OriginalId: null, seed: true },
+        attributes: ['id', 'mime', 'filename', 'name', 'sha256', 'ResourceId', 'ResourceType'],
+        where: { seed: true },
       });
 
       logger.info(`Reseeding ephemeral assets into demo app ${demoApp.id}.`);
 
       for (const asset of demoAssetsToReseed) {
-        const { data, id, ...values } = asset.dataValues;
+        const { id, ...values } = asset.dataValues;
         const created = await Asset.create({
           ...values,
           ephemeral: true,

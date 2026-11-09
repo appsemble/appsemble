@@ -11,6 +11,7 @@ exports[`should render a dropdown component 1`] = `
     <button
       aria-expanded="false"
       aria-haspopup="true"
+      aria-label="moreOptions"
       class="button"
       type="button"
     >

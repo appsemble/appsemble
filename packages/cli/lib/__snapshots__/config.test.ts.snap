@@ -78,6 +78,9 @@ barcode event only holds the object with property barcode.",
     "listen": undefined,
   },
   "messages": {
+    "barcodeType": {
+      "description": "The accessible name of the select that chooses the barcode type.",
+    },
     "empty": {
       "description": "This message is displayed if the data is empty.",
     },
@@ -87,11 +90,20 @@ barcode event only holds the object with property barcode.",
     "loading": {
       "description": "This message is displayed if no data has been loaded yet.",
     },
+    "noImage": {
+      "description": "This message is displayed while no image is selected.",
+    },
+    "patchSize": {
+      "description": "The accessible name of the select that chooses the patch size.",
+    },
     "removeImage": {
       "description": "The accessible name of the button that removes the selected image.",
     },
     "selectImage": {
       "description": "The accessible name of the control that selects an image to scan.",
+    },
+    "selectedImage": {
+      "description": "The alternative text of the selected image.",
     },
     "stopScanning": {
       "description": "The accessible name of the button that stops the camera scanner.",
@@ -425,8 +437,6 @@ Useful for conditional rendering.",
           "icon": {
             "description": "An FontAwesome icon to display inside of the button.
 
-This is the only thing visible on mobile so it's required
-
 This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons\` registry.",
             "format": "icon",
             "type": "string",
@@ -468,9 +478,6 @@ Describe what the button does. This helps with accessibility for people using sc
             "format": "remapper",
           },
         },
-        "required": [
-          "icon",
-        ],
         "type": "object",
       },
       "CardItemDefinition": {
@@ -567,7 +574,9 @@ exports[`config > getProjectImplementations > official blocks > chart 1`] = `
 
 Returns the data of the clicked data in the format of \`label\`, \`data\`.
 
-Returns an empty object if the user clicks outside of a data entry.",
+Returns an empty object if the user clicks outside of a data entry.
+
+Keyboard users launch it from the data table of the chart, which shows while it has focus.",
     },
   },
   "events": {
@@ -585,7 +594,11 @@ Refer to the block description for more information on the supported data format
       },
     },
   },
-  "messages": undefined,
+  "messages": {
+    "chart": {
+      "description": "The accessible name of a chart without a description.",
+    },
+  },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
@@ -673,6 +686,12 @@ By default the primary color of the theme will be used.",
         },
         "minItems": 1,
         "type": "array",
+      },
+      "description": {
+        "description": "A short text alternative that describes what the chart shows.
+
+This is the accessible name of the chart. Screen reader users can also read the chart data as a table.",
+        "format": "remapper",
       },
       "labelOptions": {
         "$ref": "#/definitions/LabelOptions",
@@ -915,6 +934,9 @@ Compatible data that is received will be displayed.",
     },
   },
   "messages": {
+    "captions": {
+      "description": "The label of the captions of a video.",
+    },
     "closeImage": {
       "description": "The accessible label for closing an enlarged image.",
     },
@@ -926,6 +948,12 @@ Compatible data that is received will be displayed.",
     },
     "map": {
       "description": "The accessible name of a map.",
+    },
+    "video": {
+      "description": "The accessible name of an embedded video player.",
+    },
+    "videoThumbnail": {
+      "description": "The alternative text of a video thumbnail shown without a video.",
     },
   },
   "parameters": {
@@ -1016,6 +1044,20 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
             "format": "remapper",
           },
+          "labelLevel": {
+            "description": "The heading level of the label.
+
+Defaults to 5 for field groups and bullet points, and to 6 for other fields.",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+            ],
+            "type": "number",
+          },
           "value": {
             "description": "The Remapper used to retrieve the data.",
             "format": "remapper",
@@ -1076,6 +1118,20 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
             "format": "remapper",
           },
+          "labelLevel": {
+            "description": "The heading level of the label.
+
+Defaults to 5 for field groups and bullet points, and to 6 for other fields.",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+            ],
+            "type": "number",
+          },
           "value": {
             "description": "The Remapper used to retrieve the data.",
             "format": "remapper",
@@ -1097,6 +1153,20 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
           "label": {
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
             "format": "remapper",
+          },
+          "labelLevel": {
+            "description": "The heading level of the label.
+
+Defaults to 5 for field groups and bullet points, and to 6 for other fields.",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+            ],
+            "type": "number",
           },
           "repeated": {
             "description": "Display one or multiple files.",
@@ -1193,6 +1263,20 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
             "format": "remapper",
           },
+          "labelLevel": {
+            "description": "The heading level of the label.
+
+Defaults to 5 for field groups and bullet points, and to 6 for other fields.",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+            ],
+            "type": "number",
+          },
           "latitude": {
             "description": "The name of the field used to access the longitude value.
 
@@ -1243,6 +1327,20 @@ This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
             "format": "remapper",
           },
+          "labelLevel": {
+            "description": "The heading level of the label.
+
+Defaults to 5 for field groups and bullet points, and to 6 for other fields.",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+            ],
+            "type": "number",
+          },
           "type": {
             "const": "string",
             "description": "The name of the type of the field.",
@@ -1259,6 +1357,12 @@ This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons
         "additionalProperties": false,
         "description": "Allows render video.",
         "properties": {
+          "captions": {
+            "description": "The URL or asset id of a WebVTT file with captions for the video.
+
+A video with captions loads over CORS, so a video or captions file on another domain must allow cross-origin requests. Videos from a platform show the captions of that platform instead.",
+            "format": "remapper",
+          },
           "height": {
             "default": 350,
             "description": "Height of the video element.",
@@ -1271,6 +1375,20 @@ This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons
           "label": {
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
             "format": "remapper",
+          },
+          "labelLevel": {
+            "description": "The heading level of the label.
+
+Defaults to 5 for field groups and bullet points, and to 6 for other fields.",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+            ],
+            "type": "number",
           },
           "platform": {
             "description": "Other platform the video is taken from.",
@@ -1385,6 +1503,12 @@ Compatible data that is received will be displayed.",
     "anonymousLabel": {
       "description": "The name to display for replies without known user names.",
     },
+    "avatar": {
+      "description": "The accessible name of an avatar of a feed item without a known status.",
+    },
+    "buttonLabel": {
+      "description": "The text of the button when no \`buttonLabel\` is set.",
+    },
     "closeImage": {
       "description": "The accessible label for closing an enlarged image.",
     },
@@ -1410,7 +1534,19 @@ Compatible data that is received will be displayed.",
       "description": "The error message shown when an error occurs while submitting a reply.",
     },
     "replyLabel": {
-      "description": "The placeholder text used for the reply input.",
+      "description": "The placeholder text and accessible label of the reply input.",
+    },
+    "sendReply": {
+      "description": "The accessible label of the button that submits a reply.",
+    },
+    "statusInProgress": {
+      "description": "The accessible name of the status icon of a feed item that is in progress.",
+    },
+    "statusOpen": {
+      "description": "The accessible name of the status icon of an open feed item.",
+    },
+    "statusResolved": {
+      "description": "The accessible name of the status icon of a resolved feed item.",
     },
   },
   "parameters": {
@@ -1667,6 +1803,21 @@ If not defined, the Asset API will be used instead.",
         "description": "The title displayed on the card.",
         "format": "remapper",
       },
+      "titleLevel": {
+        "default": 4,
+        "description": "The heading level of the title.
+
+The subtitle and the reply authors use the levels below it, down to 6.",
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+        ],
+        "type": "number",
+      },
     },
     "type": "object",
   },
@@ -1702,8 +1853,14 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
     "closeLabel": {
       "description": "The accessible label for closing the filter modal.",
     },
+    "fromLabel": {
+      "description": "The default accessible label of the \`from\` field of a date range.",
+    },
     "modalTitle": {
       "description": "The title of the modal.",
+    },
+    "openLabel": {
+      "description": "The accessible label of the button that opens the filter modal.",
     },
     "sliderMaximum": {
       "description": "The accessible label of the upper handle of a range slider.",
@@ -1713,6 +1870,9 @@ exports[`config > getProjectImplementations > official blocks > filter 1`] = `
     },
     "submitLabel": {
       "description": "The label of the filter button.",
+    },
+    "toLabel": {
+      "description": "The default accessible label of the \`to\` field of a date range.",
     },
   },
   "parameters": {
@@ -2501,6 +2661,9 @@ The event payload is ignored. This also works when the submit button is hidden."
     },
   },
   "messages": {
+    "addLabel": {
+      "description": undefined,
+    },
     "closeImage": {
       "description": undefined,
     },
@@ -2534,10 +2697,25 @@ The event payload is ignored. This also works when the submit button is hidden."
     "longSubmissionWarning": {
       "description": undefined,
     },
+    "markdownBold": {
+      "description": undefined,
+    },
+    "markdownItalic": {
+      "description": undefined,
+    },
+    "markdownLink": {
+      "description": undefined,
+    },
+    "markdownStrikethrough": {
+      "description": undefined,
+    },
     "optionalLabel": {
       "description": undefined,
     },
     "previousLabel": {
+      "description": undefined,
+    },
+    "removeEntry": {
       "description": undefined,
     },
     "removeFile": {
@@ -2654,8 +2832,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "loadError": {
-            "default": "Error loading options",
-            "description": "This message is displayed if the options failed to load.",
+            "description": "This message is displayed if the options failed to load. Defaults to a message in the app language.",
             "format": "remapper",
           },
           "name": {
@@ -3355,8 +3532,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "loadError": {
-            "default": "Error loading options",
-            "description": "This message is displayed if the options failed to load.",
+            "description": "This message is displayed if the options failed to load. Defaults to a message in the app language.",
             "format": "remapper",
           },
           "name": {
@@ -3499,8 +3675,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "properties": {
           "addLabel": {
-            "default": "Add",
-            "description": "The label to show on the button for adding a new entry.",
+            "description": "The label to show on the button for adding a new entry. Defaults to "Add" in the app language.",
             "format": "remapper",
           },
           "allowRemovalFromModal": {
@@ -3661,8 +3836,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "properties": {
           "addLabel": {
-            "default": "Add",
-            "description": "The label to show on the button for adding a new entry for repeated fields.",
+            "description": "The label to show on the button for adding a new entry for repeated fields. Defaults to "Add" in the app language.",
             "format": "remapper",
           },
           "disabled": {
@@ -5102,6 +5276,24 @@ The \`time\` format represents local time as an \`HH:mm\` string.",
             "description": "A description for the text field. For adding more information about the field.",
             "format": "remapper",
           },
+          "hourCycle": {
+            "anyOf": [
+              {
+                "const": "h12",
+                "type": "string",
+              },
+              {
+                "const": "h23",
+                "type": "string",
+              },
+              {
+                "format": "remapper",
+              },
+            ],
+            "description": "The hour cycle used to display and edit a \`time\` field.
+
+Use \`h12\` for hours 1–12 with AM/PM, or \`h23\` for hours 0–23. A remapper receives all form values and must return either value. Stored values remain \`HH:mm\`, independently of the browser locale. If omitted, the native browser time input is used.",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.
 
@@ -5376,8 +5568,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "properties": {
           "addLabel": {
-            "default": "Add",
-            "description": "The label to show on the button for adding a new entry.",
+            "description": "The label to show on the button for adding a new entry. Defaults to "Add" in the app language.",
             "format": "remapper",
           },
           "allowRemovalFromModal": {
@@ -5737,6 +5928,12 @@ By setting this to \`true\`, this won’t happen.",
       "startDisabled": {
         "default": false,
         "description": "If this remapper yields true, the submit button will start disabled when the form is invalid instead of waiting until the user has pressed submit",
+        "format": "remapper",
+      },
+      "submitErrorMessage": {
+        "description": "The error message that is displayed at the top of the form when the submit action fails.
+
+The remapper receives the form values as input and the error as the \`error\` context. Without this, the form shows the error returned by the action or a generic message. If the remapper yields nothing, the form shows the generic message.",
         "format": "remapper",
       },
       "title": {
@@ -7360,6 +7557,9 @@ Otherwise, it will toggle between following and not following.",
     "locationError": {
       "description": "The error message to display when the location couldn’t be determined.",
     },
+    "marker": {
+      "description": "The accessible name of a marker without a \`markerLabel\`.",
+    },
   },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -7526,6 +7726,12 @@ These are used for filtering purposes.",
         "description": "The remapper used to retrieve the longitude.",
         "format": "remapper",
       },
+      "markerLabel": {
+        "description": "The accessible name of a marker, remapped from the marker data.
+
+It is also shown as a tooltip when hovering the marker.",
+        "format": "remapper",
+      },
       "maxClusterRadius": {
         "default": 80,
         "description": "The maximum radius that a cluster will cover from the central marker (in pixels).
@@ -7645,8 +7851,14 @@ Only used when \`paginatorType\` is \`scroll\`.",
     },
   },
   "messages": {
+    "navigationLabel": {
+      "description": "The accessible name of the pagination landmark",
+    },
     "nextLabel": {
       "description": "The label of the next button",
+    },
+    "pageLabel": {
+      "description": "The current page out of the total number of pages",
     },
     "prevLabel": {
       "description": "The label of the previous button",
@@ -7934,6 +8146,12 @@ This does not trigger if the field has a different action specified.",
     },
     "loading": {
       "description": "The accessible label of the loader shown while data loads.",
+    },
+    "moreOptions": {
+      "description": "The accessible name of a dropdown that has neither a label nor a column label.",
+    },
+    "selectRow": {
+      "description": "The accessible name of a checkbox in a column without a label.",
     },
     "submitChecked": {
       "description": "The text on the button that is used to submit the checked data.",
@@ -8631,6 +8849,12 @@ exports[`config > getProjectImplementations > official blocks > wordcloud 1`] = 
     "unsupported": {
       "description": "This message is displayed if the browser does not support the block",
     },
+    "wordFrequency": {
+      "description": "A word in the list of words of the wordcloud, with how often it occurs.",
+    },
+    "wordcloud": {
+      "description": "The accessible name of a wordcloud without a description.",
+    },
   },
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -8701,6 +8925,12 @@ exports[`config > getProjectImplementations > official blocks > wordcloud 1`] = 
       },
     },
     "properties": {
+      "description": {
+        "description": "A short text alternative that describes what the wordcloud shows.
+
+This is the accessible name of the wordcloud. Screen reader users can also read the words and how often each occurs as a list.",
+        "format": "remapper",
+      },
       "fields": {
         "anyOf": [
           {

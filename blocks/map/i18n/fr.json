@@ -1,3 +1,4 @@
 {
-  "locationError": "Impossible de déterminer votre position. Les services de localisation sont-ils activés ?"
+  "locationError": "Impossible de déterminer votre position. Les services de localisation sont-ils activés ?",
+  "marker": ""
 }

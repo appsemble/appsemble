@@ -1,9 +1,10 @@
 import classNames from 'classnames';
 import { type ComponentChildren, type ComponentProps, type VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { useCallback, useId, useRef } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type ElementType, useAnimation } from '../index.js';
+import { useModalDialog } from '../useModalDialog/index.js';
 
 interface ModalCardProps<T extends ElementType> {
   /**
@@ -12,7 +13,8 @@ interface ModalCardProps<T extends ElementType> {
   readonly children?: ComponentChildren;
 
   /**
-   * Whether the user is allowed to click on the close button or outside of the modal to close it.
+   * Whether the user is allowed to close the modal using the close button, by clicking outside of
+   * it, or by pressing escape.
    */
   readonly closable?: boolean;
 
@@ -86,13 +88,17 @@ export function ModalCard<T extends ElementType = 'div'>({
     closing: styles.closing,
   });
 
-  const onKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+  const titleId = useId();
+  const dialogProps = useModalDialog({ closable, isActive, onClose });
+  const backgroundRef = useRef<HTMLDivElement>(null);
+
+  const handleClick = useCallback(
+    (event: MouseEvent) => {
+      if (closable && event.target === backgroundRef.current) {
         onClose?.(event);
       }
     },
-    [onClose],
+    [closable, onClose],
   );
 
   if (!openClass) {
@@ -100,21 +106,28 @@ export function ModalCard<T extends ElementType = 'div'>({
   }
 
   return (
-    <div className={`is-active modal ${styles.root} ${openClass}`}>
-      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-      <div
-        className="modal-background"
-        onClick={closable ? onClose : undefined}
-        onKeyDown={closable ? onKeyDown : undefined}
-        role="presentation"
-      />
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+    <dialog
+      aria-labelledby={title ? titleId : undefined}
+      className={classNames(`is-active modal ${styles.root} ${openClass}`, dialogProps.className)}
+      onCancel={dialogProps.onCancel}
+      onClick={handleClick}
+      onClose={dialogProps.onClose}
+      onKeyDown={dialogProps.onKeyDown}
+      open
+      ref={dialogProps.ref}
+      tabIndex={-1}
+    >
+      <div className="modal-background" ref={backgroundRef} />
       {/* @ts-expect-error This construct should work */}
       <Component
         className={classNames('modal-card', cardClassName, { [styles.fullscreen]: fullscreen })}
         {...props}
       >
         <div className="modal-card-head">
-          <p className="modal-card-title">{title}</p>
+          <p className="modal-card-title" id={titleId}>
+            {title}
+          </p>
           {closable ? (
             <button
               aria-label={closeButtonLabel}
@@ -129,6 +142,7 @@ export function ModalCard<T extends ElementType = 'div'>({
           {footer || <div className={styles['footer-placeholder']} />}
         </div>
       </Component>
-    </div>
+      <slot name={dialogProps.slot} />
+    </dialog>
   );
 }

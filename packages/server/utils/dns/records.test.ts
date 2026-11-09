@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createDNSRecords, deleteDNSRecords } from './records.js';
 import { setArgv } from '../argv.js';
@@ -116,36 +116,56 @@ describe('records', () => {
       ]);
     });
 
-    it('should retry if the API rate limit is reached', async () => {
-      mock
-        .onPatch(/.*/)
-        .replyOnce(429, { detail: 'Request was throttled.' }, { 'retry-after': '0' })
-        .onPatch(/.*/)
-        .reply(200, []);
+    it('should complete a bulk update after a short deSEC rate limit', async () => {
+      const records = new Map<string, string[]>();
+      let requests = 0;
+      mock.onPatch(/.*/).reply(({ data }) => {
+        requests += 1;
+        if (requests === 3) {
+          return [429, { detail: 'Request was throttled.' }, { 'retry-after': '0' }];
+        }
+        for (const record of JSON.parse(data)) {
+          records.set(`${record.subname}:${record.type}`, record.records);
+        }
+        return [200, []];
+      });
 
-      await createDNSRecords(['testorg.host.example']);
+      await createDNSRecords(
+        Array.from({ length: 400 }, (...[, index]) => `org${index}.host.example`),
+      );
 
-      expect(mock.history.patch).toHaveLength(2);
+      expect(records.size).toBe(800);
+      expect(records.get('org399:A')).toStrictEqual(['203.0.113.10']);
+      expect(records.get('org399:AAAA')).toStrictEqual(['2001:db8::10']);
     });
 
-    it('should back off before retrying if retry-after is not a number of seconds', async () => {
+    it('should share the retry deadline across all bulk chunks', async () => {
+      let now = 0;
+      let requests = 0;
+      vi.spyOn(Date, 'now').mockImplementation(() => now);
+      mock.onPatch(/.*/).reply(() => {
+        requests += 1;
+        if (requests === 3) {
+          return [429, { detail: 'Request was throttled.' }, { 'retry-after': '0' }];
+        }
+        now += 30_000;
+        return [200, []];
+      });
+
+      await expect(
+        createDNSRecords(Array.from({ length: 400 }, (...[, index]) => `org${index}.host.example`)),
+      ).rejects.toThrow('Request failed with status code 429');
+    });
+
+    it('should fail promptly when deSEC requests a day-long rate limit backoff', async () => {
       mock
         .onPatch(/.*/)
-        .replyOnce(
-          429,
-          { detail: 'Request was throttled.' },
-          { 'retry-after': 'Wed, 21 Oct 2026 07:28:00 GMT' },
-        )
-        .onPatch(/.*/)
-        .reply(200, []);
+        .reply(429, { detail: 'Request was throttled.' }, { 'retry-after': '86400' });
 
-      const start = process.hrtime.bigint();
-      await createDNSRecords(['testorg.host.example']);
-      const elapsed = Number(process.hrtime.bigint() - start) / 1e6;
-
-      expect(mock.history.patch).toHaveLength(2);
-      expect(elapsed).toBeGreaterThanOrEqual(500);
-    });
+      await expect(createDNSRecords(['testorg.host.example'])).rejects.toThrow(
+        'Request failed with status code 429',
+      );
+    }, 1000);
 
     it('should not write records if no DNS provider is configured', async () => {
       setDNSArgv({});

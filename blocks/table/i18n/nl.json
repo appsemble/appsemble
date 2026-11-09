@@ -6,5 +6,7 @@
   "enlargeNamedImage": "Vergroot afbeelding: {name}",
   "error": "Er is een fout opgetreden bij het ophalen van de gegevens",
   "loading": "Laden",
+  "moreOptions": "Meer opties",
+  "selectRow": "Selecteer rij",
   "submitChecked": "Verzenden"
 }

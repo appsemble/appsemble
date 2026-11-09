@@ -1,0 +1,4 @@
+.time :global(.flatpickr-wrapper) {
+  display: block;
+  width: 100%;
+}

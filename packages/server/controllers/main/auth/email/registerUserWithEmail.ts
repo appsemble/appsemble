@@ -7,6 +7,7 @@ import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 import { EmailAuthorization, transactional, User } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
+import { assertPasswordNotBreached } from '../../../../utils/breachedPassword.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 import { assertSlidingWindowRateLimit } from '../../../../utils/ratelimit/assertSlidingWindowRateLimit.js';
 
@@ -31,6 +32,8 @@ export async function registerUserWithEmail(ctx: Context): Promise<void> {
       body: { locale, name, password, subscribed, timezone },
     },
   } = ctx;
+
+  await assertPasswordNotBreached(ctx, password);
 
   const email = ctx.request.body.email.toLowerCase();
   const hashedPassword = await hash(password, 10);

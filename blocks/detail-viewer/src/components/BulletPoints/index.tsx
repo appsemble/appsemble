@@ -17,6 +17,7 @@ export function BulletPoints({
     bullets: { description, heading },
     hide,
     label,
+    labelLevel = 5,
     value,
   },
 }: RendererProps<BulletPointsType>): VNode | null {
@@ -27,6 +28,7 @@ export function BulletPoints({
   const remappedLabel = utils.remap(label, data);
   const remappedValue = utils.remap(value, data);
   const remappedHide = utils.remap(hide, data);
+  const Heading = `h${labelLevel}` as const;
 
   useEffect(() => {
     if (listRef.current) {
@@ -36,7 +38,9 @@ export function BulletPoints({
 
   return remappedHide ? null : (
     <div className="appsemble-group">
-      {isPreactChild(remappedLabel) ? <h5 className="title is-5">{remappedLabel}</h5> : null}
+      {isPreactChild(remappedLabel) ? (
+        <Heading className="title is-5">{remappedLabel}</Heading>
+      ) : null}
       {Array.isArray(remappedValue) ? (
         <ol
           className={bulletType === 'horizontal' ? styles.horizontalList : undefined}
@@ -45,13 +49,11 @@ export function BulletPoints({
           {remappedValue.flatMap((val) => (
             <li>
               <Field data={val} field={heading} />
-              <div>
-                {description ? (
-                  <dd>
-                    <Field data={val} field={description} />
-                  </dd>
-                ) : null}
-              </div>
+              {description ? (
+                <div className={styles.description}>
+                  <Field data={val} field={description} />
+                </div>
+              ) : null}
             </li>
           ))}
         </ol>

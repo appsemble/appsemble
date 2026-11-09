@@ -5,7 +5,16 @@
     "pages.litter-details": "Подробности об отходах",
     "pages.litter-list": "Список отходов",
     "pages.litter-overview": "Обзор отходов",
-    "pages.report-litter": "Сообщить о мусоре"
+    "pages.report-litter": "Сообщить о мусоре",
+    "routes.App-Invite": "",
+    "routes.Edit-Password": "",
+    "routes.Feedback": "",
+    "routes.Group-Invite": "",
+    "routes.Login": "",
+    "routes.Register": "",
+    "routes.Reset-Password": "",
+    "routes.Settings": "",
+    "routes.Verify": ""
   },
   "messageIds": {
     "date": "Дата",
@@ -13,6 +22,7 @@
     "notes": "Примечания",
     "notesExample": "Пример: В кустах стоит велосипед.",
     "photos": "Фотографии",
-    "process": "Процесс"
+    "process": "Процесс",
+    "reportLitter": ""
   }
 }

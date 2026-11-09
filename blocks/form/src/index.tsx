@@ -30,7 +30,7 @@ import { generateDefaultValues } from './utils/generateDefaultValues.js';
 import { isFormValid } from './utils/validity.js';
 
 const goToRef = (ref: MutableRef<any>): void => {
-  ref?.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  ref?.current?.scrollIntoView({ block: 'center' });
   ref?.current?.focus({ preventScroll: true });
 };
 
@@ -60,6 +60,7 @@ bootstrap(
       previous,
       requirements,
       skipInitialLoad = false,
+      submitErrorMessage,
       title,
     },
     path,
@@ -183,7 +184,7 @@ bootstrap(
 
     useEffect(() => {
       if (failedSubmitCount) {
-        errorSummaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        errorSummaryRef.current?.scrollIntoView({ block: 'start' });
         errorSummaryRef.current?.focus({ preventScroll: true });
       }
     }, [failedSubmitCount]);
@@ -314,6 +315,14 @@ bootstrap(
           // eslint-disable-next-line no-console
           console.error(submitActionError);
 
+          if (submitErrorMessage) {
+            setSubmitErrorResult(
+              (utils.remap(submitErrorMessage, values, { error: submitActionError }) as string) ||
+                utils.formatMessage('submitError'),
+            );
+            return;
+          }
+
           let error = '';
           if (typeof submitActionError === 'string') {
             error = submitActionError;
@@ -400,6 +409,7 @@ bootstrap(
       data,
       values,
       thumbnails,
+      submitErrorMessage,
       utils,
     ]);
 
@@ -628,13 +638,19 @@ bootstrap(
         data-path={path}
         onSubmit={onSubmit}
       >
-        {loading ? <progress className="progress is-small is-primary" /> : null}
+        {loading ? (
+          <progress
+            aria-label={utils.formatMessage('loading')}
+            className="progress is-small is-primary"
+          />
+        ) : null}
         {title ? <div className="title">{utils.remap(title, data) as string}</div> : null}
         {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <Message
           className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}
           color="danger"
           role="status"
+          tabIndex={formErrors.some(Boolean) ? 0 : undefined}
         >
           {/* Render the first form error */}
           <span>{formErrors.find(Boolean)}</span>
@@ -643,6 +659,7 @@ bootstrap(
           className={classNames(styles.error, { [styles.hidden]: submitErrorResult == null })}
           color="danger"
           role="alert"
+          tabIndex={submitErrorResult == null ? undefined : 0}
         >
           <span>{submitErrorResult}</span>
         </Message>
@@ -722,17 +739,13 @@ bootstrap(
           </div>
         ) : null}
 
-        {longSubmission &&
-        !(formErrors.some(Boolean) || !isFormValid(errors)) &&
-        !submitErrorResult ? (
-          <div
-            className={classNames(
-              'is-flex is-flex-direction-column is-justify-content-flex-start text-left',
-            )}
-          >
+        <output className="is-flex is-flex-direction-column is-justify-content-flex-start text-left">
+          {longSubmission &&
+          !(formErrors.some(Boolean) || !isFormValid(errors)) &&
+          !submitErrorResult ? (
             <span>{utils.formatMessage('longSubmissionWarning')}</span>
-          </div>
-        ) : null}
+          ) : null}
+        </output>
 
         <FormButtons className="mt-2">
           {previous ? (

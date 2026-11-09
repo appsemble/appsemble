@@ -2,7 +2,8 @@
   border: none;
   border-radius: 50%;
 
-  &:focus {
-    outline: none;
+  &:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 1px;
   }
 }

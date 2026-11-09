@@ -15,6 +15,7 @@ import { partition } from 'lodash-es';
 import parseDuration from 'parse-duration';
 import { type JsonObject, type JsonValue } from 'type-fest';
 
+import { hashFile } from './assets.js';
 import { preProcessCSV } from './csv.js';
 import {
   type GetAppResourcesParams,
@@ -281,7 +282,7 @@ export async function processResourceBody(
     ({ prepared, used }, { asset, index }) => {
       const reg = preparedRegularAssets.find(
         (regular) =>
-          regular.asset.filename?.startsWith(asset.filename.replace(thumbnailAssetSuffix, '')) &&
+          regular.asset.filename?.startsWith(asset.filename!.replace(thumbnailAssetSuffix, '')) &&
           !used.includes(regular.asset.id),
       );
       const id = reg ? `${reg.asset.id}-thumbnail` : randomUUID();
@@ -462,6 +463,10 @@ export async function processResourceBody(
   }
 
   handleValidatorResult(ctx, result, 'Resource validation failed');
+
+  for (const asset of preparedAssets) {
+    asset.sha256 = await hashFile(asset.path);
+  }
 
   return [resource, preparedAssets, knownAssetIds.filter((id) => !reusedAssets.has(id))];
 }

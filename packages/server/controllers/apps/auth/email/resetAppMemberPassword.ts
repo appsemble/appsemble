@@ -4,6 +4,7 @@ import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../models/index.js';
 import { revokeAppMemberRefreshSessionsForMember } from '../../../../utils/appMemberRefreshSession.js';
+import { assertPasswordNotBreached } from '../../../../utils/breachedPassword.js';
 
 export async function resetAppMemberPassword(ctx: Context): Promise<void> {
   const {
@@ -24,6 +25,7 @@ export async function resetAppMemberPassword(ctx: Context): Promise<void> {
 
   assertKoaCondition(appMember != null, ctx, 404, `Unknown password reset token: ${token}`);
 
+  await assertPasswordNotBreached(ctx, ctx.request.body.password);
   const password = await hash(ctx.request.body.password, 10);
 
   await appMember.update({
