@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.9
-appVersion: 0.40.9
+version: 0.40.10
+appVersion: 0.40.10
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,8 +31,97 @@ dependencies:
     repository: https://valkey.io/valkey-helm
     condition: valkey.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Block(form): Add submitErrorMessage to show a custom message when
+        the submit action fails."
+    - kind: added
+      description: "App: Allow configuring the notifications strategy per role."
+    - kind: added
+      description: "Appsemble-language-server: Publish the language server to npm."
+    - kind: added
+      description: "Preact-components: Add ariaLabel to Dropdown to name a toggle
+        button that shows no label."
+    - kind: added
+      description: "Preact-components: Add tabIndex to Message to let keyboard users
+        scroll a message that overflows."
+    - kind: added
+      description: "Server: Store a hash of asset content and add a named filter to
+        the asset listing."
+    - kind: changed
+      description: "Cli: Upload only new and changed seed assets when updating an app."
+    - kind: fixed
+      description: "Block(filter): Darken the prompt of a list field to meet the AA
+        contrast ratio."
+    - kind: fixed
+      description: "Block(form): Let keyboard users scroll error messages, and stop
+        hidden ones from scrolling."
+    - kind: fixed
+      description: "Block(form): Stop filterable enum fields from re-rendering continuously."
+    - kind: fixed
+      description: "Block(table): Name each checkbox by its column label."
+    - kind: fixed
+      description: "Block(table): Name icon-only dropdowns by their column label."
+    - kind: fixed
+      description: "App: Request custom icon assets by id so browsers cache them."
+    - kind: fixed
+      description: "App: Wait for the app controller to initialize before running
+        controller actions."
+    - kind: fixed
+      description: "Appsemble-language-server: Keep reporting schema errors after the
+        blocks used in an app change."
+    - kind: fixed
+      description: "Appsemble-language-server: Replace old errors and point at each
+        alias when aliases in an app definition have no anchor."
+    - kind: fixed
+      description: "Appsemble-language-server: Show errors from YAML validation, hover
+        and completion in the language server output."
+    - kind: fixed
+      description: "Lang-sdk: Stop reporting an unexpected error for a flow page
+        without steps or a container page without pages."
+    - kind: fixed
+      description: "Sdk: Allow controller handler names to differ from configured action names."
+    - kind: fixed
+      description: "Server: Copy the content of every unnamed asset when creating an
+        app from a template."
+    - kind: fixed
+      description: "Server: Fix reseeding demo resources with multiple or unseeded references."
+    - kind: fixed
+      description: "Server: Fix restoring the seed assets of demo apps in the nightly cleanup."
+    - kind: fixed
+      description: "Server: Fix restoring the seed resources of demo apps in the
+        nightly cleanup."
+    - kind: fixed
+      description: "Server: Fix stopping idle companion containers and starting them
+        on the next request."
+    - kind: fixed
+      description: "Server: Fix the Studio View app link of unlisted apps for users
+        outside the organization."
+    - kind: fixed
+      description: "Server: Fix the demo app member cleanup failing on instances with
+        many apps."
+    - kind: fixed
+      description: "Server: Notify only the roles and author listed in resource hook
+        notifications."
+    - kind: fixed
+      description: "Server: Show the underlying error in database connection error messages."
+    - kind: fixed
+      description: "Service-worker: Remove cached named assets when the server reports
+        them missing."
+    - kind: security
+      description: "Node-utils: Block companion container redirects to other hosts."
+    - kind: security
+      description: "Node-utils: Block request action URLs that only resemble companion
+        container URLs."
+    - kind: security
+      description: "Server: Block app login, push and SMTP connections to private addresses."
+    - kind: security
+      description: "Server: Block client credentials token requests to private addresses."
+    - kind: security
+      description: "Server: Block email action attachment downloads from private addresses."
+    - kind: security
+      description: "Server: Limit email action attachments downloaded from links to 25
+        MiB per email."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

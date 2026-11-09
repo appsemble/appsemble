@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.10](https://gitlab.com/appsemble/appsemble/-/releases/0.40.10)] - 2026-11-09
+
+### Added
+
+- Block(`form`): Add `submitErrorMessage` to show a custom message when the submit action fails.
+- App: Allow configuring the `notifications` strategy per role.
+- Appsemble-language-server: Publish the language server to npm.
+- Preact-components: Add `ariaLabel` to `Dropdown` to name a toggle button that shows no label.
+- Preact-components: Add `tabIndex` to `Message` to let keyboard users scroll a message that
+  overflows.
+- Server: Store a hash of asset content and add a `named` filter to the asset listing.
+
+### Changed
+
+- Cli: Upload only new and changed seed assets when updating an app.
+
+### Fixed
+
+- Block(`filter`): Darken the prompt of a list field to meet the AA contrast ratio.
+- Block(`form`): Let keyboard users scroll error messages, and stop hidden ones from scrolling.
+- Block(`form`): Stop filterable enum fields from re-rendering continuously.
+- Block(`table`): Name each checkbox by its column label.
+- Block(`table`): Name icon-only dropdowns by their column label.
+- App: Request custom icon assets by id so browsers cache them.
+- App: Wait for the app controller to initialize before running controller actions.
+- Appsemble-language-server: Keep reporting schema errors after the blocks used in an app change.
+- Appsemble-language-server: Replace old errors and point at each alias when aliases in an app
+  definition have no anchor.
+- Appsemble-language-server: Show errors from YAML validation, hover and completion in the language
+  server output.
+- Lang-sdk: Stop reporting an unexpected error for a flow page without steps or a container page
+  without pages.
+- Sdk: Allow controller handler names to differ from configured action names.
+- Server: Copy the content of every unnamed asset when creating an app from a template.
+- Server: Fix reseeding demo resources with multiple or unseeded references.
+- Server: Fix restoring the seed assets of demo apps in the nightly cleanup.
+- Server: Fix restoring the seed resources of demo apps in the nightly cleanup.
+- Server: Fix stopping idle companion containers and starting them on the next request.
+- Server: Fix the Studio View app link of unlisted apps for users outside the organization.
+- Server: Fix the demo app member cleanup failing on instances with many apps.
+- Server: Notify only the roles and author listed in resource hook notifications.
+- Server: Show the underlying error in database connection error messages.
+- Service-worker: Remove cached named assets when the server reports them missing.
+
+### Security
+
+- Node-utils: Block companion container redirects to other hosts.
+- Node-utils: Block request action URLs that only resemble companion container URLs.
+- Server: Block app login, push and SMTP connections to private addresses.
+- Server: Block client credentials token requests to private addresses.
+- Server: Block email action attachment downloads from private addresses.
+- Server: Limit email action attachments downloaded from links to 25 MiB per email.
+
 ## \[[0.40.9](https://gitlab.com/appsemble/appsemble/-/releases/0.40.9)] - 2026-10-29
 
 ## \[[0.40.8](https://gitlab.com/appsemble/appsemble/-/releases/0.40.8)] - 2026-10-29
