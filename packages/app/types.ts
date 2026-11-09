@@ -82,6 +82,7 @@ declare global {
       staticAssets?: string[];
       pageManifests: ProjectImplementations;
       vapidPublicKey: string;
+      iconAssetIds: Record<string, string>;
       id: number;
       definition: AppDefinition;
       demoMode: boolean;

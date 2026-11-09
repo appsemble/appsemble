@@ -18,6 +18,9 @@ import { isRequired } from '../../utils/requirements.js';
 
 type EnumInputProps = InputProps<string, EnumField>;
 
+// A stable default, because the options effect depends on it and sets a new options array.
+const noFieldsetEntryValues = {};
+
 /**
  * Render a select box which offers choices a JSON schema enum.
  */
@@ -27,7 +30,7 @@ export function EnumInput({
   disabled,
   errorLinkRef,
   field,
-  fieldsetEntryValues = {},
+  fieldsetEntryValues = noFieldsetEntryValues,
   formValues,
   name,
   onChange,
@@ -111,7 +114,9 @@ export function EnumInput({
     };
 
     const handleError = (): void => {
-      setError(utils.remap(field.loadError ?? 'Error loading options', {}) as string);
+      setError(
+        utils.remap(field.loadError ?? utils.formatMessage('selectionOptionsError'), {}) as string,
+      );
       setLoading(false);
     };
 
@@ -147,7 +152,9 @@ export function EnumInput({
     };
 
     const handleError = (): void => {
-      setError(utils.remap(field.loadError ?? 'Error loading options', {}) as string);
+      setError(
+        utils.remap(field.loadError ?? utils.formatMessage('selectionOptionsError'), {}) as string,
+      );
       setLoading(false);
     };
 
@@ -224,7 +231,11 @@ export function EnumInput({
           // @ts-expect-error strictNullChecks undefined is not assignable
           ref={ref}
         >
+          {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
           <InputField
+            aria-autocomplete="list"
+            aria-controls={`${name}-options`}
+            aria-expanded={enabled}
             autocomplete="off"
             className={classNames('field dropdown-trigger', className)}
             disabled={disabled || loading || originalOptions.length === 0}
@@ -241,22 +252,26 @@ export function EnumInput({
             placeholder={utils.remap(placeholder, {}) as string}
             readOnly={readOnly}
             required={required}
+            role="combobox"
             value={inputValue}
           />
+          {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus, jsx-a11y/prefer-tag-over-role */}
           <div
             className="dropdown-menu"
-            id="dropdown-menu"
+            id={`${name}-options`}
             onKeyDown={onKeyDown}
-            role="menu"
-            tabIndex={0}
+            role="listbox"
           >
             <div className="dropdown-content">
               {options.map((choice) => (
+                // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
                 <Button
+                  aria-selected={choice.value === value}
                   className="dropdown-item"
                   disabled={choice.disabled}
                   key={choice.value}
                   onClick={() => handleSelect(choice)}
+                  role="option"
                 >
                   {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
                 </Button>

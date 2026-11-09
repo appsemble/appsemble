@@ -274,8 +274,6 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
       swSrc: fileURLToPath(new URL('../service-worker/index.ts', import.meta.url)),
       swDest: 'service-worker.js',
       injectionPoint: 'appAssets',
-      // The app runtime exceeds Workbox's default cache limit.
-      maximumFileSizeToCacheInBytes: 3 * 2 ** 20,
       manifestTransforms: [
         (entries) => ({
           manifest: entries

@@ -3,6 +3,7 @@ import https from 'node:https';
 import {
   type ApplyAppServiceSecretsParams,
   basicAuth,
+  getSSRFProtectedAgents,
   logger,
   version,
 } from '@appsemble/node-utils';
@@ -279,7 +280,10 @@ export async function applyAppServiceSecrets({
                 // (strictNullChecks)
                 Authorization: basicAuth(serviceSecret.identifier, decryptedSecret),
               },
-              httpsAgent,
+              ...(await getSSRFProtectedAgents({
+                hostname: new URL(serviceSecret.tokenUrl!).hostname,
+                httpsAgent,
+              })),
             });
           } catch (error) {
             logger.verbose(`Failed to fetch token from ${serviceSecret.tokenUrl}`);

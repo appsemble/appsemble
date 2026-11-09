@@ -124,7 +124,7 @@ myMessage: {
 To generate an ID for the message run:
 
 ```sh
-npx eslint -- --fix path/to/my-messages-file
+npx -- eslint --fix path/to/my-messages-file
 ```
 
 This will generate an ID using the [formatjs](https://formatjs.io/docs/tooling/linter/) plugin for

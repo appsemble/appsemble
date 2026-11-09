@@ -4,6 +4,7 @@ import {
   AssetUploadValidationError,
   deleteAppAssetObjects,
   getCompressedFileMeta,
+  hashFile,
   throwKoaError,
   uploadAssets,
   validateUploadedFile,
@@ -59,6 +60,7 @@ export async function createAppAsset(ctx: Context): Promise<void> {
     ...(ephemeralAssetId ? [{ id: ephemeralAssetId, mime: validatedMime, path }] : []),
   ];
   const compressedFileMeta = getCompressedFileMeta({ filename, mime: validatedMime });
+  const sha256 = await hashFile(path);
 
   await uploadAssets(appId, assetsToUpload);
 
@@ -72,6 +74,7 @@ export async function createAppAsset(ctx: Context): Promise<void> {
             seed: true,
             ephemeral: false,
             clonable,
+            sha256,
             ...compressedFileMeta,
           },
           { transaction },
@@ -85,6 +88,7 @@ export async function createAppAsset(ctx: Context): Promise<void> {
               seed: false,
               ephemeral: true,
               clonable: false,
+              sha256,
               ...compressedFileMeta,
             },
             { transaction },
@@ -100,6 +104,7 @@ export async function createAppAsset(ctx: Context): Promise<void> {
           name,
           ephemeral: app.demoMode,
           clonable,
+          sha256,
           ...compressedFileMeta,
         },
         { transaction },

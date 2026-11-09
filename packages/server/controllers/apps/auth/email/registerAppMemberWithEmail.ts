@@ -19,6 +19,7 @@ import { getAppUrl } from '../../../../utils/app.js';
 import { parseAppMemberProperties } from '../../../../utils/appMember.js';
 import { createAppMemberRefreshSession } from '../../../../utils/appMemberRefreshSession.js';
 import { checkAppSecurityPolicy } from '../../../../utils/auth.js';
+import { assertPasswordNotBreached } from '../../../../utils/breachedPassword.js';
 import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 import { assertSlidingWindowRateLimit } from '../../../../utils/ratelimit/assertSlidingWindowRateLimit.js';
 import { requireTotp, throwTotpRequired } from '../../../../utils/totp.js';
@@ -106,6 +107,8 @@ export async function registerAppMemberWithEmail(ctx: Context): Promise<void> {
     401,
     'This app has no default role',
   );
+
+  await assertPasswordNotBreached(ctx, password);
 
   const appMemberExists = (await AppMember.count({ where: { email } })) > 0;
   let phoneNumberExists = false;

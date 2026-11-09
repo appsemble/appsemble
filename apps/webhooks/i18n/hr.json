@@ -1,7 +1,7 @@
 {
   "app": {
-    "description": "",
-    "name": "",
-    "pages.test": ""
+    "description": "Aplikacija koja prikazuje funkciju webhookova",
+    "name": "Webhook-ovi",
+    "pages.test": "Test"
   }
 }

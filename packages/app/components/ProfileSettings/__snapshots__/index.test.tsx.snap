@@ -9,7 +9,7 @@ HTMLCollection [
       class="label"
       for="name"
     >
-      Display Name
+      Display name
       <span
         class="is-pulled-right has-text-weight-normal"
       >
@@ -26,7 +26,7 @@ HTMLCollection [
         class="input"
         id="name"
         name="name"
-        placeholder="Display Name"
+        placeholder="Display name"
         value="Test User"
       />
       <span
@@ -111,7 +111,7 @@ HTMLCollection [
       <p
         class="help"
       >
-        The public picture to use for your profile.
+        The picture to use for your public profile.
       </p>
     </div>
     <span
@@ -131,9 +131,10 @@ HTMLCollection [
             class="button mr-1"
             type="button"
           >
-            Click a Picture
+            Click a picture
           </button>
           <button
+            aria-label="Camera"
             class="button"
             disabled=""
             type="button"
@@ -227,7 +228,7 @@ HTMLCollection [
       class="label"
       for="name"
     >
-      Display Name
+      Display name
       <span
         class="is-pulled-right has-text-weight-normal"
       >
@@ -244,7 +245,7 @@ HTMLCollection [
         class="input"
         id="name"
         name="name"
-        placeholder="Display Name"
+        placeholder="Display name"
         value="Test User"
       />
       <span
@@ -269,7 +270,7 @@ HTMLCollection [
       class="label"
       for="phoneNumber"
     >
-      Phone Number
+      Phone number
       <span
         class="is-pulled-right has-text-weight-normal"
       >
@@ -285,7 +286,7 @@ HTMLCollection [
         class="input"
         id="phoneNumber"
         name="phoneNumber"
-        placeholder="Phone Number"
+        placeholder="Phone number"
         value=""
       />
       <span
@@ -368,7 +369,7 @@ HTMLCollection [
       <p
         class="help"
       >
-        The public picture to use for your profile.
+        The picture to use for your public profile.
       </p>
     </div>
     <span
@@ -388,9 +389,10 @@ HTMLCollection [
             class="button mr-1"
             type="button"
           >
-            Click a Picture
+            Click a picture
           </button>
           <button
+            aria-label="Camera"
             class="button"
             disabled=""
             type="button"

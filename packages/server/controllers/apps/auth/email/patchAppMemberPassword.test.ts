@@ -1,6 +1,7 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 
 import { request, setTestApp } from 'axios-test-instance';
+import { compare } from 'bcrypt';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -8,6 +9,7 @@ import { App, type AppMember, getAppDB, Organization } from '../../../../models/
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeAppMember, createTestAppMember } from '../../../../utils/test/authorization.js';
+import { mockPwnedPasswords } from '../../../../utils/test/pwnedPasswords.js';
 
 function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
@@ -34,7 +36,7 @@ let member: AppMember;
 
 describe('patchAppMemberPassword', () => {
   beforeAll(async () => {
-    setArgv({ host: 'http://localhost', secret: 'test' });
+    setArgv({ host: 'http://localhost', rejectBreachedPasswords: true, secret: 'test' });
     server = await createServer();
     await setTestApp(server);
   });
@@ -118,5 +120,31 @@ describe('patchAppMemberPassword', () => {
         "statusCode": 401,
       }
     `);
+  });
+
+  it('should not change the password to a breached password', async () => {
+    mockPwnedPasswords(['12345678']);
+    authorizeAppMember(app, member);
+
+    const response = await request.patch(`/api/apps/${app.id}/auth/email/password`, {
+      newPassword: '12345678',
+      currentPassword: 'testpassword',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "breachedPassword": true,
+        },
+        "error": "Bad Request",
+        "message": "This password has appeared in a known data breach. Choose a different password.",
+        "statusCode": 400,
+      }
+    `);
+    await member.reload({ attributes: ['password'] });
+    expect(await compare('testpassword', member.password!)).toBe(true);
   });
 });

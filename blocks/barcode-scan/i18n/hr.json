@@ -1,8 +1,12 @@
 {
+  "barcodeType": "Vrsta barkoda",
   "empty": "Nema podataka za prikaz",
   "error": "Došlo je do problema pri učitavanju podataka.",
   "loading": "Učitavanje …",
-  "removeImage": "",
-  "selectImage": "",
-  "stopScanning": ""
+  "noImage": "Nije odabrana nijedna slika",
+  "patchSize": "Veličina zakrpe",
+  "removeImage": "Ukloni sliku",
+  "selectImage": "Odaberi sliku za skeniranje",
+  "selectedImage": "Odabrana slika",
+  "stopScanning": "Prestani skenirati"
 }

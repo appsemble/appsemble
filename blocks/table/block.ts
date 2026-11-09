@@ -317,6 +317,16 @@ declare module '@appsemble/sdk' {
      * The accessible label of the loader shown while data loads.
      */
     loading: never;
+
+    /**
+     * The accessible name of a dropdown that has neither a label nor a column label.
+     */
+    moreOptions: never;
+
+    /**
+     * The accessible name of a checkbox in a column without a label.
+     */
+    selectRow: never;
   }
   interface Parameters {
     /**

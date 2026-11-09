@@ -34,7 +34,9 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
-  // App assets are immutable and can be cached.
+  // App assets addressed by id are immutable and can be served from the cache. Addressed by name
+  // they can be replaced, so they are served from the cache only when the network is unreachable
+  // or slow.
   if (/^\/api\/apps\/\d+\/assets\//.test(pathname) && request.method !== 'HEAD') {
     event.respondWith(assetFirst(request));
     return;

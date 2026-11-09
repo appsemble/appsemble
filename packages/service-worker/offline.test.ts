@@ -50,6 +50,15 @@ it('serves a previously loaded opaque app image offline', async () => {
   expect((await browserFetch(request)).type).toBe('opaque');
 });
 
+it('loads the replacement of a named app asset', async () => {
+  const request = new Request('https://studio.example/api/apps/2/assets/lamp');
+  networkResponse = new Response('Original lamp');
+  await browserFetch(request);
+  networkResponse = new Response('Replacement lamp');
+
+  expect(await (await browserFetch(request)).text()).toBe('Replacement lamp');
+});
+
 it('serves a successful response that the cache cannot store', async () => {
   const request = new Request('https://studio.example/api/apps/2/messages/en');
   const cache = await caches.open('appsemble');

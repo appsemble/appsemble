@@ -206,6 +206,23 @@ export async function createSettings({
   const appOAuth2Secrets = await AppOAuth2Secret.findAll({ attributes: ['icon', 'id', 'name'] });
   const appSamlSecrets = await AppSamlSecret.findAll({ attributes: ['icon', 'id', 'name'] });
 
+  // Icons are requested by asset id, which addresses fixed bytes the browser may cache for good.
+  // Names resolve to the asset the asset endpoint serves for them, limited to app-level assets
+  // because the icon registry applies to the whole app.
+  const iconAssetNames = Object.values(persistedApp.definition.icons ?? {}).map(
+    ({ asset }) => asset,
+  );
+  const iconAssets = iconAssetNames.length
+    ? await Asset.findAll({
+        attributes: ['id', 'name'],
+        where: {
+          name: iconAssetNames,
+          GroupId: null,
+          ...(persistedApp.demoMode ? { seed: false, ephemeral: true } : {}),
+        },
+      })
+    : [];
+
   const { sentryDsn, sentryEnvironment } = getSentryClientSettings(
     hostname,
     persistedApp.sentryDsn,
@@ -233,6 +250,7 @@ export async function createSettings({
         const fileUrls = blockFileUrls[`${blockManifest.name}@${blockManifest.version}`];
         return fileUrls ? { ...blockManifest, fileUrls } : blockManifest;
       }),
+      iconAssetIds: Object.fromEntries(iconAssets.map(({ id, name }) => [name, id])),
       id: persistedApp.id,
       languages,
       logins: [

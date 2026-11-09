@@ -2,10 +2,12 @@ import classNames from 'classnames';
 import {
   type ComponentPropsWithoutRef,
   type ElementType,
-  type KeyboardEvent,
   type MouseEvent,
   type ReactNode,
+  type SyntheticEvent,
+  useCallback,
   useId,
+  useRef,
 } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -44,7 +46,7 @@ interface ModalCardProps<T extends ElementType> {
   /**
    * A function that will be called when the user closes the modal.
    */
-  readonly onClose?: (event: KeyboardEvent | MouseEvent) => void;
+  readonly onClose?: (event: SyntheticEvent) => void;
 
   /**
    * The title that is displayed at the top of the modal.
@@ -97,7 +99,17 @@ export function ModalCard<T extends ElementType = 'div'>({
 
   const { formatMessage } = useIntl();
   const titleId = useId();
-  const { onKeyDown, ref } = useModalDialog({ closable, isActive, onClose });
+  const dialogProps = useModalDialog({ closable, isActive, onClose });
+  const backgroundRef = useRef<HTMLDivElement>(null);
+
+  const onClick = useCallback(
+    (event: MouseEvent) => {
+      if (closable && event.target === backgroundRef.current) {
+        onClose?.(event);
+      }
+    },
+    [closable, onClose],
+  );
 
   if (!openClass) {
     return null;
@@ -105,22 +117,23 @@ export function ModalCard<T extends ElementType = 'div'>({
 
   return (
     <ModalDialogContext.Provider value>
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/prefer-tag-over-role */}
-      <div
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+      <dialog
         aria-labelledby={title ? titleId : undefined}
-        aria-modal="true"
-        className={classNames(`is-active modal ${styles.root} ${openClass}`, wrapperClassName)}
-        onKeyDown={onKeyDown}
-        ref={ref}
-        role="dialog"
+        className={classNames(
+          `is-active modal ${styles.root} ${openClass}`,
+          dialogProps.className,
+          wrapperClassName,
+        )}
+        onCancel={dialogProps.onCancel}
+        onClick={onClick}
+        onClose={dialogProps.onClose}
+        onKeyDown={dialogProps.onKeyDown}
+        open
+        ref={dialogProps.ref}
         tabIndex={-1}
       >
-        {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-        <div
-          className="modal-background"
-          onClick={closable ? onClose : undefined}
-          role="presentation"
-        />
+        <div className="modal-background" ref={backgroundRef} />
         {/* @ts-expect-error This should be fine */}
         <Component className={classNames('modal-card', cardClassName)} {...props}>
           {title || closable ? (
@@ -145,7 +158,7 @@ export function ModalCard<T extends ElementType = 'div'>({
             {footer || <div className={styles['footer-placeholder']} />}
           </div>
         </Component>
-      </div>
+      </dialog>
     </ModalDialogContext.Provider>
   );
 }

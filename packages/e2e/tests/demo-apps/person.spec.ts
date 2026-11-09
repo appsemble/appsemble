@@ -8,6 +8,11 @@ let appId: number;
 let organizationId: string;
 
 test.describe('Person', () => {
+  test.use({
+    trackBrowserResources: true,
+    autoCleanupResources: true,
+  });
+
   test.beforeAll(async ({ createApp, createOrganization, randomTestId, uploadAppMessages }) => {
     const appDefinition = await readFile('../../apps/person/app-definition.yaml', 'utf8');
     const englishTranslations = JSON.parse(
@@ -28,6 +33,21 @@ test.describe('Person', () => {
   test.beforeEach(async ({ page, visitApp }) => {
     await visitApp(appId);
     await page.waitForURL('**/person-registration-form');
+  });
+
+  test('should show person in person list', async ({ page, createTestResource, randomTestId }) => {
+    const firstName = randomTestId();
+    const lastName = randomTestId();
+
+    await createTestResource(appId, 'person', {
+      firstName,
+      lastName,
+      email: 'test@appsemble.com',
+    });
+
+    await page.getByRole('link', { name: 'Person List' }).click();
+
+    await expect(page.getByRole('row', { name: `${firstName} ${lastName}` })).toBeVisible();
   });
 
   test('should submit a new person and view it', async ({ page }) => {

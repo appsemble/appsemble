@@ -65,30 +65,6 @@ export function cacheFirst(request: Request): Promise<Response> {
 }
 
 /**
- * Serve an app asset, matching SVG images independently of raster resize parameters.
- *
- * @param request The asset request.
- * @returns The requested asset response.
- */
-export async function assetFirst(request: Request): Promise<Response> {
-  try {
-    return await cacheFirst(request);
-  } catch (error) {
-    const original = new URL(request.url);
-    if (!original.searchParams.has('width') && !original.searchParams.has('height')) {
-      throw error;
-    }
-    original.searchParams.delete('width');
-    original.searchParams.delete('height');
-    const cached = await caches.match(new Request(original));
-    if (cached?.headers.get('content-type')?.split(';', 1)[0].trim() === 'image/svg+xml') {
-      return cached;
-    }
-    throw error;
-  }
-}
-
-/**
  * Try returning a response from a request first.
  *
  * If the request fails for whatever reason, a cached response is returned.
@@ -107,6 +83,82 @@ export async function requestFirst(request: Request): Promise<Response> {
     });
   }
   return put(request, response, () => tryCached(request, () => response));
+}
+
+/**
+ * Serve a cached response only if it is marked immutable, and request a fresh one otherwise.
+ *
+ * App asset URLs carry either an asset id or an asset name in their last segment. An id addresses
+ * one fixed set of bytes, while a name can be pointed at a different asset at any time. Only the
+ * server can tell the two apart, and it records that verdict in `Cache-Control`, so read the
+ * verdict back off the stored response instead of deriving it from the URL.
+ *
+ * A stored response that may be replaced is still served when the network fails or takes longer
+ * than 3 seconds to respond, so a stalled connection does not hold up an asset that is available.
+ *
+ * @param request The request for which to get a response.
+ * @returns The fetch response object.
+ */
+export async function cacheFirstIfImmutable(request: Request): Promise<Response> {
+  const cached = await caches.match(request);
+  if (cached?.headers.get('Cache-Control')?.includes('immutable')) {
+    return cached;
+  }
+  let response: Response;
+  try {
+    const fetching = fetch(request);
+    response = await (cached
+      ? Promise.race([
+          fetching,
+          new Promise<never>((resolve, reject) => {
+            setTimeout(() => reject(new Error('The network did not respond in time')), 3000);
+          }),
+        ])
+      : fetching);
+  } catch (error: unknown) {
+    return tryCached(request, () => {
+      throw error;
+    });
+  }
+
+  if (response.status === 404) {
+    const cache = await caches.open('appsemble');
+    const { origin, pathname } = new URL(request.url);
+    const cacheKeys = await cache.keys();
+    for (const cacheRequest of cacheKeys) {
+      const cachedUrl = new URL(cacheRequest.url);
+      if (cachedUrl.origin === origin && cachedUrl.pathname === pathname) {
+        await cache.delete(cacheRequest);
+      }
+    }
+    return response;
+  }
+
+  return put(request, response, () => tryCached(request, () => response));
+}
+
+/**
+ * Serve an app asset, matching SVG images independently of raster resize parameters.
+ *
+ * @param request The asset request.
+ * @returns The requested asset response.
+ */
+export async function assetFirst(request: Request): Promise<Response> {
+  try {
+    return await cacheFirstIfImmutable(request);
+  } catch (error) {
+    const original = new URL(request.url);
+    if (!original.searchParams.has('width') && !original.searchParams.has('height')) {
+      throw error;
+    }
+    original.searchParams.delete('width');
+    original.searchParams.delete('height');
+    const cached = await caches.match(new Request(original));
+    if (cached?.headers.get('content-type')?.split(';', 1)[0].trim() === 'image/svg+xml') {
+      return cached;
+    }
+    throw error;
+  }
 }
 
 /**

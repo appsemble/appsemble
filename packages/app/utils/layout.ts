@@ -68,6 +68,21 @@ export function shouldHideGroupDropdown(
 }
 
 /**
+ * Get whether the title bar shows the name of the page, and so renders it as the H1.
+ *
+ * @param appDefinition The app definition to read the layout from.
+ * @param hideName Whether the page hides its name from the title bar.
+ * @returns Whether the app shows a title bar that displays the page name.
+ */
+export function titleBarShowsPageName(appDefinition: AppDefinition, hideName?: boolean): boolean {
+  return (
+    !hideName &&
+    !appDefinition.layout?.hideTitleBar &&
+    (appDefinition.layout?.titleBarText || 'pageName') !== 'appName'
+  );
+}
+
+/**
  * Get the top-level pages that should be rendered in the app navigation.
  *
  * @param appDefinition The app definition to read the pages from.
