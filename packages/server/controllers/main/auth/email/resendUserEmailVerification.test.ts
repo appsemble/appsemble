@@ -1,12 +1,13 @@
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
+import { type FormatXMLElementFn } from 'intl-messageformat';
 import type Koa from 'koa';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { EmailAuthorization, User } from '../../../../models/index.js';
+import { EmailAuthorization, ResetPasswordToken, User } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
-import { authorizeStudio } from '../../../../utils/test/authorization.js';
+import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
 let server: Koa;
 
@@ -46,6 +47,26 @@ describe('resendEmailVerification', () => {
         name: 'null',
       },
     });
+    spy.mockRestore();
+  });
+
+  it('should send a working link for an email left unverified by a password reset', async () => {
+    const user = await createTestUser();
+    authorizeStudio(user);
+    await request.post('/api/users/current/emails', { email: 'secondary@example.com' });
+    await ResetPasswordToken.create({ token: 'reset-token', UserId: user.id });
+    await request.post('/api/auth/email/reset-password', {
+      token: 'reset-token',
+      password: 'new password',
+    });
+    const spy = vi.spyOn(server.context.mailer, 'sendTranslatedEmail');
+
+    await request.post('/api/auth/email/resend-verification', { email: 'secondary@example.com' });
+
+    const link = spy.mock.calls[0][0].values.link as FormatXMLElementFn<string, string>;
+    const [, token] = /token=(\w+)/.exec(link(['']))!;
+    const response = await request.post('/api/auth/email/verify', { token });
+    expect(response.status).toBe(200);
     spy.mockRestore();
   });
 });
