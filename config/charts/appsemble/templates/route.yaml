@@ -20,7 +20,10 @@ spec:
   tls:
     termination: {{ .Values.route.tls.termination }}
     insecureEdgeTerminationPolicy: {{ .Values.route.tls.insecureEdgeTerminationPolicy }}
-  wildcardPolicy: Subdomain
+  # This Route serves the exact host only. A Subdomain policy here would claim every sibling host
+  # (`*.<parent domain>`) for this namespace: unrelated hosts would reach Appsemble, and OpenShift
+  # would reject Routes for those hosts in other namespaces.
+  wildcardPolicy: None
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -33,6 +36,8 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  # OpenShift rejects `*` in a Route host. With the Subdomain policy, the host `wildcard.<host>`
+  # serves `*.<host>`, one label deep: the organization hosts below the main host.
   host: {{ printf "wildcard.%s" .Values.route.host | quote }}
   to:
     kind: Service
