@@ -62,7 +62,8 @@ function parseVariables(raw: string | undefined): string | null {
   }
   const entries = Object.entries(parsed);
   if (
-    entries.length > 32 ||
+    // App, page and block themes can each declare 32 variables.
+    entries.length > 3 * 32 ||
     entries.some(
       ([name, value]) =>
         name.length > 40 ||

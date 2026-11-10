@@ -1,4 +1,5 @@
 import { bulmaVersion } from '@appsemble/node-utils';
+import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
@@ -77,6 +78,18 @@ describe('bulmaHandler', () => {
       `/bulma/${bulmaVersion}/bulma.min.css?variables=%7B%22night%22%3A%22%23141A2E%22%7D`,
     );
     await vi.waitFor(async () => expect(await Theme.count()).toBe(2));
+  });
+
+  it('should serve merged app, page and block themes with 32 variables each', async () => {
+    const themes = ['app', 'page', 'block'].map((scope) => ({
+      variables: Object.fromEntries(
+        Array.from({ length: 32 }, (value, index) => [`${scope}-${index}`, '#123456']),
+      ),
+    }));
+
+    const response = await request.get(createThemeURL(mergeThemes(...themes)));
+
+    expect(response.status).toBe(200);
   });
 
   it('should reject malformed variables JSON', async () => {
