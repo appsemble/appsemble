@@ -42,9 +42,9 @@ function populateNode(
   if (typeof value === 'string') {
     // eslint-disable-next-line no-param-reassign
     node.innerHTML = String(processor.processSync(value));
-  } else if (value != null) {
+  } else {
     // eslint-disable-next-line no-param-reassign
-    node.innerHTML = JSON.stringify(value);
+    node.innerHTML = value == null ? '' : JSON.stringify(value);
   }
 }
 
@@ -55,7 +55,7 @@ bootstrap(({ data, events, parameters, path, utils }) => {
     populateNode(node, utils.remap, d, parameters);
   });
 
-  if (shouldWait) {
+  if (shouldWait && data == null) {
     node.classList.add(style.loader, 'appsemble-loader');
   } else {
     populateNode(node, utils.remap, data, parameters);
