@@ -251,6 +251,10 @@ spec:
             - name: REJECT_BREACHED_PASSWORDS
               value: 'true'
             {{- end }}
+            {{- if .Values.disableRegistration }}
+            - name: DISABLE_REGISTRATION
+              value: 'true'
+            {{- end }}
             {{- if .Values.proxy }}
             - name: PROXY
               value: 'true'

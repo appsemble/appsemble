@@ -771,6 +771,11 @@
       },
       "default": []
     },
+    "disableRegistration": {
+      "type": "boolean",
+      "description": "If `true`, disable user registration with email and password. Without a Studio login provider (`oauthSecret`) nobody new can get an account.",
+      "default": false
+    },
     "provision": {
       "type": "object",
       "description": "Provision the database with a pre-configured account and client credentials. This is for development purposes only.",
