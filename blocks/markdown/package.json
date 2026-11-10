@@ -25,5 +25,9 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.0.0",
     "unified": "^11.0.0"
+  },
+  "devDependencies": {
+    "@appsemble/lang-sdk": "0.40.10",
+    "vitest": "4.1.12"
   }
 }

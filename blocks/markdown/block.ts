@@ -5,7 +5,7 @@ declare module '@appsemble/sdk' {
     /**
      * Data that can be used to populate `content` with dynamic content.
      *
-     * If defined, a loader will be shown until this event is triggered.
+     * If defined without initial data, a loader is shown until this event is triggered.
      */
     data: never;
   }
