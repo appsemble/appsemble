@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@appsemble/utils": "0.40.10",
+    "css-tree": "3.1.0",
     "type-fest": "^4.0.0"
   },
   "devDependencies": {

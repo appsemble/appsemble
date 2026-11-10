@@ -1,24 +1,33 @@
 import { type Promisable } from 'type-fest';
 
+const cacheWrites = new Set<Promise<unknown>>();
+
 async function put(
   request: Request,
   response: Response,
   fallback: () => Promisable<Response>,
 ): Promise<Response> {
-  // Only cache responses if the status code is 2xx
-  // or if the status is 0 due to cors and the destination is an image
-  if (
-    response.type !== 'opaque' &&
-    (response.ok || (response.status === 0 && request.destination === 'image'))
-  ) {
+  // Cache successful responses and opaque image responses.
+  if (response.ok || (response.type === 'opaque' && request.destination === 'image')) {
     const cache = await caches.open('appsemble');
-    cache.put(request, response.clone());
+    // The response streams to the page while it is stored. A failed write, for example when the
+    // storage quota is exceeded, keeps the response usable.
+    const write = cache.put(request, response.clone()).catch((): null => null);
+    cacheWrites.add(write);
+    write.finally(() => cacheWrites.delete(write));
     return response;
   }
   return fallback();
 }
 
-async function tryCached(
+/**
+ * Wait until the cache writes that have started are finished.
+ */
+export async function finishCacheWrites(): Promise<void> {
+  await Promise.all(cacheWrites);
+}
+
+export async function tryCached(
   request: Request,
   fallback: () => Promisable<Response>,
 ): Promise<Response> {
@@ -61,19 +70,23 @@ export function cacheFirst(request: Request): Promise<Response> {
  * If the request fails for whatever reason, a cached response is returned.
  *
  * @param request The request for which to get a response.
+ * @param cacheRequest The request used to identify the cached response.
  * @returns The fetch response object.
  */
-export async function requestFirst(request: Request): Promise<Response> {
+export async function requestFirst(
+  request: Request,
+  cacheRequest: Request = request,
+): Promise<Response> {
   let response: Response;
   try {
     response = await fetch(request);
   } catch (error: unknown) {
     // This might happen if the API could not be reached.
-    return tryCached(request, () => {
+    return tryCached(cacheRequest, () => {
       throw error;
     });
   }
-  return put(request, response, () => tryCached(request, () => response));
+  return put(cacheRequest, response, () => tryCached(cacheRequest, () => response));
 }
 
 /**
@@ -126,6 +139,30 @@ export async function cacheFirstIfImmutable(request: Request): Promise<Response>
   }
 
   return put(request, response, () => tryCached(request, () => response));
+}
+
+/**
+ * Serve an app asset, matching SVG images independently of raster resize parameters.
+ *
+ * @param request The asset request.
+ * @returns The requested asset response.
+ */
+export async function assetFirst(request: Request): Promise<Response> {
+  try {
+    return await cacheFirstIfImmutable(request);
+  } catch (error) {
+    const original = new URL(request.url);
+    if (!original.searchParams.has('width') && !original.searchParams.has('height')) {
+      throw error;
+    }
+    original.searchParams.delete('width');
+    original.searchParams.delete('height');
+    const cached = await caches.match(new Request(original));
+    if (cached?.headers.get('content-type')?.split(';', 1)[0].trim() === 'image/svg+xml') {
+      return cached;
+    }
+    throw error;
+  }
 }
 
 /**

@@ -14,10 +14,20 @@ import {
   useState,
 } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { type Permission, type ServiceWorkerRegistrationContextType } from '../../types.js';
-import { apiUrl, appId, e2e, vapidPublicKey } from '../../utils/settings.js';
+import { getAppAssets } from '../../utils/appAssets.js';
+import {
+  apiUrl,
+  appId,
+  appUpdated,
+  e2e,
+  staticAssets,
+  vapidPublicKey,
+} from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 interface ServiceWorkerRegistrationProviderProps {
   readonly children: ReactNode;
@@ -86,6 +96,8 @@ export function ServiceWorkerRegistrationProvider({
   children,
   serviceWorkerRegistrationPromise,
 }: ServiceWorkerRegistrationProviderProps): ReactNode {
+  const { definition, blockManifests } = useAppDefinition();
+  const { lang } = useParams<{ lang: string }>();
   const [permission, setPermission] = useState<Permission>(window.Notification?.permission);
   const [subscription, setSubscription] = useState<PushSubscription | null>();
   const [serviceWorkerError, setServiceWorkerError] = useState<Error | null>(null);
@@ -106,6 +118,44 @@ export function ServiceWorkerRegistrationProvider({
 
     setServiceWorkerError(error as Error);
   }, []);
+
+  useEffect(() => {
+    serviceWorkerRegistrationPromise
+      .then(async (registration) => {
+        if (!registration) {
+          return;
+        }
+        const { active } = await navigator.serviceWorker.ready;
+        const urls = [
+          ...getAppAssets(definition, blockManifests, appUpdated),
+          ...[
+            ...document.querySelectorAll<HTMLLinkElement>(
+              'link[rel="stylesheet"], link[rel="icon"], link[rel="apple-touch-icon"], link[rel="manifest"]',
+            ),
+          ].map(({ href }) => href),
+          ...(staticAssets ?? []).map(
+            (name) => `${apiUrl}/api/apps/${appId}/assets/${encodeURIComponent(name)}`,
+          ),
+          `${apiUrl}/api/apps/${appId}/variables`,
+          `${apiUrl}/api/apps/${appId}/messages/${lang}`,
+        ];
+
+        const message = {
+          type: 'appsemble.precache',
+          documentUrl: new URL(`/${lang}`, window.location.origin).href,
+          urls: urls.map((url) => new URL(url, window.location.origin).href),
+        };
+        // eslint-disable-next-line unicorn/require-post-message-target-origin
+        active!.postMessage(message);
+      })
+      .catch(handleServiceWorkerError);
+  }, [
+    blockManifests,
+    definition,
+    handleServiceWorkerError,
+    lang,
+    serviceWorkerRegistrationPromise,
+  ]);
 
   useEffect(() => {
     // Only reload when an updated worker takes over a page a previous worker

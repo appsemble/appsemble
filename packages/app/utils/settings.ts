@@ -21,6 +21,7 @@ export const {
   showAppsembleOAuth2Login,
   showDemoLogin,
   snapshotId,
+  staticAssets,
   supportedLanguages,
   totp,
   vapidPublicKey,
