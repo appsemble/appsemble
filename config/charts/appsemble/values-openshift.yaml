@@ -1,0 +1,9 @@
+# Values for OpenShift. The restricted-v2 security context constraint assigns the user and group IDs
+# of the namespace to each pod and rejects a pod which sets its own.
+valkey:
+  podSecurityContext:
+    fsGroup: null
+    runAsUser: null
+    runAsGroup: null
+  securityContext:
+    runAsUser: null

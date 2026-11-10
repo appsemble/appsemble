@@ -292,6 +292,12 @@ server's single-writer endpoint available. The bundled setup uses the `valkey` s
 `valkey.auth.usersExistingSecret` names that secret, and `valkey.auth.aclUsers.default.passwordKey`
 selects its `password` key.
 
+On OpenShift, install the chart with its `values-openshift.yaml` file. The `restricted-v2` security
+context constraint assigns the user and group IDs of the namespace to each pod and rejects a pod
+which sets its own, so the file unsets the fixed IDs of the bundled Valkey. With ArgoCD, list the
+file in `helm.valueFiles` of the chart source. With Helm, pass it with `--values` from the unpacked
+chart (`helm pull --untar`).
+
 To use a platform-managed Valkey or Redis service, create a password secret and set
 `valkey.enabled=false` with `externalValkey` connection settings:
 
