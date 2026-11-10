@@ -763,6 +763,14 @@
       "description": "If `true`, reject new passwords that appear in the Have I Been Pwned Pwned Passwords data set. The server then sends the first 5 characters of the SHA-1 hash of each new password to api.pwnedpasswords.com.",
       "default": false
     },
+    "ssrfAllowIpAddressList": {
+      "type": "array",
+      "description": "Private IP addresses or CIDR ranges the server may connect to on behalf of apps, for example in request actions, OAuth2 logins and app SMTP. Allow only the specific internal hosts an app needs, not whole private ranges, because the block also protects cluster internals.",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
     "provision": {
       "type": "object",
       "description": "Provision the database with a pre-configured account and client credentials. This is for development purposes only.",

@@ -90,6 +90,7 @@ IDP
 JSON
 JSX
 JWT
+Keycloak
 Koa
 Kubernetes
 localhost
@@ -125,6 +126,7 @@ SDK
 SMTP
 SSL
 SSO
+SSRF
 Stylelint
 SVG
 SwaggerUI
