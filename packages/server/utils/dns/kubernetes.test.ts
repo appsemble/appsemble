@@ -8,7 +8,7 @@ import { fs, vol } from 'memfs';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App, AppCollection, Organization } from '../../models/index.js';
-import { setArgv } from '../argv.js';
+import { setArgv, updateArgv } from '../argv.js';
 
 let kubernetes: typeof import('./kubernetes.js');
 const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
@@ -976,6 +976,69 @@ describe('kubernetes', () => {
     afterEach(() => {
       mock.reset();
       configs.length = 0;
+      setArgv({ clusterIssuer: undefined, issuer: undefined });
+    });
+
+    /**
+     * Reconcile like the Kubernetes API does: creating an ingress which exists is a conflict.
+     *
+     * @param annotations The annotations of the existing ingress of org1.
+     * @returns The annotations patched onto the existing ingress of org1.
+     */
+    async function reconcileOrg1Annotations(
+      annotations?: Record<string, string>,
+    ): Promise<Record<string, string | null>[]> {
+      mock.reset();
+      mock.onGet('/apis/networking.k8s.io/v1/namespaces/test/ingresses').reply(200, {
+        items: [
+          {
+            metadata: { name: 'org1-host-example', annotations },
+            spec: { rules: [{ host: '*.org1.host.example' }] },
+          },
+        ],
+      });
+      mock
+        .onPost(/.*/)
+        .reply(({ data }) => [JSON.parse(data).metadata.name === 'org1-host-example' ? 409 : 201]);
+      const patched: Record<string, string | null>[] = [];
+      mock
+        .onPatch('/apis/networking.k8s.io/v1/namespaces/test/ingresses/org1-host-example')
+        .reply(({ data }) => {
+          patched.push(JSON.parse(data).metadata.annotations);
+          return [200];
+        });
+
+      await kubernetes.reconcileDNS({ dryRun: false });
+      return patched;
+    }
+
+    it('should set the cluster issuer on an organization ingress created before it was configured', async () => {
+      updateArgv({ clusterIssuer: 'letsencrypt' });
+
+      const patched = await reconcileOrg1Annotations();
+
+      expect(patched).toHaveLength(1);
+      expect(patched[0]).toMatchObject({ 'cert-manager.io/cluster-issuer': 'letsencrypt' });
+    });
+
+    it('should replace the issuer of an organization ingress by the configured cluster issuer', async () => {
+      updateArgv({ clusterIssuer: 'letsencrypt' });
+
+      const patched = await reconcileOrg1Annotations({ 'cert-manager.io/issuer': 'internal-ca' });
+
+      expect(patched).toHaveLength(1);
+      expect(patched[0]).toMatchObject({
+        'cert-manager.io/cluster-issuer': 'letsencrypt',
+        'cert-manager.io/issuer': null,
+      });
+    });
+
+    it('should not patch an organization ingress which has the configured issuer', async () => {
+      updateArgv({ issuer: 'internal-ca' });
+
+      const patched = await reconcileOrg1Annotations({ 'cert-manager.io/issuer': 'internal-ca' });
+
+      expect(patched).toStrictEqual([]);
     });
 
     it('should create missing ingresses for apps, organizations, and app collections', async () => {
