@@ -9,7 +9,8 @@ import { type BootstrapParams } from '@appsemble/sdk';
 import { noop } from '@appsemble/utils';
 import { within } from '@testing-library/preact';
 import { userEvent } from '@testing-library/user-event';
-import { expect, it, onTestFinished, vi } from 'vitest';
+import { render } from 'preact';
+import { afterEach, expect, it, onTestFinished, vi } from 'vitest';
 
 import { type Field, type Values } from '../block.js';
 import messages from '../i18n/en.json' with { type: 'json' };
@@ -29,6 +30,7 @@ await import('./index.js');
 Element.prototype.scrollIntoView = () => null;
 
 const mount = sdk.bootstrap.mock.calls[0][0] as (params: BootstrapParams) => Promise<void>;
+const containers = new Set<HTMLElement>();
 
 function getInputByLabel(container: HTMLElement, label: string): HTMLInputElement {
   const labelElement = Array.from(container.querySelectorAll('label')).find((element) =>
@@ -61,6 +63,15 @@ async function waitFor(assertion: () => void): Promise<void> {
     }
   }
 }
+
+afterEach(() => {
+  for (const container of containers) {
+    render(null, container);
+  }
+  containers.clear();
+  document.body.replaceChildren();
+  vi.unstubAllGlobals();
+});
 
 it('should wait for pending validation actions before submitting', async () => {
   let resolveValidation!: (value: unknown) => void;
@@ -991,6 +1002,102 @@ it('should not set an autocomplete attribute if the field does not define one', 
   expect(getInputByLabel(container, 'Email').hasAttribute('autocomplete')).toBe(false);
   expect(getInputByLabel(container, 'Password').hasAttribute('autocomplete')).toBe(false);
   expect(getInputByLabel(container, 'Age').hasAttribute('autocomplete')).toBe(false);
+});
+
+async function mountInlineSelection(disabled = false): Promise<HTMLElement> {
+  vi.stubGlobal(
+    'IntersectionObserver',
+    class {
+      observe = noop;
+
+      unobserve = noop;
+
+      disconnect = noop;
+    },
+  );
+  const container = document.createElement('div');
+  const output = document.createElement('output');
+  containers.add(container);
+  output.setAttribute('aria-label', 'Saved selection');
+  document.body.append(container);
+  const params = getDefaultBootstrapParams();
+  await mount({
+    ...params,
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          name: 'sounds',
+          type: 'selection',
+          display: 'inline',
+          label: 'Sounds',
+          disableSearch: true,
+          disabled,
+          selection: [
+            { id: 1, header: 'Rain' },
+            { id: 2, header: 'Waves' },
+            { id: 3, header: 'Wind' },
+          ],
+          requirements: [{ maxItems: 2 }],
+        },
+      ],
+    },
+    actions: {
+      onLoad: Object.assign(noop, { type: 'noop' }),
+      onSubmit({ sounds }: { sounds: { id: number }[] }) {
+        output.textContent = sounds.map(({ id }) => id).join(', ');
+      },
+    },
+    events: {
+      emit: { change: noop },
+      on: { data: () => false, fields: () => false, submit: () => false },
+      off: { data: noop, fields: noop, submit: noop },
+    },
+  } as unknown as BootstrapParams);
+  container.append(output);
+  return container;
+}
+
+it('selects inline choices in the chosen order and removes them without opening a dialog', async () => {
+  const container = await mountInlineSelection();
+  const screen = within(container);
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Waves' })).toBeDefined());
+  screen.getByRole('button', { name: 'Waves' }).click();
+  await waitFor(() =>
+    expect(screen.getByRole('button', { name: 'Waves', pressed: true })).toBeDefined(),
+  );
+  screen.getByRole('button', { name: 'Rain' }).click();
+  await waitFor(() =>
+    expect((screen.getByRole('button', { name: 'Wind' }) as HTMLButtonElement).disabled).toBe(true),
+  );
+  screen.getByRole('button', { name: 'submitLabel' }).click();
+  await waitFor(() =>
+    expect(screen.getByRole('status', { name: 'Saved selection' }).textContent).toBe('2, 1'),
+  );
+  expect(screen.queryByRole('dialog')).toBeNull();
+  await waitFor(() =>
+    expect((screen.getByRole('button', { name: 'Waves' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    ),
+  );
+  screen.getByRole('button', { name: 'Waves' }).click();
+  await waitFor(() =>
+    expect((screen.getByRole('button', { name: 'Wind' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    ),
+  );
+  screen.getByRole('button', { name: 'submitLabel' }).click();
+  await waitFor(() =>
+    expect(screen.getByRole('status', { name: 'Saved selection' }).textContent).toBe('1'),
+  );
+});
+
+it('keeps inline choices disabled when the field is disabled', async () => {
+  const screen = within(await mountInlineSelection(true));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Rain' })).toBeDefined());
+  for (const name of ['Rain', 'Waves', 'Wind']) {
+    expect((screen.getByRole('button', { name }) as HTMLButtonElement).disabled).toBe(true);
+  }
 });
 
 async function mountExternalSubmit(disabled = false): Promise<{

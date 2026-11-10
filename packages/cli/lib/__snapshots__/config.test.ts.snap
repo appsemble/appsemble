@@ -3693,6 +3693,17 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "Whether the field should always be be disabled.",
             "format": "remapper",
           },
+          "display": {
+            "default": "modal",
+            "description": "Whether choices appear in a modal or directly inside the form.
+
+Inline choices remain visible when selected and can be toggled individually. Values retain the order in which choices are selected.",
+            "enum": [
+              "modal",
+              "inline",
+            ],
+            "type": "string",
+          },
           "event": {
             "description": "Wait until an event has been fired containing the list of options. The event should return an array of objects.",
             "format": "event-listener",
@@ -5585,6 +5596,17 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "default": false,
             "description": "Whether the field should always be be disabled.",
             "format": "remapper",
+          },
+          "display": {
+            "default": "modal",
+            "description": "Whether choices appear in a modal or directly inside the form.
+
+Inline choices remain visible when selected and can be toggled individually. Values retain the order in which choices are selected.",
+            "enum": [
+              "modal",
+              "inline",
+            ],
+            "type": "string",
           },
           "help": {
             "description": "A description for the text field. For adding more information about the field.",
