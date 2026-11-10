@@ -146,6 +146,79 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should report duplicate block names within a page', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push(
+      { type: 'test', version: '1.2.3', name: 'screen-title' },
+      { type: 'test', version: '1.2.3', name: 'screen-title' },
+    );
+    const result = await validateAppDefinition(app, () => [
+      { name: '@appsemble/test', version: '1.2.3', files: [], languages: [] },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is a duplicate block name', 'screen-title', undefined, [
+        'pages',
+        0,
+        'blocks',
+        1,
+        'name',
+      ]),
+    ]);
+  });
+
+  it('should accept conditionally displayed blocks sharing a grid area', async () => {
+    const app = createTestApp();
+    Object.assign(app.pages[0], {
+      layout: {
+        desktop: {
+          spacing: { unit: '40px', gap: 1 / 8, padding: 1 / 4 },
+          layout: { columns: 2, template: ['a b'] },
+        },
+      } as PageLayoutDefinition,
+    });
+    (app.pages[0] as BasicPageDefinition).blocks.push(
+      { type: 'test', version: '1.2.3', gridArea: 'a', hide: { prop: 'editing' } },
+      { type: 'test', version: '1.2.3', gridArea: 'a', hide: { not: [{ prop: 'editing' }] } },
+    );
+    const result = await validateAppDefinition(app, () => [
+      { name: '@appsemble/test', version: '1.2.3', files: [], languages: [] },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should accept the same block name on different pages', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      name: 'screen-title',
+    });
+    (app.pages[1] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      name: 'screen-title',
+    });
+    const result = await validateAppDefinition(app, () => [
+      { name: '@appsemble/test', version: '1.2.3', files: [], languages: [] },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should accept the same block name and grid area in different steps', async () => {
+    const app = createTestApp();
+    for (const step of (app.pages[3] as FlowPageDefinition).steps) {
+      step.blocks.push({ type: 'test', version: '1.2.3', name: 'screen-title', gridArea: 'a' });
+    }
+    const result = await validateAppDefinition(app, () => [
+      { name: '@appsemble/test', version: '1.2.3', files: [], languages: [] },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
   it('should validate block parameters', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({

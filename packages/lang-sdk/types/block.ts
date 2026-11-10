@@ -55,6 +55,15 @@ export interface BlockDefinition extends ControllerDefinition {
   version: string;
 
   /**
+   * A name which identifies this single block instance.
+   *
+   * It is rendered as a `data-block-name` attribute on the wrapper element of the block, so app
+   * styles can target one instance instead of every block of the same type. Names must be lower
+   * case and hyphen separated.
+   */
+  name?: string;
+
+  /**
    * An optional header to render above the block.
    */
   header?: Remapper;
