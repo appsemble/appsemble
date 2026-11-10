@@ -2653,6 +2653,11 @@ will be merged with the new fields’ default values.",
 
 Include an array of fields in \`fields\` to replace the current list of fields in the block.",
       },
+      "submit": {
+        "description": "Submit the current form values, using the same validation and disabled state as the submit button.
+
+The event payload is ignored. This also works when the submit button is hidden.",
+      },
     },
   },
   "messages": {
