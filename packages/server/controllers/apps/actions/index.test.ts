@@ -875,6 +875,23 @@ describe('actions', () => {
       spy.mockRestore();
     });
 
+    it('should not send the email if an attached asset cannot be read', async () => {
+      const spy = vi.spyOn(server.context.mailer, 'sendEmail');
+      onTestFinished(() => spy.mockRestore());
+      const { Asset } = await getAppDB(1);
+      // The asset has no file in the object store.
+      const asset = await Asset.create({ mime: 'text/plain', filename: 'test.txt' });
+
+      const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
+        to: 'test@example.com',
+        body: 'Body',
+        attachments: [asset.id],
+      });
+
+      expect(response.status).toBe(500);
+      expect(spy).not.toHaveBeenCalled();
+    });
+
     it('should attach existing assets by name', async () => {
       const spy = vi.spyOn(server.context.mailer, 'sendEmail');
       const buffer = Buffer.from('test');

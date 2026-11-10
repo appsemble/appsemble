@@ -69,7 +69,7 @@ describe('deleteBlockVersion', () => {
         "statusCode": 404,
       }
     `);
-    expect(await getS3FileBuffer(bucket, key)).toBeNull();
+    await expect(getS3FileBuffer(bucket, key)).rejects.toThrow('The specified key does not exist.');
   });
 
   it('should not delete a block version, user does not have sufficient permission.', async () => {

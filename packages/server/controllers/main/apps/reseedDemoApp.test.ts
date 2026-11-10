@@ -212,7 +212,9 @@ describe('reseedDemoApp', () => {
     });
 
     expect(oldEphemeralAsset).toBeNull();
-    expect(await getS3FileBuffer(ephemeralLocation.bucket, ephemeralLocation.key)).toBeNull();
+    await expect(getS3FileBuffer(ephemeralLocation.bucket, ephemeralLocation.key)).rejects.toThrow(
+      'The specified key does not exist.',
+    );
 
     const newEphemeralAsset = (await Asset.findOne({
       attributes: ['id', 'name', 'seed', 'ephemeral'],
@@ -438,7 +440,9 @@ describe('reseedDemoApp', () => {
     });
 
     expect(oldEphemeralAsset).toBeNull();
-    expect(await getS3FileBuffer(ephemeralLocation.bucket, ephemeralLocation.key)).toBeNull();
+    await expect(getS3FileBuffer(ephemeralLocation.bucket, ephemeralLocation.key)).rejects.toThrow(
+      'The specified key does not exist.',
+    );
 
     const newEphemeralAsset = (await Asset.findOne({
       attributes: ['id', 'name', 'seed', 'ephemeral'],
