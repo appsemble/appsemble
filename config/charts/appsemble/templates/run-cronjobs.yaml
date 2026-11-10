@@ -124,4 +124,8 @@ spec:
                 - name: ENABLE_APP_EMAIL_QUOTA_ALERTS
                   value: {{ .Values.quotas.appEmail.alertOrganizationOwner | quote }}
                 {{- end }}
+                {{- with .Values.ssrfAllowIpAddressList }}
+                - name: SSRF_ALLOW_IP_ADDRESS_LIST
+                  value: {{ join "," . | quote }}
+                {{- end }}
 {{ end }}
