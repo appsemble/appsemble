@@ -48,6 +48,7 @@ spec:
                 name: {{ include "appsemble.fullname" . }}
                 port:
                   name: http
+    {{- if .Values.mailpit.enabled }}
     - host: 'mailpit.{{ .Values.ingress.host }}'
       http:
         paths:
@@ -58,4 +59,5 @@ spec:
                 name: {{ include "appsemble.fullname" . }}-mailpit-http
                 port:
                   name: http
+    {{- end }}
 {{- end }}
