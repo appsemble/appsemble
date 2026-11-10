@@ -50,7 +50,10 @@ export function onFetch(event: FetchEvent): void {
 
   // App startup data may be served by a separate API origin.
   if (/^\/api\/apps\/\d+\/(messages(?:\/|$)|variables$)/.test(pathname)) {
-    event.respondWith(requestFirst(request));
+    // Precache requests omit Origin, while browser preload requests include it.
+    const headers = new Headers(request.headers);
+    headers.delete('Origin');
+    event.respondWith(requestFirst(request, new Request(request, { headers })));
     return;
   }
 

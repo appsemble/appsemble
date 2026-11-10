@@ -75,13 +75,6 @@ describe('onFetch', () => {
     expect(utils.requestFirst).not.toHaveBeenCalled();
   });
 
-  it('should cache app messages', async () => {
-    const request = new Request('/api/apps/123/messages/nl-nl');
-    await trigger('fetch', request);
-    expect(utils.requestFirst).toHaveBeenCalledWith(request);
-    expect(utils.cacheFirst).not.toHaveBeenCalled();
-  });
-
   it('should try to request app resources first', async () => {
     const request = new Request('/api/apps/123/resources/feedback');
     await trigger('fetch', request);

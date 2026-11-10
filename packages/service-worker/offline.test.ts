@@ -40,6 +40,66 @@ it.each([
   expect(await (await browserFetch(request)).json()).toStrictEqual(data);
 });
 
+it.each([
+  ['messages/en', { messages: { title: 'Routine' } }, { messages: { title: 'Updated routine' } }],
+  [
+    'variables',
+    [{ name: 'deviceName', value: 'Nursery lamp' }],
+    [{ name: 'deviceName', value: 'Bedroom lamp' }],
+  ],
+])(
+  'serves cached app %s when the browser adds Origin, preserving other Vary headers',
+  async (path, data, updatedData) => {
+    const url = `https://studio.example/api/apps/2/${path}`;
+    const cache = await caches.open('appsemble');
+    await cache.put(
+      new Request(url, { headers: { 'Accept-Language': 'en' } }),
+      new Response(JSON.stringify(data), { headers: { Vary: 'Origin, Accept-Language' } }),
+    );
+    // Model Vary at the cache IO boundary; service-worker-mock matches URLs only.
+    const match = cache.match.bind(cache);
+    vi.spyOn(cache, 'match').mockImplementation(async (input, options = {}) => {
+      const response = await match(input, options);
+      if (!response || options.ignoreVary) {
+        return response;
+      }
+      const request = new Request(input);
+      const [cachedRequest] = await cache.keys(request, options);
+      const vary = response.headers.get('Vary')?.split(',') ?? [];
+      return !cachedRequest ||
+        vary.some(
+          (header) =>
+            cachedRequest.headers.get(header.trim()) !== request.headers.get(header.trim()),
+        )
+        ? undefined
+        : response;
+    });
+    vi.spyOn(caches, 'match').mockImplementation((input, options) => cache.match(input, options));
+    online = false;
+
+    const request = new Request(url, {
+      mode: 'cors',
+      credentials: 'include',
+      headers: { Origin: 'https://www.test.com', 'Accept-Language': 'en' },
+    });
+    expect(await (await browserFetch(request)).json()).toStrictEqual(data);
+    online = true;
+    networkResponse = new Response(JSON.stringify(updatedData), {
+      headers: { Vary: 'Origin, Accept-Language' },
+    });
+    expect(await (await browserFetch(request)).json()).toStrictEqual(updatedData);
+    online = false;
+    expect(await (await browserFetch(request)).json()).toStrictEqual(updatedData);
+    await expect(
+      browserFetch(
+        new Request(request, {
+          headers: { Origin: 'https://www.test.com', 'Accept-Language': 'nl' },
+        }),
+      ),
+    ).rejects.toThrow('Network unavailable');
+  },
+);
+
 it('serves a previously loaded opaque app image offline', async () => {
   const request = new Request('https://studio.example/api/apps/2/assets/lamp');
   Object.defineProperty(request, 'destination', { value: 'image' });

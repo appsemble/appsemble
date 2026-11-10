@@ -70,19 +70,23 @@ export function cacheFirst(request: Request): Promise<Response> {
  * If the request fails for whatever reason, a cached response is returned.
  *
  * @param request The request for which to get a response.
+ * @param cacheRequest The request used to identify the cached response.
  * @returns The fetch response object.
  */
-export async function requestFirst(request: Request): Promise<Response> {
+export async function requestFirst(
+  request: Request,
+  cacheRequest: Request = request,
+): Promise<Response> {
   let response: Response;
   try {
     response = await fetch(request);
   } catch (error: unknown) {
     // This might happen if the API could not be reached.
-    return tryCached(request, () => {
+    return tryCached(cacheRequest, () => {
       throw error;
     });
   }
-  return put(request, response, () => tryCached(request, () => response));
+  return put(cacheRequest, response, () => tryCached(cacheRequest, () => response));
 }
 
 /**
