@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=https://appsemble.app/api.json#/components/schemas/BlockDefinition
+type: markdown
+version: 0.37.4
+name: screen-title

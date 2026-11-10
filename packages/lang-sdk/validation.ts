@@ -25,7 +25,7 @@ import {
   resendBannerGridArea,
 } from './gridUtils.js';
 import { isValidIconName, parseIconReference } from './icons.js';
-import { iterApp, type Prefix } from './iterApp.js';
+import { iterApp, iterBlockList, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { normalize } from './normalize.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
@@ -268,6 +268,82 @@ function validatePageParents(definition: AppDefinition, report: Report): void {
         path,
       );
     }
+  });
+}
+
+/**
+ * Validates the blocks in the app definition to ensure there are no duplicate block names.
+ *
+ * A block name identifies a single block within the screen it is rendered in. A page renders one
+ * of its tabs or steps at a time, so uniqueness is scoped to the block list the block belongs to.
+ * The same name may be used on other pages, tabs and steps, which lets an app style the same role
+ * everywhere with one rule.
+ *
+ * @param definition The definition of the app
+ * @param report A function used to report a value.
+ */
+function validateUniqueBlockNames(definition: AppDefinition, report: Report): void {
+  function checkBlockList(blocks: BlockDefinition[], path: Prefix): void {
+    const names = new Set<string>();
+
+    iterBlockList(
+      blocks,
+      {
+        onBlock(block, blockPath) {
+          if (block.name) {
+            if (names.has(block.name)) {
+              report(block.name, 'is a duplicate block name', [...blockPath, 'name']);
+            } else {
+              names.add(block.name);
+            }
+          }
+        },
+      },
+      path,
+    );
+  }
+
+  iterApp(definition, {
+    onPage(page, path) {
+      // Basic page
+      if (page.type === 'page' || page.type === undefined) {
+        checkBlockList((page as BasicPageDefinition).blocks, [...path, 'blocks']);
+        return;
+      }
+
+      // Tabs page
+      if (page.type === 'tabs') {
+        const tabsPage = page as TabsPageDefinition;
+        if (tabsPage.tabs) {
+          for (const [tabId, tab] of tabsPage.tabs.entries()) {
+            checkBlockList(tab.blocks, [...path, 'tabs', tabId, 'blocks']);
+          }
+        } else if (tabsPage.definition?.foreach) {
+          checkBlockList(tabsPage.definition.foreach.blocks, [
+            ...path,
+            'definition',
+            'foreach',
+            'blocks',
+          ]);
+        }
+        return;
+      }
+
+      // Flow page
+      if (page.type === 'flow' && page.steps) {
+        const flowPage = page as FlowPageDefinition;
+        for (const [stepId, step] of flowPage.steps.entries()) {
+          checkBlockList(step.blocks, [...path, 'steps', stepId, 'blocks']);
+        }
+        return;
+      }
+
+      // Loop page
+      if (page.type === 'loop') {
+        const loopPage = page as LoopPageDefinition;
+        checkBlockList(loopPage.foreach.blocks, [...path, 'foreach', 'blocks']);
+      }
+    },
   });
 }
 
@@ -2638,6 +2714,7 @@ export async function validateAppDefinition(
     check(() => validateActions(clonedDefinition, report));
     check(() => validateEvents(clonedDefinition, blockVersionMap, report));
     check(() => validateUniquePageNames(clonedDefinition, report));
+    check(() => validateUniqueBlockNames(clonedDefinition, report));
     check(() => validateGridLayout(clonedDefinition, report));
   } catch (error) {
     reportUnexpectedError(error);

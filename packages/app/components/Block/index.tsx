@@ -390,6 +390,7 @@ export function Block({
             [styles.hasBottomNav]: navigation === 'bottom',
           })}
           data-block={blockName}
+          data-block-name={block.name}
           data-path={prefix}
           data-path-index={prefixIndex}
         >
@@ -409,6 +410,7 @@ export function Block({
         aria-busy={isLoading}
         className={`is-flex ${styles.root} ${layout === 'grow' ? styles.grow : styles.static}`}
         data-block={blockName}
+        data-block-name={block.name}
         data-path={prefix}
         data-path-index={prefixIndex}
         // eslint-disable-next-line react/forbid-dom-props
