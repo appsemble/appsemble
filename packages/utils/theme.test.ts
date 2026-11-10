@@ -76,6 +76,19 @@ describe('mergeThemes', () => {
       warningColor: '#fed719',
     });
   });
+
+  it('should merge variables per key, later themes taking precedence', () => {
+    const result = mergeThemes(
+      { variables: { night: '#0e1220', surface: '#1a2138' } },
+      { variables: { surface: '#222b45' } },
+    );
+    expect(result.variables).toStrictEqual({ night: '#0e1220', surface: '#222b45' });
+  });
+
+  it('should leave variables undefined when no theme defines them', () => {
+    const result = mergeThemes({ primaryColor: '#123456' });
+    expect(result.variables).toBeUndefined();
+  });
 });
 
 describe('createThemeURL', () => {
@@ -109,6 +122,60 @@ describe('createThemeURL', () => {
         '&tileLayer=https%3A%2F%2Fexample.com' +
         '&warningColor=%23fed719',
     );
+  });
+
+  it('should serialize variables as sorted JSON for cacheability', () => {
+    const result = createThemeURL({
+      dangerColor: '#ff2800',
+      font: {
+        family: 'Open Sans',
+        source: 'google',
+      },
+      infoColor: '#a7d0ff',
+      linkColor: '#0440ad',
+      primaryColor: '#123456',
+      splashColor: '#ffffff',
+      successColor: '#abcdef',
+      themeColor: '#ffffff',
+      tileLayer: 'https://example.com',
+      variables: { surface: '#1a2138', night: '#0e1220' },
+      warningColor: '#fed719',
+    });
+    expect(result).toBe(
+      `/bulma/${bulmaPkg.version}/bulma.min.css` +
+        '?dangerColor=%23ff2800' +
+        '&fontFamily=Open+Sans' +
+        '&fontSource=google' +
+        '&infoColor=%23a7d0ff' +
+        '&linkColor=%230440ad' +
+        '&primaryColor=%23123456' +
+        '&splashColor=%23ffffff' +
+        '&successColor=%23abcdef' +
+        '&themeColor=%23ffffff' +
+        '&tileLayer=https%3A%2F%2Fexample.com' +
+        '&variables=%7B%22night%22%3A%22%230e1220%22%2C%22surface%22%3A%22%231a2138%22%7D' +
+        '&warningColor=%23fed719',
+    );
+  });
+
+  it('should omit empty variables from the URL', () => {
+    const result = createThemeURL({
+      dangerColor: '#ff2800',
+      font: {
+        family: 'Open Sans',
+        source: 'google',
+      },
+      infoColor: '#a7d0ff',
+      linkColor: '#0440ad',
+      primaryColor: '#123456',
+      splashColor: '#ffffff',
+      successColor: '#abcdef',
+      themeColor: '#ffffff',
+      tileLayer: 'https://example.com',
+      variables: {},
+      warningColor: '#fed719',
+    });
+    expect(result).not.toContain('variables');
   });
 
   it('should include the display font when it is set', () => {

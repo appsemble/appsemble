@@ -8,6 +8,7 @@
   - [Semantics](#semantics)
   - [Block specific](#block-specific)
   - [Mobile only](#mobile-only)
+  - [Custom variables](#custom-variables)
 - [Example](#example)
 - [Bulma Extensions](#bulma-extensions)
 
@@ -92,6 +93,34 @@ These themes are only seen on mobile versions of the app.
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `splashColor` | The background color of the splash screen                                                                                       |
 | `themeColor`  | The background color of the notification window at the top of the screen, and the splash screen if `splashColor` is not defined |
+
+### Custom variables
+
+Beyond the predefined variables, the `variables` key defines custom CSS properties (design tokens).
+Each entry is emitted as a `--<name>` custom property on `:root` in the theme CSS. Names must be
+lower case and hyphen separated. Values can be any single-line CSS value, such as a color, a size,
+or a font stack.
+
+Custom properties inherit into every block's shadow DOM, so tokens defined once can be referenced
+from [core, shared, and block styles](custom-css.md) with `var()`:
+
+```yaml
+theme:
+  variables:
+    night: '#0e1220'
+    surface: '#1a2138'
+    font-display: "'Baloo 2', sans-serif"
+```
+
+```css
+.card {
+  background-color: var(--surface);
+  font-family: var(--font-display);
+}
+```
+
+Like the predefined variables, `variables` can be set on the app, page, and block level. The maps
+are merged per variable, so a page or block can override a single token while keeping the others.
 
 ## Example
 
