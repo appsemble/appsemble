@@ -932,6 +932,8 @@ e2e report:
       when: always
   script:
     - cd packages/e2e
+    # No shard ran when a job it needs failed, so there is nothing to merge
+    - test -d blob-report || { echo 'No e2e shard results to merge'; exit 0; }
     - npx playwright merge-reports --reporter html blob-report
   artifacts:
     expose_as: Playwright report
