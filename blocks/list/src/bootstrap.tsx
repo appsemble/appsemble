@@ -271,12 +271,10 @@ export function List({
           setData(newData);
         }
 
-        if (!events.on.data) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
-  }, [appendData, base, blockData, events.on.data]);
+  }, [appendData, base, blockData]);
 
   useEffect(ready, [ready]);
 

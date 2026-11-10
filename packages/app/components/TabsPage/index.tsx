@@ -260,7 +260,7 @@ export function TabsPage({
                       {...blockListProps}
                       appStorage={appStorage}
                       blocks={blocks}
-                      data={data}
+                      data={pageDefinition.definition ? data : blockListProps.data}
                       ee={ee}
                       name={translatedName}
                       pageDefinition={pageDefinition}

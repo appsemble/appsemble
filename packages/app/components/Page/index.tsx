@@ -94,9 +94,11 @@ export function Page(): ReactNode {
   const navigate = useNavigate();
 
   const [data, setData] = useState<unknown>({});
+  const [loadedPage, setLoadedPage] = useState<PageDefinition | null>();
 
   useEffect(() => {
     setData({});
+    setLoadedPage(undefined);
   }, [pageId]);
 
   const [dialog, setDialog] = useState<ShowDialogParams | undefined>();
@@ -310,6 +312,10 @@ export function Page(): ReactNode {
     ],
   );
 
+  // Blocks read the page data once, when they are initialized, so they wait until the onLoad
+  // action of the page has settled. Later runs of the action leave them mounted.
+  const dataReady = actions.onLoad.type === 'noop' || loadedPage === pageDefinition;
+
   useEffect(() => {
     if (!pageDefinition) {
       return;
@@ -329,11 +335,19 @@ export function Page(): ReactNode {
   );
 
   useEffect(() => {
+    let active = true;
     if (actions.onLoad.type !== 'noop') {
       actions
         .onLoad()
         .then((results) => {
-          setData(results);
+          if (active) {
+            setData(results);
+          }
+        })
+        .finally(() => {
+          if (active) {
+            setLoadedPage(pageDefinition);
+          }
         })
         .catch((error: unknown) => {
           if (!isActionOwnerAbortError(error)) {
@@ -341,7 +355,10 @@ export function Page(): ReactNode {
           }
         });
     }
-  }, [setData, actions]);
+    return () => {
+      active = false;
+    };
+  }, [setData, actions, pageDefinition]);
 
   const checkPagePermissionsCallback = useCallback(
     (pd: PageDefinition): boolean =>
@@ -423,6 +440,7 @@ export function Page(): ReactNode {
           <TabsPage
             appStorage={appStorage.current}
             data={data}
+            dataReady={dataReady}
             ee={ee.current}
             key={prefix}
             pageDefinition={pageDefinition}
@@ -444,6 +462,7 @@ export function Page(): ReactNode {
                     appDefinition={appDefinition}
                     appStorage={appStorage.current}
                     data={data}
+                    dataReady={dataReady}
                     ee={ee.current}
                     key={prefix}
                     pageDefinition={pageDefinition}
@@ -478,6 +497,7 @@ export function Page(): ReactNode {
                     appStorage={appStorage.current}
                     blocks={pageDefinition.blocks}
                     data={data}
+                    dataReady={dataReady}
                     ee={ee.current}
                     key={prefix}
                     pageDefinition={pageDefinition}
