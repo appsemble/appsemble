@@ -932,6 +932,8 @@ e2e report:
       when: always
   script:
     - cd packages/e2e
+    # No shard ran when a job it needs failed, so there is nothing to merge
+    - test -d blob-report || { echo 'No e2e shard results to merge'; exit 0; }
     - npx playwright merge-reports --reporter html blob-report
   artifacts:
     expose_as: Playwright report
@@ -1026,6 +1028,8 @@ e2e keycloak:
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
         E2E: true
+        # The Keycloak service runs on the build's private network.
+        SSRF_ALLOW_IP_ADDRESS_LIST: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
   script:
     - npm run appsemble -- config set context e2e
     - npm run appsemble -- config set remote 'http://appsemble:9999'

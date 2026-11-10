@@ -1,5 +1,6 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 
+import { createFormData } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare, hash } from 'bcrypt';
@@ -162,5 +163,67 @@ describe('resetAppMemberPassword', () => {
     await appMember.reload();
     expect(await compare('testpassword', appMember.password!)).toBe(true);
     expect(appMember.resetKey).toBe('reset-token');
+  });
+
+  it('should reject a verification link issued before the password was reset', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+    const { AppMember, AppMemberEmailAuthorization } = await getAppDB(app.id);
+    await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+    const { key: verificationToken } = (await AppMemberEmailAuthorization.findOne())!;
+    await request.post(`/api/apps/${app.id}/auth/email/request-password-reset`, {
+      email: 'test@example.com',
+    });
+    const { resetKey } = (await AppMember.findOne({ attributes: ['resetKey'] }))!;
+    await request.post(`/api/apps/${app.id}/auth/email/reset-password`, {
+      token: resetKey,
+      password: 'new password',
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/auth/email/verify`, {
+      token: verificationToken,
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Unable to verify this token.",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should verify the email address the reset link was sent to', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+    const { AppMember } = await getAppDB(app.id);
+    await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+    await request.post(`/api/apps/${app.id}/auth/email/request-password-reset`, {
+      email: 'test@example.com',
+    });
+    const appMember = (await AppMember.findOne())!;
+
+    await request.post(`/api/apps/${app.id}/auth/email/reset-password`, {
+      token: appMember.resetKey,
+      password: 'new password',
+    });
+
+    await appMember.reload();
+    expect(appMember.emailVerified).toBe(true);
   });
 });

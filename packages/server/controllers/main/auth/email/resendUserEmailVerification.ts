@@ -1,3 +1,5 @@
+import { randomBytes } from 'node:crypto';
+
 import { logger } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
@@ -12,6 +14,10 @@ export async function resendUserEmailVerification(ctx: Context): Promise<void> {
     include: [{ model: User, attributes: ['name', 'locale'] }],
   });
   if (record && !record.verified) {
+    // A password reset clears outstanding verification keys.
+    if (!record.key) {
+      await record.update({ key: randomBytes(40).toString('hex') });
+    }
     const { key } = record;
     await mailer
       .sendTranslatedEmail({
