@@ -121,6 +121,28 @@ specific blocks on specific pages.
 }
 ```
 
+A page often uses the same block type in several roles. To style one of those instances, give the
+block definition a `name`. The name is lower case and hyphen separated, and is rendered as a
+`data-block-name` attribute on the block. Where `data-path` targets a block by its position, so the
+selector shifts when a block is inserted or removed and changes when the page is renamed, a name
+stays with the block. A name is unique within the page, tab or step the block belongs to, so the
+same name may be reused elsewhere to style the same role everywhere with one rule.
+
+```yaml copy
+blocks:
+  - type: markdown
+    version: 0.37.4
+    name: screen-title
+    parameters:
+      content: '# Welcome'
+```
+
+```css copy
+[data-block-name='screen-title'] {
+  text-align: center;
+}
+```
+
 At the current state Appsemble doesn’t support theming of specific parts of the block elements. As
 an example, it is possible to change list block’s background color but changing styling of list
 elements wouldn’t be possible. Such approach is currently only supported within the form block due

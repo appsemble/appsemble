@@ -35,6 +35,7 @@ import { appendLoopResult, createLoopSteps, getLoopStepPrefix } from './createLo
 
 interface FlowPageProps {
   readonly data: unknown;
+  readonly dataReady: boolean;
   readonly appDefinition: AppDefinition;
   readonly ee: EventEmitter;
   readonly pageDefinition: FlowPageDefinition | LoopPageDefinition;
@@ -52,6 +53,7 @@ export function FlowPage({
   appDefinition,
   appStorage,
   data,
+  dataReady,
   ee,
   pageDefinition,
   prefix,
@@ -406,6 +408,7 @@ export function FlowPage({
         appStorage={appStorage}
         blocks={steps[currentStep].blocks}
         data={data}
+        dataReady={dataReady}
         ee={ee}
         flowActions={flowActions}
         key={currentStep}

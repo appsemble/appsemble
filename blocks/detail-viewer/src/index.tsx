@@ -1,5 +1,6 @@
-import { bootstrap } from '@appsemble/preact';
+import { bootstrap, type BlockProps } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
+import { type VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
 import { BulletPoints } from './components/BulletPoints/index.js';
@@ -7,16 +8,26 @@ import { Field } from './components/Field/index.js';
 import { FieldGroup } from './components/FieldGroup/index.js';
 import styles from './index.module.css';
 
-bootstrap(({ data: blockData, events, parameters, ready, utils }) => {
+export function DetailViewer({
+  data: blockData,
+  events,
+  parameters,
+  ready,
+  utils,
+}: BlockProps): VNode {
   const [data, setData] = useState(blockData);
-  const [loading, setLoading] = useState(true);
+  // A page without data passes an empty object, so only initial data with fields is shown before
+  // the first data event.
+  const [loading, setLoading] = useState(!Object.keys(blockData ?? {}).length);
 
   useEffect(() => {
     const hasListener = events.on.data((d) => {
       setData(d);
       setLoading(false);
     });
-    setLoading(hasListener);
+    if (!hasListener) {
+      setLoading(false);
+    }
     ready();
   }, [events, ready]);
 
@@ -47,4 +58,6 @@ bootstrap(({ data: blockData, events, parameters, ready, utils }) => {
       })}
     </div>
   );
-});
+}
+
+bootstrap(DetailViewer);

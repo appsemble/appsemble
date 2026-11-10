@@ -264,6 +264,34 @@ serve a certificate of your own instead.
 The `secure` protocol shortcut allows TLS 1.2 and TLS 1.3. Set `postgresSSL: false` for a PostgreSQL
 server without TLS, otherwise startup fails with a TLS-not-supported error.
 
+## Connections to private addresses
+
+App developers decide where the server connects on behalf of their apps: request actions, OAuth2 and
+OpenID Connect logins, client credentials token requests, SAML metadata, app SMTP servers, push
+notification endpoints and email attachment links. The server refuses these connections when the
+host resolves to a private, loopback or link-local address. This keeps an app definition from
+reaching what runs next to Appsemble, such as the Kubernetes API, PostgreSQL, Valkey, object storage
+or a cloud metadata endpoint.
+
+An installation needs an exception when its apps call services on the internal network, for example
+an internal API or an OAuth2 or OpenID Connect provider such as Keycloak that runs in the cluster.
+List the addresses those hosts resolve to in `ssrfAllowIpAddressList`:
+
+```yaml
+ssrfAllowIpAddressList:
+  - 10.43.12.7 # The internal Keycloak service
+  - 192.168.10.25 # An internal API that apps call
+```
+
+Each entry is a single IP address or a CIDR range. Host names are not accepted, because the check
+applies to the address a host name resolves to. The chart joins the entries with commas into the
+`SSRF_ALLOW_IP_ADDRESS_LIST` environment variable of the server deployment and of the `run-cronjobs`
+cron job, which runs app cron jobs. The variable is not set when the list is empty, which is the
+default.
+
+Allow only the specific hosts an app needs. Allowing a whole private range such as `10.0.0.0/8`
+opens every service in that range to every app developer on the installation.
+
 ## Health checks
 
 The server serves three operational endpoints on every hostname, following the
@@ -563,6 +591,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `remote`                                    | `null`                         | A remote Appsemble server to connect to in order to synchronize blocks.                                                                   |
 | `securityEmail`                             | `security@appsemble.com`       | The default security contact email for reporting security vulnerabilities.                                                                |
 | `rejectBreachedPasswords`                   | `false`                        | If `true`, reject new passwords that appear in the Have I Been Pwned Pwned Passwords data set.                                            |
+| `ssrfAllowIpAddressList`                    | `[]`                           | Private IPs or CIDRs apps may connect to. See [Connections to private addresses](#connections-to-private-addresses).                      |
 | `postgresSSL`                               | `true`                         | If `true`, establish the database connection over TLS. When PgBouncer is enabled, both DB hops use TLS.                                   |
 | `quotas.appEmail.enabled`                   | `false`                        | If `true`, enable app email quotas.                                                                                                       |
 | `quotas.appEmail.dailyLimit`                | `10`                           | The maximum number of emails an app can send per day.                                                                                     |

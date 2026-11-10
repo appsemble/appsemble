@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=https://appsemble.app/api.json#/components/schemas/Theme
+primaryColor: '#f4b860'
+variables:
+  night: '#0e1220'
+  font-display: "'Baloo 2', sans-serif"

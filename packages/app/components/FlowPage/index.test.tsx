@@ -66,6 +66,7 @@ function renderFlowPage(): void {
             appDefinition={{ name: 'Test App', pages: [pageDefinition] } as AppDefinition}
             appStorage={{} as AppStorage}
             data={{}}
+            dataReady
             // eslint-disable-next-line unicorn/prefer-event-target
             ee={new EventEmitter()}
             pageDefinition={pageDefinition}

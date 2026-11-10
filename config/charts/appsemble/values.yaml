@@ -215,6 +215,8 @@ securityEmail: security@appsemble.com
 
 rejectBreachedPasswords: false
 
+ssrfAllowIpAddressList: []
+
 quotas:
   appEmail:
     enabled: false

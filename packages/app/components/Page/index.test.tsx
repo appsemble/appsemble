@@ -1,10 +1,13 @@
-import { type AppDefinition } from '@appsemble/lang-sdk';
+import { type AppDefinition, type PageDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
+import { noop } from '@appsemble/utils';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { Page } from './index.js';
 import * as bootstrapper from '../../utils/bootstrapper.js';
@@ -52,11 +55,12 @@ function mockApp(definition: AppDefinition): void {
     demoMode: false,
     revision: 1,
     blockManifests,
+    pageManifests: { events: { listen: { data: {} } } },
   } as never);
 }
 
-function renderApp(path = '/en/home'): void {
-  render(
+function renderApp(path = '/en/home'): () => void {
+  const app = (): ReactNode => (
     <IntlProvider locale="en" messages={{}}>
       <MemoryRouter initialEntries={[path]}>
         <MenuProvider>
@@ -66,8 +70,10 @@ function renderApp(path = '/en/home'): void {
           </Routes>
         </MenuProvider>
       </MemoryRouter>
-    </IntlProvider>,
+    </IntlProvider>
   );
+  const { rerender } = render(app());
+  return () => rerender(app());
 }
 
 beforeEach(() => {
@@ -394,5 +400,148 @@ describe('reserved grid areas', () => {
     const banner = await screen.findByText(/verify your email address/);
     expect(banner.closest('main')).not.toBeNull();
     expect(screen.getAllByText(/verify your email address/)).toHaveLength(1);
+  });
+});
+
+describe('page initial data', () => {
+  let mock: MockAdapter;
+  let blocks: BootstrapParams[];
+
+  function mockPages(home?: Partial<PageDefinition>): void {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      layout: { navigation: 'bottom' },
+      pages: [
+        {
+          name: 'Home',
+          actions: { onLoad: { type: 'request', url: 'https://example.com/home', proxy: false } },
+          blocks: [block],
+          ...home,
+        },
+        {
+          name: 'Other',
+          actions: { onLoad: { type: 'request', url: 'https://example.com/other', proxy: false } },
+          blocks: [block],
+        },
+      ],
+    } as AppDefinition);
+  }
+
+  beforeEach(() => {
+    blocks = [];
+    mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
+    vi.spyOn(bootstrapper, 'callBootstrap').mockImplementation((manifest, params) => {
+      blocks.push(params);
+      return Promise.resolve();
+    });
+  });
+
+  afterEach(() => {
+    mock.restore();
+  });
+
+  it('should initialize blocks with the completed asynchronous onLoad result', async () => {
+    let respond!: () => void;
+    mock.onGet('https://example.com/home').reply(
+      () =>
+        new Promise((resolve) => {
+          respond = () => resolve([200, { name: 'Ada' }]);
+        }),
+    );
+    mockPages();
+    renderApp();
+    await waitFor(() => expect(respond).toBeDefined());
+    respond();
+    await waitFor(() => expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Ada' }]));
+  });
+
+  it('should pass the page onLoad result to a static tab', async () => {
+    mock.onGet('https://example.com/home').reply(200, { name: 'Grace' });
+    mockPages({ type: 'tabs', tabs: [{ name: 'Details', blocks: [block] }] });
+    renderApp();
+    await waitFor(() => expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Grace' }]));
+  });
+
+  it('should initialize the next page with its own result when a previous request finishes late', async () => {
+    let respondHome!: () => void;
+    mock.onGet('https://example.com/home').reply(
+      () =>
+        new Promise((resolve) => {
+          respondHome = () => resolve([200, { name: 'Ada' }]);
+        }),
+    );
+    mock.onGet('https://example.com/other').reply(200, { name: 'Grace' });
+    mockPages();
+    renderApp();
+    await waitFor(() => expect(respondHome).toBeDefined());
+    fireEvent.click(screen.getByRole('link', { name: 'Other' }));
+    await waitFor(() => expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Grace' }]));
+    await act(async () => {
+      respondHome();
+      await Promise.resolve();
+    });
+    expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Grace' }]);
+  });
+
+  it('should initialize blocks of a revisited page with its new onLoad result', async () => {
+    mock
+      .onGet('https://example.com/home')
+      .replyOnce(200, { name: 'Ada' })
+      .onGet('https://example.com/home')
+      .replyOnce(200, { name: 'Grace' });
+    mock.onGet('https://example.com/other').reply(() => new Promise(noop));
+    mockPages();
+    renderApp();
+    await waitFor(() => expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Ada' }]));
+    fireEvent.click(screen.getByRole('link', { name: 'Other' }));
+    fireEvent.click(screen.getByRole('link', { name: 'Home' }));
+    await waitFor(() =>
+      expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Ada' }, { name: 'Grace' }]),
+    );
+  });
+
+  it('should initialize blocks on a page without an onLoad action', async () => {
+    mockPages({ actions: undefined });
+    renderApp();
+    await waitFor(() => expect(blocks).toHaveLength(1));
+  });
+
+  it('should initialize blocks when the onLoad action fails', async () => {
+    const errors: unknown[] = [];
+    const onUnhandledRejection = (error: unknown): void => {
+      errors.push(error);
+    };
+    // Vitest reports an unhandled rejection unless the test listens for it.
+    process.on('unhandledRejection', onUnhandledRejection);
+    onTestFinished(() => {
+      process.off('unhandledRejection', onUnhandledRejection);
+    });
+    mock.onGet('https://example.com/home').reply(500);
+    mockPages();
+    renderApp();
+    await waitFor(() => expect(blocks).toHaveLength(1));
+    await waitFor(() => expect(errors).toHaveLength(1));
+  });
+
+  it('should keep blocks mounted when the page actions change', async () => {
+    mock.onGet('https://example.com/home').reply(200, { name: 'Ada' });
+    mockPages();
+    const rerender = renderApp();
+    await waitFor(() => expect(blocks).toHaveLength(1));
+    let removed = false;
+    blocks[0].utils.addCleanup(() => {
+      removed = true;
+    });
+
+    // The page actions depend on the push notification state, so they are rebuilt and onLoad runs
+    // again.
+    vi.spyOn(serviceWorkerRegistrationProvider, 'useServiceWorkerRegistration').mockReturnValue({
+      permission: 'granted',
+    } as never);
+    rerender();
+    await waitFor(() => expect(mock.history.get).toHaveLength(2));
+
+    expect(removed).toBe(false);
   });
 });

@@ -25,6 +25,13 @@ export const partialNormalized = /([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)/;
 export const normalized = new RegExp(`^${partialNormalized.source}$`);
 
 /**
+ * A pattern for validating a theme variable (custom CSS property) value.
+ *
+ * Any single-line CSS value that cannot escape its declaration block is allowed.
+ */
+export const themeVariableValue = /^[^\n\r;{}]+$/;
+
+/**
  * A pattern for matching the block name pattern of @organization/project.
  */
 export const blockNamePattern = new RegExp(

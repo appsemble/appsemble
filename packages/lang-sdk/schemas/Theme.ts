@@ -1,7 +1,7 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
 import { baseTheme } from '../constants/baseTheme.js';
-import { hexColor } from '../constants/patterns.js';
+import { hexColor, normalized, themeVariableValue } from '../constants/patterns.js';
 
 export const Theme: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
@@ -93,5 +93,37 @@ the CSS of the app and its blocks. It falls back to the body font.
         { $ref: '#/components/schemas/GoogleFontDefinition' },
       ],
     },
+    variables: {
+      type: 'object',
+      description: `Custom CSS properties (design tokens) exposed on \`:root\` in the theme CSS.
+
+Each entry is emitted as a \`--<name>\` custom property. Names must be lower case and hyphen
+separated. Custom properties inherit into every block's shadow DOM, so tokens defined once are
+usable in core, shared, and block styles.
+
+For example:
+
+\`\`\`yaml
+theme:
+  variables:
+    night: '#0e1220'
+    font-display: "'Baloo 2', sans-serif"
+\`\`\`
+
+These can be referenced in custom CSS as \`var(--night)\` and \`var(--font-display)\`.
+`,
+      minProperties: 1,
+      maxProperties: 32,
+      // The validator supports propertyNames, but the OpenAPI schema object type does not know it.
+      propertyNames: {
+        pattern: normalized.source,
+        maxLength: 40,
+      },
+      additionalProperties: {
+        type: 'string',
+        pattern: themeVariableValue.source,
+        maxLength: 128,
+      },
+    } as OpenAPIV3.NonArraySchemaObject,
   },
 };

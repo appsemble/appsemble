@@ -62,6 +62,19 @@ Layout float can be combined with the \`position\` property to place the block o
                 "static",
               ],
             },
+            "name": {
+              "description": "A name which identifies this single block instance.
+
+The name is rendered as a \`data-block-name\` attribute on the wrapper element of the block, so app
+styles can target one instance instead of every block of the same type. Names must be lower case and
+hyphen separated.
+
+For example, a block named \`screen-title\` is targeted with \`[data-block-name='screen-title']\`.
+",
+              "maxLength": 40,
+              "pattern": "^([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)$",
+              "type": "string",
+            },
             "parameters": {
               "additionalProperties": true,
               "description": "A free form mapping of named parameters.
@@ -2422,6 +2435,19 @@ Layout float can be combined with the \`position\` property to place the block o
                 "grow",
                 "static",
               ],
+            },
+            "name": {
+              "description": "A name which identifies this single block instance.
+
+The name is rendered as a \`data-block-name\` attribute on the wrapper element of the block, so app
+styles can target one instance instead of every block of the same type. Names must be lower case and
+hyphen separated.
+
+For example, a block named \`screen-title\` is targeted with \`[data-block-name='screen-title']\`.
+",
+              "maxLength": 40,
+              "pattern": "^([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)$",
+              "type": "string",
             },
             "parameters": {
               "additionalProperties": true,

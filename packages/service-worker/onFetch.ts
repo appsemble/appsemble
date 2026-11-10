@@ -1,10 +1,11 @@
 import { partialNormalized } from '@appsemble/utils';
 
 import {
+  assetFirst,
   cacheFirst,
-  cacheFirstIfImmutable,
   handleModifyAndInvalidateCache,
   requestFirst,
+  tryCached,
 } from './utils.js';
 
 /**
@@ -37,7 +38,7 @@ export function onFetch(event: FetchEvent): void {
   // they can be replaced, so they are served from the cache only when the network is unreachable
   // or slow.
   if (/^\/api\/apps\/\d+\/assets\//.test(pathname) && request.method !== 'HEAD') {
-    event.respondWith(cacheFirstIfImmutable(request));
+    event.respondWith(assetFirst(request));
     return;
   }
 
@@ -47,9 +48,21 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
-  // This is an unhandled request to an external service or the Appsemble API. This should not be
-  // cached.
+  // App startup data may be served by a separate API origin.
+  if (/^\/api\/apps\/\d+\/(messages(?:\/|$)|variables$)/.test(pathname)) {
+    // Precache requests omit Origin, while browser preload requests include it.
+    const headers = new Headers(request.headers);
+    headers.delete('Origin');
+    event.respondWith(requestFirst(request, new Request(request, { headers })));
+    return;
+  }
+
+  // Cached scripts, stylesheets, fonts and images may come from another origin, such as a CDN.
+  // Other requests to an external service or the Appsemble API are left to the browser.
   if (origin !== globalThis.location.origin) {
+    if (['font', 'image', 'script', 'style'].includes(request.destination)) {
+      event.respondWith(tryCached(request, () => fetch(request)));
+    }
     return;
   }
 
@@ -67,12 +80,6 @@ export function onFetch(event: FetchEvent): void {
   // Block version requests are immutable and should be cached.
   if (/^\/api\/blocks\/@(?:[\da-z-]+\/){2}versions\//.test(pathname)) {
     event.respondWith(cacheFirst(request));
-    return;
-  }
-
-  // Cache app messages
-  if (/^\/api\/apps\/\d+\/messages/.test(pathname)) {
-    event.respondWith(requestFirst(request));
     return;
   }
 

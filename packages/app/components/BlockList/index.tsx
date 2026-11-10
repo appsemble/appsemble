@@ -39,6 +39,7 @@ import { VerifyBanner } from '../VerifyBanner/index.js';
 interface BlockListProps {
   readonly blocks: BlockDefinition[];
   readonly data?: any;
+  readonly dataReady?: boolean;
   readonly ee: EventEmitter;
   readonly extraCreators?: ActionCreators;
   readonly flowActions?: object;
@@ -61,6 +62,7 @@ export function BlockList({
   appStorage,
   blocks,
   data,
+  dataReady = true,
   ee,
   extraCreators,
   flowActions,
@@ -252,6 +254,10 @@ export function BlockList({
     (remapper: Remapper, input: unknown) => remap(remapper, input, {}),
     [remap],
   );
+
+  if (!dataReady) {
+    return <Loader />;
+  }
 
   if (!blockList.length) {
     if (!isLoggedIn) {
