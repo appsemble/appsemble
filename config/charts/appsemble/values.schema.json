@@ -596,14 +596,6 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "existingSecret": {
-              "type": "string",
-              "description": "The Kubernetes secret containing PgBouncer's userlist file."
-            },
-            "userlistKey": {
-              "type": "string",
-              "description": "The key in pgbouncer.auth.existingSecret containing the userlist file."
-            },
             "type": {
               "type": "string",
               "description": "The PgBouncer authentication method.",
