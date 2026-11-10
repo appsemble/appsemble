@@ -131,6 +131,36 @@ Restrict the token to the records Appsemble manages. For deSEC, give it token po
 writing `A` and `AAAA` record sets in `dns.zone` and nothing else, so it cannot touch the
 `_acme-challenge` records of cert-manager or the records of custom domains in the same zone.
 
+## OpenShift
+
+The OpenShift router serves an Ingress by generating a Route for each of its hosts. A host with a
+TLS secret gets an `edge` Route which serves the certificate in that secret and redirects HTTP to
+HTTPS. Expose Appsemble through the Ingress with certificates from cert-manager, and leave the chart
+Route disabled:
+
+```yaml
+ingress:
+  className: openshift-default
+  host: my-appsemble.example.com
+  tls: true
+  tlsSecretName: appsemble-tls
+  tlsWildcardSecretName: appsemble-tls-wildcard
+  clusterIssuer: my-cluster-issuer
+route:
+  enabled: false
+```
+
+cert-manager issues a certificate for `ingress.host` into `ingress.tlsSecretName` and one for
+`*.ingress.host` into `ingress.tlsWildcardSecretName`, like it does for the Ingress of every
+organization. The issuer must be able to sign wildcard hosts, which takes a DNS01 solver for an ACME
+issuer, and the IngressController must admit wildcard Routes
+(`routeAdmission.wildcardPolicy: WildcardsAllowed`).
+
+The Routes of `route.enabled` terminate TLS with the default certificate of the router. OpenShift
+generates no Route for an Ingress host whose TLS secret does not exist. On an installation which
+runs on the chart Route, set the `ingress` values first and set `route.enabled` to `false` once both
+Certificates are ready.
+
 ## Migrations
 
 The chart runs database migrations in the `migrate` Job. Server replicas do not run migrations at
@@ -486,6 +516,8 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `ingress.tls`                               | `false`                        | Whether TLS should be configured for the top-level and wildcard hosts.                                                                    |
 | `ingress.tlsSecretName`                     | `''`                           | The secret name to use to configure TLS for the top level host.                                                                           |
 | `ingress.tlsWildcardSecretName`             | `''`                           | The secret name to use to configure TLS for the direct wildcard host.                                                                     |
+| `ingress.issuer`                            |                                | The cert-manager issuer which issues the certificates of the Appsemble and organization ingresses.                                        |
+| `ingress.clusterIssuer`                     |                                | The cert-manager cluster issuer which issues the certificates of the Appsemble and organization ingresses.                                |
 | `dns.provider`                              | `''`                           | The provider which serves the DNS zone of the organization host names. The only supported value is `desec`.                               |
 | `dns.zone`                                  | `''`                           | The name of the DNS zone which contains the organization host names.                                                                      |
 | `dns.secret`                                | `''`                           | The name of the secret which holds the API token of the DNS provider under the key `dns-token`.                                           |
