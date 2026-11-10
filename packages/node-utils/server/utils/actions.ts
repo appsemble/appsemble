@@ -39,6 +39,15 @@ const allowResponseHeaders = [
 
 const supportedActions = ['email', 'notify', 'request'];
 
+/**
+ * How long the server waits for the endpoint of a request action to respond, and how long the
+ * connection may stay idle after that, in milliseconds.
+ *
+ * This matches the default read timeout of the NGINX ingress controller, which already ends a
+ * proxied request that stays silent this long.
+ */
+export const requestActionTimeout = 60_000;
+
 export async function handleEmail(
   ctx: Context,
   app: App,
@@ -181,6 +190,7 @@ async function handleRequestProxy(
   axiosConfig.responseType = 'stream';
   axiosConfig.validateStatus = () => true;
   axiosConfig.decompress = false;
+  axiosConfig.timeout = requestActionTimeout;
 
   let response;
   const containerHostnamePattern = /^(?:[\da-z-]+\.){2}svc\.cluster\.local$/;

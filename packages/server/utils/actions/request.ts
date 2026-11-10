@@ -5,7 +5,12 @@ import {
   type RequestLikeActionDefinition,
   type ResourceQueryActionDefinition,
 } from '@appsemble/lang-sdk';
-import { getRemapperContext, getSSRFProtectedAgents, logger } from '@appsemble/node-utils';
+import {
+  getRemapperContext,
+  getSSRFProtectedAgents,
+  logger,
+  requestActionTimeout,
+} from '@appsemble/node-utils';
 import { formatRequestAction } from '@appsemble/utils';
 import axios from 'axios';
 
@@ -99,6 +104,7 @@ export async function request({
   });
   newAxiosConfig.httpAgent = httpAgent;
   newAxiosConfig.httpsAgent = httpsAgent;
+  newAxiosConfig.timeout = requestActionTimeout;
 
   let response;
   try {

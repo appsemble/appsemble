@@ -1,6 +1,8 @@
 import { type ActionDefinition } from '@appsemble/lang-sdk';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { createInstance } from 'axios-test-instance';
+import Koa from 'koa';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { request } from './request.js';
@@ -245,6 +247,38 @@ describe('request action', () => {
           context: {} as any,
         }),
       ).rejects.toThrow('Network Error');
+    });
+
+    it('should give up on an endpoint that does not respond within a minute', async () => {
+      const requestReceived = Promise.withResolvers<null>();
+      const slowEndpoint = await createInstance(
+        new Koa().use(() => {
+          requestReceived.resolve(null);
+          return Promise.withResolvers().promise;
+        }),
+      );
+      const action: ActionDefinition = {
+        type: 'request',
+        url: slowEndpoint.defaults.baseURL!,
+      };
+      mock.onAny().passThrough();
+
+      const app = await exampleApp('testorg', action);
+      vi.useFakeTimers();
+
+      const result = handleAction(request, {
+        app,
+        action,
+        mailer,
+        data: {},
+        options,
+        context: {} as any,
+      });
+      await Promise.all([
+        expect(result).rejects.toThrow('timeout of 60000ms exceeded'),
+        requestReceived.promise.then(() => vi.advanceTimersByTimeAsync(60_000)),
+      ]);
+      await slowEndpoint.close();
     });
   });
 });
