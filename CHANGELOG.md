@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.11-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.40.11-test.0)] - 2026-11-10
+
+### Added
+
+- Block(`form`): Add inline ordered selection fields.
+- Block(`form`): Allow form submission from an external event.
+- Block(`html`): Add remapped CSS properties through the `data-style` attribute.
+- Lang-sdk: Add custom theme variables shared by app and block styles.
+- Lang-sdk: Allow app styles to target a named block instance.
+- Server: Allow app requests to private IPs with the `ssrfAllowIpAddressList` Helm value.
+
+### Fixed
+
+- Block(`button-list`): Apply button visibility and disabled conditions to initial block data.
+- Block(`detail-viewer`): Render initial field data while listening for updates and preserve zero
+  values.
+- Block(`list`): Display initial list data while listening for subsequent updates.
+- Block(`markdown`): Clear the content when a data event has no data.
+- Block(`markdown`): Render initial data while listening for content updates.
+- App: Fix a blocking service worker error dialog when the registration has no worker.
+- App: Initialize page blocks with the resolved onLoad action data.
+- App: Open installed apps and unvisited pages offline, including their blocks, styles, fonts and
+  images.
+- Server: Stop the Helm chart server Role colliding with the CloudNativePG Role.
+
+### Security
+
+- Server: Invalidate pending email verification links when a password is reset.
+
 ## \[[0.40.10](https://gitlab.com/appsemble/appsemble/-/releases/0.40.10)] - 2026-11-09
 
 ### Added
