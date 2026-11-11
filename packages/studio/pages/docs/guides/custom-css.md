@@ -209,6 +209,7 @@ The following pages exist. A page is only mounted if its condition holds.
 | `feedback`        | `/Feedback`       | `form`                                                       | A Sentry DSN is configured                                                  |
 | `debug`           | `/debug`          | `default`                                                    | Always                                                                      |
 | `openid-callback` | `/Callback`       | `error`                                                      | The OAuth2 login failed                                                     |
+| `page-error`      | any page route    | `not-found`                                                  | No page matches the URL, and the app defines no `notFoundPage`              |
 | `page-error`      | any page route    | `permission`                                                 | Logged in, and no page of the app is allowed for the member                 |
 
 ```css copy

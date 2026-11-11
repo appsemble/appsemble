@@ -1,5 +1,6 @@
 import { type AppDefinition, type PageDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
+import { MetaProvider } from '@appsemble/react-components';
 import { noop } from '@appsemble/utils';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
@@ -266,6 +267,262 @@ it('should name the main landmark after the page when the title bar shows the ap
   renderApp();
 
   expect(await screen.findByRole('main', { name: 'Home' })).not.toBeNull();
+});
+
+describe('page not found', () => {
+  const security = {
+    default: { policy: 'everyone', role: 'User' },
+    roles: { User: {}, Admin: {} },
+  };
+
+  function renderAt(path: string): void {
+    render(
+      <IntlProvider locale="en" messages={{}}>
+        <MemoryRouter initialEntries={[path]}>
+          <MetaProvider description="" title="Test App">
+            <MenuProvider>
+              <LocationProbe />
+              <Routes>
+                <Route element={<Page />} path="/:lang/:pageId/*" />
+              </Routes>
+            </MenuProvider>
+          </MetaProvider>
+        </MemoryRouter>
+      </IntlProvider>,
+    );
+  }
+
+  function mockMember(isLoggedIn: boolean, appMemberRoles: string[] = []): void {
+    vi.spyOn(appMemberProvider, 'useAppMember').mockReturnValue({
+      appMemberGroups: [],
+      appMemberInfoRef: { current: undefined },
+      appMemberRoles,
+      appMemberSelectedGroup: undefined,
+      isLoggedIn,
+    } as never);
+  }
+
+  it('should show a page not found page at an unknown page path', async () => {
+    renderAt('/en/does-not-exist?foo=bar');
+
+    expect(await screen.findByRole('heading', { name: 'Page not found' })).not.toBeNull();
+    expect(screen.getByText('/en/does-not-exist?foo=bar')).not.toBeNull();
+    expect(screen.getByRole('link', { name: 'Go to the home page' }).getAttribute('href')).toBe(
+      '/en',
+    );
+    expect(document.title).toBe('Page not found · Test App');
+  });
+
+  it('should show the not found page of the app at an unknown page path, even to guests', async () => {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      notFoundPage: 'Lost',
+      security,
+      pages: [
+        { name: 'Home', blocks: [block] },
+        { name: 'Lost', roles: ['Admin'], blocks: [block] },
+      ],
+    } as AppDefinition);
+    renderAt('/en/does-not-exist');
+
+    expect(await screen.findByRole('main', { name: 'Lost' })).not.toBeNull();
+    expect(screen.getByText('/en/does-not-exist')).not.toBeNull();
+  });
+
+  it('should show the not found page of the app for path segments that match no parameter', async () => {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      notFoundPage: 'Lost',
+      pages: [
+        { name: 'Home', blocks: [block] },
+        { name: 'Item', parameters: ['id'], blocks: [block] },
+        { name: 'Lost', blocks: [block] },
+      ],
+    } as AppDefinition);
+    renderAt('/en/item/1/extra');
+
+    expect(await screen.findByRole('main', { name: 'Lost' })).not.toBeNull();
+    expect(screen.getByText('/en/item/1/extra')).not.toBeNull();
+  });
+
+  it('should keep showing a page for its parameters when the app defines a not found page', async () => {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      notFoundPage: 'Lost',
+      pages: [
+        { name: 'Home', blocks: [block] },
+        { name: 'Item', parameters: ['id'], blocks: [block] },
+        { name: 'Lost', blocks: [block] },
+      ],
+    } as AppDefinition);
+    renderAt('/en/item/1');
+
+    expect(await screen.findByRole('main', { name: 'Item' })).not.toBeNull();
+  });
+
+  it('should keep showing a page for extra path segments when the app defines no not found page', async () => {
+    renderAt('/en/about/extra');
+
+    expect(await screen.findByRole('main', { name: 'About' })).not.toBeNull();
+    expect(screen.getByText('/en/about/extra')).not.toBeNull();
+  });
+
+  it('should not pass the data of the previous page to the not found page', async () => {
+    const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
+    onTestFinished(() => mock.restore());
+    mock.onGet('https://example.com/item').reply(200, { name: 'Ada' });
+    const blocks: BootstrapParams[] = [];
+    vi.spyOn(bootstrapper, 'callBootstrap').mockImplementation((manifest, params) => {
+      blocks.push(params);
+      return Promise.resolve();
+    });
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      notFoundPage: 'Lost',
+      pages: [
+        { name: 'Home', blocks: [block] },
+        {
+          name: 'Item',
+          parameters: ['id'],
+          actions: { onLoad: { type: 'request', url: 'https://example.com/item', proxy: false } },
+          blocks: [block],
+        },
+        { name: 'Lost', blocks: [block] },
+      ],
+    } as AppDefinition);
+    render(
+      <IntlProvider locale="en" messages={{}}>
+        <MemoryRouter initialEntries={['/en/item/1']}>
+          <MenuProvider>
+            <Link to="/en/item/1/extra">extra</Link>
+            <Routes>
+              <Route element={<Page />} path="/:lang/:pageId/*" />
+            </Routes>
+          </MenuProvider>
+        </MemoryRouter>
+      </IntlProvider>,
+    );
+    await waitFor(() => expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Ada' }]));
+
+    fireEvent.click(screen.getByText('extra'));
+
+    expect(await screen.findByRole('main', { name: 'Lost' })).not.toBeNull();
+    await waitFor(() => expect(blocks.at(-1)?.data).toStrictEqual({}));
+  });
+
+  it('should not mark the page of the URL as current in the navigation when the not found page is shown', async () => {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      notFoundPage: 'Lost',
+      layout: { navigation: 'bottom' },
+      pages: [
+        { name: 'Home', blocks: [block] },
+        { name: 'About', blocks: [block] },
+        { name: 'Lost', hideNavTitle: true, blocks: [block] },
+      ],
+    } as AppDefinition);
+    renderAt('/en/about/extra');
+
+    expect(await screen.findByRole('main', { name: 'Lost' })).not.toBeNull();
+    expect(screen.getByRole('link', { name: 'About' }).getAttribute('aria-current')).toBe('false');
+  });
+
+  it('should leave the sub paths of a tabs page to its tabs when the app defines a not found page', async () => {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      notFoundPage: 'Lost',
+      pages: [
+        { name: 'Home', blocks: [block] },
+        {
+          name: 'Details',
+          type: 'tabs',
+          tabs: [
+            { name: 'First', blocks: [block] },
+            { name: 'Second', blocks: [block] },
+          ],
+        },
+        { name: 'Lost', blocks: [block] },
+      ],
+    } as AppDefinition);
+    renderAt('/en/details/second');
+
+    expect(await screen.findByRole('main', { name: 'Details' })).not.toBeNull();
+    expect(screen.getByText('/en/details/second')).not.toBeNull();
+  });
+
+  it('should show the not found page of the app for the sub paths of a container page', async () => {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      notFoundPage: 'Lost',
+      pages: [
+        { name: 'Home', blocks: [block] },
+        { name: 'Reports', type: 'container', pages: [{ name: 'Daily', blocks: [block] }] },
+        { name: 'Lost', blocks: [block] },
+      ],
+    } as AppDefinition);
+    renderAt('/en/reports/extra');
+
+    expect(await screen.findByRole('main', { name: 'Lost' })).not.toBeNull();
+    expect(screen.getByText('/en/reports/extra')).not.toBeNull();
+  });
+
+  it('should redirect to the login page for an existing page that requires a login', async () => {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      security,
+      pages: [
+        { name: 'Home', blocks: [block] },
+        { name: 'About', blocks: [block] },
+      ],
+    } as AppDefinition);
+    renderAt('/en/about');
+
+    expect(
+      await screen.findByText(`/en/Login?${new URLSearchParams({ redirect: '/en/about' })}`),
+    ).not.toBeNull();
+  });
+
+  it('should redirect a member to the default page for an existing page they may not view', async () => {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      security,
+      pages: [
+        { name: 'Home', blocks: [block] },
+        { name: 'Admin', roles: ['Admin'], blocks: [block] },
+      ],
+    } as AppDefinition);
+    mockMember(true, ['User']);
+    renderAt('/en/admin');
+
+    expect(await screen.findByText('/en/home')).not.toBeNull();
+  });
+
+  it('should not redirect a member who may not view a page to the not found page', async () => {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      notFoundPage: 'Lost',
+      security,
+      pages: [
+        { name: 'Home', roles: ['Admin'], blocks: [block] },
+        { name: 'Lost', blocks: [block] },
+        { name: 'Reports', roles: ['User'], blocks: [block] },
+      ],
+    } as AppDefinition);
+    mockMember(true, ['User']);
+    renderAt('/en/home');
+
+    expect(await screen.findByText('/en/reports')).not.toBeNull();
+  });
 });
 
 describe('reserved grid areas', () => {

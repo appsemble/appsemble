@@ -1,7 +1,12 @@
-import { type AppDefinition, type PageDefinition } from '@appsemble/lang-sdk';
+import {
+  type AppDefinition,
+  findPageById,
+  normalize,
+  type PageDefinition,
+} from '@appsemble/lang-sdk';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
-import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Link, MemoryRouter, Route, Routes, useMatch } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { TopNavigation } from './index.js';
@@ -11,7 +16,10 @@ import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
+import * as menuProvider from '../MenuProvider/index.js';
 import { SideNavigation } from '../SideNavigation/index.js';
+
+const { usePage } = menuProvider;
 
 const pages: PageDefinition[] = [
   { name: 'Home', blocks: [] },
@@ -59,6 +67,16 @@ function renderNavigation(
     }),
     getMessage: () => ({ format: () => '' }),
   } as never);
+  // The page component reports the page it renders. These tests render the navigation alone.
+  vi.spyOn(menuProvider, 'usePage').mockImplementation(() => {
+    const pageId = useMatch('/:lang/:pageId/*')?.params.pageId;
+    const { getAppMessage } = appMessagesProvider.useAppMessages();
+    return {
+      ...usePage(),
+      page:
+        (pageId && findPageById(definition.pages, normalize(pageId), getAppMessage)) || undefined,
+    };
+  });
   vi.spyOn(appVariablesProvider, 'useAppVariables').mockReturnValue({
     getVariable: vi.fn(),
   } as never);

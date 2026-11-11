@@ -86,8 +86,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
       defaultLanguage;
     if (lang) {
       // Someone got linked to a page without a language tag. Redirect them to the same page, but
-      // with language set, whichever language the page segment is in. This is especially important
-      // for the OAuth2 callback URL. An unknown page falls back to the default page.
+      // with language set. This is especially important for the OAuth2 callback URL.
       navigate(`/${detected}${redirect}`, { replace: true });
     } else {
       navigate(`/${detected}`, { replace: true });

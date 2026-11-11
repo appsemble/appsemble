@@ -4,6 +4,7 @@ import {
   bottomNavigationGridArea,
   breadcrumbsGridArea,
   findPageById,
+  findPageByName,
   getPageDisplayName,
   getPagePathSegment,
   getRouteSegment,
@@ -34,6 +35,8 @@ import {
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
+  Link,
+  matchPath,
   Navigate,
   type Params,
   Route,
@@ -96,11 +99,6 @@ export function Page(): ReactNode {
   const [data, setData] = useState<unknown>({});
   const [loadedPage, setLoadedPage] = useState<PageDefinition | null>();
 
-  useEffect(() => {
-    setData({});
-    setLoadedPage(undefined);
-  }, [pageId]);
-
   const [dialog, setDialog] = useState<ShowDialogParams | undefined>();
   const stepRef = useRef<unknown>();
   const url = `/${lang}`;
@@ -155,7 +153,27 @@ export function Page(): ReactNode {
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
   const normalizedPageId = normalize(pageId);
-  const pageDefinition = findPageById(appDefinition.pages, normalizedPageId, getAppMessage);
+  const foundPage = findPageById(appDefinition.pages, normalizedPageId, getAppMessage);
+  const { '*': wildcard = '', ...pageRouteParams } = routeParams;
+  const notFoundPage = appDefinition.notFoundPage
+    ? findPageByName(appDefinition.pages, appDefinition.notFoundPage)
+    : undefined;
+  // An app that defines a not found page also renders it for path segments that match none of the
+  // parameters of a page. Tabs pages resolve their own sub paths.
+  const isNotFound =
+    !foundPage ||
+    (notFoundPage != null &&
+      foundPage.type !== 'tabs' &&
+      !matchPath(
+        `/${(foundPage.parameters ?? []).map((param) => `:${param}`).join('/')}`,
+        `/${wildcard}`,
+      ));
+  const pageDefinition = isNotFound ? notFoundPage : foundPage;
+
+  useEffect(() => {
+    setData({});
+    setLoadedPage(undefined);
+  }, [pageDefinition]);
 
   // The path is rebuilt from its segments (`/:lang/:pageId/...rest`), because replacing the text
   // of the page segment could also replace part of the language segment.
@@ -171,7 +189,6 @@ export function Page(): ReactNode {
   // Switching tabs only changes the tab segment of the wildcard. Page actions never read that
   // segment, so it is left out of the identity of `params`; a new object per tab would rebuild
   // the actions, re-run onLoad, and re-emit the tab list while a tab is still loading.
-  const { '*': wildcard = '', ...pageRouteParams } = routeParams;
   const paramsKey = JSON.stringify(
     pageDefinition?.type === 'tabs'
       ? { ...pageRouteParams, '*': wildcard.split('/').slice(1).join('/') }
@@ -370,11 +387,11 @@ export function Page(): ReactNode {
   // The cleanup and the next set land in the same commit, so switching pages never renders a frame
   // without one.
   useLayoutEffect(() => {
-    if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
+    if (pageDefinition && (isNotFound || checkPagePermissionsCallback(pageDefinition))) {
       setPage(pageDefinition);
       return () => setPage(undefined);
     }
-  }, [checkPagePermissionsCallback, pageDefinition, setPage]);
+  }, [checkPagePermissionsCallback, isNotFound, pageDefinition, setPage]);
 
   useEffect(() => {
     if (navigator.credentials) {
@@ -404,12 +421,31 @@ export function Page(): ReactNode {
     }
   }, []);
 
-  // If the user is on an existing page and is allowed to view it, render it.
-  if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
+  if (!pageDefinition) {
+    return (
+      <BuiltinPage
+        narrow
+        page="page-error"
+        showTitle
+        state="not-found"
+        title={messages.notFoundTitle}
+      >
+        <p>
+          <FormattedMessage {...messages.notFound} />
+        </p>
+        <Link to={url}>
+          <FormattedMessage {...messages.notFoundLink} />
+        </Link>
+      </BuiltinPage>
+    );
+  }
+
+  // The not found page is shown to everyone, other pages only to members allowed to view them.
+  if (isNotFound || checkPagePermissionsCallback(pageDefinition)) {
     const pageName = getPageDisplayName(pageDefinition, getAppMessage);
     const translatedPageId = getPagePathSegment(pageDefinition, getAppMessage);
 
-    if (pageId && pageId !== translatedPageId) {
+    if (pageId && pageId !== translatedPageId && !isNotFound) {
       // The canonical slug and other aliases redirect to the slug of the current language, while
       // preserving query params and the fragment.
       return (
@@ -510,7 +546,11 @@ export function Page(): ReactNode {
                   />
                 )
               }
-              path={(pageDefinition.parameters || []).map((param) => `/:${param}`).join('')}
+              path={
+                isNotFound
+                  ? '*'
+                  : (pageDefinition.parameters || []).map((param) => `/:${param}`).join('')
+              }
             />
           </MetaSwitch>
         )}
@@ -535,7 +575,7 @@ export function Page(): ReactNode {
 
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
-  if (pageDefinition && !isLoggedIn) {
+  if (!isLoggedIn) {
     const loginSegment = getRouteSegment('Login', getAppMessage);
     return <Navigate to={`${url}/${loginSegment}?${new URLSearchParams({ redirect })}`} />;
   }
@@ -551,7 +591,8 @@ export function Page(): ReactNode {
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
   const redirectPage = appDefinition.pages.find(
-    (pd) => checkPagePermissionsCallback(pd) && !pd.parameters,
+    (pd) =>
+      pd.name !== appDefinition.notFoundPage && checkPagePermissionsCallback(pd) && !pd.parameters,
   );
   if (redirectPage) {
     return <Navigate replace to={`${url}/${getPagePathSegment(redirectPage, getAppMessage)}`} />;
