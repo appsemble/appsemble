@@ -17,6 +17,7 @@ import {
   deleteS3Files,
   getAppAssetLocation,
   getBlockAssetLocation,
+  getS3File,
   getS3FileBuffer,
   getS3FileStats,
   initS3Client,
@@ -344,6 +345,19 @@ describe('uploadS3File', () => {
       error,
     );
     expect(sentCommandNames()).toStrictEqual(['HeadBucketCommand', 'PutObjectCommand']);
+  });
+});
+
+describe('getS3File', () => {
+  beforeEach(() => {
+    initS3Client(credentials);
+  });
+
+  it('surfaces S3 errors to the caller', async () => {
+    const error = s3Error('NoSuchKey');
+    send.mockRejectedValueOnce(error);
+
+    await expect(getS3File('app-1216', 'asset-id')).rejects.toBe(error);
   });
 });
 
