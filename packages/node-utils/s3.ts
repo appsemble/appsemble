@@ -263,14 +263,8 @@ export async function uploadS3FileFromPath(
 }
 
 export async function getS3File(bucket: string, key: string): Promise<Readable> {
-  try {
-    const { Body } = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
-    return Body as Readable;
-  } catch (error) {
-    logger.error(error);
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
-    return null;
-  }
+  const { Body } = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+  return Body as Readable;
 }
 
 export async function getS3FileBuffer(bucket: string, key: string): Promise<Buffer> {
