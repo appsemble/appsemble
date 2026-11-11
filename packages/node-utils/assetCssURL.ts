@@ -94,12 +94,24 @@ function getAppAssetPathReference(path: string): string | null {
  * @param suffix The query and fragment to append to the URL.
  * @param appId The id of the app the asset belongs to.
  * @param host The host on which the app asset endpoints are available.
+ * @param passwordToken The token which grants access to password protected app assets.
  * @returns The app asset URL.
  */
-function createAppAssetURL(reference: string, suffix: string, appId: number, host: string): string {
+function createAppAssetURL(
+  reference: string,
+  suffix: string,
+  appId: number,
+  host: string,
+  passwordToken?: string,
+): string {
   const path = `/api/apps/${appId}/assets/${encodeURIComponent(reference)}${suffix}`;
-
-  return String(new URL(path, host)).replaceAll('\\', '%5C').replaceAll("'", '%27');
+  const url = new URL(path, host);
+  if (passwordToken) {
+    url.searchParams.set('passwordToken', passwordToken);
+  } else if (url.searchParams.has('passwordToken')) {
+    url.searchParams.delete('passwordToken');
+  }
+  return String(url).replaceAll('\\', '%5C').replaceAll("'", '%27');
 }
 
 /**
@@ -108,18 +120,24 @@ function createAppAssetURL(reference: string, suffix: string, appId: number, hos
  * @param value The asset reference or app asset endpoint path the utility was called with.
  * @param appId The id of the app the asset belongs to.
  * @param host The host on which the app asset endpoints are available.
+ * @param passwordToken The token which grants access to password protected app assets.
  * @returns The app asset URL the utility resolves to.
  */
-function resolveAssetReference(value: string, appId: number, host: string): string {
+function resolveAssetReference(
+  value: string,
+  appId: number,
+  host: string,
+  passwordToken?: string,
+): string {
   if (value.startsWith('/')) {
     const { path, suffix } = splitURLParts(value);
     const reference = getAppAssetPathReference(path);
 
     if (reference) {
-      return createAppAssetURL(reference, suffix, appId, host);
+      return createAppAssetURL(reference, suffix, appId, host, passwordToken);
     }
   } else if (isValidAssetReference(value)) {
-    return createAppAssetURL(value, '', appId, host);
+    return createAppAssetURL(value, '', appId, host, passwordToken);
   }
 
   throw new StyleValidationError(`Invalid asset reference: ${value}`);
@@ -135,20 +153,29 @@ function resolveAssetReference(value: string, appId: number, host: string): stri
  * @param value The URL to rewrite.
  * @param appId The id of the app the asset belongs to.
  * @param host The host on which the app asset endpoints are available.
+ * @param passwordToken The token which grants access to password protected app assets.
  * @returns The rewritten URL, or `null` if the value does not address an app asset.
  */
-function rewriteAppAssetURL(value: string, appId: number, host: string): string | null {
+function rewriteAppAssetURL(
+  value: string,
+  appId: number,
+  host: string,
+  passwordToken?: string,
+): string | null {
   let path: string;
   let suffix: string;
 
-  if (value.startsWith('/')) {
+  if (value.startsWith('//') && !passwordToken) {
+    return null;
+  }
+  if (value.startsWith('/') && !value.startsWith('//')) {
     ({ path, suffix } = splitURLParts(value));
   } else {
-    if (!URL.canParse(value)) {
+    if (!URL.canParse(value, value.startsWith('//') ? host : undefined)) {
       return null;
     }
 
-    const url = new URL(value);
+    const url = new URL(value, host);
 
     if (url.origin !== new URL(host).origin) {
       return null;
@@ -160,7 +187,7 @@ function rewriteAppAssetURL(value: string, appId: number, host: string): string 
 
   const reference = getAppAssetPathReference(path);
 
-  return reference ? createAppAssetURL(reference, suffix, appId, host) : null;
+  return reference ? createAppAssetURL(reference, suffix, appId, host, passwordToken) : null;
 }
 
 /**
@@ -169,9 +196,15 @@ function rewriteAppAssetURL(value: string, appId: number, host: string): string 
  * @param css The CSS to process.
  * @param appId The id of the app the assets belong to.
  * @param host The host on which the app asset endpoints are available.
+ * @param passwordToken The token which grants access to password protected app assets.
  * @returns The CSS with all app asset references resolved.
  */
-function resolveAssetReferences(css: string, appId: number, host: string): string {
+function resolveAssetReferences(
+  css: string,
+  appId: number,
+  host: string,
+  passwordToken?: string,
+): string {
   const replacements: Replacement[] = [];
 
   /**
@@ -193,19 +226,47 @@ function resolveAssetReferences(css: string, appId: number, host: string): strin
           replaceNode(
             child,
             offset,
-            `url('${resolveAssetReference(argument.value, appId, host)}')`,
+            `url('${resolveAssetReference(argument.value, appId, host, passwordToken)}')`,
           ),
         );
         return;
       }
 
       if (child.type === 'Url') {
-        const rewrittenURL = rewriteAppAssetURL(child.value, appId, host);
+        const rewrittenURL = rewriteAppAssetURL(child.value, appId, host, passwordToken);
 
         if (rewrittenURL) {
           replacements.push(replaceNode(child, offset, `url('${rewrittenURL}')`));
         }
         return;
+      }
+
+      if (
+        child.type === 'Atrule' &&
+        child.name.toLowerCase() === 'import' &&
+        child.prelude?.type === 'AtrulePrelude'
+      ) {
+        const { first } = child.prelude.children;
+        if (first?.type === 'String') {
+          const rewrittenURL = rewriteAppAssetURL(first.value, appId, host, passwordToken);
+          if (rewrittenURL) {
+            replacements.push(replaceNode(first, offset, `'${rewrittenURL}'`));
+          }
+        }
+      }
+
+      if (
+        child.type === 'Function' &&
+        ['image-set', '-webkit-image-set'].includes(child.name.toLowerCase())
+      ) {
+        for (const image of child.children) {
+          if (image.type === 'String') {
+            const rewrittenURL = rewriteAppAssetURL(image.value, appId, host, passwordToken);
+            if (rewrittenURL) {
+              replacements.push(replaceNode(image, offset, `'${rewrittenURL}'`));
+            }
+          }
+        }
       }
 
       if (child.type === 'Raw') {
@@ -222,7 +283,7 @@ function resolveAssetReferences(css: string, appId: number, host: string): strin
 
   let result = css;
 
-  for (const replacement of replacements.reverse()) {
+  for (const replacement of replacements.sort((a, b) => b.start - a.start)) {
     result = result.slice(0, replacement.start) + replacement.value + result.slice(replacement.end);
   }
 
@@ -239,12 +300,14 @@ function resolveAssetReferences(css: string, appId: number, host: string): strin
  * @param css The CSS to process.
  * @param appId The id of the app the assets belong to.
  * @param host The host on which the app asset endpoints are available.
+ * @param passwordToken The token which grants access to password protected app assets.
  * @returns The CSS with all app asset references resolved.
  */
 export function replaceAssetFunctions(
   css: string,
   appId: number | undefined,
   host: string,
+  passwordToken?: string,
 ): string {
-  return appId ? resolveAssetReferences(css, appId, host) : css;
+  return appId ? resolveAssetReferences(css, appId, host, passwordToken) : css;
 }

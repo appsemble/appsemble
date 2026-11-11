@@ -5,6 +5,7 @@ import {
   getSupportedLanguages,
   logger,
   mergeMessages,
+  replaceAssetFunctions,
   type TempFile,
   throwKoaError,
   uploadToBuffer,
@@ -148,6 +149,20 @@ export function getAppStoreListing(app: App): Omit<AppType, 'definition'> & {
       name: app.messages?.app?.name || name,
     },
   };
+}
+
+/**
+ * Add the current app password token to asset URLs in a served stylesheet.
+ *
+ * @param app The app whose stylesheet is served.
+ * @param style The stored stylesheet.
+ * @returns The stylesheet with authorized asset URLs.
+ */
+export function getAppStyle(app: Pick<App, 'id' | 'password'>, style?: string | null): string {
+  const passwordToken = getAppPasswordToken(app);
+  return passwordToken && style
+    ? replaceAssetFunctions(style, app.id, argv.host, passwordToken)
+    : style || '';
 }
 
 export function getAppUrl(app: App): URL {
