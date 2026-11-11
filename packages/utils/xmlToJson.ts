@@ -5,18 +5,12 @@ import { type JsonValue } from 'type-fest';
  * The part of a DOM node this module reads, as implemented by browsers and `@xmldom/xmldom`.
  */
 interface XmlNode {
-  childNodes: Iterable<XmlNode>;
-  nodeType: number;
+  children: Iterable<XmlNode>;
   prefix: string | null;
   localName: string;
   textContent: string;
   getAttribute: (name: string) => string | null;
   getElementsByTagName: (name: string) => Iterable<XmlNode>;
-}
-
-function getChildren(node: XmlNode): XmlNode[] {
-  // Node type 1 is an element.
-  return [...node.childNodes].filter((child) => child.nodeType === 1);
 }
 
 function parseFromString(value: string | null, schema: OpenAPIV3.SchemaObject): JsonValue {
@@ -60,7 +54,7 @@ function processNode(
 ): JsonValue {
   const xmlObject = schema.xml;
   if (schema.type === 'object') {
-    const child = getChildren(parent).filter(matchNode(xmlObject, name))[index];
+    const child = [...parent.children].filter(matchNode(xmlObject, name))[index];
     return Object.fromEntries(
       Object.entries(schema.properties ?? {}).map(([key, childSchema]) => [
         key,
@@ -69,13 +63,13 @@ function processNode(
     );
   }
   if (schema.type === 'array') {
-    const childNodes = getChildren(parent);
+    const childNodes = [...parent.children];
     const itemSchema = schema.items as OpenAPIV3.SchemaObject;
     const wrapper = xmlObject?.wrapped ? childNodes.find(matchNode(xmlObject, name)) : parent;
     if (!wrapper) {
       return [];
     }
-    return getChildren(wrapper)
+    return [...wrapper.children]
       .filter(matchNode(itemSchema.xml, name))
       .map((element, i) => processNode(wrapper, itemSchema, name, i));
   }
@@ -87,7 +81,7 @@ function processNode(
       schema,
     );
   }
-  const node = getChildren(parent).filter(matchNode(xmlObject, name))[index];
+  const node = [...parent.children].filter(matchNode(xmlObject, name))[index];
   if (!node) {
     return null;
   }
