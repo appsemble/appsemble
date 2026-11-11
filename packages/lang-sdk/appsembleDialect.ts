@@ -108,12 +108,14 @@ function completePageRoles({ node, relativePath }: BindingContext): Completion[]
 }
 
 /**
- * The page components with a binding that completes role names inside `roles`. `define`s, so they
- * override the bulk-annotated pages by name; pass them into `compileAppsembleDialect`.
+ * Every Appsemble component with a `complete` binding: the page kinds, which complete role names
+ * inside `roles`. `define`s, so they override the bulk-annotated components by name. Editors (the
+ * language server, the GUI editor) compile the dialect with these, so a `complete` binding added here
+ * reaches all of them.
  *
- * @returns One component per page kind.
+ * @returns The components that complete values.
  */
-export function pageRoleCompletionDefs(): LanguageComponent[] {
+export function appsembleCompletionDefs(): LanguageComponent[] {
   return (
     [
       'PageDefinition',

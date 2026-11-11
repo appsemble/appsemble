@@ -39,8 +39,10 @@ import { matchOffsetToDocument } from 'yaml-language-server/lib/esm/languageserv
 import { type LanguageService } from 'yaml-language-server/lib/esm/languageservice/yamlLanguageService.js';
 
 import { type ValidationHandler } from './validationHandlers.js';
+import { appDefinitionFileNames } from '../../appsembleSchemaConfig.js';
 import { ResultLimitReachedNotification } from '../../requestTypes.js';
 import { type SettingsState } from '../../yamlSettings.js';
+import { languageComponentCompletions } from '../languageComponentCompletion.js';
 
 function formatError(error: unknown): string {
   if (error instanceof Error) {
@@ -247,11 +249,26 @@ export class LanguageHandlers {
     return (
       this.withDocument(textDocumentPosition.textDocument.uri, async (document) => {
         try {
-          return await this.languageService.doComplete(
+          const completions = await this.languageService.doComplete(
             document,
             textDocumentPosition.position,
             isKubernetesAssociatedDocument(document, this.yamlSettings.specificValidatorPaths),
           );
+          if (appDefinitionFileNames.includes(basename(document.uri))) {
+            const known = new Set(completions.items.map((item) => item.label));
+            // A failing binding must not take yaml-language-server's own completions down with it.
+            const added = await languageComponentCompletions(
+              document,
+              textDocumentPosition.position,
+            ).catch((error: unknown) => {
+              this.connection.console.error(
+                `Language component completion failed for ${document.uri}\n${formatError(error)}`,
+              );
+              return [];
+            });
+            completions.items.push(...added.filter((item) => !known.has(item.label)));
+          }
+          return completions;
         } catch (error: unknown) {
           this.connection.console.error(
             `Completion failed for ${document.uri} at ${textDocumentPosition.position.line}:${textDocumentPosition.position.character}\n${describePosition(document, textDocumentPosition.position)}\n${formatError(error)}`,

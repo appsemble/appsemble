@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { compileAppsembleDialect, pageRoleCompletionDefs } from '../appsembleDialect.js';
+import { compileAppsembleDialect, appsembleCompletionDefs } from '../appsembleDialect.js';
 import { type Completion, LanguageCtx, scan } from './index.js';
 import { miniSchemas } from './stress-test-schemas/schemas.js';
 
@@ -194,7 +194,7 @@ describe('binding context', () => {
 });
 
 describe('page role completion', () => {
-  const ctx = compileAppsembleDialect(pageRoleCompletionDefs());
+  const ctx = compileAppsembleDialect(appsembleCompletionDefs());
   const definition = {
     name: 'App',
     defaultPage: 'a',

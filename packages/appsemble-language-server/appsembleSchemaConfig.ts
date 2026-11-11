@@ -45,6 +45,9 @@ function addMarkdownDescriptions(schema: Schema): Schema {
   return result;
 }
 
+// The file names the language server treats as Appsemble app definitions.
+export const appDefinitionFileNames = ['app-definition.yaml', 'app-definition.yml'];
+
 interface CreateAppsembleSchemaConfigOptions {
   readonly referenceUri?: string;
 }
@@ -63,7 +66,7 @@ export function createAppsembleSchemaConfig({
   return [
     {
       uri: 'appsemble://schema.json',
-      fileMatch: ['app-definition.yaml', 'app-definition.yml'],
+      fileMatch: appDefinitionFileNames,
       schema: {
         id: 'appsemble://schema.json',
         url: referenceUri,
