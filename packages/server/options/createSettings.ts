@@ -91,6 +91,7 @@ function sanitizeAppDefinitionForPublicSettings(
         }
       : undefined,
     name: definition.name,
+    notFoundPage: definition.notFoundPage,
     notifications: definition.notifications,
     pages: definition.pages,
     resources: definition.resources,

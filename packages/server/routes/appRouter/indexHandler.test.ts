@@ -766,6 +766,7 @@ describe('indexHandler', () => {
         description: 'Private description',
         defaultLanguage: 'nl',
         defaultPage: 'Home',
+        notFoundPage: 'Home',
         layout: {
           breakpoints: {
             desktop: 1024,
@@ -917,6 +918,7 @@ describe('indexHandler', () => {
         },
       },
       name: 'Test App',
+      notFoundPage: 'Home',
       notifications: 'login',
       pages: [
         {
