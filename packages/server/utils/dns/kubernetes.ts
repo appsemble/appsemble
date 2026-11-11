@@ -387,10 +387,15 @@ async function createIngressFunction(): Promise<
       }
       logger.warn(`Conflict registering ingress ${name}`);
       logger.info(`Patching ingress ${name} instead`);
-      const patchAnnotations: Record<string, string | null> = { ...annotations };
-      if (customSSL && issuerAnnotationKey) {
-        patchAnnotations[issuerAnnotationKey] = null;
-      }
+      // A merge patch keeps the keys it doesn't mention, and cert-manager rejects an ingress which
+      // has both issuer annotations.
+      const patchAnnotations: Record<string, string | null> = {
+        ...(issuerAnnotationKey && {
+          'cert-manager.io/cluster-issuer': null,
+          'cert-manager.io/issuer': null,
+        }),
+        ...annotations,
+      };
       await requestKubernetes(`patch ingress ${name}`, () =>
         axios.patch(
           // Not SSRF: baseURL is from server config (argv), namespace from K8s service account, name is normalized domain
@@ -604,7 +609,9 @@ export async function cleanupDNS(): Promise<void> {
   logger.info(`Successfully deleted all secrets for ${serviceName}`);
 }
 
-async function getIngressHosts(): Promise<{ hosts: string[]; name: string }[]> {
+async function getIngressHosts(): Promise<
+  { annotations: Record<string, string>; hosts: string[]; name: string }[]
+> {
   const config = await getAxiosConfig();
   const namespace = await readK8sSecret('namespace');
   const { data } = await requestKubernetes('list ingresses', () =>
@@ -619,6 +626,7 @@ async function getIngressHosts(): Promise<{ hosts: string[]; name: string }[]> {
     ),
   );
   const names = data.items.flatMap(({ metadata, spec }) => ({
+    annotations: metadata.annotations ?? {},
     hosts: spec.rules.map((rule) => rule.host),
     name: metadata.name!,
   }));
@@ -626,7 +634,8 @@ async function getIngressHosts(): Promise<{ hosts: string[]; name: string }[]> {
 }
 
 /**
- * Re-creates missing ingresses and deletes extra ingresses.
+ * Re-creates missing ingresses, deletes extra ingresses, and sets the configured cert-manager issuer
+ * on organization ingresses.
  *
  * @param options Options for reconciling DNS.
  */
@@ -677,6 +686,16 @@ export async function reconcileDNS({
   ].filter(
     (expected) => !ingressHosts.some(({ hosts }) => expected.every((host) => hosts.includes(host))),
   );
+  const { clusterIssuer, issuer } = argv;
+  const outdatedIngresses =
+    clusterIssuer || issuer
+      ? ingressHosts.filter(
+          ({ annotations, hosts }) =>
+            organizationHosts.has(hosts[0]) &&
+            (annotations['cert-manager.io/cluster-issuer'] !== (clusterIssuer || undefined) ||
+              annotations['cert-manager.io/issuer'] !== (clusterIssuer ? undefined : issuer)),
+        )
+      : [];
   for (const { hosts, name } of extraIngresses) {
     logger.info(`Deleting extra ingress ${name}${dryRun ? ' (Dry run)' : ''}`);
     if (dryRun) {
@@ -721,6 +740,13 @@ export async function reconcileDNS({
       await createSSLSecret(name, sslCertificate, sslKey);
     }
     logger.info(`Created missing ingress ${name}`);
+  }
+  for (const { hosts, name } of outdatedIngresses) {
+    logger.info(`Updating the issuer of ingress ${name}${dryRun ? ' (Dry run)' : ''}`);
+    if (dryRun) {
+      continue;
+    }
+    await createIngress([hosts[0]], false, undefined, hosts[0].slice(2, -hostname.length - 1));
   }
 }
 
