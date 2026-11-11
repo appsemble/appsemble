@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.11-test.0
-appVersion: 0.40.11-test.0
+version: 0.40.11
+appVersion: 0.40.11
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,47 +31,9 @@ dependencies:
     repository: https://valkey.io/valkey-helm
     condition: valkey.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Block(form): Add inline ordered selection fields."
-    - kind: added
-      description: "Block(form): Allow form submission from an external event."
-    - kind: added
-      description: "Block(html): Add remapped CSS properties through the data-style attribute."
-    - kind: added
-      description: "Lang-sdk: Add custom theme variables shared by app and block styles."
-    - kind: added
-      description: "Lang-sdk: Allow app styles to target a named block instance."
-    - kind: added
-      description: "Server: Allow app requests to private IPs with the
-        ssrfAllowIpAddressList Helm value."
+  artifacthub.io/changes: |
     - kind: fixed
-      description: "Block(button-list): Apply button visibility and disabled
-        conditions to initial block data."
-    - kind: fixed
-      description: "Block(detail-viewer): Render initial field data while listening
-        for updates and preserve zero values."
-    - kind: fixed
-      description: "Block(list): Display initial list data while listening for
-        subsequent updates."
-    - kind: fixed
-      description: "Block(markdown): Clear the content when a data event has no data."
-    - kind: fixed
-      description: "Block(markdown): Render initial data while listening for content updates."
-    - kind: fixed
-      description: "App: Fix a blocking service worker error dialog when the
-        registration has no worker."
-    - kind: fixed
-      description: "App: Initialize page blocks with the resolved onLoad action data."
-    - kind: fixed
-      description: "App: Open installed apps and unvisited pages offline, including
-        their blocks, styles, fonts and images."
-    - kind: fixed
-      description: "Server: Stop the Helm chart server Role colliding with the
-        CloudNativePG Role."
-    - kind: security
-      description: "Server: Invalidate pending email verification links when a
-        password is reset."
+      description: "Server: Restore the missing link text in translated emails."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

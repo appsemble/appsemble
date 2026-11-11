@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.11](https://gitlab.com/appsemble/appsemble/-/releases/0.40.11)] - 2026-11-11
+
+### Fixed
+
+- Server: Restore the missing link text in translated emails.
+
 ## \[[0.40.11-test.0](https://gitlab.com/appsemble/appsemble/-/releases/0.40.11-test.0)] - 2026-11-10
 
 ### Added
