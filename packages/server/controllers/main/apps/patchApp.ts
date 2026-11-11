@@ -290,6 +290,12 @@ export async function patchApp(ctx: Context): Promise<void> {
     }
 
     if (password !== undefined) {
+      assertKoaCondition(
+        Buffer.byteLength(password, 'utf8') <= 72,
+        ctx,
+        400,
+        'The app password must not exceed 72 UTF-8 bytes.',
+      );
       result.password = password ? await hash(password, 10) : null;
     }
 

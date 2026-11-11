@@ -292,6 +292,25 @@ describe('patchApp', () => {
     expect(await compare('open sesame', app.password!)).toBe(true);
   });
 
+  it.each([
+    ['ascii', 'a'.repeat(73)],
+    ['Unicode', 'é'.repeat(37)],
+  ])('should reject %s passwords that bcrypt would truncate', async (encoding, password) => {
+    const app = await App.create({
+      definition: { name: 'Test app', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+
+    const response = await request.patch(`/api/apps/${app.id}`, createFormData({ password }));
+
+    await app.reload();
+    expect([response.status, app.password]).toStrictEqual([400, null]);
+  });
+
   it('should turn password protection off with an empty password', async () => {
     const app = await App.create({
       definition: { name: 'Test app', defaultPage: 'Test Page' },
