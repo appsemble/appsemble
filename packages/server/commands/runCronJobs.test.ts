@@ -177,4 +177,40 @@ describe('run-cronjobs', () => {
     expect(smtp.messages[0]).toContain('filename=format-print.docx');
     expect(smtp.messages[0]).toContain(content.toString('base64'));
   }, 60_000);
+
+  it('should run the remaining cron jobs of an app after one of them fails', async () => {
+    await App.create({
+      OrganizationId: 'testorg',
+      path: 'cron-app',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+      definition: {
+        name: 'Cron App',
+        defaultPage: '',
+        pages: [],
+        // The database returns the keys of a definition shortest first, so `failing` runs before
+        // `reminder`.
+        cron: {
+          failing: {
+            schedule: '* * * * *',
+            action: { type: 'throw', remapBefore: { static: 'Cron job failure' } },
+          },
+          reminder: {
+            schedule: '* * * * *',
+            action: {
+              type: 'email',
+              to: 'recipient@example.com',
+              subject: 'Reminder',
+              body: 'This reminder follows a failed cron job.',
+            },
+          },
+        },
+      },
+    } as Partial<App>);
+
+    await runCronJobs(smtp.port);
+
+    expect(smtp.messages).toHaveLength(1);
+    expect(smtp.messages[0]).toContain('Subject: Reminder');
+  }, 60_000);
 });
