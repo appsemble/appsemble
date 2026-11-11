@@ -44,10 +44,18 @@ function mockAppMember(overrides: Record<string, unknown> = {}): void {
 function renderCallback(): void {
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/Callback?code=abc&state=state-1']}>
+      <MemoryRouter initialEntries={['/en/Callback?code=abc&state=state-1']}>
         <Routes>
-          <Route element={<OpenIDCallback />} path="/Callback" />
           <Route element={<p>Login page</p>} path="/Login" />
+          <Route
+            element={
+              <Routes>
+                <Route element={<OpenIDCallback />} path="/Callback" />
+                <Route element={<p>Home page</p>} path="/home" />
+              </Routes>
+            }
+            path="/:lang/*"
+          />
         </Routes>
       </MemoryRouter>
     </IntlProvider>,
@@ -93,6 +101,15 @@ describe('OpenIDCallback', () => {
     // The login continues on the login page, which is where the second factor is verified.
     expect(await screen.findByText('Login page')).not.toBeNull();
     expect(clearOAuth2State).toHaveBeenCalledWith();
+  });
+
+  it('should send a member who logged in without a deep link to the default page', async () => {
+    loadOAuth2State.mockReturnValue({ state: 'state-1' });
+    mockAppMember({ isLoggedIn: true });
+
+    renderCallback();
+
+    expect(await screen.findByText('Home page')).not.toBeNull();
   });
 
   it('should clear the OAuth2 state once logged in', async () => {

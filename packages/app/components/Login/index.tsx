@@ -35,7 +35,9 @@ export function Login(): ReactNode {
   if (isLoggedIn || !definition.security) {
     const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
     return (
-      <Navigate to={redirect || getPagePathSegment({ name: defaultPageName }, getAppMessage)} />
+      <Navigate
+        to={redirect || `../${getPagePathSegment({ name: defaultPageName }, getAppMessage)}`}
+      />
     );
   }
 
