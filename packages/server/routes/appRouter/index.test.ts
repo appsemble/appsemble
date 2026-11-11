@@ -1,7 +1,9 @@
+import { readFile } from 'node:fs/promises';
+
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import Koa from 'koa';
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { appRouter } from './index.js';
 import { App, Organization } from '../../models/index.js';
@@ -25,6 +27,12 @@ describe('appRouter', () => {
       server
         .use((ctx, next) => {
           Object.defineProperty(ctx, 'URL', { value: new URL('http://app.org.localhost') });
+          ctx.fs = {
+            promises: {
+              readFile: () =>
+                readFile(new URL('../../../app/password.html', import.meta.url), 'utf8'),
+            },
+          };
           return next();
         })
         .use(appRouter),
@@ -44,17 +52,54 @@ describe('appRouter', () => {
     });
   });
 
+  afterEach(() => vi.unstubAllEnvs());
+
   it('should show the password page with the message instead of the app', async () => {
     const response = await request.get('/en/home');
 
     expect(response).toMatchObject({
       status: 200,
-      headers: { 'cache-control': 'private,no-store', vary: 'Cookie' },
+      headers: { 'cache-control': 'private,no-store', vary: 'Cookie, Accept-Language' },
       data: {
         filename: 'app/password.html',
         data: { error: false, message: 'This app is in a closed test.\nAsk the team for access.' },
       },
     });
+  });
+
+  it.each([
+    [
+      'nl-NL,nl;q=0.9,en;q=0.8',
+      'nl',
+      'Wachtwoord vereist',
+      'Deze app is beveiligd met een wachtwoord',
+      'Wachtwoord',
+      'Doorgaan',
+    ],
+    ['de', 'de', 'Passwort erforderlich', 'Diese App ist passwortgeschützt', 'Passwort', 'Weiter'],
+    ['zz', 'en', 'Password required', 'This app is password protected', 'Password', 'Continue'],
+    ['ang', 'ang', 'Password required', 'This app is password protected', 'Password', 'Continue'],
+  ])('should localize the password page for %s', async (language, locale, ...text) => {
+    vi.stubEnv('NODE_ENV', 'development');
+
+    const response = await request.get('/', { headers: { 'Accept-Language': language } });
+
+    expect(response.status).toBe(200);
+    expect(response.headers['content-language']).toBe(locale);
+    for (const value of [...text, app.passwordMessage!]) {
+      expect(response.data).toContain(value);
+    }
+  });
+
+  it('should localize an incorrect password error', async () => {
+    vi.stubEnv('NODE_ENV', 'development');
+
+    const response = await request.post('/', new URLSearchParams({ password: 'guess' }), {
+      headers: { 'Accept-Language': 'nl' },
+    });
+
+    expect(response.status).toBe(401);
+    expect(response.data).toContain('Het wachtwoord is onjuist.');
   });
 
   it('should refuse the files of a password protected app without the password', async () => {

@@ -1,4 +1,10 @@
-import { createAppRouter, render } from '@appsemble/node-utils';
+import {
+  createAppRouter,
+  getAppsembleMessages,
+  getSupportedLanguages,
+  render,
+} from '@appsemble/node-utils';
+import { defaultLocale, detectLocale } from '@appsemble/utils';
 import { compare } from 'bcrypt';
 import { type Middleware } from 'koa';
 import getRawBody from 'raw-body';
@@ -8,6 +14,7 @@ import { getApp, getAppPasswordToken } from '../../utils/app.js';
 import { setCookie } from '../../utils/appCookies.js';
 
 const router = createAppRouter(options);
+const supportedLanguages = getSupportedLanguages();
 
 export const appRouter: Middleware = async (ctx, next) => {
   const { app } = await getApp(ctx, { attributes: ['id', 'password', 'passwordMessage'] });
@@ -43,5 +50,19 @@ export const appRouter: Middleware = async (ctx, next) => {
     error = true;
     ctx.status = 401;
   }
-  return render(ctx, 'app/password.html', { error, message: app.passwordMessage });
+  const locale =
+    detectLocale([...(await supportedLanguages)], ctx.acceptsLanguages()) || defaultLocale;
+  const messages = await getAppsembleMessages(locale, defaultLocale);
+  ctx.set('Content-Language', locale);
+  ctx.vary('Accept-Language');
+  return render(ctx, 'app/password.html', {
+    error,
+    locale,
+    message: app.passwordMessage,
+    title: messages['server.passwordPage.title'],
+    heading: messages['server.passwordPage.heading'],
+    passwordLabel: messages['server.passwordPage.password'],
+    incorrectPassword: messages['server.passwordPage.incorrectPassword'],
+    submitLabel: messages['server.passwordPage.submit'],
+  });
 };
