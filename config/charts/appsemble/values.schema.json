@@ -596,14 +596,6 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "existingSecret": {
-              "type": "string",
-              "description": "The Kubernetes secret containing PgBouncer's userlist file."
-            },
-            "userlistKey": {
-              "type": "string",
-              "description": "The key in pgbouncer.auth.existingSecret containing the userlist file."
-            },
             "type": {
               "type": "string",
               "description": "The PgBouncer authentication method.",
@@ -770,6 +762,11 @@
         "type": "string"
       },
       "default": []
+    },
+    "disableRegistration": {
+      "type": "boolean",
+      "description": "If `true`, disable user registration with email and password. Without a Studio login provider (`oauthSecret`) nobody new can get an account.",
+      "default": false
     },
     "provision": {
       "type": "object",

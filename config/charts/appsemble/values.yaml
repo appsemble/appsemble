@@ -166,7 +166,6 @@ slowQueryThreshold: 100
 appServingCacheTtl: 300
 
 pgbouncer:
-  # Requires the pgbouncer.auth.existingSecret userlist secret to exist before enabling.
   enabled: false
   # Above 1, the replicas spread across nodes and a PodDisruptionBudget keeps one available.
   replicaCount: 1
@@ -177,8 +176,6 @@ pgbouncer:
   service:
     port: 6432
   auth:
-    existingSecret: pgbouncer-userlist
-    userlistKey: userlist.txt
     type: scram-sha-256
   resources:
     requests:
@@ -216,6 +213,8 @@ securityEmail: security@appsemble.com
 rejectBreachedPasswords: false
 
 ssrfAllowIpAddressList: []
+
+disableRegistration: false
 
 quotas:
   appEmail:

@@ -75,13 +75,13 @@ describe('queryApps', () => {
     await AppMessages.create({
       AppId: app.id,
       language: 'nl',
-      messages: { app: { name: 'Testapp' }, messageIds: { secret: 'Private text' } },
+      messages: { app: { name: 'Translated app' }, messageIds: { secret: 'Private text' } },
     });
 
     const response = await request.get('/api/apps?language=nl');
 
     expect([response.status, response.data[0].definition, response.data[0].messages]).toStrictEqual(
-      [200, { name: 'Testapp' }, undefined],
+      [200, { name: 'Translated app' }, undefined],
     );
   });
 
