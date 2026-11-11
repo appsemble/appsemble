@@ -18,6 +18,7 @@ describe('proxyGet', () => {
   let proxiedRequest: AxiosTestInstance;
   let proxiedBody: any;
   let responseHeaders: Record<string, string>;
+  let proxiedHandler: (() => Promise<unknown>) | undefined;
 
   beforeEach(async () => {
     setArgv(argv);
@@ -33,6 +34,7 @@ describe('proxyGet', () => {
         ctx.set(responseHeaders);
       }
       proxiedContext = ctx;
+      return proxiedHandler?.();
     });
     proxiedRequest = await createInstance(proxiedApp);
     const { baseURL } = proxiedRequest.defaults;
@@ -128,6 +130,7 @@ describe('proxyGet', () => {
     proxiedBody = undefined;
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     responseHeaders = undefined;
+    proxiedHandler = undefined;
   });
 
   it('should proxy simple GET request actions', async () => {
@@ -148,5 +151,28 @@ describe('proxyGet', () => {
       'user-agent': `AppsembleServer/${version}`,
     });
     expect(proxiedContext.path).toBe('/');
+  });
+
+  it('should respond with 502 if the proxied endpoint does not respond within a minute', async () => {
+    const requestReceived = Promise.withResolvers<null>();
+    proxiedHandler = () => {
+      requestReceived.resolve(null);
+      return Promise.withResolvers().promise;
+    };
+
+    const responsePromise = request.get('/api/apps/1/actions/pages.0.blocks.0.actions.get?data={}');
+    await requestReceived.promise;
+    await vi.advanceTimersByTimeAsync(60_000);
+
+    expect(await responsePromise).toMatchInlineSnapshot(`
+      HTTP/1.1 502 Bad Gateway
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Gateway",
+        "message": "Bad Gateway",
+        "statusCode": 502,
+      }
+    `);
   });
 });
