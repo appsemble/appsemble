@@ -949,6 +949,27 @@ describe('actions', () => {
       spy.mockRestore();
     });
 
+    it('should apply the given filename to an asset attached by name', async () => {
+      const spy = vi.spyOn(server.context.mailer, 'sendEmail');
+      onTestFinished(() => spy.mockRestore());
+      const buffer = Buffer.from('test');
+      const { Asset } = await getAppDB(1);
+      const asset = await Asset.create({ mime: 'text/plain', filename: 'test.txt', name: 'test' });
+      const { bucket, key } = getAppAssetLocation(1, asset.id);
+      await uploadS3File(bucket, key, buffer);
+
+      const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
+        to: 'test@example.com',
+        body: 'Body',
+        attachments: [{ target: 'test', filename: 'renamed.txt' }],
+      });
+
+      expect(response.status).toBe(204);
+      expect(spy.mock.calls[0][0].attachments).toStrictEqual([
+        { content: buffer, filename: 'renamed.txt' },
+      ]);
+    });
+
     it('should not attach non-existant assets', async () => {
       const spy = vi.spyOn(server.context.mailer, 'sendEmail');
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
