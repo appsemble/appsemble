@@ -69,8 +69,6 @@ export class LanguageCtx<Root = unknown, C = Components> {
   // `resolveValidator`.
   private readonly documentValidator: Validator;
 
-  private readonly localShape: (schema: Schema) => Schema;
-
   private readonly cachedResolveContext: ResolveContext;
 
   // The pinned root (a registry key + its schema). The value is not part of the compiled context —
@@ -99,7 +97,6 @@ export class LanguageCtx<Root = unknown, C = Components> {
     const validatorFactory = options.validatorFactory ?? (() => this.registry.createValidator());
     this.resolveValidator = validatorFactory();
     this.documentValidator = validatorFactory();
-    this.localShape = localShapeFactory();
     this.rootName = rootName;
     this.rootSchema = rootSchema;
     this.binds = options.binds ?? new Map();
@@ -108,7 +105,7 @@ export class LanguageCtx<Root = unknown, C = Components> {
     this.primitiveComponentNames = findPrimitiveComponents(schemas);
     this.cachedResolveContext = {
       resolveRef,
-      localShape: this.localShape,
+      localShape: localShapeFactory(),
       dynamicChild: options.dynamicChild,
       loadDynamicChild: options.loadDynamicChild,
       draftChildSchemas: options.draftChildSchemas,
@@ -181,7 +178,7 @@ export class LanguageCtx<Root = unknown, C = Components> {
   }
 
   // The binding declared for a component identity, if any — so a consumer (e.g. the GUI editor) can read
-  // its behaviors or `getExtraAnnotations`. Dispatched by the same identity name as the walk's hooks.
+  // its behaviors or `getExtraAnnotations`.
   bindingFor(name: string): LanguageComponentBinding | undefined {
     return this.binds.get(name);
   }

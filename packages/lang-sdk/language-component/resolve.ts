@@ -543,7 +543,7 @@ export function childSchema(
 // The schema half of the descent step: the value-directed resolver first (when configured), else
 // `childSchema`'s structural lookup over the winners. `childNode` wraps this with the value/path
 // arithmetic, so the walk, `Node`, and `boundaryAt` all step identically.
-export function resolveAtKey(
+function resolveAtKey(
   resolution: Resolution,
   parentValue: unknown,
   key: string,

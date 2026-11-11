@@ -32,8 +32,8 @@ export interface IncrementalOptions {
   changed?: NodePath[];
 }
 
-// Binding hooks that take the resolved `Node` (dispatched by the walk) — excludes `getExtraAnnotations`,
-// which is keyed by scope, not node, and read via `LanguageCtx.bindingFor`.
+// Binding hooks that take a `BindingContext`; `getExtraAnnotations` is keyed by scope, not node, and
+// read via `LanguageCtx.bindingFor`.
 export type NodeBindingHook = 'validate' | 'complete' | 'describe';
 
 // A re-walk root: the subtree (schema at a path) to re-analyze after an edit at or below it.
@@ -102,8 +102,6 @@ export class MountIndex {
   }
 
   // Dispatch one hook of the nearest enclosing component that defines it. Undefined when none does.
-  // Only the hooks that take
-  // the resolved `Node` are dispatchable here; `getExtraAnnotations` is read by scope, not by node.
   callBindingAt<Hook extends NodeBindingHook>(
     path: NodePath,
     hook: Hook,

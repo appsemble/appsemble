@@ -16,6 +16,7 @@ export {
 } from './languageComponent.js';
 export { type CompileOptions, LanguageCtx, type ScanValidation } from './languageCtx.js';
 export { type ChildValue, type ChildValues, type Components, type Draft, Node } from './node.js';
+export { type DeriveComponents, type LCValue, type LocalValue } from './overlay-schema.js';
 export {
   type Discriminator,
   type DynamicChild,

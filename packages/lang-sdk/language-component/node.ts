@@ -199,8 +199,9 @@ export class Node<V = unknown, C = Components> {
     return this.as(name) ?? this.parent()?.nearest(name) ?? null;
   }
 
-  // Whether this node resolves to component `name`, at any depth of its identity. A plain boolean rather than a `this is` guard, whose
-  // self-intersection accumulates on a recursive value type; `as` is the narrowing form.
+  // Whether this node resolves to component `name`, at any depth of its identity. A plain boolean
+  // rather than a `this is` guard, whose self-intersection accumulates on a recursive value type;
+  // `as` is the narrowing form.
   is(name: string): boolean {
     return this.identity ? identityNames(this.identity).includes(name) : false;
   }
