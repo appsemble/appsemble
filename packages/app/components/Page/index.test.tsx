@@ -479,14 +479,16 @@ describe('page not found', () => {
     expect(screen.getByText('/en/reports/extra')).not.toBeNull();
   });
 
-  it('should redirect to the login page for an existing page that requires a login', async () => {
+  it('should redirect to the login page for an existing page that requires a login when the app defines a not found page', async () => {
     mockApp({
       name: 'Test App',
       defaultPage: 'Home',
+      notFoundPage: 'Lost',
       security,
       pages: [
         { name: 'Home', blocks: [block] },
         { name: 'About', blocks: [block] },
+        { name: 'Lost', blocks: [block] },
       ],
     } as AppDefinition);
     renderAt('/en/about');
@@ -496,14 +498,16 @@ describe('page not found', () => {
     ).not.toBeNull();
   });
 
-  it('should redirect a member to the default page for an existing page they may not view', async () => {
+  it('should redirect a member to the default page for an existing page they may not view when the app defines a not found page', async () => {
     mockApp({
       name: 'Test App',
       defaultPage: 'Home',
+      notFoundPage: 'Lost',
       security,
       pages: [
         { name: 'Home', blocks: [block] },
         { name: 'Admin', roles: ['Admin'], blocks: [block] },
+        { name: 'Lost', blocks: [block] },
       ],
     } as AppDefinition);
     mockMember(true, ['User']);

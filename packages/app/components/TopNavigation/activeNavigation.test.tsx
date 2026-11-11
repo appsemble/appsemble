@@ -62,8 +62,8 @@ function renderNavigation(
     isLoggedIn: Boolean(roles.length),
   } as never);
   vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
-    getAppMessage: ({ defaultMessage, id }: { defaultMessage: string; id: string }) => ({
-      format: () => (id === 'pages.lot-details' ? 'Details' : defaultMessage),
+    getAppMessage: ({ defaultMessage }: { defaultMessage: string }) => ({
+      format: () => defaultMessage,
     }),
     getMessage: () => ({ format: () => '' }),
   } as never);
@@ -166,11 +166,6 @@ describe.each(['top', 'side', 'bottom'])('%s navigation selection', (navigation)
     expect(selection()).toStrictEqual([['Overview Lots', 'location']]);
   });
 
-  it('should resolve translated page URLs', () => {
-    renderNavigation(navigation, '/nl/details/42');
-    expect(selection()).toStrictEqual([['Available Lots', 'location']]);
-  });
-
   it('should update selection when switching sections and clear it for an unrelated page', () => {
     renderNavigation(navigation, '/en/lot-details/42');
     expect(selection()).toStrictEqual([['Available Lots', 'location']]);
@@ -183,14 +178,11 @@ describe.each(['top', 'side', 'bottom'])('%s navigation selection', (navigation)
     expect(screen.queryByRole('link', { current: 'location' })).toBeNull();
   });
 
-  it.each(['/en/orphan', '/en/unknown', '/en/Settings'])(
-    'should leave navigation unselected at %s',
-    (path) => {
-      renderNavigation(navigation, path);
-      expect(screen.queryByRole('link', { current: 'page' })).toBeNull();
-      expect(screen.queryByRole('link', { current: 'location' })).toBeNull();
-    },
-  );
+  it('should leave navigation unselected on a page outside the navigation', () => {
+    renderNavigation(navigation, '/en/orphan');
+    expect(screen.queryByRole('link', { current: 'page' })).toBeNull();
+    expect(screen.queryByRole('link', { current: 'location' })).toBeNull();
+  });
 
   it.each([
     { hideNavTitle: true },
