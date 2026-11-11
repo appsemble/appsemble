@@ -107,15 +107,12 @@ export async function handler(): Promise<void> {
     ],
     where: { definition: { cron: { [Op.not]: null } } },
   })) {
-    let lastId;
+    logger.info(
+      `Processing ${Object.keys(app.definition.cron ?? {}).length} cron jobs for app ${app.id}`,
+    );
 
-    try {
-      logger.info(
-        `Processing ${Object.keys(app.definition.cron ?? {}).length} cron jobs for app ${app.id}`,
-      );
-
-      for (const [id, job] of Object.entries(app.definition.cron ?? {})) {
-        lastId = id;
+    for (const [id, job] of Object.entries(app.definition.cron ?? {})) {
+      try {
         const schedule = cron.parseExpression(job.schedule, { startDate });
 
         if (!schedule.hasPrev()) {
@@ -135,10 +132,10 @@ export async function handler(): Promise<void> {
           options,
           context: { mailer } as any,
         });
+      } catch (error: unknown) {
+        logger.error(`Failed to run ${id} for app ${app.id}`);
+        logger.error(error);
       }
-    } catch (error: unknown) {
-      logger.error(`Failed to run ${lastId} for app ${app.id}`);
-      logger.error(error);
     }
   }
 

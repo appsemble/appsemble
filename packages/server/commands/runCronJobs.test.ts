@@ -177,4 +177,33 @@ describe('run-cronjobs', () => {
     expect(smtp.messages[0]).toContain('filename=format-print.docx');
     expect(smtp.messages[0]).toContain(content.toString('base64'));
   }, 60_000);
+
+  it('should run the remaining cron jobs of an app after one of them fails', async () => {
+    const job = (subject: string): unknown => ({
+      schedule: '* * * * *',
+      action: {
+        type: 'email',
+        to: 'recipient@example.com',
+        subject,
+        body: 'This cron job fails after sending its email.',
+        onSuccess: { type: 'throw', remapBefore: { static: 'Cron job failure' } },
+      },
+    });
+    await App.create({
+      OrganizationId: 'testorg',
+      path: 'cron-app',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+      definition: {
+        name: 'Cron App',
+        defaultPage: '',
+        pages: [],
+        cron: { first: job('First'), second: job('Second') },
+      },
+    } as Partial<App>);
+
+    await runCronJobs(smtp.port);
+
+    expect(smtp.messages).toHaveLength(2);
+  }, 60_000);
 });
