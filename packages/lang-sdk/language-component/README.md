@@ -89,6 +89,7 @@ classDiagram
       +nearest(name) Node
       +is(name) boolean
       +as(name) Node
+      +asLocalValid(name) Node
       -boundaryFrom(boundary, target) Node
     }
   }
@@ -97,7 +98,7 @@ classDiagram
     class ResolveFns {
       <<util fns>>
       +resolve(schema, value, ctx) Resolution
-      +resolveAtKey(resolution, val, key, ctx) Schema
+      -resolveAtKey(resolution, val, key, ctx) Schema
       +childNode(val, path, resolution, key, ctx) StepChild
       +childSchema(winners, key, resolveRef) Schema
       +localShapeFactory() ShapeFn
@@ -248,13 +249,13 @@ LanguageCtx.compile(schemas, rootName)   compile registry + validators + ref-cut
 - `validate` produces `documentValid` and `errors` independently of the walk, so a caller runs it on
   its own cadence (an LSP computes diagnostics on idle, not per keystroke). Its `hits` are kept for
   tooling but do not drive the tree.
-- Compile also runs a **distinguishability analysis**: per union, can ref-cut local matching always
-  pick the right branch (a discriminator, or branches separable by top-level shape)? A union it
-  can't prove sufficient escalates at runtime — `resolve` re-validates the colliding branches in
-  full only when ref-cut matches more than one, so the fast path is untouched and only genuine
-  collisions pay. The verdict doubles as a dialect-sanity lint (`ctx.distinguishabilityLint` /
-  `distinguishabilityErrors`, severity by component label): two distinct labeled components that
-  share a ref-cut shape are an `error`.
+- When ref-cut local matching leaves more than one branch of a `oneOf`/`anyOf`, `resolve`
+  re-validates those branches in full and keeps the ones the value satisfies. Unions whose branches
+  differ in local shape never tie, so they stay on the fast path.
+- `findUnionCollisions(ctx)`, from `@appsemble/lang-sdk/language-component`, is the dialect-sanity
+  check a dialect author runs in their own tests: per union, can ref-cut local matching always pick
+  the right branch (a discriminator, or branches separable by top-level shape)? Two distinct labeled
+  components that share a ref-cut shape are an `error`; `formatCollision` renders one readably.
 - The walk reaches everything Appsemble's OpenAPI 3.0 schemas can express. It cannot reach language
   components placed behind conditional/pattern applicators (`if`/`then`, `patternProperties`), which
   those schemas do not use; blocks are reached through the value-directed `dynamicChild` hook
@@ -337,30 +338,32 @@ frames — see `PERFORMANCE.md`). Nodes are minted only where navigation is need
 a `LanguageComponentBinding` of optional `validate`/`complete`/`describe` hooks.
 `schemas`/`bindings` collect a def list into the two registries: the `name -> schema` set for
 `LanguageCtx.compile`, and the `name -> binding` map for dispatching behavior by the identity a node
-resolves to. Hooks run only after resolution and each receive the `Node`, so they read value,
-schema, and surrounding context, and report what a schema cannot express.
+resolves to. Hooks run only after resolution and each receive a `BindingContext`, so they read
+value, schema, and surrounding context, and report what a schema cannot express.
 
 ```ts
-const Email = LanguageComponent.define(
-  'Email',
-  { type: 'string', format: 'email' },
+const Contact = LanguageComponent.define(
+  'Contact',
+  { type: 'object', properties: { email: { type: 'string', format: 'email' } } },
   {
-    validate: (node) =>
-      typeof node.val === 'string' && node.val.endsWith('@example.com')
+    validate: ({ node }) =>
+      (node.val as { email?: string }).email?.endsWith('@example.com')
         ? []
-        : [{ message: 'must be an @example.com address' }],
-    describe: () => 'Email address',
+        : [{ message: 'must be an @example.com address', path: ['email'] }],
+    describe: () => 'Contact details',
   },
 );
 
-// Collect the def list (one Email here, more in practice) into the two registries.
-const schemas = LanguageComponent.schemas([Email]);
-const bindings = LanguageComponent.bindings([Email]);
+// Collect the def list (one Contact here, more in practice) into the two registries.
+const schemas = LanguageComponent.schemas([Contact]);
+const bindings = LanguageComponent.bindings([Contact]);
 
 // Dispatch a resolved node's behavior by its identity name.
-const node = LanguageCtx.compile(schemas, 'Email').root('a@other.com');
-// Returns [{ message: 'must be an @example.com address' }] — a Diagnostic, path omitted = on this node.
+const ctx = LanguageCtx.compile(schemas, 'Contact', { binds: bindings });
+const node = ctx.root({ email: 'a@other.com' });
 const context = ctx.bindingContextFor(node, 'validate');
+// Returns [{ message: 'must be an @example.com address', path: ['email'] }]: a Diagnostic, with its
+// path relative to the component.
 context?.binding.validate?.(context, ctx.context);
 ```
 
@@ -372,12 +375,12 @@ does the same lookup from a node, so a consumer needs no tree.
 
 ## Annotation
 
-Identity comes only from `appsembleLanguageComponent`; a schema graph carrying no such tags produces
-an empty tree. Wrappers and leaves can both be tagged:
+Identity comes only from `x-appsemble-language-component`; a schema graph carrying no such tags
+produces an empty tree. Wrappers and leaves can both be tagged:
 
 ```ts
 const Widget = {
-  appsembleLanguageComponent: { name: 'Widget', mode: 'oneOf' },
+  'x-appsemble-language-component': { name: 'Widget', mode: 'oneOf' },
   oneOf: [
     { $ref: '#/components/schemas/ButtonWidget' },
     { $ref: '#/components/schemas/IconWidget' },
@@ -390,8 +393,8 @@ with `LanguageComponent.annotate` (each named object/combinator schema becomes a
 scalars and already-tagged schemas pass through), then compile pinning the root component:
 
 ```ts
-import { LanguageComponent, LanguageCtx, scan } from '@appsemble/lang-sdk';
-import * as rawSchemas from '@appsemble/lang-sdk/schemas';
+import { schemas as rawSchemas } from '@appsemble/lang-sdk';
+import { LanguageComponent, LanguageCtx, scan } from '@appsemble/lang-sdk/language-component';
 
 const schemas = LanguageComponent.annotate(rawSchemas as Record<string, Schema>);
 const ctx = LanguageCtx.compile(schemas, 'AppDefinition');
@@ -402,7 +405,7 @@ scan(ctx, app);
 Untagged combinators are still transparent — an anonymous `oneOf`/`anyOf`/`allOf` surfaces the
 identities of its tagged branches — but an untagged plain object mounts nothing, which is why the
 named object schemas need tagging. The tag always lives under the `COMPONENT_KEY` keyword
-(`appsembleLanguageComponent`), declared on the `jsonschema` `Schema` type by the module
+(`x-appsemble-language-component`), declared on the `jsonschema` `Schema` type by the module
 augmentation in `types.ts`.
 
 ## Files
@@ -473,8 +476,11 @@ const root = ctx.root({ label: 'Main', children: [{ label: 'Home', href: '/' }] 
 
 const { label }: { label: string } = root.val;
 const item: Link | Menu | undefined = root.child('children')?.child(0)?.val;
-// `as` checks at runtime that the node resolves to `Link`.
-const href: string | undefined = root.child('children')?.child(0)?.as('Link')?.val.href;
+const first = root.child('children')?.child(0);
+// `as` checks only that the node resolves to `Link`, so the value may be half-written.
+const draftHref: string | undefined = first?.as('Link')?.val?.href;
+// `asLocalValid` also checks Link's own shape, so `href` is there.
+const href: string | undefined = first?.asLocalValid('Link')?.val.href;
 ```
 
 With a schema map instead of defs, pass the types directly:
@@ -500,7 +506,7 @@ const menuValue: { label: string; children: unknown[] } = root.val;
 const linkValue: { label: string; href: string } | undefined = root
   .child('children')
   ?.child(0)
-  ?.as('Link')?.val;
+  ?.asLocalValid('Link')?.val;
 ```
 
 See `schema-derived.test.ts` for the full example.
@@ -536,7 +542,3 @@ those errors.
 - [`PERFORMANCE.md`](./PERFORMANCE.md): where the time goes and how incremental re-analysis wins.
 - [`./stress-test-schemas/README.md`](./stress-test-schemas/README.md): the stress-test suite for
   the walk.
-
-```
-
-```

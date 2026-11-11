@@ -53,13 +53,14 @@ carry only a handful of errors).
 
 ## Known `jsonschema` validator sharp edges (follow-ups)
 
-Relevant only to the full-ref `collectHits` pass; do not patch the validator — keep the pass off the
-hot path instead (or migrate to a compiling validator such as Ajv, which addresses 1–2 at once).
+Relevant only to the full-ref `collectHits` pass; keep the pass off the hot path (or migrate to a
+compiling validator such as Ajv, which addresses 1–2 at once).
 
 1. **`makeChild` runs a `url.parse` per node (dominant, ~55% of validation CPU).** Skipping the
    `uri.resolve` when there is no `$id` took full-ref validation 3,775 ms → 904 ms, identical
-   result. Appsemble schemas are `$id`-less and almost entirely `$ref`-reached, so the clean
-   `ctx`-dispatch lever barely helps; a full fix needs overriding `validateSchema`.
+   result. Appsemble schemas are `$id`-less and almost entirely `$ref`-reached.
+   `skipBaseResolutionForSchemasWithoutId` does this process-wide once a `BaseValidatorFactory` has
+   built, so the engine's own `Validator` only benefits after that.
 2. **No `$ref`-resolution cache (~6%).** A `Validator` subclass with a memoized `resolve` fixes it
    cleanly, but it is gated behind (1); apply only once (1) is addressed.
 3. **`ObjectRemapperDefinition` is a fat 77-property closed object.** ~2,000 remapper nodes each
