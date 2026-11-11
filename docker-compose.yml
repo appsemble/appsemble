@@ -110,7 +110,7 @@ services:
 
   # Mailpit instance for testing email delivery
   mailpit:
-    image: axllent/mailpit:v1.33.0
+    image: axllent/mailpit:v1.33.1
     restart: always
     volumes:
       - ./mailpit-data:/data
