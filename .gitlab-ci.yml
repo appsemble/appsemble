@@ -1393,8 +1393,6 @@ update dependencies:
     auto_stop_in: 1 week
   variables:
     GIT_STRATEGY: fetch
-    # Matches the chart default postgresql.auth.username.
-    POSTGRES_APP_USER: appsemble
   retry:
     max: 1
     when:
@@ -1413,13 +1411,6 @@ update dependencies:
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-valkey --from-literal "password=$(openssl rand -base64 30)"
-    # PgBouncer setup, auth file generation
-    - |
-      POSTGRES_PASSWORD="$(kubectl get secret review-$CI_MERGE_REQUEST_IID-postgresql-app -o jsonpath='{.data.password}' | base64 -d)"
-
-      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
-    - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt
-    - rm pgbouncer-userlist.txt
     # Stripe webhook setup
     - |
       STRIPE_RELEASE_URL=$(curl -fsSL -H 'User-Agent: appsemble-ci' \
@@ -1506,7 +1497,6 @@ update dependencies:
       --set "valkey.resources.limits.memory=128Mi"
       --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
       --set "pgbouncer.enabled=true"
-      --set "pgbouncer.auth.existingSecret=review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist"
       --set "backups.enabled=false"
 
 review:
@@ -1558,8 +1548,6 @@ staging:
     url: https://appsemble.eu
   variables:
     GIT_STRATEGY: none
-    # Matches the chart default postgresql.auth.username.
-    POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
     # This is the only way to make sure staging can be overwritten
@@ -1579,13 +1567,6 @@ staging:
     - kubectl get secret valkey >/dev/null
     # The CloudNativePG cluster lives outside the release (appsemble/infra), so the data survives a redeploy.
     - kubectl wait --for=condition=Ready cluster.postgresql.cnpg.io/staging-postgresql --timeout=1m
-    # PgBouncer auth file, generated from the PostgreSQL user password
-    - |
-      POSTGRES_PASSWORD="$(kubectl get secret staging-postgresql-app -o jsonpath='{.data.password}' | base64 -d)"
-
-      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
-    - kubectl create secret generic staging-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
-    - rm pgbouncer-userlist.txt
     # Reserve memory for workload peaks rather than average use, leaving capacity for monitoring.
     # Asset storage needs headroom for production-sized restores, storage overhead, and growth.
     - helm install staging ./public/appsemble-*.tgz
@@ -1645,7 +1626,6 @@ staging:
       --set "valkey.auth.usersExistingSecret=valkey"
       --set "pgbouncer.enabled=true"
       --set "pgbouncer.replicaCount=2"
-      --set "pgbouncer.auth.existingSecret=staging-pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=50m"
       --set "valkey.resources.requests.memory=64Mi"
       --set "valkey.resources.limits.cpu=500m"
@@ -1675,8 +1655,6 @@ production:
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
-    # Matches the chart default postgresql.auth.username.
-    POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:production"
     - kubectl config set-context --current --namespace default
@@ -1712,13 +1690,6 @@ production:
     - kubectl get secret valkey >/dev/null
     # The CloudNativePG cluster lives outside the release (appsemble/infra).
     - kubectl wait --for=condition=Ready "cluster.postgresql.cnpg.io/$POSTGRESQL_CLUSTER" --timeout=1m
-    # PgBouncer auth file, generated from the PostgreSQL user password
-    - |
-      POSTGRES_PASSWORD="$(kubectl get secret "$POSTGRESQL_SECRET" -o jsonpath='{.data.password}' | base64 -d)"
-
-      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
-    - kubectl create secret generic pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
-    - rm pgbouncer-userlist.txt
     - kubectl rollout restart deployment appsemble-mailpit || true
     - helm upgrade appsemble appsemble/appsemble
       --debug
@@ -1778,7 +1749,6 @@ production:
       --set "valkey.auth.usersExistingSecret=valkey"
       --set "pgbouncer.enabled=true"
       --set "pgbouncer.replicaCount=2"
-      --set "pgbouncer.auth.existingSecret=pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=100m"
       --set "valkey.resources.requests.memory=128Mi"
       --set "valkey.resources.limits.cpu=1"
