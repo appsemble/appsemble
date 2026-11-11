@@ -224,6 +224,7 @@ quotas:
     alertOrganizationOwner: false
 
 mailpit:
+  enabled: true
   mailpit:
     smtp:
       tls:
