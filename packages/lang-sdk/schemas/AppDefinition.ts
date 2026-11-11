@@ -74,6 +74,19 @@ strategy of those roles. Only roles assigned to the member count, not roles they
 This **must** match the name of a page defined for the app.
 `,
     },
+    notFoundPage: {
+      type: 'string',
+      description: `The name of the page that is displayed when the URL does not match a page.
+
+The page is displayed at the URL that was not found, without checking the roles of the app member.
+It **must** match the name of a top-level page of the app, may not specify parameters, and may not
+be a container or tabs page. If this is not specified, Appsemble displays a built-in “Page not
+found” page.
+
+If this is specified, it is also displayed for path segments that don’t match the parameters of a
+page, except on tabs pages.
+`,
+    },
     defaultLanguage: {
       type: 'string',
       default: defaultLocale,

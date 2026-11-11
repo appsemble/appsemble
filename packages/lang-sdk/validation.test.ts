@@ -1975,6 +1975,59 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should validate the not found page isn’t inside a container page', async () => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), notFoundPage: 'Contained Page' },
+      () => [],
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('may not be inside a container page', 'Contained Page', undefined, [
+        'notFoundPage',
+      ]),
+    ]);
+  });
+
+  it('should validate the not found page exists', async () => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), notFoundPage: 'Does not exist' },
+      () => [],
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not refer to an existing page', 'Does not exist', undefined, [
+        'notFoundPage',
+      ]),
+    ]);
+  });
+
+  it('should validate the not found page doesn’t specify parameters', async () => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), notFoundPage: 'Page with parameters' },
+      () => [],
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('may not specify parameters', 'Page with parameters', undefined, [
+        'notFoundPage',
+      ]),
+    ]);
+  });
+
+  it.each([
+    ['Container Page 1', 'container'],
+    ['Page with tabs', 'tabs'],
+  ])('should validate the not found page %s isn’t a %s page', async (name, type) => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), notFoundPage: name },
+      () => [],
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(`may not be a ${type} page`, name, undefined, ['notFoundPage']),
+    ]);
+  });
+
   it('should report invalid cronjob schedule syntax', async () => {
     const result = await validateAppDefinition(
       {

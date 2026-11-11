@@ -2106,6 +2106,30 @@ function validateDefaultPage({ defaultPage, pages }: AppDefinition, report: Repo
   }
 }
 
+function validateNotFoundPage({ notFoundPage, pages }: AppDefinition, report: Report): void {
+  if (notFoundPage == null) {
+    return;
+  }
+
+  const page = findPageByName(pages, notFoundPage);
+  if (!page) {
+    report(notFoundPage, 'does not refer to an existing page', ['notFoundPage']);
+    return;
+  }
+
+  if (!pages.includes(page)) {
+    report(notFoundPage, 'may not be inside a container page', ['notFoundPage']);
+  }
+
+  if (page.parameters) {
+    report(notFoundPage, 'may not specify parameters', ['notFoundPage']);
+  }
+
+  if (page.type === 'container' || page.type === 'tabs') {
+    report(notFoundPage, `may not be a ${page.type} page`, ['notFoundPage']);
+  }
+}
+
 function validateCronJobs({ cron }: AppDefinition, report: Report): void {
   if (!cron) {
     return;
@@ -2706,6 +2730,7 @@ export async function validateAppDefinition(
     check(() => validateLanguage(clonedDefinition, report));
     check(() => validateResourceReferences(clonedDefinition, report));
     check(() => validateMembersSchema(clonedDefinition, report));
+    check(() => validateNotFoundPage(clonedDefinition, report));
     check(() => validatePageParents(clonedDefinition, report));
     check(() => validatePhoneNumberDefinition(clonedDefinition, report));
     check(() => validateResourceSchemas(clonedDefinition, report));

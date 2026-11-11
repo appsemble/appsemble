@@ -79,6 +79,11 @@ export interface AppDefinition {
   defaultPage: string;
 
   /**
+   * The page that is displayed when the URL does not match a page.
+   */
+  notFoundPage?: string;
+
+  /**
    * The settings for the layout of the app.
    */
   layout?: {
