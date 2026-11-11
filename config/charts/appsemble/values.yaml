@@ -214,6 +214,8 @@ rejectBreachedPasswords: false
 
 ssrfAllowIpAddressList: []
 
+disableRegistration: false
+
 quotas:
   appEmail:
     enabled: false
