@@ -28,6 +28,26 @@ beforeEach(() => {
 
 afterEach(() => vi.unstubAllGlobals());
 
+it.each<[string, number]>([
+  ['messages/en', 401],
+  ['messages/en', 403],
+  ['variables', 401],
+  ['variables', 403],
+  ['resources/note', 401],
+  ['resources/note', 403],
+  ['assets/logo', 401],
+  ['assets/logo', 403],
+])('honors a %s access refusal with status %s after caching its content', async (path, status) => {
+  const request = new Request(`https://studio.example/api/apps/2/${path}`);
+  networkResponse = new Response('Protected content');
+  await browserFetch(request);
+  networkResponse = new Response('Access refused', { status });
+
+  const response = await browserFetch(request);
+
+  expect([response.status, await response.text()]).toStrictEqual([status, 'Access refused']);
+});
+
 it.each([
   ['messages/en', { messages: { title: 'Routine' } }],
   ['variables', [{ name: 'deviceName', value: 'Nursery lamp' }]],

@@ -1,47 +1,112 @@
-import { SimpleForm } from '@appsemble/react-components';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import axios from 'axios';
+import { createContext, type ReactNode, useContext, useMemo, useState } from 'react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
-import { expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
-import { PasswordProtection } from './index.js';
+import { SettingsPage } from '../index.js';
 
-const app = vi.hoisted(() => ({ passwordProtected: false }));
+const initialApp = {
+  id: 1,
+  OrganizationId: 'test',
+  definition: { name: 'Test app' },
+  path: 'test-app',
+  visibility: 'unlisted',
+  locked: 'unlocked',
+  iconBackground: '#ffffff',
+  supportedLanguages: ['en'],
+  passwordProtected: false,
+  passwordToken: undefined as string | undefined,
+};
+const AppContext = createContext<{
+  app: typeof initialApp;
+  setApp: (app: typeof initialApp) => void;
+}>({
+  app: initialApp,
+  setApp: vi.fn<(app: typeof initialApp) => void>(),
+});
+const transport = axios.defaults.adapter;
+let submittedPasswords: (FormDataEntryValue | null)[];
 
-vi.mock('../../index.js', () => ({ useApp: () => ({ app }) }));
+vi.mock('../../index.js', () => ({ useApp: () => useContext(AppContext) }));
+vi.mock('../../../../../components/UserProvider/index.js', () => ({
+  useUser: () => ({ organizations: [{ id: 'test' }] }),
+}));
 
-function renderPasswordProtection(): void {
+beforeEach(() => {
+  submittedPasswords = [];
+  axios.defaults.adapter = (config) => {
+    let data: unknown = [];
+    if (config.method === 'patch') {
+      const password = (config.data as FormData).get('password');
+      submittedPasswords.push(password);
+      data = {
+        ...initialApp,
+        passwordProtected: true,
+        passwordToken: 'saved-password-token',
+      };
+    }
+    return Promise.resolve({ data, status: 200, statusText: 'OK', headers: {}, config });
+  };
+  Object.defineProperty(URL, 'revokeObjectURL', { configurable: true, value: vi.fn() });
+});
+
+afterEach(() => {
+  axios.defaults.adapter = transport;
+});
+
+function TestApp(): ReactNode {
+  const [app, setApp] = useState(initialApp);
+  const context = useMemo(() => ({ app, setApp }), [app]);
+  return (
+    <AppContext.Provider value={context}>
+      <SettingsPage />
+    </AppContext.Provider>
+  );
+}
+
+function renderSettings(): void {
   render(
     <IntlProvider locale="en" messages={{}}>
       <MemoryRouter>
-        <SimpleForm
-          defaultValues={{
-            passwordProtected: app.passwordProtected,
-            password: '',
-            passwordMessage: '',
-          }}
-          onSubmit={vi.fn()}
-        >
-          <PasswordProtection disabled={false} />
-        </SimpleForm>
+        <TestApp />
       </MemoryRouter>
     </IntlProvider>,
   );
 }
 
-it('should require a password when password protection is turned on', () => {
-  app.passwordProtected = false;
-  renderPasswordProtection();
-  expect(screen.queryByLabelText('Password')).toBeNull();
-
+it('should require a password before saving newly enabled password protection', async () => {
+  renderSettings();
   fireEvent.click(screen.getByLabelText('Password protection'));
+  expect(screen.getByRole('button', { name: 'Save changes' })).toHaveProperty('disabled', true);
 
-  expect(screen.getByLabelText('Password')).toHaveProperty('required', true);
+  fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'open sesame' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+  await waitFor(() => expect(submittedPasswords).toStrictEqual(['open sesame']));
 });
 
-it('should keep the current password of a password protected app unless a new one is entered', () => {
-  app.passwordProtected = true;
-  renderPasswordProtection();
+it('should allow saving after turning password protection on and off without a password', async () => {
+  renderSettings();
+  fireEvent.click(screen.getByLabelText('Password protection'));
+  fireEvent.click(screen.getByLabelText('Password protection'));
+  fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
 
-  expect(screen.getByLabelText('Password(Optional)')).toHaveProperty('required', false);
+  await waitFor(() => expect(submittedPasswords).toStrictEqual(['']));
+});
+
+it('should keep the saved password when other settings are saved afterwards', async () => {
+  renderSettings();
+  fireEvent.click(screen.getByLabelText('Password protection'));
+  fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'open sesame' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+  await screen.findByLabelText('Password(Optional)');
+
+  fireEvent.change(screen.getByLabelText('Password page message(Optional)'), {
+    target: { value: 'Ask the team for access.' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+  await waitFor(() => expect(submittedPasswords).toStrictEqual(['open sesame', null]));
 });

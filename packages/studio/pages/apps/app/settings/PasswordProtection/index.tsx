@@ -18,7 +18,7 @@ interface PasswordProtectionProps {
 
 export function PasswordProtection({ disabled }: PasswordProtectionProps): ReactNode {
   const { app } = useApp();
-  const { values } = useSimpleForm();
+  const { setValue, values } = useSimpleForm();
 
   return (
     <>
@@ -43,6 +43,7 @@ export function PasswordProtection({ disabled }: PasswordProtectionProps): React
         }
         label={<FormattedMessage {...messages.passwordProtectedLabel} />}
         name="passwordProtected"
+        onChange={(event, value) => setValue('password', '', value && !app.passwordProtected)}
       />
       {values.passwordProtected ? (
         <>

@@ -20,6 +20,7 @@ import {
   OrganizationSubscription,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
+import { getAppPasswordToken } from '../../../utils/app.js';
 import { createServer } from '../../../utils/createServer.js';
 import { resourcePartitionName } from '../../../utils/resourcePartition.js';
 import { getResourceUniqueIndexName } from '../../../utils/resourceUniqueIndexes.js';
@@ -204,6 +205,54 @@ describe('createAppFromTemplate', () => {
   afterAll(() => {
     vi.useRealTimers();
   });
+
+  it.each([false, true])(
+    'should refuse copying protected apps without source access (template: %s)',
+    async (template) => {
+      await templates[2].update({
+        template,
+        visibility: 'public',
+        showAppDefinition: true,
+        password: 'hash',
+      });
+      authorizeStudio();
+
+      const response = await request.post('/api/app-templates', {
+        templateId: templates[2].id,
+        organizationId: 'testorganization',
+      });
+
+      expect(response.status).toBe(403);
+    },
+  );
+
+  it.each(['member', 'password'])(
+    'should allow copying protected apps with source access (%s)',
+    async (access) => {
+      const source = templates[access === 'member' ? 0 : 2];
+      await source.update({ visibility: 'public', showAppDefinition: true, password: 'hash' });
+      authorizeStudio();
+
+      const response = await request.post(
+        '/api/app-templates',
+        {
+          templateId: source.id,
+          organizationId: 'testorganization',
+        },
+        {
+          headers:
+            access === 'password'
+              ? { 'X-Appsemble-Password-Token': getAppPasswordToken(source) }
+              : {},
+        },
+      );
+
+      expect([response.status, response.data.definition]).toStrictEqual([
+        201,
+        { name: 'Test Template', pages: [] },
+      ]);
+    },
+  );
 
   it('should create a new app using a template', async () => {
     authorizeStudio();

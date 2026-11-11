@@ -7,6 +7,9 @@ async function put(
   response: Response,
   fallback: () => Promisable<Response>,
 ): Promise<Response> {
+  if (response.status === 401 || response.status === 403) {
+    return response;
+  }
   // Cache successful responses and opaque image responses.
   if (response.ok || (response.type === 'opaque' && request.destination === 'image')) {
     const cache = await caches.open('appsemble');

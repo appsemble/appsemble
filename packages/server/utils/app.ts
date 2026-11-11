@@ -9,6 +9,7 @@ import {
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
+import { type App as AppType } from '@appsemble/types';
 import { extractAppMessages, normalizeLocale, StyleValidationError } from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
@@ -127,6 +128,26 @@ export function getAppPasswordToken({
   return password
     ? createHmac('sha256', argv.secret).update(`${id}:${password}`).digest('base64url')
     : undefined;
+}
+
+/**
+ * Get public listing metadata without exposing the content of an app.
+ *
+ * @param app The app to list.
+ * @returns The public app listing.
+ */
+export function getAppStoreListing(app: App): Omit<AppType, 'definition'> & {
+  definition: Pick<AppType['definition'], 'defaultLanguage' | 'description' | 'name'>;
+} {
+  const { defaultLanguage, description, name } = app.definition;
+  return {
+    ...app.toJSON(['yaml', 'messages', 'controllerCode', 'controllerImplementations']),
+    definition: {
+      defaultLanguage,
+      description: app.messages?.app?.description || description,
+      name: app.messages?.app?.name || name,
+    },
+  };
 }
 
 export function getAppUrl(app: App): URL {

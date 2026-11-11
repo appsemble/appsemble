@@ -1,5 +1,5 @@
 import { readFixture } from '@appsemble/node-utils';
-import { PredefinedOrganizationRole } from '@appsemble/types';
+import { type App as AppType, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -119,6 +119,59 @@ describe('queryAppCollectionApps', () => {
       }),
     ]);
   });
+
+  it.each([
+    undefined,
+    PredefinedOrganizationRole.Member,
+    PredefinedOrganizationRole.AppMemberManager,
+  ])(
+    'should protect app content in collection listings without source app query permission (%s)',
+    async (role) => {
+      const sourceOrganization = await Organization.create({ id: 'source' });
+      const app = await App.create({
+        path: 'protected',
+        definition: { name: 'Protected App', pages: [] },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        visibility: 'public',
+        OrganizationId: sourceOrganization.id,
+        password: 'hash',
+        controllerCode: 'private code',
+      });
+      await AppMessages.create({
+        AppId: app.id,
+        language: 'nl',
+        messages: { messageIds: { secret: 'Private text' } },
+      });
+      await AppCollectionApp.create({ AppCollectionId: collections[0].id, AppId: app.id });
+      if (role) {
+        await OrganizationMember.create({
+          OrganizationId: sourceOrganization.id,
+          UserId: user.id,
+          role,
+        });
+      }
+      const canQueryApps = role === PredefinedOrganizationRole.Member;
+      authorizeStudio(user);
+
+      const response = await request.get<AppType[]>(
+        `/api/app-collections/${collections[0].id}/apps?language=nl`,
+      );
+      const listed = response.data.find(({ id }) => id === app.id)!;
+
+      expect([
+        response.status,
+        listed.definition,
+        listed.messages?.messageIds,
+        listed.controllerCode,
+      ]).toStrictEqual([
+        200,
+        canQueryApps ? { name: 'Protected App', pages: [] } : { name: 'Protected App' },
+        canQueryApps ? { secret: 'Private text' } : undefined,
+        canQueryApps ? 'private code' : undefined,
+      ]);
+    },
+  );
 
   it('should return localized apps in an app collection', async () => {
     await AppMessages.create({

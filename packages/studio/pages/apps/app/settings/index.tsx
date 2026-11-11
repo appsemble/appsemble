@@ -208,7 +208,7 @@ export function SettingsPage(): ReactNode {
   return (
     <>
       <Content fullwidth>
-        <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
+        <SimpleForm defaultValues={defaultValues} key={app.passwordToken} onSubmit={onSubmit}>
           <SimpleFormError>
             {({ error }) =>
               axios.isAxiosError(error) && error.response?.status === 403 ? (

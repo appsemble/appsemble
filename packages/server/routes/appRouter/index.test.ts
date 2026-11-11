@@ -35,7 +35,7 @@ describe('appRouter', () => {
     await Organization.create({ id: 'org' });
     app = await App.create({
       OrganizationId: 'org',
-      definition: {},
+      definition: { name: 'Test App', defaultPage: 'Test Page', pages: [] },
       path: 'app',
       vapidPrivateKey: '',
       vapidPublicKey: '',
@@ -49,6 +49,7 @@ describe('appRouter', () => {
 
     expect(response).toMatchObject({
       status: 200,
+      headers: { 'cache-control': 'private,no-store', vary: 'Cookie' },
       data: {
         filename: 'app/password.html',
         data: { error: false, message: 'This app is in a closed test.\nAsk the team for access.' },
@@ -77,6 +78,18 @@ describe('appRouter', () => {
     const response = await request.get('/robots.txt', { headers: { cookie } });
 
     expect(response.status).toBe(200);
+  });
+
+  it('should keep the app page containing the password token out of shared HTTP caches', async () => {
+    const cookie = await enterPassword('open sesame');
+
+    const response = await request.get('/', { headers: { cookie, host: 'app.org.localhost' } });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: { 'cache-control': 'private,no-store', vary: 'Cookie' },
+      data: { filename: 'app/index.html' },
+    });
   });
 
   it('should remember the password in a cookie that scripts and other sites cannot use', async () => {

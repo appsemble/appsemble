@@ -12,6 +12,10 @@ const router = createAppRouter(options);
 export const appRouter: Middleware = async (ctx, next) => {
   const { app } = await getApp(ctx, { attributes: ['id', 'password', 'passwordMessage'] });
   const passwordToken = app && getAppPasswordToken(app);
+  if (passwordToken) {
+    ctx.set('Cache-Control', 'private,no-store');
+    ctx.vary('Cookie');
+  }
   if (!passwordToken || ctx.cookies.get('app_password', { signed: true }) === passwordToken) {
     return router(ctx, next);
   }

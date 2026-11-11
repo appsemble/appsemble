@@ -1,4 +1,6 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { col, fn, literal, Op } from 'sequelize';
 
@@ -11,7 +13,12 @@ import {
   Organization,
   OrganizationMember,
 } from '../../../../models/index.js';
-import { applyAppMessages, compareApps, parseLanguage } from '../../../../utils/app.js';
+import {
+  applyAppMessages,
+  compareApps,
+  getAppStoreListing,
+  parseLanguage,
+} from '../../../../utils/app.js';
 
 export async function queryAppCollectionApps(ctx: Context): Promise<void> {
   const {
@@ -91,6 +98,18 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
 
   assertKoaCondition(apps != null, ctx, 404, 'App collection apps not found');
 
+  const memberships = user
+    ? await OrganizationMember.findAll({
+        attributes: ['OrganizationId', 'role'],
+        where: {
+          UserId: user.id,
+          OrganizationId: apps
+            .filter(({ App: app }) => app!.password)
+            .map(({ App: app }) => app!.OrganizationId),
+        },
+      })
+    : [];
+
   const ratingsMap = new Map(
     (
       await AppRating.findAll({
@@ -136,5 +155,19 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
       }
       return compareApps(app1, app2);
     })
-    .map(({ app, pinnedAt }) => Object.assign(app.toJSON(['yaml']), { pinnedAt }));
+    .map(({ app, pinnedAt }) =>
+      Object.assign(
+        app.password &&
+          !memberships.some(
+            ({ OrganizationId, role }) =>
+              OrganizationId === app.OrganizationId &&
+              checkOrganizationRoleOrganizationPermissions(role, [
+                OrganizationPermission.QueryApps,
+              ]),
+          )
+          ? getAppStoreListing(app)
+          : app.toJSON(['yaml']),
+        { pinnedAt },
+      ),
+    );
 }

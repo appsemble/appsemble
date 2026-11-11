@@ -2,7 +2,14 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, AppRating, Organization, OrganizationMember, User } from '../../../models/index.js';
+import {
+  App,
+  AppMessages,
+  AppRating,
+  Organization,
+  OrganizationMember,
+  User,
+} from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { createTestUser } from '../../../utils/test/authorization.js';
@@ -53,6 +60,29 @@ describe('queryApps', () => {
 
       []
     `);
+  });
+
+  it('should list protected apps without exposing their translations', async () => {
+    const app = await App.create({
+      path: 'protected',
+      definition: { name: 'Test App', pages: [] },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      visibility: 'public',
+      OrganizationId: organization.id,
+      password: 'hash',
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl',
+      messages: { app: { name: 'Testapp' }, messageIds: { secret: 'Private text' } },
+    });
+
+    const response = await request.get('/api/apps?language=nl');
+
+    expect([response.status, response.data[0].definition, response.data[0].messages]).toStrictEqual(
+      [200, { name: 'Testapp' }, undefined],
+    );
   });
 
   it('should return an array of apps', async () => {

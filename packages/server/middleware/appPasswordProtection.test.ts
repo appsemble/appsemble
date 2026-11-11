@@ -63,6 +63,7 @@ describe('appPasswordProtection', () => {
     });
 
     expect(response).toMatchObject({ status: 200, data: { definition: { name: 'Test App' } } });
+    expect(response.headers.vary?.split(/,\s*/)).toContain('X-Appsemble-Password-Token');
   });
 
   it('should serve URL loaded app content with the password token as query parameter', async () => {

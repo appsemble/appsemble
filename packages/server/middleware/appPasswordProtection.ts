@@ -1,12 +1,10 @@
-import { OrganizationPermission } from '@appsemble/types';
 import { type Context, type Next } from 'koa';
 import { type Plugin } from 'koas-core';
 
 import { App } from '../models/index.js';
-import { getAppPasswordToken } from '../utils/app.js';
-import { checkUserOrganizationPermissions } from '../utils/authorization.js';
+import { checkAppPassword } from '../utils/authorization.js';
 
-async function checkAppPassword(ctx: Context, next: Next): Promise<void> {
+async function checkRequestAppPassword(ctx: Context, next: Next): Promise<void> {
   const appId = ctx.pathParams?.appId;
   if (
     appId == null ||
@@ -27,15 +25,11 @@ async function checkAppPassword(ctx: Context, next: Next): Promise<void> {
   }
 
   const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId', 'password'] });
-  if (
-    app?.password &&
-    (ctx.get('x-appsemble-password-token') || ctx.query.passwordToken) !== getAppPasswordToken(app)
-  ) {
-    await checkUserOrganizationPermissions({
-      context: ctx,
-      organizationId: app.OrganizationId,
-      requiredPermissions: [OrganizationPermission.QueryApps],
-    });
+  if (app) {
+    if (app.password) {
+      ctx.vary('X-Appsemble-Password-Token');
+    }
+    await checkAppPassword(ctx, app);
   }
   return next();
 }
@@ -50,5 +44,5 @@ async function checkAppPassword(ctx: Context, next: Next): Promise<void> {
  * @returns A Koas plugin which guards the API of password protected apps.
  */
 export function appPasswordProtection(): Plugin {
-  return () => checkAppPassword;
+  return () => checkRequestAppPassword;
 }
