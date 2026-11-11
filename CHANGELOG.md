@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.12](https://gitlab.com/appsemble/appsemble/-/releases/0.40.12)] - 2026-11-11
+
+### Added
+
+- App: Send the password token of a password protected app with its API requests.
+- Server: Add a `disableRegistration` Helm chart value to turn off registration with email and
+  password.
+- Server: Add an OpenShift values preset to the Helm chart.
+- Server: Add password protection for apps, with a password page on the app domains and a guarded
+  app API.
+- Studio: Add the password protection settings to the app settings page.
+
+### Removed
+
+- Server: Remove the Helm values `pgbouncer.auth.existingSecret` and `pgbouncer.auth.userlistKey`:
+  PgBouncer reads the credentials from `postgresql.auth.existingSecret`.
+
+### Fixed
+
+- Node-utils: Fail S3 requests when no connection to the object store is made within 10 seconds.
+- Node-utils: Surface object store read errors instead of serving an empty response.
+- Server: Apply the `filename` of an `email` action attachment to an asset referenced by name.
+- Server: Fail the `email` action when an attached asset cannot be read.
+- Server: Leave the `mailpit` host out of the Helm chart Ingress when Mailpit is disabled.
+- Server: Request actions give up on an endpoint that does not respond within 60 seconds.
+- Server: Set the configured cert-manager issuer on existing organization ingresses in
+  `reconcile-dns`.
+- Server: Stop a hung `run-cronjobs` job after four minutes, so it no longer blocks the following
+  runs.
+- Server: Stop hung `scale-containers`, `s3-assets-backup`, `charge-organization-subscriptions` and
+  `cleanup-soft-deleted-records` jobs after a deadline.
+- Server: Stop the Helm chart main OpenShift Route claiming its parent domain.
+
 ## \[[0.40.11](https://gitlab.com/appsemble/appsemble/-/releases/0.40.11)] - 2026-11-11
 
 ### Fixed

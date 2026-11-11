@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.11
-appVersion: 0.40.11
+version: 0.40.12
+appVersion: 0.40.12
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -31,9 +31,54 @@ dependencies:
     repository: https://valkey.io/valkey-helm
     condition: valkey.enabled
 annotations:
-  artifacthub.io/changes: |
+  artifacthub.io/changes: >
+    - kind: added
+      description: "App: Send the password token of a password protected app with its
+        API requests."
+    - kind: added
+      description: "Server: Add a disableRegistration Helm chart value to turn off
+        registration with email and password."
+    - kind: added
+      description: "Server: Add an OpenShift values preset to the Helm chart."
+    - kind: added
+      description: "Server: Add password protection for apps, with a password page on
+        the app domains and a guarded app API."
+    - kind: added
+      description: "Studio: Add the password protection settings to the app settings page."
+    - kind: removed
+      description: "Server: Remove the Helm values pgbouncer.auth.existingSecret and
+        pgbouncer.auth.userlistKey: PgBouncer reads the credentials from
+        postgresql.auth.existingSecret."
     - kind: fixed
-      description: "Server: Restore the missing link text in translated emails."
+      description: "Node-utils: Fail S3 requests when no connection to the object
+        store is made within 10 seconds."
+    - kind: fixed
+      description: "Node-utils: Surface object store read errors instead of serving an
+        empty response."
+    - kind: fixed
+      description: "Server: Apply the filename of an email action attachment to an
+        asset referenced by name."
+    - kind: fixed
+      description: "Server: Fail the email action when an attached asset cannot be read."
+    - kind: fixed
+      description: "Server: Leave the mailpit host out of the Helm chart Ingress when
+        Mailpit is disabled."
+    - kind: fixed
+      description: "Server: Request actions give up on an endpoint that does not
+        respond within 60 seconds."
+    - kind: fixed
+      description: "Server: Set the configured cert-manager issuer on existing
+        organization ingresses in reconcile-dns."
+    - kind: fixed
+      description: "Server: Stop a hung run-cronjobs job after four minutes, so it no
+        longer blocks the following runs."
+    - kind: fixed
+      description: "Server: Stop hung scale-containers, s3-assets-backup,
+        charge-organization-subscriptions and cleanup-soft-deleted-records jobs
+        after a deadline."
+    - kind: fixed
+      description: "Server: Stop the Helm chart main OpenShift Route claiming its
+        parent domain."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
