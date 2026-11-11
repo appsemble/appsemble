@@ -11,7 +11,7 @@ polyfillStorage();
 setupSentry(sentryDsn, sentryEnvironment);
 
 if (passwordToken) {
-  // The browser sends the app password to the app host only, so the API gets this token instead.
+  // The password cookie only reaches the app host, so requests to the API carry this token instead.
   axios.interceptors.request.use((config) => {
     if (axios.getUri(config).startsWith(`${apiUrl}/`)) {
       config.headers.set('X-Appsemble-Password-Token', passwordToken);
