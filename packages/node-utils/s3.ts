@@ -97,7 +97,9 @@ export function initS3Client({
       // S3-compatible stores that do not implement flexible checksums.
       requestChecksumCalculation: 'WHEN_REQUIRED',
       responseChecksumValidation: 'WHEN_REQUIRED',
-      ...(socketTimeout && { requestHandler: { socketTimeout } }),
+      // Without a connection timeout, each attempt to reach an unreachable object store lasts
+      // until the operating system gives up on it, which takes minutes.
+      requestHandler: { connectionTimeout: 10_000, socketTimeout },
     });
     // S3 requires a checksum on DeleteObjects. The SDK sends CRC32, which object stores from
     // before the flexible checksums reject in favour of Content-MD5.
