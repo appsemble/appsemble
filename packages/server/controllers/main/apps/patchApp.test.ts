@@ -2151,17 +2151,27 @@ describe('patchApp', () => {
                     "type": "string",
                   },
                   "notFoundPage": {
-                    "description": "The name of the page that is displayed when the URL does not match a page.
+                    "description": "What is displayed when the URL does not match a page.
 
-      The page is displayed at the URL that was not found, without checking the roles of the app member.
-      It **must** match the name of a top-level page of the app, may not specify parameters, and may not
-      be a container or tabs page. If this is not specified, Appsemble displays a built-in “Page not
-      found” page.
+      Set this to \`true\` to display a built-in “Page not found” page, or to the name of a page to display
+      that page. The page **must** be a top-level page of the app, may not specify parameters, and may not
+      be a container or tabs page. It is displayed at the URL that was not found, without checking the
+      roles of the app member.
 
-      If this is specified, it is also displayed for path segments that don’t match the parameters of a
-      page, except on tabs pages.
+      The not found page is also displayed for path segments that don’t match the parameters of a page,
+      except on tabs pages. If this is not specified, a URL that matches no page redirects to the default
+      page, and extra path segments are ignored.
       ",
-                    "type": "string",
+                    "oneOf": [
+                      {
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          true,
+                        ],
+                      },
+                    ],
                   },
                   "notifications": {
                     "description": "The strategy to use for apps to subscribe to push notifications.
@@ -2389,17 +2399,27 @@ describe('patchApp', () => {
                     "type": "string",
                   },
                   "notFoundPage": {
-                    "description": "The name of the page that is displayed when the URL does not match a page.
+                    "description": "What is displayed when the URL does not match a page.
 
-      The page is displayed at the URL that was not found, without checking the roles of the app member.
-      It **must** match the name of a top-level page of the app, may not specify parameters, and may not
-      be a container or tabs page. If this is not specified, Appsemble displays a built-in “Page not
-      found” page.
+      Set this to \`true\` to display a built-in “Page not found” page, or to the name of a page to display
+      that page. The page **must** be a top-level page of the app, may not specify parameters, and may not
+      be a container or tabs page. It is displayed at the URL that was not found, without checking the
+      roles of the app member.
 
-      If this is specified, it is also displayed for path segments that don’t match the parameters of a
-      page, except on tabs pages.
+      The not found page is also displayed for path segments that don’t match the parameters of a page,
+      except on tabs pages. If this is not specified, a URL that matches no page redirects to the default
+      page, and extra path segments are ignored.
       ",
-                    "type": "string",
+                    "oneOf": [
+                      {
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          true,
+                        ],
+                      },
+                    ],
                   },
                   "notifications": {
                     "description": "The strategy to use for apps to subscribe to push notifications.

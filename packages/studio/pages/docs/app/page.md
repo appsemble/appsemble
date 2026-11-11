@@ -135,10 +135,13 @@ check it out.
 
 ## Page not found
 
-A URL that matches no page shows a built-in “Page not found” page. The URL stays as it is.
+A URL that matches no page redirects to the default page. Set `notFoundPage: true` in the app
+definition to show a built-in “Page not found” page instead, at the URL that was not found. It is
+also shown for path segments that don't match the [page parameters](#page-parameters) of a page,
+except on tabs pages.
 
-To build this page with blocks, for example to show the same footer as the other pages, name one of
-the pages in the `notFoundPage` property of the app definition:
+To build this page with blocks, for example to show the same footer as the other pages, set
+`notFoundPage` to the name of one of the pages:
 
 ```yaml copy validate
 name: My app
@@ -162,9 +165,8 @@ pages:
 ```
 
 At a URL that matches no page, this page is shown regardless of its `roles`. It must be a top-level
-page, may not define page parameters, and may not be a container or tabs page. It is also shown for
-path segments that don't match the [page parameters](#page-parameters) of a page, except on tabs
-pages. Set `hideNavTitle` to keep it out of the navigation menus.
+page, may not define page parameters, and may not be a container or tabs page. Set `hideNavTitle` to
+keep it out of the navigation menus.
 
 ## Theming
 

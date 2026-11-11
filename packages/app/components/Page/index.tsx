@@ -155,20 +155,22 @@ export function Page(): ReactNode {
   const normalizedPageId = normalize(pageId);
   const foundPage = findPageById(appDefinition.pages, normalizedPageId, getAppMessage);
   const { '*': wildcard = '', ...pageRouteParams } = routeParams;
-  const notFoundPage = appDefinition.notFoundPage
-    ? findPageByName(appDefinition.pages, appDefinition.notFoundPage)
-    : undefined;
-  // An app that defines a not found page also renders it for path segments that match none of the
-  // parameters of a page. Tabs pages resolve their own sub paths.
+  const { notFoundPage } = appDefinition;
+  // An app that defines a not found page renders it at a URL that matches no page, including path
+  // segments that match none of the parameters of a page. Tabs pages resolve their own sub paths.
   const isNotFound =
-    !foundPage ||
-    (notFoundPage != null &&
-      foundPage.type !== 'tabs' &&
-      !matchPath(
-        `/${(foundPage.parameters ?? []).map((param) => `:${param}`).join('/')}`,
-        `/${wildcard}`,
-      ));
-  const pageDefinition = isNotFound ? notFoundPage : foundPage;
+    notFoundPage != null &&
+    (!foundPage ||
+      (foundPage.type !== 'tabs' &&
+        !matchPath(
+          `/${(foundPage.parameters ?? []).map((param) => `:${param}`).join('/')}`,
+          `/${wildcard}`,
+        )));
+  const pageDefinition = isNotFound
+    ? typeof notFoundPage === 'string'
+      ? findPageByName(appDefinition.pages, notFoundPage)
+      : undefined
+    : foundPage;
 
   useEffect(() => {
     setData({});
@@ -421,7 +423,7 @@ export function Page(): ReactNode {
     }
   }, []);
 
-  if (!pageDefinition) {
+  if (isNotFound && !pageDefinition) {
     return (
       <BuiltinPage
         narrow
@@ -441,7 +443,7 @@ export function Page(): ReactNode {
   }
 
   // The not found page is shown to everyone, other pages only to members allowed to view them.
-  if (isNotFound || checkPagePermissionsCallback(pageDefinition)) {
+  if (pageDefinition && (isNotFound || checkPagePermissionsCallback(pageDefinition))) {
     const pageName = getPageDisplayName(pageDefinition, getAppMessage);
     const translatedPageId = getPagePathSegment(pageDefinition, getAppMessage);
 
@@ -575,7 +577,7 @@ export function Page(): ReactNode {
 
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
-  if (!isLoggedIn) {
+  if (pageDefinition && !isLoggedIn) {
     const loginSegment = getRouteSegment('Login', getAppMessage);
     return <Navigate to={`${url}/${loginSegment}?${new URLSearchParams({ redirect })}`} />;
   }

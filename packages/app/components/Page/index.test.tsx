@@ -302,7 +302,20 @@ describe('page not found', () => {
     } as never);
   }
 
-  it('should show a page not found page at an unknown page path', async () => {
+  it('should redirect to the default page at an unknown page path when the app defines no not found page', async () => {
+    renderAt('/en/does-not-exist');
+
+    expect(await screen.findByRole('main', { name: 'Home' })).not.toBeNull();
+    expect(screen.getByText('/en/home')).not.toBeNull();
+  });
+
+  it('should show the built-in page not found page at an unknown page path', async () => {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      notFoundPage: true,
+      pages: [{ name: 'Home', blocks: [block] }],
+    } as AppDefinition);
     renderAt('/en/does-not-exist?foo=bar');
 
     expect(await screen.findByRole('heading', { name: 'Page not found' })).not.toBeNull();

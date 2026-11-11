@@ -1975,6 +1975,14 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should accept the built-in not found page', async () => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), notFoundPage: true },
+      () => [],
+    );
+    expect(result.valid).toBe(true);
+  });
+
   it('should validate the not found page isn’t inside a container page', async () => {
     const result = await validateAppDefinition(
       { ...createTestApp(), notFoundPage: 'Contained Page' },

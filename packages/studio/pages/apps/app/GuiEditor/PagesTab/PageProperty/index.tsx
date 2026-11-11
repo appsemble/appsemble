@@ -109,7 +109,8 @@ export function PageProperty({
       if (saveStack.toJS().defaultPage.trim() === oldName) {
         changeIn(['defaultPage'], doc.createNode(currentPageName.trim()));
       }
-      if (saveStack.toJS().notFoundPage?.trim() === oldName) {
+      const { notFoundPage } = saveStack.toJS();
+      if (typeof notFoundPage === 'string' && notFoundPage.trim() === oldName) {
         changeIn(['notFoundPage'], doc.createNode(currentPageName.trim()));
       }
       changeIn(['pages', selectedPage, 'name'], doc.createNode(currentPageName.trim()));

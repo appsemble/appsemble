@@ -2107,7 +2107,7 @@ function validateDefaultPage({ defaultPage, pages }: AppDefinition, report: Repo
 }
 
 function validateNotFoundPage({ notFoundPage, pages }: AppDefinition, report: Report): void {
-  if (notFoundPage == null) {
+  if (typeof notFoundPage !== 'string') {
     return;
   }
 
