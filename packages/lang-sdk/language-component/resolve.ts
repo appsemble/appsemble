@@ -74,9 +74,6 @@ export interface ResolveContext {
   dynamicChild?: DynamicChild;
   loadDynamicChild?: LoadDynamicChild;
   draftChildSchemas?: boolean;
-  // Whether ref-cut matching always picks this union's branch correctly. False lets
-  // `escalateAmbiguous` re-validate ties in full. Absent means every union is trusted.
-  refCutSufficient?: (schema: Schema) => boolean;
   // Resolutions shared across cursors, keyed by value object then schema. An edit creates new value
   // objects only along the changed path, so unchanged subtrees keep their entries.
   resolutionCache?: WeakMap<object, Map<Schema, Resolution>>;
@@ -359,27 +356,25 @@ function pickBranch(
 }
 
 /**
- * Break a ref-cut tie. When more than one branch of a union that is not ref-cut-sufficient matches
- * locally, re-validate those branches in full and keep the ones the value satisfies. If none does,
- * the value is incomplete and the ref-cut matches stay.
+ * Break a ref-cut tie. When more than one branch of an anyOf/oneOf matches locally, re-validate those
+ * branches in full and keep the ones the value satisfies. If none does, the value is incomplete and
+ * the ref-cut matches stay.
  *
  * @param mode The composite mode of the union (`allOf`/`anyOf`/`oneOf`).
- * @param union The union schema being resolved.
  * @param branchSchemas The union's branch schemas, index-aligned with `resolutions`.
  * @param resolutions The ref-cut resolutions to disambiguate.
  * @param value The value being resolved against the union.
- * @param ctx The resolve context, carrying the validator and ref-cut oracle.
+ * @param ctx The resolve context, carrying the validator.
  * @returns The disambiguated resolutions, or the input untouched when no escalation applies.
  */
 function escalateAmbiguous(
   mode: 'allOf' | 'anyOf' | 'oneOf',
-  union: Schema,
   branchSchemas: readonly Schema[],
   resolutions: Resolution[],
   value: unknown,
   ctx: ResolveContext,
 ): Resolution[] {
-  if (mode === 'allOf' || (ctx.refCutSufficient ? ctx.refCutSufficient(union) : true)) {
+  if (mode === 'allOf') {
     return resolutions;
   }
   const matchedIdx = resolutions.flatMap((resolution, index) =>
@@ -470,7 +465,7 @@ export function resolve(
       const composed = resolveComposite(
         mode,
         resolved,
-        escalateAmbiguous(mode, resolved, branches, branches.map(resolveBranch), value, ctx),
+        escalateAmbiguous(mode, branches, branches.map(resolveBranch), value, ctx),
         tag,
         value,
         ctx,

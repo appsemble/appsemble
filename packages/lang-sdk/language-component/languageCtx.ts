@@ -1,11 +1,6 @@
 import { type Schema, type ValidationError, type Validator } from 'jsonschema';
 
 import {
-  analyzeDistinguishability,
-  type DistinguishabilityResult,
-  type UnionCollision,
-} from './distinguishability.js';
-import {
   findPrimitiveComponents,
   LanguageComponent,
   type LanguageComponentBinding,
@@ -91,10 +86,6 @@ export class LanguageCtx<Root = unknown, C = Components> {
   // its shape. `undefined` when a plain DSL declared no environment.
   readonly context: unknown;
 
-  // Compile-time verdict per union: can ref-cut local matching always pick correctly? Gates the
-  // runtime escalation and surfaces the authoring lint via `distinguishabilityLint`.
-  private readonly distinguishability: DistinguishabilityResult;
-
   // Tagged components that are bare primitives — the dialect-sanity violation set (see
   // `findPrimitiveComponents`). Computed once at compile from the schema set.
   private readonly primitiveComponentNames: readonly string[];
@@ -114,7 +105,6 @@ export class LanguageCtx<Root = unknown, C = Components> {
     this.binds = options.binds ?? new Map();
     this.context = options.context;
     const resolveRef = (ref: string): Schema => this.registry.resolveRef(ref);
-    this.distinguishability = analyzeDistinguishability([rootSchema], resolveRef, this.localShape);
     this.primitiveComponentNames = findPrimitiveComponents(schemas);
     this.cachedResolveContext = {
       resolveRef,
@@ -123,24 +113,8 @@ export class LanguageCtx<Root = unknown, C = Components> {
       loadDynamicChild: options.loadDynamicChild,
       draftChildSchemas: options.draftChildSchemas,
       validator: this.resolveValidator,
-      refCutSufficient: (schema) => this.distinguishability.refCutSufficient.get(schema) ?? true,
       resolutionCache: new WeakMap(),
     };
-  }
-
-  // Unions whose branches aren't provably distinguishable by ref-cut local shape — the authoring
-  // lint. Each names a union, a colliding branch pair, and a severity set by the component labels:
-  // `error` = two distinct labeled components can't be told apart (a labeling-vs-shape contradiction),
-  // `warning` = a labeled component whose forms over-broaden, `info` = a structural overlap. Adding a
-  // discriminant (a `type` const, a unique required key, or an `x-appsemble-discriminator`) clears it.
-  get distinguishabilityLint(): readonly UnionCollision[] {
-    return this.distinguishability.collisions;
-  }
-
-  // The `error`-severity subset: distinct labeled components a dialect declares as separate kinds yet
-  // leaves indistinguishable. The high-signal dialect-sanity failures worth blocking on.
-  get distinguishabilityErrors(): readonly UnionCollision[] {
-    return this.distinguishability.collisions.filter((collision) => collision.severity === 'error');
   }
 
   // Tagged components that are bare primitives — a dialect-authoring violation (a primitive belongs as a

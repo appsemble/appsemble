@@ -1,7 +1,6 @@
 export {
-  analyzeDistinguishability,
   type CollisionSeverity,
-  type DistinguishabilityResult,
+  findUnionCollisions,
   formatCollision,
   type UnionCollision,
 } from './distinguishability.js';

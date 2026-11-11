@@ -25,6 +25,10 @@
     ".": {
       "ts-source": "./index.ts",
       "default": "./index.js"
+    },
+    "./language-component": {
+      "ts-source": "./language-component/index.ts",
+      "default": "./language-component/index.js"
     }
   },
   "files": [

@@ -1,18 +1,18 @@
 import { type Schema } from 'jsonschema';
 
+import { type LanguageCtx } from './languageCtx.js';
 import { deref, type Discriminator, readDiscriminator } from './resolve.js';
 import { schemaTag } from './types.js';
 
 /*
- * Compile-time distinguishability analysis. For every oneOf/anyOf union reachable from the root, it
- * decides — from the schema alone, no data — whether ref-cut local matching can always pick the right
- * branch(es). The verdict gates the runtime escalation in `resolve` (a `refCutSufficient` union never
- * escalates), and the recorded collisions double as an authoring lint.
+ * Distinguishability analysis, a dialect-sanity check. For every oneOf/anyOf union reachable from the
+ * root, it decides from the schema alone, no data, whether ref-cut local matching can always pick the
+ * right branch(es). A dialect author runs it from their own tests; the resolver does not need it,
+ * because it re-validates in full whenever ref-cut matching actually ties.
  *
- * It is a SOUND over-approximation: a union is called sufficient only when every branch pair is
- * provably separable by local (ref-cut) shape or a declared discriminator. When separability can't be
- * proven the union is flagged, so the resolver escalates for it — safe (never a missed collision),
- * at worst a needless deep re-validation for a genuinely-overlapping anyOf.
+ * It is a SOUND over-approximation: a union passes only when every branch pair is provably separable
+ * by local (ref-cut) shape or a declared discriminator. When separability can't be proven the union
+ * is reported, so it never misses a collision, at worst it flags a genuinely-overlapping anyOf.
  */
 
 /*
@@ -42,7 +42,7 @@ export interface UnionCollision {
 }
 
 // A one-line, human-readable rendering of a collision — for lint output, CI logs, and assertion
-// failure messages when a dialect's sanity test gates on `distinguishabilityErrors`.
+// failure messages when a dialect's sanity test gates on `findUnionCollisions`.
 export function formatCollision(collision: UnionCollision): string {
   const where = collision.unionName ?? '(anonymous union)';
   const which =
@@ -50,13 +50,6 @@ export function formatCollision(collision: UnionCollision): string {
       ? `${collision.componentA} vs ${collision.componentB}`
       : `branches ${collision.branchA} & ${collision.branchB}`;
   return `[${collision.severity}] ${where} (${collision.mode}): ${which} not distinguishable by ref-cut local shape`;
-}
-
-export interface DistinguishabilityResult {
-  // Per union schema: can ref-cut local matching always pick the right branch? Absent ⇒ never analyzed
-  // (the resolver treats it as sufficient, i.e. no escalation).
-  refCutSufficient: Map<Schema, boolean>;
-  collisions: UnionCollision[];
 }
 
 type ResolveRef = (ref: string) => Schema;
@@ -268,37 +261,29 @@ function* subschemas(schema: Schema): Iterable<Schema> {
 }
 
 /**
- * Walk every schema reachable from `roots`, and for each oneOf/anyOf union decide `refCutSufficient`
- * on the branches' local (ref-cut) shapes. `localShape` is the resolver's own ref-cut, so the verdict
- * reflects exactly what the resolver will see at runtime.
+ * Find the unions in a compiled language whose branches ref-cut local matching can't always tell
+ * apart. Walks every schema reachable from the root and compares the branches' local shapes with the
+ * resolver's own ref-cut, so the result reflects exactly what the resolver sees.
  *
- * @param roots The schemas to walk, each a language root.
- * @param resolveRef Resolves a `$ref` to its target schema.
- * @param localShape The resolver's ref-cut of a schema, used to compare branch shapes.
- * @returns The per-union `refCutSufficient` verdicts and the collisions found.
+ * @param ctx The compiled language to check.
+ * @returns One collision per indistinguishable branch pair. A dialect-sanity test usually asserts
+ *   that none has severity `error`.
  */
-export function analyzeDistinguishability(
-  roots: Schema[],
-  resolveRef: ResolveRef,
-  localShape: (schema: Schema) => Schema,
-): DistinguishabilityResult {
-  const refCutSufficient = new Map<Schema, boolean>();
+export function findUnionCollisions(ctx: LanguageCtx): UnionCollision[] {
+  const { localShape, resolveRef } = ctx.resolveContext();
   const collisions: UnionCollision[] = [];
   const seen = new Set<Schema>();
 
   const analyzeUnion = (union: Schema, mode: 'anyOf' | 'oneOf', branches: Schema[]): void => {
     if (hasDiscriminator(union)) {
-      refCutSufficient.set(union, true);
       return;
     }
     const unionLabeled = schemaTag(union) != null;
     const shapes = branches.map((branch) => localShape(deref(branch, resolveRef)));
     const names = branches.map((branch) => schemaTag(deref(branch, resolveRef))?.name);
-    let ok = true;
     for (let i = 0; i < shapes.length; i += 1) {
       for (let j = i + 1; j < shapes.length; j += 1) {
         if (!separable(shapes[i], shapes[j], resolveRef)) {
-          ok = false;
           const componentA = names[i];
           const componentB = names[j];
           const distinctComponents =
@@ -327,7 +312,6 @@ export function analyzeDistinguishability(
         }
       }
     }
-    refCutSufficient.set(union, ok);
   };
 
   const visit = (schema: Schema): void => {
@@ -348,8 +332,6 @@ export function analyzeDistinguishability(
     }
   };
 
-  for (const root of roots) {
-    visit(root);
-  }
-  return { refCutSufficient, collisions };
+  visit(ctx.rootSchema);
+  return collisions;
 }

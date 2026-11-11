@@ -1,13 +1,13 @@
 import { type Schema } from 'jsonschema';
 import { describe, expect, it } from 'vitest';
 
-import { LanguageComponent, LanguageCtx } from './index.js';
+import { findUnionCollisions, LanguageComponent, LanguageCtx } from './index.js';
 
 /*
- * Compile-time distinguishability + runtime escalation. A union whose branches differ only BELOW a
- * `$ref` can't be told apart by ref-cut local shape; the analysis flags it, and `resolve` escalates to
- * full validation to break the tie — fixing over-broad anyOf and under-resolved oneOf — while leaving
- * ref-cut-separable unions on the fast path untouched.
+ * Distinguishability check + runtime escalation. A union whose branches differ only BELOW a `$ref`
+ * can't be told apart by ref-cut local shape; `findUnionCollisions` flags it, and `resolve` escalates
+ * to full validation when the branches actually tie, fixing over-broad anyOf and under-resolved oneOf,
+ * while leaving ref-cut-separable unions on the fast path untouched.
  */
 
 // Two payload shapes that a ref hides: an object (needs `n`) vs a plain string.
@@ -135,34 +135,33 @@ const partNames = (identity: unknown): string[] => {
   return id?.kind === 'composite' && id.parts ? id.parts.map((part) => part.name) : [];
 };
 
-describe('compile-time distinguishability', () => {
+describe('findUnionCollisions', () => {
   it('flags a union whose branches differ only below a $ref', () => {
-    const lint = compile('AnyRoot').distinguishabilityLint;
+    const lint = findUnionCollisions(compile('AnyRoot'));
     expect(lint).toHaveLength(1);
     expect(lint[0].mode).toBe('anyOf');
     expect([lint[0].branchA, lint[0].branchB]).toStrictEqual([0, 1]);
   });
 
   it('clears a union whose branches are separable by a top-level const', () => {
-    expect(compile('Pet').distinguishabilityLint).toStrictEqual([]);
+    expect(findUnionCollisions(compile('Pet'))).toStrictEqual([]);
   });
 
   it('does not treat integer and number branches as separable (they overlap)', () => {
-    expect(compile('NumRoot').distinguishabilityLint.length).toBeGreaterThan(0);
+    expect(findUnionCollisions(compile('NumRoot')).length).toBeGreaterThan(0);
   });
 
   it('rates two indistinguishable distinct labeled components an error', () => {
     // AnyRoot's arms are the labeled components BranchA and BranchB — declared distinct, yet
     // ref-cut can't tell them apart: a labeling-vs-shape contradiction.
-    const ctx = compile('AnyRoot');
-    expect(ctx.distinguishabilityErrors).toHaveLength(1);
-    const [error] = ctx.distinguishabilityErrors;
+    const [error, ...rest] = findUnionCollisions(compile('AnyRoot'));
+    expect(rest).toStrictEqual([]);
     expect(error.severity).toBe('error');
     expect([error.componentA, error.componentB]).toStrictEqual(['BranchA', 'BranchB']);
   });
 
   it('rates a labeled component with overlapping unlabeled forms a warning', () => {
-    const [collision] = compile('FormUnion').distinguishabilityLint;
+    const [collision] = findUnionCollisions(compile('FormUnion'));
     expect(collision.severity).toBe('warning');
     expect(collision.componentA).toBeUndefined();
   });
@@ -218,7 +217,7 @@ describe('discriminator short-circuit', () => {
       {},
     );
     const ctx = LanguageCtx.compile(LanguageComponent.schemas([Link, Dialog, Action]), 'Action');
-    expect(ctx.distinguishabilityLint).toStrictEqual([]);
+    expect(findUnionCollisions(ctx)).toStrictEqual([]);
     expect(partNames(ctx.root({ type: 'dialog' }).identity)).toContain('Dialog');
   });
 });
