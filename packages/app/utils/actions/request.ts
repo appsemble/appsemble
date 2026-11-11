@@ -1,10 +1,9 @@
 import { type HTTPMethods } from '@appsemble/lang-sdk';
-import { formatRequestAction, serializeResource } from '@appsemble/utils';
+import { formatRequestAction, serializeResource, xmlToJson } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 
 import { type ActionCreator } from './index.js';
 import { apiUrl, appId } from '../settings.js';
-import { xmlToJson } from '../xmlToJson.js';
 
 export const request: ActionCreator<'request'> = ({ definition, prefixIndex, remap }) => {
   const { body, method: uncasedMethod = 'GET', proxy = true, schema, url } = definition;
@@ -142,7 +141,7 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
       ) {
         // @ts-expect-error 2345 argument of type is not assignable to parameter of type
         // (strictNullChecks)
-        responseBody = xmlToJson(responseBody, schema);
+        responseBody = xmlToJson(responseBody, schema, new DOMParser());
       }
 
       if (

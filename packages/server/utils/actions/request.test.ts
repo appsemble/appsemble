@@ -3,7 +3,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { createInstance } from 'axios-test-instance';
 import Koa from 'koa';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { request } from './request.js';
 import { App, Organization } from '../../models/index.js';
@@ -35,11 +35,8 @@ const exampleApp = (orgId: string, action: ActionDefinition, path = 'test-app'):
   } as Partial<App>);
 
 describe('request action', () => {
-  beforeAll(() => {
-    vi.useFakeTimers();
-  });
-
   beforeEach(async () => {
+    vi.useFakeTimers();
     vi.clearAllTimers();
     vi.setSystemTime(0);
     setArgv({ host: 'https://example.com' });
@@ -220,6 +217,47 @@ describe('request action', () => {
 
       expect(result).toBe('Hello, World!');
     });
+
+    it('should convert an XML response to JSON as described by the schema', async () => {
+      const action: ActionDefinition = {
+        type: 'request',
+        url: 'https://api.example.com/xml',
+        schema: {
+          type: 'object',
+          xml: { name: 'city' },
+          properties: {
+            id: { type: 'integer', xml: { attribute: true } },
+            name: { type: 'string' },
+            districts: { type: 'array', items: { type: 'string', xml: { name: 'district' } } },
+          },
+        },
+      };
+
+      mock
+        .onGet('https://api.example.com/xml')
+        .reply(
+          200,
+          '<?xml version="1.0" encoding="UTF-8"?><city id="40"><name>Eindhoven</name><district>Center</district><district>North</district></city>',
+          { 'content-type': 'application/xml' },
+        );
+
+      const app = await exampleApp('testorg', action);
+
+      const result = await handleAction(request, {
+        app,
+        action,
+        mailer,
+        data: {},
+        options,
+        context: {} as any,
+      });
+
+      expect(result).toStrictEqual({
+        id: 40,
+        name: 'Eindhoven',
+        districts: ['Center', 'North'],
+      });
+    });
   });
 
   // SSRF protection tests are in utils/actions/ssrf.test.ts
@@ -264,7 +302,6 @@ describe('request action', () => {
       mock.onAny().passThrough();
 
       const app = await exampleApp('testorg', action);
-      vi.useFakeTimers();
 
       const result = handleAction(request, {
         app,

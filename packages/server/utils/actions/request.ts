@@ -11,7 +11,8 @@ import {
   logger,
   requestActionTimeout,
 } from '@appsemble/node-utils';
-import { formatRequestAction } from '@appsemble/utils';
+import { formatRequestAction, xmlToJson } from '@appsemble/utils';
+import { DOMParser } from '@xmldom/xmldom';
 import axios from 'axios';
 
 import { type ServerActionParameters } from './index.js';
@@ -161,11 +162,10 @@ export async function request({
   if (
     typeof responseBody === 'string' &&
     typeof contentType === 'string' &&
-    /^(application|text)\/(.+\+)?xml/.test(contentType)
+    /^(application|text)\/(.+\+)?xml/.test(contentType) &&
+    definition.schema
   ) {
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
-    responseBody = xmlToJson(responseBody, schema);
+    responseBody = xmlToJson(responseBody, definition.schema, new DOMParser());
   }
   return responseBody;
 }
