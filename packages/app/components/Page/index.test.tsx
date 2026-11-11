@@ -376,13 +376,6 @@ describe('page not found', () => {
     expect(await screen.findByRole('main', { name: 'Item' })).not.toBeNull();
   });
 
-  it('should keep showing a page for extra path segments when the app defines no not found page', async () => {
-    renderAt('/en/about/extra');
-
-    expect(await screen.findByRole('main', { name: 'About' })).not.toBeNull();
-    expect(screen.getByText('/en/about/extra')).not.toBeNull();
-  });
-
   it('should not pass the data of the previous page to the not found page', async () => {
     const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
     onTestFinished(() => mock.restore());

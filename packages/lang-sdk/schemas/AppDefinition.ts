@@ -85,7 +85,7 @@ roles of the app member.
 
 The not found page is also displayed for path segments that don’t match the parameters of a page,
 except on tabs pages. If this is not specified, a URL that matches no page redirects to the default
-page, and extra path segments are ignored.
+page.
 `,
     },
     defaultLanguage: {
