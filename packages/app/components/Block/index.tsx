@@ -28,7 +28,7 @@ import { callBootstrap, getBlockFileURL } from '../../utils/bootstrapper.js';
 import { createEvents } from '../../utils/events.js';
 import { injectCSS } from '../../utils/injectCSS.js';
 import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
-import { apiUrl, appId, appUpdated, iconAssetIds } from '../../utils/settings.js';
+import { apiUrl, appId, appUpdated, iconAssetIds, passwordToken } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -238,7 +238,7 @@ export function Block({
         cleanups.current.push(fn);
       },
       asset(id) {
-        return `${apiUrl}/api/apps/${appId}/assets/${id}`;
+        return `${apiUrl}/api/apps/${appId}/assets/${id}${passwordToken ? `?passwordToken=${passwordToken}` : ''}`;
       },
       formatMessage(message, args = {}) {
         return getBlockMessage(blockName, block.version, { id: String(message) }, prefix).format(
@@ -248,7 +248,7 @@ export function Block({
       fa,
       resolveIcon(reference) {
         return resolveIcon(reference, appDefinition.icons, (asset) =>
-          getIconAsset(apiUrl, appId, asset, iconAssetIds),
+          getIconAsset(apiUrl, appId, asset, iconAssetIds, passwordToken),
         );
       },
       icon(reference, options) {

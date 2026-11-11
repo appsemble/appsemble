@@ -11,7 +11,7 @@ import {
   AppSnapshot,
   Organization,
 } from '../../../models/index.js';
-import { applyAppMessages, parseLanguage } from '../../../utils/app.js';
+import { applyAppMessages, getAppPasswordToken, parseLanguage } from '../../../utils/app.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 
 export async function getAppById(ctx: Context): Promise<void> {
@@ -185,10 +185,14 @@ export async function getAppById(ctx: Context): Promise<void> {
 
   applyAppMessages(app, language, baseLanguage);
 
+  // Requests for a password protected app only get here if they may see its content.
+  const passwordToken = getAppPasswordToken(app);
+
   ctx.status = 200;
   if (propertyFilters.includes('definition')) {
     const { defaultLanguage, defaultPage, description, name } = app.definition;
     ctx.body = Object.assign(app.toJSON(propertyFilters), {
+      passwordToken,
       definition: {
         name,
         description,
@@ -200,5 +204,5 @@ export async function getAppById(ctx: Context): Promise<void> {
     });
     return;
   }
-  ctx.body = app.toJSON(propertyFilters);
+  ctx.body = { ...app.toJSON(propertyFilters), passwordToken };
 }

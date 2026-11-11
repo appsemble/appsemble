@@ -33,6 +33,11 @@ interface IconProviderProps {
   readonly assetIds?: Record<string, string>;
 
   /**
+   * The token which grants access to the assets of a password protected app.
+   */
+  readonly passwordToken?: string;
+
+  /**
    * The `icons` registry of the app definition.
    */
   readonly registry: IconRegistry | undefined;
@@ -50,14 +55,15 @@ export function IconProvider({
   appId,
   assetIds,
   children,
+  passwordToken,
   registry,
 }: IconProviderProps): ReactNode {
   const value = useMemo<IconContext>(
     () => ({
       registry,
-      getAsset: (asset) => getIconAsset(apiUrl, appId, asset, assetIds),
+      getAsset: (asset) => getIconAsset(apiUrl, appId, asset, assetIds, passwordToken),
     }),
-    [apiUrl, appId, assetIds, registry],
+    [apiUrl, appId, assetIds, passwordToken, registry],
   );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

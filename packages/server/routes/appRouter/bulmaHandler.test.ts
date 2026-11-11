@@ -6,11 +6,13 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { appRouter } from './index.js';
 import { Theme } from '../../models/index.js';
+import { setArgv } from '../../utils/argv.js';
 
 const bulmaUrl = `/bulma/${bulmaVersion}/bulma.min.css?primaryColor=%23123456`;
 
 describe('bulmaHandler', () => {
   beforeAll(async () => {
+    setArgv({ host: 'http://localhost' });
     const app = new Koa();
     app.use(appRouter);
     await setTestApp(app);

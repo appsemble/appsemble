@@ -27,7 +27,12 @@ import { type Configuration } from 'webpack';
 import { argv } from './argv.js';
 import { Mailer } from './email/Mailer.js';
 import * as controllers from '../controllers/index.js';
-import { appMapper, authentication, stripeMiddleware } from '../middleware/index.js';
+import {
+  appMapper,
+  appPasswordProtection,
+  authentication,
+  stripeMiddleware,
+} from '../middleware/index.js';
 import { appRouter, operationalRouter, studioRouter } from '../routes/index.js';
 
 interface CreateServerOptions {
@@ -155,6 +160,7 @@ export async function createServer({
           swaggerUI({ url: '/api-explorer' }),
           security(authentication()),
           parameters(),
+          appPasswordProtection(),
           bodyParser(),
           serializer(),
           statusCode(),

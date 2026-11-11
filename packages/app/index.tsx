@@ -1,13 +1,24 @@
 import { setupSentry } from '@appsemble/web-utils';
+import axios from 'axios';
 import { createRoot } from 'react-dom/client';
 
 import { App } from './components/App/index.js';
 import './index.css';
 import { polyfillStorage } from './utils/polyfillStorage.js';
-import { sentryDsn, sentryEnvironment } from './utils/settings.js';
+import { apiUrl, passwordToken, sentryDsn, sentryEnvironment } from './utils/settings.js';
 
 polyfillStorage();
 setupSentry(sentryDsn, sentryEnvironment);
+
+if (passwordToken) {
+  // The browser sends the app password to the app host only, so the API gets this token instead.
+  axios.interceptors.request.use((config) => {
+    if (axios.getUri(config).startsWith(`${apiUrl}/`)) {
+      config.headers.set('X-Appsemble-Password-Token', passwordToken);
+    }
+    return config;
+  });
+}
 
 // WebPack does not allow it
 // eslint-disable-next-line unicorn/prefer-top-level-await

@@ -15,6 +15,7 @@ export const {
   languages,
   logins,
   pageManifests,
+  passwordToken,
   sentryDsn,
   sentryEnvironment,
   showAppsembleLogin,

@@ -1,4 +1,4 @@
-import { randomBytes } from 'node:crypto';
+import { createHmac, randomBytes } from 'node:crypto';
 
 import {
   assertKoaCondition,
@@ -110,6 +110,23 @@ export async function getApp(
       })) ?? undefined;
   }
   return value;
+}
+
+/**
+ * Get the token which grants the visitors of a password protected app access to its API.
+ *
+ * The token is derived from the password hash, so changing the password revokes it.
+ *
+ * @param app The app to get the token for.
+ * @returns The token, or `undefined` if the app is not password protected.
+ */
+export function getAppPasswordToken({
+  id,
+  password,
+}: Pick<App, 'id' | 'password'>): string | undefined {
+  return password
+    ? createHmac('sha256', argv.secret).update(`${id}:${password}`).digest('base64url')
+    : undefined;
 }
 
 export function getAppUrl(app: App): URL {

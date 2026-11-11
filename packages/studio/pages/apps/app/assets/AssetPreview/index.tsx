@@ -17,6 +17,8 @@ export function AssetPreview({ asset }: { readonly asset: Asset }): ReactNode {
 
   const url = `/api/apps/${app.id}/assets/${asset.id}`;
   const downloadUrl = `${url}/download`;
+  // Media elements cannot send the credentials of the Studio user.
+  const src = app.passwordToken ? `${url}?passwordToken=${app.passwordToken}` : url;
   const isImage = asset.mime.startsWith('image/');
   const isAudio = asset.mime.startsWith('audio/');
   const isVideo = asset.mime.startsWith('video/');
@@ -33,11 +35,11 @@ export function AssetPreview({ asset }: { readonly asset: Asset }): ReactNode {
         <FormattedMessage {...messages.download} />
       </Button>
       <div className="box">
-        {isImage ? <img alt={asset.filename || `Asset ${asset.id}`} src={url} /> : null}
+        {isImage ? <img alt={asset.filename || `Asset ${asset.id}`} src={src} /> : null}
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        {isAudio ? <audio controls src={url} /> : null}
+        {isAudio ? <audio controls src={src} /> : null}
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        {isVideo ? <video controls src={url} /> : null}
+        {isVideo ? <video controls src={src} /> : null}
         {!isImage && !isAudio && !isVideo ? <FormattedMessage {...messages.notSupported} /> : null}
       </div>
     </Content>

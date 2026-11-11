@@ -101,6 +101,7 @@ declare global {
       e2e?: boolean;
       supportedLanguages: string[];
       totp: 'disabled' | 'enabled' | 'required';
+      passwordToken?: string;
     };
   }
 }

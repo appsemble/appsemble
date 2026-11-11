@@ -304,6 +304,16 @@ export interface App {
   showAppDefinition: boolean;
 
   /**
+   * Whether visitors must enter a password to open the app.
+   */
+  passwordProtected?: boolean;
+
+  /**
+   * The token which grants access to the API of a password protected app.
+   */
+  passwordToken?: string;
+
+  /**
    * The Google analytics ID of the app.
    */
   googleAnalyticsID?: string;

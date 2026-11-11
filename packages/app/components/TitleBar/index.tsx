@@ -12,7 +12,7 @@ import {
   shouldShowMenu,
   titleBarShowsPageName,
 } from '../../utils/layout.js';
-import { apiUrl, appId } from '../../utils/settings.js';
+import { apiUrl, appId, passwordToken } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -131,7 +131,7 @@ export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): Rea
       <img
         alt="app-logo"
         className={styles.logo}
-        src={`${apiUrl}/api/apps/${appId}/assets/${definition.layout?.logo?.asset || 'logo'}`}
+        src={`${apiUrl}/api/apps/${appId}/assets/${definition.layout?.logo?.asset || 'logo'}${passwordToken ? `?passwordToken=${passwordToken}` : ''}`}
       />
     </Link>
   ) : null;

@@ -6,6 +6,7 @@ import {
   SubscriptionPlanType,
 } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import { compare, hash } from 'bcrypt';
 import stripIndent from 'strip-indent';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -268,6 +269,44 @@ describe('patchApp', () => {
     );
     expect(status).toBe(200);
     expect(data.supportedLanguages).toStrictEqual(['en', 'nl']);
+  });
+
+  it('should password protect an app without returning the password hash', async () => {
+    const app = await App.create({
+      definition: { name: 'Test app', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+
+    const { data } = await request.patch<AppType>(
+      `/api/apps/${app.id}`,
+      createFormData({ password: 'open sesame' }),
+    );
+
+    await app.reload();
+    expect(data.passwordProtected).toBe(true);
+    expect(JSON.stringify(data)).not.toContain(app.password);
+    expect(await compare('open sesame', app.password!)).toBe(true);
+  });
+
+  it('should turn password protection off with an empty password', async () => {
+    const app = await App.create({
+      definition: { name: 'Test app', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      password: await hash('open sesame', 10),
+    });
+    authorizeStudio();
+
+    await request.patch(`/api/apps/${app.id}`, createFormData({ password: '' }));
+
+    await app.reload();
+    expect(app.password).toBeNull();
   });
 
   it('should keep only the latest build snapshot after repeated app definition updates', async () => {
@@ -3256,6 +3295,7 @@ describe('patchApp', () => {
         "messages": undefined,
         "metaPixelID": null,
         "msClarityID": null,
+        "passwordProtected": undefined,
         "path": "bar",
         "rating": undefined,
         "readmeUrl": undefined,
