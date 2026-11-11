@@ -102,6 +102,7 @@ export function SettingsPage(): ReactNode {
       showAppDefinition: app.showAppDefinition,
       passwordProtected: Boolean(app.passwordProtected),
       password: '',
+      passwordMessage: app.passwordMessage || '',
       displayAppMemberName: app.displayAppMemberName || false,
       displayInstallationPrompt: app.displayInstallationPrompt || false,
       skipGroupInvites: app.skipGroupInvites || false,
@@ -128,6 +129,7 @@ export function SettingsPage(): ReactNode {
     } else if (values.password) {
       form.set('password', values.password);
     }
+    form.set('passwordMessage', values.passwordMessage);
     form.set('displayAppMemberName', String(values.displayAppMemberName));
     form.set('displayInstallationPrompt', String(values.displayInstallationPrompt));
     form.set('skipGroupInvites', String(values.skipGroupInvites));

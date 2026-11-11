@@ -270,6 +270,12 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
       minify,
       chunks: [],
     }),
+    new HtmlWebpackPlugin({
+      template: fileURLToPath(new URL('app/password.html', packagesDir)),
+      filename: 'password.html',
+      minify,
+      chunks: [],
+    }),
     new InjectManifest({
       swSrc: fileURLToPath(new URL('../service-worker/index.ts', import.meta.url)),
       swDest: 'service-worker.js',

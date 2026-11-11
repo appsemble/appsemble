@@ -15,7 +15,11 @@ function renderPasswordProtection(): void {
     <IntlProvider locale="en" messages={{}}>
       <MemoryRouter>
         <SimpleForm
-          defaultValues={{ passwordProtected: app.passwordProtected, password: '' }}
+          defaultValues={{
+            passwordProtected: app.passwordProtected,
+            password: '',
+            passwordMessage: '',
+          }}
           onSubmit={vi.fn()}
         >
           <PasswordProtection disabled={false} />

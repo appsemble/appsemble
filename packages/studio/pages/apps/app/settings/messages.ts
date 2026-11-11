@@ -72,6 +72,15 @@ export const messages = defineMessages({
     defaultMessage:
       'Enter a new password to replace the current one, or leave this empty to keep it.',
   },
+  passwordMessageLabel: {
+    id: 'studio.S7wNj+',
+    defaultMessage: 'Password page message',
+  },
+  passwordMessageDescription: {
+    id: 'studio.TnIqEe',
+    defaultMessage:
+      'Shown to visitors above the password field, for example to explain who can give them access.',
+  },
   appLock: {
     id: 'studio.5JnqzW',
     defaultMessage: 'App lock',

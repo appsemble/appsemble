@@ -34,7 +34,7 @@ function getCookieOptions(path: string): {
  * @param value The value of the cookie.
  * @param options The cookie options.
  */
-function setCookie(ctx: Context, name: string, value: string, options: any): void {
+export function setCookie(ctx: Context, name: string, value: string, options: any): void {
   const cookies = ctx.cookies as any;
   const originalSecure = cookies.secure;
   try {

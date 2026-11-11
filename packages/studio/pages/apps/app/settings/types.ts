@@ -18,6 +18,7 @@ export interface FormValues {
   showAppDefinition: boolean;
   passwordProtected: boolean;
   password: string;
+  passwordMessage: string;
   displayAppMemberName: boolean;
   displayInstallationPrompt: boolean;
   skipGroupInvites: boolean;

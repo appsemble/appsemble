@@ -11,9 +11,15 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization.js'
 let app: App;
 
 async function getPasswordTokenFromAppPage(): Promise<string> {
-  const { data } = await request.get<{ data: { settings: string } }>('/', {
+  const login = await request.post('/', new URLSearchParams({ password: 'open sesame' }), {
     headers: { host: 'app.org.localhost' },
-    auth: { username: 'tester', password: 'open sesame' },
+    maxRedirects: 0,
+  });
+  const { data } = await request.get<{ data: { settings: string } }>('/', {
+    headers: {
+      host: 'app.org.localhost',
+      cookie: login.headers['set-cookie']!.map((cookie) => cookie.split(';')[0]).join('; '),
+    },
   });
   return JSON.parse(
     data.data.settings.slice('<script>window.settings='.length, -'</script>'.length),

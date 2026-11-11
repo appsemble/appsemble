@@ -1,35 +1,43 @@
-import { createHash } from 'node:crypto';
-
-import { createAppRouter } from '@appsemble/node-utils';
+import { createAppRouter, render } from '@appsemble/node-utils';
 import { compare } from 'bcrypt';
 import { type Middleware } from 'koa';
+import getRawBody from 'raw-body';
 
 import { options } from '../../options/options.js';
-import { getApp } from '../../utils/app.js';
+import { getApp, getAppPasswordToken } from '../../utils/app.js';
+import { setCookie } from '../../utils/appCookies.js';
 
 const router = createAppRouter(options);
 
-// A page load requests dozens of files, so the last password verified for each app is remembered
-// instead of running bcrypt for every request.
-const verifiedPasswords = new Map<number, string>();
-
 export const appRouter: Middleware = async (ctx, next) => {
-  const { app } = await getApp(ctx, { attributes: ['id', 'password'] });
-  if (app?.password) {
-    const [scheme, credentials = ''] = ctx.get('authorization').split(' ');
-    const decoded = Buffer.from(credentials, 'base64').toString();
-    // Any username is accepted, so only the password after the first colon is checked.
-    const password = decoded.slice(decoded.indexOf(':') + 1);
-    const digest = createHash('sha256').update(`${app.password}:${password}`).digest('base64');
-    if (verifiedPasswords.get(app.id) !== digest) {
-      if (scheme.toLowerCase() !== 'basic' || !(await compare(password, app.password))) {
-        ctx.status = 401;
-        ctx.set('WWW-Authenticate', 'Basic realm="App", charset="UTF-8"');
-        ctx.body = 'This app is password protected.';
-        return;
-      }
-      verifiedPasswords.set(app.id, digest);
-    }
+  const { app } = await getApp(ctx, { attributes: ['id', 'password', 'passwordMessage'] });
+  const passwordToken = app && getAppPasswordToken(app);
+  if (!passwordToken || ctx.cookies.get('app_password', { signed: true }) === passwordToken) {
+    return router(ctx, next);
   }
-  return router(ctx, next);
+
+  // Only pages show the password form, files such as scripts and the manifest are refused.
+  if (/\.[a-z]\w*$/i.test(ctx.path)) {
+    ctx.status = 401;
+    return;
+  }
+
+  let error = false;
+  if (ctx.method === 'POST') {
+    const body = await getRawBody(ctx.req, { encoding: 'utf8', limit: '10kb' });
+    const password = new URLSearchParams(body).get('password') ?? '';
+    if (await compare(password, app.password!)) {
+      setCookie(ctx, 'app_password', passwordToken, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: true,
+        signed: true,
+      });
+      ctx.redirect(ctx.url);
+      return;
+    }
+    error = true;
+    ctx.status = 401;
+  }
+  return render(ctx, 'app/password.html', { error, message: app.passwordMessage });
 };

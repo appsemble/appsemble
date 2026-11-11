@@ -9,11 +9,20 @@ import { setArgv } from '../../utils/argv.js';
 
 let app: App;
 
+async function enterPassword(password: string): Promise<string> {
+  const response = await request.post('/', new URLSearchParams({ password }), {
+    maxRedirects: 0,
+  });
+  return (response.headers['set-cookie'] ?? []).map((cookie) => cookie.split(';')[0]).join('; ');
+}
+
 describe('appRouter', () => {
   beforeAll(async () => {
-    setArgv({ host: 'http://localhost' });
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    const server = new Koa();
+    server.keys = ['test'];
     await setTestApp(
-      new Koa()
+      server
         .use((ctx, next) => {
           Object.defineProperty(ctx, 'URL', { value: new URL('http://app.org.localhost') });
           return next();
@@ -31,40 +40,61 @@ describe('appRouter', () => {
       vapidPrivateKey: '',
       vapidPublicKey: '',
       password: await hash('open sesame', 10),
+      passwordMessage: 'This app is in a closed test.\nAsk the team for access.',
     });
   });
 
-  it('should ask for the password of a password protected app', async () => {
-    const response = await request.get('/robots.txt');
+  it('should show the password page with the message instead of the app', async () => {
+    const response = await request.get('/en/home');
 
     expect(response).toMatchObject({
-      status: 401,
-      headers: { 'www-authenticate': 'Basic realm="App", charset="UTF-8"' },
+      status: 200,
+      data: {
+        filename: 'app/password.html',
+        data: { error: false, message: 'This app is in a closed test.\nAsk the team for access.' },
+      },
     });
   });
 
-  it('should refuse a wrong password', async () => {
-    const response = await request.get('/robots.txt', {
-      auth: { username: 'tester', password: 'guess' },
-    });
+  it('should refuse the files of a password protected app without the password', async () => {
+    const response = await request.get('/robots.txt');
 
     expect(response.status).toBe(401);
   });
 
-  it('should serve a password protected app with the password and any username', async () => {
-    const response = await request.get('/robots.txt', {
-      auth: { username: 'anyone', password: 'open sesame' },
+  it('should show the password page with an error for a wrong password', async () => {
+    const response = await request.post('/', new URLSearchParams({ password: 'guess' }));
+
+    expect(response).toMatchObject({
+      status: 401,
+      data: { filename: 'app/password.html', data: { error: true } },
     });
+  });
+
+  it('should open the app after the password is entered', async () => {
+    const cookie = await enterPassword('open sesame');
+
+    const response = await request.get('/robots.txt', { headers: { cookie } });
 
     expect(response.status).toBe(200);
   });
 
-  it('should refuse the old password after the password changes', async () => {
-    const auth = { username: 'tester', password: 'open sesame' };
-    await request.get('/robots.txt', { auth });
+  it('should remember the password in a cookie that scripts and other sites cannot use', async () => {
+    const response = await request.post('/', new URLSearchParams({ password: 'open sesame' }), {
+      maxRedirects: 0,
+    });
+
+    expect(response.status).toBe(302);
+    expect(response.headers['set-cookie']?.[0]).toMatch(
+      /^app_password=[\w-]+; path=\/; samesite=lax; secure; httponly$/,
+    );
+  });
+
+  it('should ask for the password again after the password changes', async () => {
+    const cookie = await enterPassword('open sesame');
     await app.update({ password: await hash('new secret', 10) });
 
-    const response = await request.get('/robots.txt', { auth });
+    const response = await request.get('/robots.txt', { headers: { cookie } });
 
     expect(response.status).toBe(401);
   });

@@ -1,1 +1,1 @@
-Add password protection for apps, enforced on the app domains and the app API
+Add password protection for apps, with a password page on the app domains and a guarded app API

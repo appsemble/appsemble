@@ -1,1 +1,1 @@
-Add the password protection setting to the app settings page
+Add the password protection settings to the app settings page

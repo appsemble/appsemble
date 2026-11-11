@@ -54,6 +54,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 description:
                   'The password visitors must enter to open the app. An empty string turns password protection off.',
               },
+              passwordMessage: {
+                $ref: '#/components/schemas/App/properties/passwordMessage',
+              },
               force: {
                 type: 'boolean',
                 description: 'Whether the locked property should be ignored.',

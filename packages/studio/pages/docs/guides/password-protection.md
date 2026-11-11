@@ -17,15 +17,18 @@ version of the app definition does not change it.
 
 1. Open the app in Appsemble Studio and go to **Settings**.
 2. Check **Password protection** and enter a password.
-3. Click **Save changes**.
+3. Optionally, enter a **Password page message**. Visitors see it above the password field, so use
+   it to explain why the app is protected and who can give them access.
+4. Click **Save changes**.
 
 To change the password, enter a new one and save. To turn password protection off, uncheck
 **Password protection** and save.
 
 ## Sharing the password
 
-Send the testers the link to the app and the password. When they open the app, the browser asks for
-a username and a password. Any username is accepted.
+Send the testers the link to the app and the password. When they open the app, they see the password
+page with the message. After they enter the password, they can use the app until they close the
+browser.
 
 Changing the password revokes the access of everyone who used the old password. Share the new
 password with the people who should keep access.
@@ -39,7 +42,7 @@ Password protection covers:
   resources, assets, variables and styles.
 
 Members of the organization of the app keep working with it in Appsemble Studio. The app preview in
-Studio loads the app the way a visitor does, so the browser asks for the password there as well.
+Studio loads the app the way a visitor does, so it shows the password page as well.
 
 The following stay reachable without the password:
 

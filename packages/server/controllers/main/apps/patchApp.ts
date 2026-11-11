@@ -84,6 +84,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         metaPixelID,
         msClarityID,
         password,
+        passwordMessage,
         path,
         readmes,
         screenshots,
@@ -292,6 +293,10 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.password = password ? await hash(password, 10) : null;
     }
 
+    if (passwordMessage !== undefined) {
+      result.passwordMessage = passwordMessage || null;
+    }
+
     if (sentryDsn !== undefined) {
       result.sentryDsn = sentryDsn;
     }
@@ -406,6 +411,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       path !== undefined ||
       visibility !== undefined ||
       password !== undefined ||
+      passwordMessage !== undefined ||
       template !== undefined ||
       icon !== undefined ||
       maskableIcon !== undefined ||
