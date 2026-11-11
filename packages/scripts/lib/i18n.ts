@@ -53,6 +53,11 @@ const serverMessageKeys = [
   'server.emails.appCollectionDomainExpired.subject',
   'server.emails.domainExpired.body',
   'server.emails.domainExpired.subject',
+  'server.passwordPage.title',
+  'server.passwordPage.heading',
+  'server.passwordPage.password',
+  'server.passwordPage.incorrectPassword',
+  'server.passwordPage.submit',
 ];
 
 export async function extractMessages(): Promise<Translations> {

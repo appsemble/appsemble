@@ -9,6 +9,7 @@ import { Op } from 'sequelize';
 import { parse } from 'yaml';
 
 import { App, AppBuildSnapshot, AppSnapshot, getAppDB, transactional } from '../models/index.js';
+import { getAppPasswordToken } from '../utils/app.js';
 import {
   createAppBuildManifest,
   getMissingBlockManifestIdentifiers,
@@ -132,6 +133,7 @@ export async function createSettings({
       'displayInstallationPrompt',
       'supportedLanguages',
       'totp',
+      'password',
     ],
     where: { id: app.id },
     include: [
@@ -281,6 +283,7 @@ export async function createSettings({
       enableSelfRegistration: persistedApp.enableSelfRegistration ?? true,
       showDemoLogin: persistedApp.demoMode ?? false,
       totp: persistedApp.totp ?? 'disabled',
+      passwordToken: getAppPasswordToken(persistedApp),
       sentryDsn,
       sentryEnvironment,
       appUpdated: persistedApp.updated.toISOString(),

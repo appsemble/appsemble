@@ -2,7 +2,12 @@ import { type Context } from 'koa';
 import { col, fn, literal } from 'sequelize';
 
 import { App, AppRating, Organization } from '../../../models/index.js';
-import { applyAppMessages, compareApps, parseLanguage } from '../../../utils/app.js';
+import {
+  applyAppMessages,
+  compareApps,
+  getAppStoreListing,
+  parseLanguage,
+} from '../../../utils/app.js';
 
 export async function queryApps(ctx: Context): Promise<void> {
   const {
@@ -30,6 +35,7 @@ export async function queryApps(ctx: Context): Promise<void> {
       'demoMode',
       'skipGroupInvites',
       'supportedLanguages',
+      'password',
       [literal('"App"."icon" IS NOT NULL'), 'hasIcon'],
       [literal('"App"."maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
     ],
@@ -75,12 +81,14 @@ export async function queryApps(ctx: Context): Promise<void> {
     })
     .sort(compareApps)
     .map((app) =>
-      Object.assign(app.toJSON(['yaml']), {
-        definition: {
-          name: app.definition.name,
-          description: app.definition.description,
-          defaultLanguage: app.definition.defaultLanguage,
-        },
-      }),
+      app.password
+        ? getAppStoreListing(app)
+        : Object.assign(app.toJSON(['yaml']), {
+            definition: {
+              name: app.definition.name,
+              description: app.definition.description,
+              defaultLanguage: app.definition.defaultLanguage,
+            },
+          }),
     );
 }

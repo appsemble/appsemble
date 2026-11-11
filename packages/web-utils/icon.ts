@@ -82,6 +82,7 @@ export function getMessageIcon(color?: BulmaColor): IconName | undefined {
  * @param appId The ID of the app owning the asset.
  * @param asset The validated name of the asset.
  * @param assetIds The asset ids of the app’s icon assets, by asset name.
+ * @param passwordToken The token which grants access to the assets of a password protected app.
  * @returns The renderable icon of the asset.
  */
 export function getIconAsset(
@@ -89,13 +90,15 @@ export function getIconAsset(
   appId: number,
   asset: string,
   assetIds?: Record<string, string>,
+  passwordToken?: string,
 ): AssetIcon {
   const assetsUrl = `${apiUrl}/api/apps/${appId}/assets`;
-  const url = `${assetsUrl}/${encodeURIComponent(asset)}`;
+  const search = passwordToken ? `?passwordToken=${passwordToken}` : '';
+  const url = `${assetsUrl}/${encodeURIComponent(asset)}${search}`;
   return assetIds && Object.hasOwn(assetIds, asset)
     ? {
         type: 'asset',
-        url: `${assetsUrl}/${encodeURIComponent(assetIds[asset])}`,
+        url: `${assetsUrl}/${encodeURIComponent(assetIds[asset])}${search}`,
         fallbackUrl: url,
       }
     : { type: 'asset', url };

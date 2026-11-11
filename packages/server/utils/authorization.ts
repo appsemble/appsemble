@@ -9,7 +9,7 @@ import {
 import { appWideGroupId, assertKoaCondition } from '@appsemble/node-utils';
 import {
   appOrganizationPermissionMapping,
-  type OrganizationPermission,
+  OrganizationPermission,
   type PredefinedOrganizationRole,
   predefinedOrganizationRolePermissions,
 } from '@appsemble/types';
@@ -17,6 +17,7 @@ import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
+import { getAppPasswordToken } from './app.js';
 import {
   App,
   type AppMember,
@@ -277,6 +278,29 @@ export async function checkUserOrganizationPermissions({
     403,
     'User does not have sufficient organization permissions.',
   );
+}
+
+/**
+ * Require the app password token or permission to query the app's organization.
+ *
+ * @param context The request context.
+ * @param app The app whose content is requested.
+ */
+export async function checkAppPassword(
+  context: Context,
+  app: Pick<App, 'id' | 'password' | 'OrganizationId'>,
+): Promise<void> {
+  if (
+    app.password &&
+    (context.get('x-appsemble-password-token') || context.query.passwordToken) !==
+      getAppPasswordToken(app)
+  ) {
+    await checkUserOrganizationPermissions({
+      context,
+      organizationId: app.OrganizationId,
+      requiredPermissions: [OrganizationPermission.QueryApps],
+    });
+  }
 }
 
 export function checkAuthSubjectAppPermissions(params: CheckAppPermissionsParams): Promise<void> {

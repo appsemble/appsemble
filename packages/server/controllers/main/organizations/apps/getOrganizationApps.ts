@@ -1,9 +1,16 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { col, fn, literal } from 'sequelize';
 
 import { App, AppRating, Organization, OrganizationMember } from '../../../../models/index.js';
-import { applyAppMessages, compareApps, parseLanguage } from '../../../../utils/app.js';
+import {
+  applyAppMessages,
+  compareApps,
+  getAppStoreListing,
+  parseLanguage,
+} from '../../../../utils/app.js';
 
 export async function getOrganizationApps(ctx: Context): Promise<void> {
   const {
@@ -30,6 +37,11 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
       },
     });
   }
+  const canQueryApps =
+    organizationMember &&
+    checkOrganizationRoleOrganizationPermissions(organizationMember.role, [
+      OrganizationPermission.QueryApps,
+    ]);
 
   const apps = await App.findAll({
     attributes: {
@@ -82,5 +94,5 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
       return app;
     })
     .sort(compareApps)
-    .map((app) => app.toJSON(['yaml']));
+    .map((app) => (app.password && !canQueryApps ? getAppStoreListing(app) : app.toJSON(['yaml'])));
 }

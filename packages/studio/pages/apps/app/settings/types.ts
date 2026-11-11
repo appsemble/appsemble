@@ -16,6 +16,9 @@ export interface FormValues {
   locked: AppLock;
   totp: AppTotp;
   showAppDefinition: boolean;
+  passwordProtected: boolean;
+  password: string;
+  passwordMessage: string;
   displayAppMemberName: boolean;
   displayInstallationPrompt: boolean;
   skipGroupInvites: boolean;

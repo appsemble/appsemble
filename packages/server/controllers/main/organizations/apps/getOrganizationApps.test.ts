@@ -4,7 +4,13 @@ import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, Organization, OrganizationMember, type User } from '../../../../models/index.js';
+import {
+  App,
+  AppMessages,
+  Organization,
+  OrganizationMember,
+  type User,
+} from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
@@ -80,6 +86,50 @@ describe('getOrganizationApps', () => {
       ],
     });
   });
+
+  it.each([
+    undefined,
+    PredefinedOrganizationRole.Member,
+    PredefinedOrganizationRole.AppMemberManager,
+  ])(
+    'should protect app content in organization listings without app query permission (%s)',
+    async (role) => {
+      const app = await App.create({
+        path: 'protected',
+        definition: { name: 'Test App', pages: [] },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        visibility: 'public',
+        OrganizationId: organization.id,
+        password: 'hash',
+        controllerCode: 'private code',
+      });
+      await AppMessages.create({
+        AppId: app.id,
+        language: 'nl',
+        messages: { messageIds: { secret: 'Private text' } },
+      });
+      if (role) {
+        await OrganizationMember.update({ role }, { where: { UserId: user.id } });
+        authorizeStudio(user);
+      }
+      const canQueryApps = role === PredefinedOrganizationRole.Member;
+
+      const response = await request.get(`/api/organizations/${organization.id}/apps?language=nl`);
+
+      expect([
+        response.status,
+        response.data[0].definition,
+        response.data[0].messages?.messageIds,
+        response.data[0].controllerCode,
+      ]).toStrictEqual([
+        200,
+        canQueryApps ? { name: 'Test App', pages: [] } : { name: 'Test App' },
+        canQueryApps ? { secret: 'Private text' } : undefined,
+        canQueryApps ? 'private code' : undefined,
+      ]);
+    },
+  );
 
   it('should include unlisted and private organization apps if the user is part of the organization', async () => {
     authorizeStudio(user);

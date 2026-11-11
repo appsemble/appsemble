@@ -32,6 +32,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IconTool } from './IconTool/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { PasswordProtection } from './PasswordProtection/index.js';
 import { type FormValues } from './types.js';
 import { useSSLStatus } from '../../../../components/useSSLStatus.js';
 import { useApp } from '../index.js';
@@ -99,6 +100,9 @@ export function SettingsPage(): ReactNode {
       locked: app.locked,
       totp: app.totp || 'disabled',
       showAppDefinition: app.showAppDefinition,
+      passwordProtected: Boolean(app.passwordProtected),
+      password: '',
+      passwordMessage: app.passwordMessage || '',
       displayAppMemberName: app.displayAppMemberName || false,
       displayInstallationPrompt: app.displayInstallationPrompt || false,
       skipGroupInvites: app.skipGroupInvites || false,
@@ -120,6 +124,12 @@ export function SettingsPage(): ReactNode {
     form.set('visibility', values.visibility);
     form.set('iconBackground', values.iconBackground);
     form.set('showAppDefinition', String(values.showAppDefinition));
+    if (!values.passwordProtected) {
+      form.set('password', '');
+    } else if (values.password) {
+      form.set('password', values.password);
+    }
+    form.set('passwordMessage', values.passwordMessage);
     form.set('displayAppMemberName', String(values.displayAppMemberName));
     form.set('displayInstallationPrompt', String(values.displayInstallationPrompt));
     form.set('skipGroupInvites', String(values.skipGroupInvites));
@@ -198,7 +208,7 @@ export function SettingsPage(): ReactNode {
   return (
     <>
       <Content fullwidth>
-        <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
+        <SimpleForm defaultValues={defaultValues} key={app.passwordToken} onSubmit={onSubmit}>
           <SimpleFormError>
             {({ error }) =>
               axios.isAxiosError(error) && error.response?.status === 403 ? (
@@ -227,6 +237,7 @@ export function SettingsPage(): ReactNode {
             label={<FormattedMessage {...messages.showAppDefinitionLabel} />}
             name="showAppDefinition"
           />
+          <PasswordProtection disabled={app.locked !== 'unlocked'} />
           <SimpleFormField
             component={CheckboxField}
             disabled={app.locked !== 'unlocked'}

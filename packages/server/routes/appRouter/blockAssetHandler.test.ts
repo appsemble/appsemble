@@ -10,9 +10,11 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 import { appRouter } from './index.js';
 import { BlockAsset, BlockVersion, Organization } from '../../models/index.js';
+import { setArgv } from '../../utils/argv.js';
 
 describe('blockAssetHandler', () => {
   beforeAll(async () => {
+    setArgv({ host: 'http://localhost' });
     await setTestApp(new Koa().use(errorMiddleware()).use(appRouter));
   });
 

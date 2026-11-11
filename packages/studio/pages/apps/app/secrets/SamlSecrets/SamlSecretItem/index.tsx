@@ -54,7 +54,12 @@ export function SamlSecretItem({ onDeleted, onUpdated, secret }: SamlSecretItemP
 
   return (
     <>
-      <IconProvider apiUrl={window.location.origin} appId={app.id} registry={app.definition.icons}>
+      <IconProvider
+        apiUrl={window.location.origin}
+        appId={app.id}
+        passwordToken={app.passwordToken}
+        registry={app.definition.icons}
+      >
         <ListButton
           description={
             entityId

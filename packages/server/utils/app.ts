@@ -1,14 +1,16 @@
-import { randomBytes } from 'node:crypto';
+import { createHmac, randomBytes } from 'node:crypto';
 
 import {
   assertKoaCondition,
   getSupportedLanguages,
   logger,
   mergeMessages,
+  replaceAssetFunctions,
   type TempFile,
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
+import { type App as AppType } from '@appsemble/types';
 import { extractAppMessages, normalizeLocale, StyleValidationError } from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
@@ -110,6 +112,57 @@ export async function getApp(
       })) ?? undefined;
   }
   return value;
+}
+
+/**
+ * Get the token which grants the visitors of a password protected app access to its API.
+ *
+ * The token is derived from the password hash, so changing the password revokes it.
+ *
+ * @param app The app to get the token for.
+ * @returns The token, or `undefined` if the app is not password protected.
+ */
+export function getAppPasswordToken({
+  id,
+  password,
+}: Pick<App, 'id' | 'password'>): string | undefined {
+  return password
+    ? createHmac('sha256', argv.secret).update(`${id}:${password}`).digest('base64url')
+    : undefined;
+}
+
+/**
+ * Get public listing metadata without exposing the content of an app.
+ *
+ * @param app The app to list.
+ * @returns The public app listing.
+ */
+export function getAppStoreListing(app: App): Omit<AppType, 'definition'> & {
+  definition: Pick<AppType['definition'], 'defaultLanguage' | 'description' | 'name'>;
+} {
+  const { defaultLanguage, description, name } = app.definition;
+  return {
+    ...app.toJSON(['yaml', 'messages', 'controllerCode', 'controllerImplementations']),
+    definition: {
+      defaultLanguage,
+      description: app.messages?.app?.description || description,
+      name: app.messages?.app?.name || name,
+    },
+  };
+}
+
+/**
+ * Add the current app password token to asset URLs in a served stylesheet.
+ *
+ * @param app The app whose stylesheet is served.
+ * @param style The stored stylesheet.
+ * @returns The stylesheet with authorized asset URLs.
+ */
+export function getAppStyle(app: Pick<App, 'id' | 'password'>, style?: string | null): string {
+  const passwordToken = getAppPasswordToken(app);
+  return passwordToken && style
+    ? replaceAssetFunctions(style, app.id, argv.host, passwordToken)
+    : style || '';
 }
 
 export function getAppUrl(app: App): URL {

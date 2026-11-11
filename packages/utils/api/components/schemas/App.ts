@@ -59,6 +59,20 @@ This doesn’t affect whether or not the app can be accessed on its own domain.
       type: 'boolean',
       description: 'Whether or not people who have access to the app may see the app definition.',
     },
+    passwordProtected: {
+      type: 'boolean',
+      readOnly: true,
+      description: 'Whether visitors must enter a password to open the app.',
+    },
+    passwordMessage: {
+      type: 'string',
+      description: 'The message visitors see above the password field of a password protected app.',
+    },
+    passwordToken: {
+      type: 'string',
+      readOnly: true,
+      description: 'The token which grants access to the API of a password protected app.',
+    },
     locked: {
       enum: ['fullLock', 'studioLock', 'unlocked'],
       default: 'unlocked',

@@ -24,7 +24,10 @@ import {
 } from '../../../models/index.js';
 import { handleAppValidationError, setAppPath } from '../../../utils/app.js';
 import { argv } from '../../../utils/argv.js';
-import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import {
+  checkAppPassword,
+  checkUserOrganizationPermissions,
+} from '../../../utils/authorization.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { createAppBuildManifest } from '../../../utils/appBuildManifest.js';
 import { syncAppDefinitionIndexes } from '../../../utils/appDefinitionIndexes.js';
@@ -66,6 +69,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       'demoMode',
       'scimEnabled',
       'sslKey',
+      'password',
     ],
     include: [
       { model: AppMessages, required: false },
@@ -92,6 +96,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
   });
 
   assertKoaCondition(template != null, ctx, 404, `Template with ID ${templateId} does not exist.`);
+  await checkAppPassword(ctx, template);
 
   if (!template.template && (template.visibility === 'private' || !template.showAppDefinition)) {
     // Only allow cloning of unlisted apps if the user is part of the template’s organization.

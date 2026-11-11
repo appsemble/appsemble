@@ -1,8 +1,15 @@
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { col, fn, literal, Op } from 'sequelize';
 
 import { App, AppRating, Organization, OrganizationMember } from '../../../../../models/index.js';
-import { applyAppMessages, compareApps, parseLanguage } from '../../../../../utils/app.js';
+import {
+  applyAppMessages,
+  compareApps,
+  getAppStoreListing,
+  parseLanguage,
+} from '../../../../../utils/app.js';
 
 export async function queryCurrentUserApps(ctx: Context): Promise<void> {
   const user = ctx.user!;
@@ -13,7 +20,7 @@ export async function queryCurrentUserApps(ctx: Context): Promise<void> {
   } = parseLanguage(ctx, ctx.query?.language ?? []);
 
   const memberships = await OrganizationMember.findAll({
-    attributes: ['OrganizationId'],
+    attributes: ['OrganizationId', 'role'],
     raw: true,
     where: { UserId: user.id },
   });
@@ -89,12 +96,19 @@ export async function queryCurrentUserApps(ctx: Context): Promise<void> {
     })
     .sort(compareApps)
     .map((app) =>
-      Object.assign(app.toJSON(['yaml']), {
-        definition: {
-          name: app.definition.name,
-          description: app.definition.description,
-          defaultLanguage: app.definition.defaultLanguage,
-        },
-      }),
+      app.password &&
+      !memberships.some(
+        ({ OrganizationId, role }) =>
+          OrganizationId === app.OrganizationId &&
+          checkOrganizationRoleOrganizationPermissions(role, [OrganizationPermission.QueryApps]),
+      )
+        ? getAppStoreListing(app)
+        : Object.assign(app.toJSON(['yaml']), {
+            definition: {
+              name: app.definition.name,
+              description: app.definition.description,
+              defaultLanguage: app.definition.defaultLanguage,
+            },
+          }),
     );
 }

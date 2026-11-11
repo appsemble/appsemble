@@ -16,6 +16,7 @@ import {
 } from '@appsemble/node-utils';
 import { APP_VALIDATION_FAILED, OrganizationPermission } from '@appsemble/types';
 import { validateStyle } from '@appsemble/utils';
+import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 import { parse } from 'yaml';
@@ -34,6 +35,7 @@ import {
 import {
   createAppReadmes,
   createAppScreenshots,
+  getAppPasswordToken,
   handleAppValidationError,
 } from '../../../utils/app.js';
 import { argv } from '../../../utils/argv.js';
@@ -81,6 +83,8 @@ export async function patchApp(ctx: Context): Promise<void> {
         maskableIcon,
         metaPixelID,
         msClarityID,
+        password,
+        passwordMessage,
         path,
         readmes,
         screenshots,
@@ -285,6 +289,20 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.showAppDefinition = showAppDefinition;
     }
 
+    if (password !== undefined) {
+      assertKoaCondition(
+        Buffer.byteLength(password, 'utf8') <= 72,
+        ctx,
+        400,
+        'The app password must not exceed 72 UTF-8 bytes.',
+      );
+      result.password = password ? await hash(password, 10) : null;
+    }
+
+    if (passwordMessage !== undefined) {
+      result.passwordMessage = passwordMessage || null;
+    }
+
     if (sentryDsn !== undefined) {
       result.sentryDsn = sentryDsn;
     }
@@ -398,6 +416,8 @@ export async function patchApp(ctx: Context): Promise<void> {
       domain !== undefined ||
       path !== undefined ||
       visibility !== undefined ||
+      password !== undefined ||
+      passwordMessage !== undefined ||
       template !== undefined ||
       icon !== undefined ||
       maskableIcon !== undefined ||
@@ -538,7 +558,7 @@ WHERE resource.id = positions.id`,
       }
     });
 
-    ctx.body = dbApp.toJSON();
+    ctx.body = { ...dbApp.toJSON(), passwordToken: getAppPasswordToken(dbApp) };
   } catch (error: unknown) {
     handleAppValidationError(ctx, error as Error, result);
   }

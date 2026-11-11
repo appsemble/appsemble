@@ -50,6 +50,37 @@ export const messages = defineMessages({
     id: 'studio.FhSRwt',
     defaultMessage: 'Show app definition',
   },
+  passwordProtectedLabel: {
+    id: 'studio.FhB/3o',
+    defaultMessage: 'Password protection',
+  },
+  passwordProtectedDescription: {
+    id: 'studio.ilr2Tp',
+    defaultMessage:
+      'If checked, visitors must enter a password to open the app. Read more in the <link>documentation</link>.',
+  },
+  passwordLabel: {
+    id: 'studio.5sg7KC',
+    defaultMessage: 'Password',
+  },
+  passwordDescription: {
+    id: 'studio.2CYe3Z',
+    defaultMessage: 'The password visitors must enter. Share it with everyone who may use the app.',
+  },
+  passwordChangeDescription: {
+    id: 'studio.kjJyF+',
+    defaultMessage:
+      'Enter a new password to replace the current one, or leave this empty to keep it.',
+  },
+  passwordMessageLabel: {
+    id: 'studio.S7wNj+',
+    defaultMessage: 'Password page message',
+  },
+  passwordMessageDescription: {
+    id: 'studio.TnIqEe',
+    defaultMessage:
+      'Shown to visitors above the password field, for example to explain who can give them access.',
+  },
   appLock: {
     id: 'studio.5JnqzW',
     defaultMessage: 'App lock',
