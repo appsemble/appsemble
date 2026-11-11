@@ -13,6 +13,9 @@ spec:
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
+      # A run that is still active at the next ten-minute tick makes that tick skip, so a hung run
+      # ends early enough for its pod to terminate before the tick.
+      activeDeadlineSeconds: 480
       template:
         metadata:
           annotations:

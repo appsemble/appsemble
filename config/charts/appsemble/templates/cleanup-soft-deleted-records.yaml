@@ -12,6 +12,8 @@ spec:
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
+      # A run takes several minutes, so a hung run ends within the hour.
+      activeDeadlineSeconds: 3600
       template:
         metadata:
           annotations:
