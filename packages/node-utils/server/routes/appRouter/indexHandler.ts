@@ -200,7 +200,10 @@ export function createIndexHandler(options: Options): Middleware {
       bulmaURL: createThemeURL(mergedTheme),
       fontURL,
       faURL,
-      messagesURL: `${host}/api/apps/${app.id}/messages/${messagesLanguage}`,
+      // A preload cannot send the password token, and the browser would hand its refusal to the app.
+      messagesURL: app.passwordProtected
+        ? undefined
+        : `${host}/api/apps/${app.id}/messages/${messagesLanguage}`,
       nonce,
       settings,
       themeColor: app.definition.theme?.themeColor || '#ffffff',
