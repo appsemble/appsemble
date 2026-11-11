@@ -47,8 +47,9 @@ spec:
             - -ec
             - |
               # The auth file format escapes a double quote by doubling it.
-              quote() { printf '%s' "$1" | sed 's/"/""/g'; }
-              printf '"%s" "%s"\n' "$(quote "$DATABASE_USER")" "$(quote "$DATABASE_PASSWORD")" \
+              # Enclosing each field preserves trailing newlines during command substitution.
+              quote() { printf '%s\n' "$1" | sed 's/"/""/g; 1s/^/"/; $s/$/"/'; }
+              printf '%s %s\n' "$(quote "$DATABASE_USER")" "$(quote "$DATABASE_PASSWORD")" \
                 > /etc/pgbouncer/auth/userlist.txt
           volumeMounts:
             - name: pgbouncer-auth
