@@ -103,10 +103,14 @@ export function PageProperty({
         push({ body: formatMessage(messages.pageNameEmpty), color: 'danger' });
         return;
       }
-      // Check if the changed page is the default page TODO check if page name is used anywhere else
+      // Check if the changed page is the default or not found page TODO check if page name is used
+      // anywhere else
       const oldName = saveStack.toJS().pages[selectedPage].name.trim();
       if (saveStack.toJS().defaultPage.trim() === oldName) {
         changeIn(['defaultPage'], doc.createNode(currentPageName.trim()));
+      }
+      if (saveStack.toJS().notFoundPage?.trim() === oldName) {
+        changeIn(['notFoundPage'], doc.createNode(currentPageName.trim()));
       }
       changeIn(['pages', selectedPage, 'name'], doc.createNode(currentPageName.trim()));
 
