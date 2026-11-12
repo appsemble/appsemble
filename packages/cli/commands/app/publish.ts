@@ -154,6 +154,7 @@ export function builder(yargs: Argv): Argv<any> {
     .option('password', {
       describe: 'The password visitors must enter to open the app.',
       type: 'string',
+      requiresArg: true,
     });
 }
 

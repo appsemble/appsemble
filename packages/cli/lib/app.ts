@@ -1859,6 +1859,7 @@ export async function updateApp({
   }
 
   if (options.password !== undefined) {
+    logger.info(options.password ? 'Setting app password' : 'Turning password protection off');
     formData.append('password', options.password);
   }
 

@@ -90,6 +90,7 @@ export function builder(yargs: Argv): Argv<any> {
       description:
         'The password visitors must enter to open the app. Pass an empty string to turn password protection off.',
       type: 'string',
+      requiresArg: true,
     })
     .option('force', {
       description: 'Whether the lock property should be ignored',
