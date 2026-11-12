@@ -124,6 +124,18 @@ describe('appRouter', () => {
     expect(response.data).toMatchObject({ data: { message: 'Vraag het team om toegang.' } });
   });
 
+  it('should show the message in the default language to visitors whose language keeps the default', async () => {
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl',
+      messages: { core: { 'server.passwordPage.message': '' } },
+    });
+
+    const response = await request.get('/', { headers: { 'Accept-Language': 'nl' } });
+
+    expect(response.data).toMatchObject({ data: { message: passwordMessage } });
+  });
+
   it('should ask visitors of an app without a message to request the password from its owner', async () => {
     await AppMessages.destroy({ where: { AppId: app.id } });
 
