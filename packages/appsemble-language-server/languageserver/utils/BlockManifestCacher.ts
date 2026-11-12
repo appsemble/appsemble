@@ -2,6 +2,8 @@ import {
   type BlockManifest,
   type IdentifiableBlock,
   normalizeBlockName,
+  parseBlockName,
+  semver,
 } from '@appsemble/lang-sdk';
 
 import { type Logger } from '../../Logger.js';
@@ -96,6 +98,10 @@ export class BlockManifestCacher {
   }
 
   private getBlockManifest(block: IdentifiableBlock): Promise<BlockManifest | null> {
+    // The registry only has blocks with a full name and version, unlike one still being typed.
+    if (!parseBlockName(block.type) || !semver.test(String(block.version))) {
+      return Promise.resolve(null);
+    }
     const url = new URL(
       `/api/blocks/${normalizeBlockName(block.type)}/versions/${block.version}`,
       this.apiBaseUrl,
@@ -133,7 +139,9 @@ export class BlockManifestCacher {
         await delay(this.retryDelay(attempt, response));
       } catch (error) {
         if (attempt >= this.maxRetries) {
-          this.logger.error(`Block request for ${url} failed: ${error}`);
+          this.logger.error(
+            `Block request for ${url} failed: ${error} (${(error as Error).cause})`,
+          );
           return null;
         }
         this.logger.log(
