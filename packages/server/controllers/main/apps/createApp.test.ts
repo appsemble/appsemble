@@ -3100,14 +3100,14 @@ describe('createApp', () => {
           OrganizationId: organization.id,
           s3Bucket: 'tst-named-bucket',
           yaml: stripIndent(`
-          name: Test App
-          defaultPage: Test Page
-          pages:
-            - name: Test Page
-              blocks:
-                - type: test
-                  version: 0.0.0
-        `),
+            name: Test App
+            defaultPage: Test Page
+            pages:
+              - name: Test Page
+                blocks:
+                  - type: test
+                    version: 0.0.0
+          `),
         }),
       );
       const file = Buffer.from('named bucket');
