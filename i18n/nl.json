@@ -715,7 +715,7 @@
   "studio.Jh0bQl": "Weet u zeker dat u {member} uit deze app wilt verwijderen?",
   "studio.JkLHGw": "Website",
   "studio.Jrk0SZ": "De toestemming om uitnodigingen voor apps te verwijderen.",
-  "studio.Jrs+iV": "Om apps te klonen, moet u ingelogd zijn. Klik hier op <loginLink></loginLink> om in te loggen met een bestaand account of hier op <registerLink></registerLink> om een nieuw account aan te maken.",
+  "studio.Jrs+iV": "Om apps te klonen, moet u ingelogd zijn. Klik <loginLink>hier</loginLink> om in te loggen met een bestaand account of <registerLink>hier</registerLink> om een nieuw account aan te maken.",
   "studio.JsZpzQ": "demo",
   "studio.JvxqIq": "De resource-definities in deze app-definitie bevatten andere gegevens dan het origineel. Dit kan onverwachte resultaten opleveren bij het gebruik van oudere gegevens.",
   "studio.Jx1BPg": "De gebruikersnaam die wordt gebruikt voor authenticatie bij de aangepaste SMTP-server.",
