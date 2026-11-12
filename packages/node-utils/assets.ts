@@ -5,7 +5,7 @@ import { stat } from 'node:fs/promises';
 import { type Context } from 'koa';
 
 import { logger } from './logger.js';
-import { getAppAssetLocation, type S3FileStats, uploadS3File } from './s3.js';
+import { type AssetOwner, getAppAssetLocation, type S3FileStats, uploadS3File } from './s3.js';
 import { removeUploads } from './uploads.js';
 
 // An asset URL addresses one fixed set of bytes when it carries the asset id, so it may be cached
@@ -104,13 +104,13 @@ export interface AssetToUpload {
   path: string;
 }
 
-export async function uploadAsset(appId: number, asset: AssetToUpload): Promise<void> {
+export async function uploadAsset(app: AssetOwner, asset: AssetToUpload): Promise<void> {
   const { id, path } = asset;
 
   try {
     const stats = await stat(path);
     const stream = createReadStream(path);
-    const { bucket, key } = getAppAssetLocation(appId, id);
+    const { bucket, key } = getAppAssetLocation(app, id);
     await uploadS3File(bucket, key, stream, stats.size);
   } catch (error) {
     logger.error(error);
@@ -118,12 +118,12 @@ export async function uploadAsset(appId: number, asset: AssetToUpload): Promise<
   }
 }
 
-export async function uploadAssets(appId: number, assets: AssetToUpload[]): Promise<void> {
+export async function uploadAssets(app: AssetOwner, assets: AssetToUpload[]): Promise<void> {
   const filesToUnlink = [...new Set(assets.map(({ path }) => path))];
 
   try {
     for (const asset of assets) {
-      await uploadAsset(appId, asset);
+      await uploadAsset(app, asset);
     }
   } finally {
     await removeUploads(filesToUnlink);

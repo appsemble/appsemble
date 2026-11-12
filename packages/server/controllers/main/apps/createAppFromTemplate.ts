@@ -70,6 +70,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       'scimEnabled',
       'sslKey',
       'password',
+      's3Bucket',
     ],
     include: [
       { model: AppMessages, required: false },
@@ -202,10 +203,10 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
           { transaction },
         );
         for (const templateAsset of templateAssets) {
-          const source = getAppAssetLocation(template.id, templateAsset.id);
+          const source = getAppAssetLocation(template, templateAsset.id);
           const templateStream = await getS3File(source.bucket, source.key);
           const templateStats = await getS3FileStats(source.bucket, source.key);
-          const target = getAppAssetLocation(record.id, templateAsset.id);
+          const target = getAppAssetLocation(record, templateAsset.id);
           await uploadS3File(target.bucket, target.key, templateStream, templateStats.size);
         }
       });

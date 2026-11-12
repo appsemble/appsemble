@@ -12,7 +12,9 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
     query: { seed },
     request: { body },
   } = ctx;
-  const app = await App.findByPk(appId, { attributes: ['OrganizationId', 'demoMode'] });
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'OrganizationId', 'demoMode', 's3Bucket'],
+  });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   const isSeed = !(ctx.client && 'app' in ctx.client) && seed === 'true';
@@ -42,7 +44,7 @@ export async function deleteAppAssets(ctx: Context): Promise<void> {
   assertKoaCondition(isSeed || assets.length !== 0, ctx, 404, 'No assets found');
 
   await deleteAppAssetObjects(
-    appId,
+    app,
     assets.map((asset) => asset.id),
   );
 

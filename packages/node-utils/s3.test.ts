@@ -60,8 +60,15 @@ describe('bucket-per-app layout', () => {
   });
 
   it('stores app assets in a bucket per app', () => {
-    expect(getAppAssetLocation(1216, 'asset-id')).toStrictEqual({
+    expect(getAppAssetLocation({ id: 1216 }, 'asset-id')).toStrictEqual({
       bucket: 'app-1216',
+      key: 'asset-id',
+    });
+  });
+
+  it('stores the assets of an app with its own bucket in that bucket', () => {
+    expect(getAppAssetLocation({ id: 1216, s3Bucket: 'tst-kcc' }, 'asset-id')).toStrictEqual({
+      bucket: 'tst-kcc',
       key: 'asset-id',
     });
   });
@@ -82,6 +89,18 @@ describe('bucket-per-app layout', () => {
       ['HeadBucketCommand', { Bucket: 'app-1216' }],
       ['CreateBucketCommand', { Bucket: 'app-1216' }],
       ['PutObjectCommand', expect.objectContaining({ Bucket: 'app-1216', Key: 'asset-id' })],
+    ]);
+  });
+
+  it('never creates the own bucket of an app', async () => {
+    send.mockRejectedValueOnce(s3Error('NoSuchBucket'));
+
+    await expect(uploadS3File('tst-kcc', 'asset-id', 'payload')).rejects.toMatchObject({
+      name: 'NoSuchBucket',
+    });
+
+    expect(sentCommands()).toStrictEqual([
+      ['PutObjectCommand', expect.objectContaining({ Bucket: 'tst-kcc', Key: 'asset-id' })],
     ]);
   });
 
@@ -138,9 +157,16 @@ describe('single-bucket layout', () => {
   });
 
   it('stores app assets under a prefix per app', () => {
-    expect(getAppAssetLocation(1216, 'asset-id')).toStrictEqual({
+    expect(getAppAssetLocation({ id: 1216 }, 'asset-id')).toStrictEqual({
       bucket: 'objects',
       key: 'apps/1216/asset-id',
+    });
+  });
+
+  it('stores the assets of an app with its own bucket in that bucket', () => {
+    expect(getAppAssetLocation({ id: 1216, s3Bucket: 'tst-kcc' }, 'asset-id')).toStrictEqual({
+      bucket: 'tst-kcc',
+      key: 'asset-id',
     });
   });
 
@@ -225,7 +251,7 @@ describe('single-bucket layout', () => {
   });
 
   it('deletes app assets under their prefix', async () => {
-    await deleteAppAssetObjects(1216, ['a', 'b']);
+    await deleteAppAssetObjects({ id: 1216 }, ['a', 'b']);
 
     expect(sentCommands()).toStrictEqual([
       [
@@ -234,6 +260,17 @@ describe('single-bucket layout', () => {
           Bucket: 'objects',
           Delete: { Objects: [{ Key: 'apps/1216/a' }, { Key: 'apps/1216/b' }], Quiet: true },
         },
+      ],
+    ]);
+  });
+
+  it('deletes the assets of an app with its own bucket from that bucket', async () => {
+    await deleteAppAssetObjects({ id: 1216, s3Bucket: 'tst-kcc' }, ['a']);
+
+    expect(sentCommands()).toStrictEqual([
+      [
+        'DeleteObjectsCommand',
+        { Bucket: 'tst-kcc', Delete: { Objects: [{ Key: 'a' }], Quiet: true } },
       ],
     ]);
   });
@@ -456,10 +493,10 @@ describe('object store', () => {
   });
 
   it('creates a missing bucket in the bucket-per-app layout before applying its policy', async () => {
-    await expect(listS3Files('policy-bucket')).rejects.toMatchObject({ name: 'NoSuchBucket' });
+    await expect(listS3Files('app-404040')).rejects.toMatchObject({ name: 'NoSuchBucket' });
 
     await setS3BucketPolicy(
-      'policy-bucket',
+      'app-404040',
       JSON.stringify({
         Version: '2012-10-17',
         Statement: [
@@ -467,16 +504,16 @@ describe('object store', () => {
             Effect: 'Allow',
             Principal: '*',
             Action: ['s3:GetObject'],
-            Resource: ['arn:aws:s3:::policy-bucket/*'],
+            Resource: ['arn:aws:s3:::app-404040/*'],
           },
         ],
       }),
     );
 
-    expect(await listS3Files('policy-bucket')).toStrictEqual([]);
-    await uploadS3File('policy-bucket', 'public.txt', 'readable by anyone');
+    expect(await listS3Files('app-404040')).toStrictEqual([]);
+    await uploadS3File('app-404040', 'public.txt', 'readable by anyone');
     const { data, status } = await axios.get(
-      `http://${store.endPoint}:${store.port}/policy-bucket/public.txt`,
+      `http://${store.endPoint}:${store.port}/app-404040/public.txt`,
     );
     expect(status).toBe(200);
     expect(data).toBe('readable by anyone');

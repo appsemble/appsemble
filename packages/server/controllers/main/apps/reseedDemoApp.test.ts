@@ -134,14 +134,14 @@ describe('reseedDemoApp', () => {
       name: 'tasks',
       seed: true,
     });
-    const seedLocation = getAppAssetLocation(appId, seedAssetId);
+    const seedLocation = getAppAssetLocation({ id: appId }, seedAssetId);
     await uploadS3File(seedLocation.bucket, seedLocation.key, createFixtureStream('standing.png'));
 
     const { id: ephemeralAssetId } = await Asset.create({
       name: 'tasks',
       ephemeral: true,
     });
-    const ephemeralLocation = getAppAssetLocation(appId, ephemeralAssetId);
+    const ephemeralLocation = getAppAssetLocation({ id: appId }, ephemeralAssetId);
     await uploadS3File(
       ephemeralLocation.bucket,
       ephemeralLocation.key,
@@ -230,7 +230,7 @@ describe('reseedDemoApp', () => {
         ephemeral: true,
       }),
     );
-    const { bucket, key } = getAppAssetLocation(appId, newEphemeralAsset.id);
+    const { bucket, key } = getAppAssetLocation({ id: appId }, newEphemeralAsset.id);
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(await readFixture('standing.png'));
   });
 
@@ -307,14 +307,14 @@ describe('reseedDemoApp', () => {
       name: 'tasks',
       seed: true,
     });
-    const seedLocation = getAppAssetLocation(appId, seedAssetId);
+    const seedLocation = getAppAssetLocation({ id: appId }, seedAssetId);
     await uploadS3File(seedLocation.bucket, seedLocation.key, createFixtureStream('standing.png'));
 
     const { id: ephemeralAssetId } = await Asset.create({
       name: 'tasks',
       ephemeral: true,
     });
-    const ephemeralLocation = getAppAssetLocation(appId, ephemeralAssetId);
+    const ephemeralLocation = getAppAssetLocation({ id: appId }, ephemeralAssetId);
     await uploadS3File(
       ephemeralLocation.bucket,
       ephemeralLocation.key,
@@ -458,7 +458,7 @@ describe('reseedDemoApp', () => {
         ephemeral: true,
       }),
     );
-    const { bucket, key } = getAppAssetLocation(appId, newEphemeralAsset.id);
+    const { bucket, key } = getAppAssetLocation({ id: appId }, newEphemeralAsset.id);
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(await readFixture('standing.png'));
   });
 
@@ -778,7 +778,7 @@ describe('reseedDemoApp', () => {
       ResourceId: seedResourceId,
       ResourceType: 'tasks',
     });
-    const { bucket, key } = getAppAssetLocation(appId, seedAssetId);
+    const { bucket, key } = getAppAssetLocation({ id: appId }, seedAssetId);
     await uploadS3File(bucket, key, createFixtureStream('standing.png'));
 
     await request.post(`/api/apps/${appId}/reseed`);
@@ -814,7 +814,7 @@ describe('reseedDemoApp', () => {
     const hashed = await Asset.create({ name: 'hashed', seed: true, sha256: 'hash' });
     const unhashed = await Asset.create({ name: 'unhashed', seed: true });
     for (const { id } of [hashed, unhashed]) {
-      const { bucket, key } = getAppAssetLocation(appId, id);
+      const { bucket, key } = getAppAssetLocation({ id: appId }, id);
       await uploadS3File(bucket, key, createFixtureStream('standing.png'));
     }
 

@@ -2,6 +2,7 @@ import { createHmac, randomBytes } from 'node:crypto';
 
 import {
   assertKoaCondition,
+  isLayoutBucket,
   getSupportedLanguages,
   logger,
   mergeMessages,
@@ -427,6 +428,38 @@ export async function createAppReadmes(
     ),
     // These queries provide huge logs.
     { transaction, logging: false },
+  );
+}
+
+/**
+ * Assert an app may keep its assets in a bucket with this name.
+ *
+ * The name must start with the configured app bucket prefix, so an app cannot reach buckets that
+ * the operator did not set aside for apps, and no other app may use it.
+ *
+ * @param ctx The Koa context to throw an error with.
+ * @param s3Bucket The bucket name the app asks for.
+ * @param appId The id of the app that asks for it, if it exists already.
+ */
+export async function assertAppS3Bucket(
+  ctx: Context,
+  s3Bucket: string,
+  appId?: number,
+): Promise<void> {
+  assertKoaCondition(
+    Boolean(argv.s3AppBucketPrefix) &&
+      s3Bucket.startsWith(argv.s3AppBucketPrefix) &&
+      !isLayoutBucket(s3Bucket),
+    ctx,
+    400,
+    `Apps on this server cannot use bucket “${s3Bucket}”`,
+  );
+  const owner = await App.findOne({ attributes: ['id'], where: { s3Bucket }, paranoid: false });
+  assertKoaCondition(
+    owner == null || owner.id === appId,
+    ctx,
+    409,
+    `Another app already uses bucket “${s3Bucket}”`,
   );
 }
 

@@ -117,6 +117,10 @@
         "pathStyle": {
           "type": "boolean",
           "description": "Whether to address buckets in the URL path instead of as a subdomain of the endpoint."
+        },
+        "appBucketPrefix": {
+          "type": "string",
+          "description": "The prefix the name of an app’s own bucket must start with. When unset, apps cannot name their own bucket."
         }
       }
     },

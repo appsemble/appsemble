@@ -113,7 +113,7 @@ describe('createAppAsset', () => {
       `/api/apps/${app.id}/assets`,
       createFormData({ file: data, name: 'test-asset' }),
     );
-    const { bucket, key } = getAppAssetLocation(app.id, response.data.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, response.data.id);
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(data);
   });
 
@@ -227,7 +227,7 @@ describe('createAppAsset', () => {
       filename: 'uploaded.bin',
       mime: 'image/png',
     });
-    const { bucket, key } = getAppAssetLocation(app.id, response.data.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, response.data.id);
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(image);
   });
 

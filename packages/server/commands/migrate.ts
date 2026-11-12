@@ -1,4 +1,4 @@
-import { AppsembleError, initS3Client, logger, version } from '@appsemble/node-utils';
+import { AppsembleError, initS3Client, logger } from '@appsemble/node-utils';
 import semver from 'semver';
 import { QueryTypes, type Sequelize } from 'sequelize';
 import { type Argv } from 'yargs';
@@ -18,7 +18,7 @@ export const description = 'Migrate the Appsemble database.';
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs).positional('migrate-to', {
     desc: 'The database version to migrate to.',
-    default: version,
+    default: 'next',
   });
 }
 

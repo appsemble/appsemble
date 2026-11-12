@@ -54,6 +54,11 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 description:
                   'The password visitors must enter to open the app. An empty string turns password protection off.',
               },
+              s3Bucket: {
+                type: 'string',
+                pattern: '^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$',
+                description: 'The pre-provisioned S3 bucket that holds the app’s assets.',
+              },
               force: {
                 type: 'boolean',
                 description: 'Whether the locked property should be ignored.',

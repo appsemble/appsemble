@@ -29,6 +29,7 @@ import {
   transactional,
 } from '../../../models/index.js';
 import {
+  assertAppS3Bucket,
   createAppReadmes,
   createAppScreenshots,
   handleAppValidationError,
@@ -67,6 +68,7 @@ export async function createApp(ctx: Context): Promise<void> {
         msClarityID,
         password,
         readmes,
+        s3Bucket,
         screenshots,
         sentryDsn,
         sentryEnvironment,
@@ -98,6 +100,10 @@ export async function createApp(ctx: Context): Promise<void> {
     organizationId: OrganizationId,
     requiredPermissions: [OrganizationPermission.CreateApps],
   });
+
+  if (s3Bucket) {
+    await assertAppS3Bucket(ctx, s3Bucket);
+  }
 
   try {
     const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
@@ -167,6 +173,7 @@ export async function createApp(ctx: Context): Promise<void> {
       dbHost,
       dbPort,
       dbUser,
+      s3Bucket,
       supportedLanguages: supportedLanguagesArray.length
         ? supportedLanguagesArray
         : [definition.defaultLanguage ?? defaultLocale],

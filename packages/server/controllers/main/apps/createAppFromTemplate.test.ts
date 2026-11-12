@@ -111,7 +111,7 @@ describe('createAppFromTemplate', () => {
     const asset2 = await Asset.create({ name: 'test' });
     vi.useRealTimers();
     for (const asset of [asset1, asset2]) {
-      const { bucket, key } = getAppAssetLocation(t2.id, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: t2.id }, asset.id);
       await uploadS3File(bucket, key, Buffer.from('test'));
     }
     await AppMessages.create({
@@ -510,7 +510,7 @@ describe('createAppFromTemplate', () => {
 
     for (const asset of assets) {
       expect(asset.name).toBe('test-clonable');
-      const { bucket, key } = getAppAssetLocation(id!, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: id! }, asset.id);
       expect(await getS3FileBuffer(bucket, key)).toStrictEqual(Buffer.from('test'));
     }
     expect(assets.map(({ name, sha256 }) => ({ name, sha256 }))).toStrictEqual([
@@ -525,7 +525,7 @@ describe('createAppFromTemplate', () => {
     const contents = new Map<string, string>();
     for (const content of ['first', 'second']) {
       const { id } = await TemplateAsset.create({ clonable: true });
-      const { bucket, key } = getAppAssetLocation(template.id, id);
+      const { bucket, key } = getAppAssetLocation({ id: template.id }, id);
       await uploadS3File(bucket, key, Buffer.from(content));
       contents.set(id, content);
     }
@@ -540,7 +540,7 @@ describe('createAppFromTemplate', () => {
     });
 
     for (const [id, content] of contents) {
-      const { bucket, key } = getAppAssetLocation(response.data.id!, id);
+      const { bucket, key } = getAppAssetLocation({ id: response.data.id! }, id);
       expect(String(await getS3FileBuffer(bucket, key))).toBe(content);
     }
   });

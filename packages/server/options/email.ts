@@ -29,6 +29,7 @@ export async function email({
       'id',
       'OrganizationId',
       'path',
+      's3Bucket',
     ],
   }))!;
 

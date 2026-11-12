@@ -38,6 +38,7 @@ s3:
   bucket: ''
   region: us-east-1
   pathStyle: true
+  appBucketPrefix: ''
 
 dns:
   provider: ''

@@ -529,6 +529,13 @@ export interface Argv {
   s3Bucket: string;
 
   /**
+   * The prefix the name of an app’s own bucket must start with. When unset, apps cannot name their own bucket.
+   *
+   * default undefined
+   */
+  s3AppBucketPrefix: string;
+
+  /**
    * The region to sign requests to the Amazon S3 compatible object storage server for
    *
    * default us-east-1
@@ -803,6 +810,8 @@ const defaults: Argv = {
   s3SecretKey: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   s3Bucket: undefined,
+  // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
+  s3AppBucketPrefix: undefined,
   s3Region: 'us-east-1',
   s3PathStyle: true,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)

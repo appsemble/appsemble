@@ -33,6 +33,7 @@ export async function exportApp(ctx: Context): Promise<void> {
       'sharedStyle',
       'showAppDefinition',
       'visibility',
+      's3Bucket',
     ],
     include: [
       { model: AppMessages, required: false },
@@ -166,7 +167,7 @@ export async function exportApp(ctx: Context): Promise<void> {
         `assets/${asset.filename}`,
         Readable.from(
           (async function* readAsset(): AsyncGenerator<Buffer> {
-            const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+            const { bucket, key } = getAppAssetLocation(app, asset.id);
             yield* await getS3File(bucket, key);
           })(),
         ),

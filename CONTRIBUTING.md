@@ -683,9 +683,9 @@ Examples:
 Only stable tags (`x.y.z`) and `test` prerelease tags deploy to production; other prerelease tags
 skip the production jobs.
 
-> **Note**: Migrations are still added manually. Make sure the release matches any new migrations.
-> For example, if you’re releasing version `1.2.3`, make sure existing migrations in
-> `./packages/server/migrations/` are no higher than `1.2.3`.
+> **Note**: Add migrations manually with unique keys higher than existing keys in the same
+> directory. Database upgrades apply all migrations bundled with the release. Pass an explicit
+> migration key to `appsemble migrate` to target an earlier schema.
 
 [dnsmasq]: http://www.thekelleys.org.uk/dnsmasq/doc.html
 [keep a changelog]: https://keepachangelog.com/en/1.0.0

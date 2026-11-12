@@ -81,7 +81,7 @@ describe('getOriginalAppAsset', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     authorizeStudio(user);
@@ -117,7 +117,7 @@ describe('getOriginalAppAsset', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const appMember = await createTestAppMember(app.id, user.primaryEmail);
@@ -147,7 +147,7 @@ describe('getOriginalAppAsset', () => {
     const svg = Buffer.from(
       '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>',
     );
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, svg);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}/download`, {
@@ -183,7 +183,7 @@ describe('getOriginalAppAsset', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}/download`, {
@@ -209,7 +209,7 @@ describe('getOriginalAppAsset', () => {
       name: 'logo',
     });
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     const response = await request.get(`/api/apps/${app.id}/assets/logo/download`, {
@@ -230,7 +230,7 @@ describe('getOriginalAppAsset', () => {
       name: 'logo',
     });
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     const url = `/api/apps/${app.id}/assets/logo/download`;

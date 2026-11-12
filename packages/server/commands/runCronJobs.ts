@@ -104,6 +104,7 @@ export async function handler(): Promise<void> {
       'emailPassword',
       'emailPort',
       'emailSecure',
+      's3Bucket',
     ],
     where: { definition: { cron: { [Op.not]: null } } },
   })) {

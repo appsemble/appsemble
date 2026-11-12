@@ -104,7 +104,7 @@ describe('appPasswordProtection', () => {
     async (kind, host) => {
       const { Asset, AppBlockStyle } = await getAppDB(app.id);
       const asset = await Asset.create({ name: 'background', mime: 'image/svg+xml' });
-      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
       const content = '<svg xmlns="http://www.w3.org/2000/svg"/>';
       await uploadS3File(bucket, key, Buffer.from(content));
       const style = `body{background-image:url('http://localhost/api/apps/${app.id}/assets/background?passwordToken=stale#photo')}`;

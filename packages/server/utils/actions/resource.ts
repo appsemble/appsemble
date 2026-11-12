@@ -12,6 +12,7 @@ import {
 } from '@appsemble/lang-sdk';
 import {
   addResourceEtag,
+  type AssetOwner,
   deleteAppAssetObjects,
   getCompressedFileMeta,
   getRemapperContext,
@@ -36,9 +37,9 @@ import {
 } from '../resource.js';
 
 export const resourceCleanup = {
-  async deleteDereferencedS3Assets(appId: number, deletedAssetIds: string[]): Promise<void> {
+  async deleteDereferencedS3Assets(app: AssetOwner, deletedAssetIds: string[]): Promise<void> {
     try {
-      await deleteAppAssetObjects(appId, deletedAssetIds);
+      await deleteAppAssetObjects(app, deletedAssetIds);
     } catch (error) {
       logger.error(error);
     }
@@ -306,7 +307,7 @@ export async function update({
       });
 
       if (preparedAssets.length) {
-        await uploadAssets(app.id, preparedAssets);
+        await uploadAssets(app, preparedAssets);
         uploadedAssetIds = preparedAssets.map((asset) => asset.id);
       }
 
@@ -352,13 +353,13 @@ export async function update({
     });
   } catch (error) {
     if (uploadedAssetIds.length) {
-      await deleteAppAssetObjects(app.id, uploadedAssetIds);
+      await deleteAppAssetObjects(app, uploadedAssetIds);
     }
     throw error;
   }
 
   if (shouldDeleteDereferencedAssets) {
-    await resourceCleanup.deleteDereferencedS3Assets(app.id, deletedAssetIds);
+    await resourceCleanup.deleteDereferencedS3Assets(app, deletedAssetIds);
   }
 
   processReferenceHooks(app, updatedResourceModel!, 'update', options, context);
@@ -455,7 +456,7 @@ export async function patch({
       });
 
       if (preparedAssets.length) {
-        await uploadAssets(app.id, preparedAssets);
+        await uploadAssets(app, preparedAssets);
         uploadedAssetIds = preparedAssets.map((asset) => asset.id);
       }
 
@@ -502,13 +503,13 @@ export async function patch({
     });
   } catch (error) {
     if (uploadedAssetIds.length) {
-      await deleteAppAssetObjects(app.id, uploadedAssetIds);
+      await deleteAppAssetObjects(app, uploadedAssetIds);
     }
     throw error;
   }
 
   if (shouldDeleteDereferencedAssets) {
-    await resourceCleanup.deleteDereferencedS3Assets(app.id, deletedAssetIds);
+    await resourceCleanup.deleteDereferencedS3Assets(app, deletedAssetIds);
   }
 
   return addResourceEtag(patchedResourceModel!.toJSON());
