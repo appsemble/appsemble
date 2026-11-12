@@ -6,6 +6,7 @@ Everyone who opens the app enters the same password.
 ## Table of Contents
 
 - [Turning password protection on and off](#turning-password-protection-on-and-off)
+- [Password page message](#password-page-message)
 - [Sharing the password](#sharing-the-password)
 - [What is protected](#what-is-protected)
 - [Related settings](#related-settings)
@@ -17,18 +18,33 @@ version of the app definition does not change it.
 
 1. Open the app in Appsemble Studio and go to **Settings**.
 2. Check **Password protection** and enter a password.
-3. Optionally, enter a **Password page message**. Visitors see it above the password field, so use
-   it to explain why the app is protected and who can give them access.
-4. Click **Save changes**.
+3. Click **Save changes**.
 
 To change the password, enter a new one and save. To turn password protection off, uncheck
 **Password protection** and save.
+
+With the [Appsemble CLI](https://www.npmjs.com/package/@appsemble/cli), pass `--password` to
+`appsemble app publish`, `appsemble app update`, or `appsemble app patch`. For the latter two, an
+empty string, `--password ''`, turns password protection off.
+
+## Password page message
+
+The password page can show a message above the password field, for example to explain why the app is
+protected and who can give visitors access. The message is the core message
+`server.passwordPage.message`, which you
+[translate like any other core message](../app/translating.md#using-the-translations-page) for each
+language of the app. Visitors see the message in their own language, or else in the default language
+of the app. Without a translation, the page asks visitors to request the password from the owner of
+the app.
 
 ## Sharing the password
 
 Send the testers the link to the app and the password. When they open the app, they see the password
 page with the message. After they enter the password, they can use the app until they close the
 browser.
+
+After 10 wrong passwords within 15 minutes, the password page refuses every attempt from the same
+network, including the correct password, until the oldest of those attempts is 15 minutes old.
 
 Changing the password revokes the access of everyone who used the old password. Share the new
 password with the people who should keep access.

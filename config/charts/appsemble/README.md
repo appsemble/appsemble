@@ -336,10 +336,10 @@ readiness. `/api/health` is a deprecated alias of `/health/ready`.
 ## Valkey
 
 The chart deploys one Valkey pod by default. Valkey holds only the app-serving cache (with a default
-`appServingCacheTtl` of 300 seconds) and the sliding-window counters for e-mail registration rate
-limits. It holds no sessions or queues. If Valkey restarts, the cache and counters reset; the server
-keeps serving requests and reconnects when Valkey returns. Cache operations fail fast during the
-outage, and registration requests proceed without the rate limit.
+`appServingCacheTtl` of 300 seconds) and the sliding-window counters for e-mail registration and app
+password rate limits. It holds no sessions or queues. If Valkey restarts, the cache and counters
+reset; the server keeps serving requests and reconnects when Valkey returns. Cache operations fail
+fast during the outage, and registration requests and password attempts proceed without rate limits.
 
 The bundled Valkey has no persistent volume because its data is disposable. It has no replicas: the
 dependency chart does not promote a replica when the primary fails, so replicas would not keep the

@@ -1286,6 +1286,11 @@ interface PublishAppParams {
    * The TOTP (two-factor authentication) setting for the app.
    */
   totp?: AppTotp;
+
+  /**
+   * The password visitors must enter to open the app.
+   */
+  password?: string;
 }
 
 /**
@@ -1457,6 +1462,10 @@ export async function publishApp({
   if (totp) {
     logger.info(`Setting TOTP to ${totp}`);
     formData.append('totp', totp);
+  }
+
+  if (options.password) {
+    formData.append('password', options.password);
   }
 
   const seedAssetFiles =
@@ -1719,6 +1728,12 @@ interface UpdateAppParams {
    * The TOTP (two-factor authentication) setting for the app.
    */
   totp?: AppTotp;
+
+  /**
+   * The password visitors must enter to open the app. An empty string turns password protection
+   * off.
+   */
+  password?: string;
 }
 
 /**
@@ -1841,6 +1856,11 @@ export async function updateApp({
 
   if (supportedLanguages?.length) {
     formData.append('supportedLanguages', JSON.stringify(supportedLanguages));
+  }
+
+  if (options.password !== undefined) {
+    logger.info(options.password ? 'Setting app password' : 'Turning password protection off');
+    formData.append('password', options.password);
   }
 
   if (icon) {
@@ -2060,6 +2080,12 @@ interface PatchAppParams {
    * The TOTP (two-factor authentication) setting for the app.
    */
   totp?: AppTotp;
+
+  /**
+   * The password visitors must enter to open the app. An empty string turns password protection
+   * off.
+   */
+  password?: string;
 }
 
 export async function patchApp({ id, remote, ...options }: PatchAppParams): Promise<void> {
@@ -2121,6 +2147,10 @@ export async function patchApp({ id, remote, ...options }: PatchAppParams): Prom
   if (options.totp !== undefined) {
     logger.info(`Setting totp to ${options.totp}`);
     formData.append('totp', options.totp);
+  }
+  if (options.password !== undefined) {
+    logger.info(options.password ? 'Setting app password' : 'Turning password protection off');
+    formData.append('password', options.password);
   }
   try {
     if (!formData.getLengthSync() && options.locked === undefined) {

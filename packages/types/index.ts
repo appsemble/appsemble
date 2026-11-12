@@ -309,11 +309,6 @@ export interface App {
   passwordProtected?: boolean;
 
   /**
-   * The message visitors see above the password field of a password protected app.
-   */
-  passwordMessage?: string;
-
-  /**
    * The token which grants access to the API of a password protected app.
    */
   passwordToken?: string;

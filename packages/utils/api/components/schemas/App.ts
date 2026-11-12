@@ -64,10 +64,6 @@ This doesn’t affect whether or not the app can be accessed on its own domain.
       readOnly: true,
       description: 'Whether visitors must enter a password to open the app.',
     },
-    passwordMessage: {
-      type: 'string',
-      description: 'The message visitors see above the password field of a password protected app.',
-    },
     passwordToken: {
       type: 'string',
       readOnly: true,

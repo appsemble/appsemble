@@ -20,6 +20,7 @@ import {
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { ISODateTimePattern } from '@appsemble/utils';
 import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
+import { compare } from 'bcrypt';
 import FormData from 'form-data';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -579,7 +580,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "test-app",
           "rating": undefined,
@@ -642,6 +642,24 @@ describe('app', () => {
       expect(resource).toStrictEqual([]);
       const asset = await Asset.findAll();
       expect(asset).toStrictEqual([]);
+    });
+
+    it('should publish a password protected app', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+      await publishApp({
+        path: resolveFixture('apps/test'),
+        organization: organization.id,
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        password: 'open sesame',
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+      });
+      vi.useFakeTimers();
+      const app = (await App.findOne())!;
+      expect(await compare('open sesame', app.password!)).toBe(true);
     });
 
     it('should publish seed app members with an app', async () => {
@@ -789,7 +807,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "test-app",
           "rating": undefined,
@@ -1006,7 +1023,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "test-app",
           "rating": undefined,
@@ -1194,7 +1210,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "test-app",
           "rating": undefined,
@@ -1631,6 +1646,27 @@ describe('app', () => {
       expect((await Asset.findAll()).map((asset) => asset.id)).toStrictEqual([id]);
     });
 
+    it('should set the app password', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+
+      await updateApp({
+        id: app.id,
+        path: resolveFixture('apps/test'),
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        password: 'open sesame',
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+        force: false,
+      });
+      vi.useFakeTimers();
+
+      await app.reload();
+      expect(await compare('open sesame', app.password!)).toBe(true);
+    });
+
     it('should upload the seed assets of a demo app again on every update', async () => {
       vi.useRealTimers();
       const clientCredentials = await authorizeCLI('apps:write assets:write', testApp);
@@ -1741,7 +1777,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "test-app",
           "rating": undefined,
@@ -1941,7 +1976,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "test-app",
           "rating": undefined,
@@ -2123,7 +2157,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "test-app",
           "rating": undefined,
@@ -2309,7 +2342,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "test-app",
           "rating": undefined,
@@ -2612,7 +2644,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "test-app",
           "rating": undefined,
@@ -2699,7 +2730,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "test-app",
           "rating": undefined,
@@ -2778,7 +2808,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "test-app",
           "rating": undefined,
@@ -2869,7 +2898,6 @@ describe('app', () => {
           "messages": undefined,
           "metaPixelID": null,
           "msClarityID": null,
-          "passwordMessage": undefined,
           "passwordProtected": undefined,
           "path": "updated-path",
           "rating": undefined,
@@ -2989,6 +3017,27 @@ describe('app', () => {
       expect(app.dataValues.showAppDefinition).toBe(false);
       await app.reload();
       expect(app.dataValues.showAppDefinition).toBe(true);
+    });
+
+    it('should set and remove the app password', async () => {
+      const app = await App.create({
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      });
+      await authorizeCLI('apps:write', testApp);
+      const patch = (password: string): Promise<void> =>
+        patchApp({ remote: testApp.defaults.baseURL!, id: app.id, password });
+
+      await patch('open sesame');
+      await app.reload();
+      expect(await compare('open sesame', app.password!)).toBe(true);
+
+      await patch('');
+      await app.reload();
+      expect(app.password).toBeNull();
     });
   });
 

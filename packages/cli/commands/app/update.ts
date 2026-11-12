@@ -35,6 +35,7 @@ interface UpdateAppArguments extends BaseArguments {
   dbPort: number;
   dbUser: string;
   dbPassword: string;
+  password?: string;
 }
 
 export const command = 'update <paths...>';
@@ -145,6 +146,12 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('db-password', {
       describe: 'The password of the external app database.',
+    })
+    .option('password', {
+      describe:
+        'The password visitors must enter to open the app. Pass an empty string to turn password protection off.',
+      type: 'string',
+      requiresArg: true,
     });
 }
 

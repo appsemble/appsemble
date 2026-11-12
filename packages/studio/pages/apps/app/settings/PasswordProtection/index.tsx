@@ -2,7 +2,6 @@ import {
   CheckboxField,
   PasswordField,
   SimpleFormField,
-  TextAreaField,
   useSimpleForm,
 } from '@appsemble/react-components';
 import { type ReactNode } from 'react';
@@ -46,30 +45,21 @@ export function PasswordProtection({ disabled }: PasswordProtectionProps): React
         onChange={(event, value) => setValue('password', '', value && !app.passwordProtected)}
       />
       {values.passwordProtected ? (
-        <>
-          <SimpleFormField
-            autoComplete="new-password"
-            component={PasswordField}
-            disabled={disabled}
-            help={
-              <FormattedMessage
-                {...(app.passwordProtected
-                  ? messages.passwordChangeDescription
-                  : messages.passwordDescription)}
-              />
-            }
-            label={<FormattedMessage {...messages.passwordLabel} />}
-            name="password"
-            required={!app.passwordProtected}
-          />
-          <SimpleFormField
-            component={TextAreaField}
-            disabled={disabled}
-            help={<FormattedMessage {...messages.passwordMessageDescription} />}
-            label={<FormattedMessage {...messages.passwordMessageLabel} />}
-            name="passwordMessage"
-          />
-        </>
+        <SimpleFormField
+          autoComplete="new-password"
+          component={PasswordField}
+          disabled={disabled}
+          help={
+            <FormattedMessage
+              {...(app.passwordProtected
+                ? messages.passwordChangeDescription
+                : messages.passwordDescription)}
+            />
+          }
+          label={<FormattedMessage {...messages.passwordLabel} />}
+          name="password"
+          required={!app.passwordProtected}
+        />
       ) : null}
     </>
   );

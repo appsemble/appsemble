@@ -9,6 +9,7 @@ import {
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
+import { compare } from 'bcrypt';
 import stripIndent from 'strip-indent';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -322,6 +323,30 @@ describe('createApp', () => {
     );
     expect(response.status).toBe(201);
     expect(response.data.supportedLanguages).toStrictEqual(['en', 'nl']);
+  });
+
+  it('should create a password protected app', async () => {
+    authorizeStudio();
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        password: 'open sesame',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    expect(response.status).toBe(201);
+    expect(response.data.passwordProtected).toBe(true);
+    const { password } = (await App.findByPk(response.data.id))!;
+    expect(await compare('open sesame', password!)).toBe(true);
   });
 
   it('should create an app member with role `cron` if the security definition has cron defined', async () => {
@@ -1166,6 +1191,10 @@ describe('createApp', () => {
                   "format": "binary",
                   "type": "string",
                 },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
+                  "type": "string",
+                },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
                 },
@@ -1259,6 +1288,10 @@ describe('createApp', () => {
                 "maskableIcon": {
                   "description": "The app icon.",
                   "format": "binary",
+                  "type": "string",
+                },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
                   "type": "string",
                 },
                 "path": {
@@ -1389,6 +1422,10 @@ describe('createApp', () => {
                 "maskableIcon": {
                   "description": "The app icon.",
                   "format": "binary",
+                  "type": "string",
+                },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
                   "type": "string",
                 },
                 "path": {
@@ -2054,6 +2091,10 @@ describe('createApp', () => {
                   "format": "binary",
                   "type": "string",
                 },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
+                  "type": "string",
+                },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
                 },
@@ -2211,6 +2252,10 @@ describe('createApp', () => {
                 "maskableIcon": {
                   "description": "The app icon.",
                   "format": "binary",
+                  "type": "string",
+                },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
                   "type": "string",
                 },
                 "path": {

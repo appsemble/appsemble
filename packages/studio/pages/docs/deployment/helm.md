@@ -42,10 +42,10 @@ and the commands that copy an existing installation into a single bucket are in 
 
 ## Valkey
 
-The chart bundles one Valkey pod for the app-serving cache and e-mail registration rate limits. Its
-data is disposable, so the bundled pod has no persistent volume. Create the `valkey` password secret
-before installing the chart. The server keeps serving requests while Valkey is unavailable and
-reconnects when it returns.
+The chart bundles one Valkey pod for the app-serving cache and the rate limits of e-mail
+registration and app passwords. Its data is disposable, so the bundled pod has no persistent volume.
+Create the `valkey` password secret before installing the chart. The server keeps serving requests
+while Valkey is unavailable and reconnects when it returns.
 
 To use a managed Valkey or Redis service, set `valkey.enabled=false` and configure
 `externalValkey.host`, `port`, `username`, `tls`, `existingSecret` and `passwordKey`. The secret
