@@ -23,6 +23,10 @@ import { type AxiosTestInstance, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 import FormData from 'form-data';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import yargs from 'yargs';
+
+import { builder as publishBuilder } from '../commands/app/publish.js';
+import { builder as updateBuilder } from '../commands/app/update.js';
 
 import {
   deleteApp,
@@ -158,6 +162,26 @@ const parsedAppMembers = [
     timezone: 'Europe/Amsterdam',
   },
 ];
+
+describe.each([
+  { name: 'publish', builder: publishBuilder },
+  { name: 'update', builder: updateBuilder },
+])('app $name bucket option', ({ builder }) => {
+  it('preserves numeric bucket names', () => {
+    const args = builder(yargs(['--s3-bucket', '1e3'])).parseSync();
+
+    expect(args['s3-bucket']).toBe('1e3');
+  });
+
+  it('requires a bucket name', () => {
+    expect(() =>
+      builder(yargs(['--s3-bucket']))
+        .exitProcess(false)
+        .showHelpOnFail(false)
+        .parseSync(),
+    ).toThrow('Not enough arguments following: s3-bucket');
+  });
+});
 
 describe('app', () => {
   beforeAll(() => {

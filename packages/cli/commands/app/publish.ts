@@ -154,6 +154,8 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('s3-bucket', {
       describe: 'The pre-provisioned S3 bucket that holds the app’s assets.',
+      requiresArg: true,
+      type: 'string',
     })
     .option('password', {
       describe: 'The password visitors must enter to open the app.',
