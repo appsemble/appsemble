@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.13
-appVersion: 0.40.13
+version: 0.40.14
+appVersion: 0.40.14
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,32 +33,8 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "App: Add an opt-in page not found page through notFoundPage."
-    - kind: added
-      description: "Cli: Add --password option to app publish, app update, and app patch."
-    - kind: added
-      description: "Lang-sdk: Add the notFoundPage property to the app definition."
-    - kind: added
-      description: "Server: Accept a password when creating an app."
-    - kind: changed
-      description: "Server: Show the password page message from the
-        server.passwordPage.message app translation."
-    - kind: removed
-      description: "Server: Remove the passwordMessage app property."
-    - kind: removed
-      description: "Studio: Remove the password page message setting, translate
-        server.passwordPage.message instead."
-    - kind: fixed
-      description: "Server: A failing app cron job no longer skips the remaining cron
-        jobs of that app."
-    - kind: fixed
-      description: "Server: Convert XML responses of server-side request actions that
-        define a schema."
-    - kind: fixed
-      description: "Studio: Fix the Studio app settings and translations pages
-        crashing on an app language such as ang."
-    - kind: security
-      description: "Server: Rate limit password attempts on password protected apps."
+      description: "Server: Map host names to addresses in the pods that send email
+        with the hostAliases Helm value."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

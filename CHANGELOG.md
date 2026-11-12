@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.14](https://gitlab.com/appsemble/appsemble/-/releases/0.40.14)] - 2026-11-12
+
+### Added
+
+- Server: Map host names to addresses in the pods that send email with the `hostAliases` Helm value.
+
 ## \[[0.40.13](https://gitlab.com/appsemble/appsemble/-/releases/0.40.13)] - 2026-11-12
 
 ### Added
