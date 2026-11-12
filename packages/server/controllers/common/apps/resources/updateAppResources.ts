@@ -27,7 +27,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
   } = ctx;
   const groupId = getSingleGroupId(selectedGroupId);
   const app = await App.findByPk(appId, {
-    attributes: ['definition', 'id'],
+    attributes: ['definition', 'id', 's3Bucket'],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
@@ -103,7 +103,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
 
   let updatedResources: Resource[];
   if (preparedAssets.length) {
-    await uploadAssets(app.id, preparedAssets);
+    await uploadAssets(app, preparedAssets);
   }
 
   try {
@@ -139,7 +139,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
 
         transaction.afterCommit(async () => {
           try {
-            await deleteAppAssetObjects(appId, unusedAssetIds);
+            await deleteAppAssetObjects(app, unusedAssetIds);
           } catch (error) {
             logger.error(error);
           }
@@ -174,7 +174,7 @@ export async function updateAppResources(ctx: Context): Promise<void> {
   } catch (error) {
     if (preparedAssets.length) {
       await deleteAppAssetObjects(
-        appId,
+        app,
         preparedAssets.map((asset) => asset.id),
       );
     }

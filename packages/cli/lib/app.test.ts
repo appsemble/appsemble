@@ -344,7 +344,7 @@ describe('app', () => {
       const assets = await findAssets();
       expect(assets).toHaveLength(1);
       expect(assets[0].id).not.toBe(id);
-      const { bucket, key } = getAppAssetLocation(app.id, assets[0].id);
+      const { bucket, key } = getAppAssetLocation({ id: app.id }, assets[0].id);
       expect(String(await getS3FileBuffer(bucket, key))).toBe('new');
     });
 
@@ -889,7 +889,7 @@ describe('app', () => {
       expect(
         await Promise.all(
           assets.map((a) => {
-            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            const { bucket, key } = getAppAssetLocation({ id: app.id }, a.id);
             return getS3FileBuffer(bucket, key);
           }),
         ),
@@ -1118,7 +1118,7 @@ describe('app', () => {
       expect(
         await Promise.all(
           assets.map((a) => {
-            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            const { bucket, key } = getAppAssetLocation({ id: app.id }, a.id);
             return getS3FileBuffer(bucket, key);
           }),
         ),
@@ -1292,7 +1292,7 @@ describe('app', () => {
       expect(
         await Promise.all(
           assets.map((a) => {
-            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            const { bucket, key } = getAppAssetLocation({ id: app.id }, a.id);
             return getS3FileBuffer(bucket, key);
           }),
         ),
@@ -2056,7 +2056,7 @@ describe('app', () => {
       expect(
         await Promise.all(
           assets.map((a) => {
-            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            const { bucket, key } = getAppAssetLocation({ id: app.id }, a.id);
             return getS3FileBuffer(bucket, key);
           }),
         ),
@@ -2248,7 +2248,7 @@ describe('app', () => {
       expect(
         await Promise.all(
           assets.map((a) => {
-            const { bucket, key } = getAppAssetLocation(app.id, a.id);
+            const { bucket, key } = getAppAssetLocation({ id: app.id }, a.id);
             return getS3FileBuffer(bucket, key);
           }),
         ),

@@ -86,6 +86,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         password,
         path,
         readmes,
+        s3Bucket,
         screenshots,
         sentryDsn,
         sentryEnvironment,
@@ -374,6 +375,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (dbUser) {
       result.dbUser = dbUser;
+    }
+
+    if (s3Bucket) {
+      result.s3Bucket = s3Bucket;
     }
 
     if (supportedLanguages?.length) {

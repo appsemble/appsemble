@@ -45,6 +45,11 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 type: 'string',
                 description: 'The password visitors must enter to open the app.',
               },
+              s3Bucket: {
+                type: 'string',
+                pattern: '^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$',
+                description: 'The pre-provisioned S3 bucket that holds the app’s assets.',
+              },
               yaml: {
                 type: 'string',
                 description: 'The original YAML definition used to define the app.',

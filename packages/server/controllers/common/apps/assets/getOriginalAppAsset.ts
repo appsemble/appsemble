@@ -32,7 +32,7 @@ export async function getOriginalAppAsset(ctx: Context): Promise<void> {
     pathParams: { appId, assetId },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'demoMode'],
+    attributes: ['id', 'OrganizationId', 'demoMode', 's3Bucket'],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
@@ -46,7 +46,7 @@ export async function getOriginalAppAsset(ctx: Context): Promise<void> {
   });
   assertKoaCondition(asset != null, ctx, 404, 'Asset not found');
 
-  const { bucket, key } = getAppAssetLocation(appId, asset.id);
+  const { bucket, key } = getAppAssetLocation(app, asset.id);
   const filename = getAssetFilename(asset.id, asset.filename, asset.mime);
   const stats = await getS3FileStats(bucket, key);
 

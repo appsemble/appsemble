@@ -250,7 +250,7 @@ export async function importApp(ctx: Context): Promise<void> {
                 { transaction: appTransaction },
               );
 
-              const { bucket, key } = getAppAssetLocation(appId, asset.id);
+              const { bucket, key } = getAppAssetLocation({ id: appId }, asset.id);
               await uploadS3File(bucket, key, createReadStream(tempPath), stats.size);
             }
           }

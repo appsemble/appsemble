@@ -28,7 +28,7 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
   const date = new Date();
 
   const demoApps = await App.findAll({
-    attributes: ['id', 'definition'],
+    attributes: ['id', 'definition', 's3Bucket'],
     where: { demoMode: true },
   });
   for (const demoApp of demoApps) {
@@ -53,7 +53,7 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
 
       try {
         await deleteAppAssetObjects(
-          demoApp.id,
+          demoApp,
           demoAssetsToDestroy.map((a) => a.id),
         );
       } catch (error) {
@@ -82,8 +82,8 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
           ephemeral: true,
           seed: false,
         });
-        const source = getAppAssetLocation(demoApp.id, id);
-        const target = getAppAssetLocation(demoApp.id, created.id);
+        const source = getAppAssetLocation(demoApp, id);
+        const target = getAppAssetLocation(demoApp, created.id);
         const stream = await getS3File(source.bucket, source.key);
         const stats = await getS3FileStats(source.bucket, source.key);
         await uploadS3File(target.bucket, target.key, stream, stats.size);
@@ -132,7 +132,7 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
     }
   }
 
-  const apps = await App.findAll({ attributes: ['id'], where: { demoMode: false } });
+  const apps = await App.findAll({ attributes: ['id', 's3Bucket'], where: { demoMode: false } });
   for (const app of apps) {
     let appDB: Awaited<ReturnType<typeof getAppDB>>;
 
@@ -155,7 +155,7 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
 
       try {
         await deleteAppAssetObjects(
-          app.id,
+          app,
           assetsToDestroy.map((a) => a.id),
         );
       } catch (error) {

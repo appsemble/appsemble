@@ -443,6 +443,10 @@ The single bucket suits providers that limit the number of buckets, credentials 
 buckets, and buckets claimed through Kubernetes. `blockAssets.publicUrl` serves block assets from
 `<publicUrl>/<bucket>/<key>` in both layouts.
 
+In either layout, an app published with `appsemble app publish --s3-bucket <name>` keeps its assets
+in that pre-provisioned bucket, key `<assetId>`. Changing the bucket later does not move existing
+assets.
+
 ### Provisioning the bucket
 
 Create the bucket before installing the chart and, when `blockAssets.publicUrl` is set, allow

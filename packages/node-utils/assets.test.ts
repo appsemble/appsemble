@@ -85,7 +85,7 @@ describe('uploadAssets', () => {
 
     await withTempFile(Buffer.from('test'), async (path) => {
       await expect(
-        uploadAssets(1, [{ id: 'asset-id', mime: 'application/octet-stream', path }]),
+        uploadAssets({ id: 1 }, [{ id: 'asset-id', mime: 'application/octet-stream', path }]),
       ).rejects.toThrow('upload failed');
 
       await expect(access(path, constants.F_OK)).rejects.toMatchObject({ code: 'ENOENT' });

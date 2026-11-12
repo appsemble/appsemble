@@ -37,6 +37,7 @@ interface PublishAppArguments extends BaseArguments {
   dbPort: number;
   dbUser: string;
   dbPassword: string;
+  s3Bucket?: string;
   password?: string;
 }
 
@@ -150,6 +151,9 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('db-password', {
       describe: 'The password of the external app database.',
+    })
+    .option('s3-bucket', {
+      describe: 'The pre-provisioned S3 bucket that holds the app’s assets.',
     })
     .option('password', {
       describe: 'The password visitors must enter to open the app.',

@@ -1,5 +1,6 @@
 import {
   assertKoaCondition,
+  type AssetOwner,
   deleteAppAssetObjects,
   getCompressedFileMeta,
   getResourceDefinition,
@@ -18,13 +19,16 @@ import { getAppResources, getCurrentAppMember } from '../../../../options/index.
 import { checkAppPermissions } from '../../../../utils/authorization.js';
 import { lockResourceWithIfMatch } from '../../../../utils/optimisticResourceLock.js';
 
-export async function deleteAppAssets(appId: number, assetIds: string[]): Promise<void> {
-  await deleteAppAssetObjects(appId, assetIds);
+export async function deleteAppAssets(app: AssetOwner, assetIds: string[]): Promise<void> {
+  await deleteAppAssetObjects(app, assetIds);
 }
 
-export async function deleteAppAssetsWithLogging(appId: number, assetIds: string[]): Promise<void> {
+export async function deleteAppAssetsWithLogging(
+  app: AssetOwner,
+  assetIds: string[],
+): Promise<void> {
   try {
-    await deleteAppAssets(appId, assetIds);
+    await deleteAppAssets(app, assetIds);
   } catch (error) {
     logger.error(error);
   }
@@ -39,7 +43,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
   const groupId = getSingleGroupId(selectedGroupId);
   const { Asset, Resource, ResourceVersion, sequelize } = await getAppDB(appId);
   const app = await App.findByPk(appId, {
-    attributes: ['definition', 'demoMode', 'id'],
+    attributes: ['definition', 'demoMode', 'id', 's3Bucket'],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
@@ -113,7 +117,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
       });
 
       if (preparedAssets.length) {
-        await uploadAssets(app.id, preparedAssets);
+        await uploadAssets(app, preparedAssets);
         uploadedAssetIds = preparedAssets.map((asset) => asset.id);
       }
 
@@ -160,7 +164,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
       } else if (deletedAssetIds.length) {
         promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
         transaction.afterCommit(async () => {
-          await deleteAppAssetsWithLogging(app.id, deletedAssetIds);
+          await deleteAppAssetsWithLogging(app, deletedAssetIds);
         });
       }
 
@@ -179,7 +183,7 @@ export async function patchAppResource(ctx: Context): Promise<void> {
     });
   } catch (error) {
     if (uploadedAssetIds.length) {
-      await deleteAppAssets(app.id, uploadedAssetIds);
+      await deleteAppAssets(app, uploadedAssetIds);
     }
     throw error;
   }

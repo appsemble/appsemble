@@ -168,7 +168,7 @@ describe('run-cronjobs', () => {
       mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     });
     const content = Buffer.from('cron attachment');
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, content);
 
     await runCronJobs(smtp.port);

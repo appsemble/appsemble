@@ -28,7 +28,9 @@ export async function createAppAsset(ctx: Context): Promise<void> {
       query: { seed },
     },
   } = ctx;
-  const app = await App.findByPk(appId, { attributes: ['id', 'demoMode', 'OrganizationId'] });
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'demoMode', 'OrganizationId', 's3Bucket'],
+  });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
@@ -62,7 +64,7 @@ export async function createAppAsset(ctx: Context): Promise<void> {
   const compressedFileMeta = getCompressedFileMeta({ filename, mime: validatedMime });
   const sha256 = await hashFile(path);
 
-  await uploadAssets(appId, assetsToUpload);
+  await uploadAssets(app, assetsToUpload);
 
   try {
     asset = await sequelize.transaction(async (transaction) => {
@@ -112,7 +114,7 @@ export async function createAppAsset(ctx: Context): Promise<void> {
     });
   } catch (error: unknown) {
     await deleteAppAssetObjects(
-      appId,
+      app,
       assetsToUpload.map(({ id }) => id),
     );
     if (error instanceof UniqueConstraintError) {

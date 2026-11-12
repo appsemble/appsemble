@@ -1,6 +1,6 @@
 import { getRandomValues } from 'node:crypto';
 
-import { createFixtureStream, createFormData } from '@appsemble/node-utils';
+import { createFixtureStream, createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import {
   type App as AppType,
   PredefinedOrganizationRole,
@@ -1206,6 +1206,11 @@ describe('createApp', () => {
                   },
                   "type": "array",
                 },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
+                },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
                   "items": {
@@ -1304,6 +1309,11 @@ describe('createApp', () => {
                     "type": "string",
                   },
                   "type": "array",
+                },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -1438,6 +1448,11 @@ describe('createApp', () => {
                     "type": "string",
                   },
                   "type": "array",
+                },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -2106,6 +2121,11 @@ describe('createApp', () => {
                   },
                   "type": "array",
                 },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
+                },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
                   "items": {
@@ -2268,6 +2288,11 @@ describe('createApp', () => {
                     "type": "string",
                   },
                   "type": "array",
+                },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -3060,6 +3085,56 @@ describe('createApp', () => {
       }),
     );
     expect(decrypt(app!.dbPassword, 'testSecret')).toBe(databasePassword);
+  });
+
+  it('should keep the assets of an app in the bucket it names', async () => {
+    vi.useRealTimers();
+    authorizeStudio();
+    const { data: app } = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        s3Bucket: 'tst-named-bucket',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    const file = Buffer.from('named bucket');
+    const { data: asset } = await request.post<{ id: string }>(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file, name: 'named' }),
+    );
+
+    expect(await getS3FileBuffer('tst-named-bucket', asset.id)).toStrictEqual(file);
+  });
+
+  it('should reject an invalid bucket name', async () => {
+    authorizeStudio();
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        s3Bucket: 'Not_A_Bucket',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(400);
   });
 
   it('should use passed database parameters if present', async () => {

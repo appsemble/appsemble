@@ -1,5 +1,5 @@
 import { type ResourceDefinition } from '@appsemble/lang-sdk';
-import { createFixtureStream, createFormData } from '@appsemble/node-utils';
+import { createFixtureStream, createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import {
   type App as AppType,
   PredefinedOrganizationRole,
@@ -1944,6 +1944,11 @@ describe('patchApp', () => {
                   },
                   "type": "array",
                 },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
+                },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
                   "items": {
@@ -2042,6 +2047,11 @@ describe('patchApp', () => {
                     "type": "string",
                   },
                   "type": "array",
+                },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -3496,6 +3506,27 @@ describe('patchApp', () => {
       ",
       }
     `);
+  });
+
+  it('should keep later assets in the bucket the app is patched to name', async () => {
+    vi.useRealTimers();
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    authorizeStudio();
+    await request.patch(`/api/apps/${app.id}`, createFormData({ s3Bucket: 'tst-patched-bucket' }));
+    const file = Buffer.from('patched bucket');
+    const { data: asset } = await request.post<{ id: string }>(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file, name: 'patched' }),
+    );
+
+    expect(await getS3FileBuffer('tst-patched-bucket', asset.id)).toStrictEqual(file);
   });
 
   it('should use passed database parameters if present', async () => {

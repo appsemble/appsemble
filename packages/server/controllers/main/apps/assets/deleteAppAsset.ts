@@ -9,7 +9,7 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, assetId },
   } = ctx;
-  const app = await App.findByPk(appId, { attributes: ['OrganizationId'] });
+  const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId', 's3Bucket'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
@@ -34,5 +34,5 @@ export async function deleteAppAsset(ctx: Context): Promise<void> {
 
   await asset.destroy();
 
-  await deleteAppAssetObjects(appId, [assetId]);
+  await deleteAppAssetObjects(app, [assetId]);
 }

@@ -60,8 +60,15 @@ describe('bucket-per-app layout', () => {
   });
 
   it('stores app assets in a bucket per app', () => {
-    expect(getAppAssetLocation(1216, 'asset-id')).toStrictEqual({
+    expect(getAppAssetLocation({ id: 1216 }, 'asset-id')).toStrictEqual({
       bucket: 'app-1216',
+      key: 'asset-id',
+    });
+  });
+
+  it('stores the assets of an app with its own bucket in that bucket', () => {
+    expect(getAppAssetLocation({ id: 1216, s3Bucket: 'tst-kcc' }, 'asset-id')).toStrictEqual({
+      bucket: 'tst-kcc',
       key: 'asset-id',
     });
   });
@@ -138,9 +145,16 @@ describe('single-bucket layout', () => {
   });
 
   it('stores app assets under a prefix per app', () => {
-    expect(getAppAssetLocation(1216, 'asset-id')).toStrictEqual({
+    expect(getAppAssetLocation({ id: 1216 }, 'asset-id')).toStrictEqual({
       bucket: 'objects',
       key: 'apps/1216/asset-id',
+    });
+  });
+
+  it('stores the assets of an app with its own bucket in that bucket', () => {
+    expect(getAppAssetLocation({ id: 1216, s3Bucket: 'tst-kcc' }, 'asset-id')).toStrictEqual({
+      bucket: 'tst-kcc',
+      key: 'asset-id',
     });
   });
 
@@ -225,7 +239,7 @@ describe('single-bucket layout', () => {
   });
 
   it('deletes app assets under their prefix', async () => {
-    await deleteAppAssetObjects(1216, ['a', 'b']);
+    await deleteAppAssetObjects({ id: 1216 }, ['a', 'b']);
 
     expect(sentCommands()).toStrictEqual([
       [
@@ -234,6 +248,17 @@ describe('single-bucket layout', () => {
           Bucket: 'objects',
           Delete: { Objects: [{ Key: 'apps/1216/a' }, { Key: 'apps/1216/b' }], Quiet: true },
         },
+      ],
+    ]);
+  });
+
+  it('deletes the assets of an app with its own bucket from that bucket', async () => {
+    await deleteAppAssetObjects({ id: 1216, s3Bucket: 'tst-kcc' }, ['a']);
+
+    expect(sentCommands()).toStrictEqual([
+      [
+        'DeleteObjectsCommand',
+        { Bucket: 'tst-kcc', Delete: { Objects: [{ Key: 'a' }], Quiet: true } },
       ],
     ]);
   });

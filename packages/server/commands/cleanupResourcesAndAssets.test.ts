@@ -88,7 +88,7 @@ describe('cleanupResourcesAndAssets', () => {
     });
     const { Asset } = await getAppDB(appId);
     const { id: seedAssetId } = await Asset.create({ name: 'tasks', seed: true, sha256: 'hash' });
-    const seed = getAppAssetLocation(appId, seedAssetId);
+    const seed = getAppAssetLocation({ id: appId }, seedAssetId);
     await uploadS3File(seed.bucket, seed.key, createFixtureStream('standing.png'));
 
     await cleanupResourcesAndAssets();
@@ -97,7 +97,7 @@ describe('cleanupResourcesAndAssets', () => {
     const { Asset: ReopenedAsset } = await getAppDB(appId, undefined, undefined, true);
     const copy = await ReopenedAsset.findOne({ where: { ephemeral: true } });
     expect(copy).toMatchObject({ name: 'tasks', seed: false, sha256: 'hash' });
-    const target = getAppAssetLocation(appId, copy!.id);
+    const target = getAppAssetLocation({ id: appId }, copy!.id);
     expect(await getS3FileBuffer(target.bucket, target.key)).toStrictEqual(
       await readFixture('standing.png'),
     );

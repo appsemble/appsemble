@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 
 import {
   assertKoaCondition,
+  type AssetOwner,
   assetValidators,
   getAppAssetLocation,
   getS3File,
@@ -66,13 +67,13 @@ function getDerivedFilename(
 
 async function serveCachedDerivedAsset(
   ctx: Context,
-  appId: number,
+  app: AssetOwner,
   sourceAsset: { id: string; filename?: string | null },
   cachedAsset: { id: string; mime?: string | null; destroy: () => Promise<unknown> },
   immutable: boolean,
 ): Promise<boolean> {
   try {
-    const { bucket, key } = getAppAssetLocation(appId, cachedAsset.id);
+    const { bucket, key } = getAppAssetLocation(app, cachedAsset.id);
     const stats = await getS3FileStats(bucket, key);
     const mime = cachedAsset.mime ?? 'application/octet-stream';
     setAssetHeaders(ctx, {
@@ -105,7 +106,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     queryParams: { height, width },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'demoMode'],
+    attributes: ['id', 'OrganizationId', 'demoMode', 's3Bucket'],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
   const { Asset } = await getAppDB(appId);
@@ -147,7 +148,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
 
       if (
         cachedAsset &&
-        (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset, immutable))
+        (await serveCachedDerivedAsset(ctx, app, sourceAsset, cachedAsset, immutable))
       ) {
         return;
       }
@@ -162,13 +163,13 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
 
       if (
         cachedAsset &&
-        (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset, immutable))
+        (await serveCachedDerivedAsset(ctx, app, sourceAsset, cachedAsset, immutable))
       ) {
         return;
       }
     }
 
-    const source = getAppAssetLocation(appId, sourceAsset.id);
+    const source = getAppAssetLocation(app, sourceAsset.id);
     const sourceBuffer = await getS3FileBuffer(source.bucket, source.key);
     const image = sharp(sourceBuffer);
     const metadata = await image.metadata();
@@ -201,7 +202,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
 
       if (
         cachedAsset &&
-        (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset, immutable))
+        (await serveCachedDerivedAsset(ctx, app, sourceAsset, cachedAsset, immutable))
       ) {
         return;
       }
@@ -232,7 +233,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       });
 
-      const derived = getAppAssetLocation(appId, newAsset.id);
+      const derived = getAppAssetLocation(app, newAsset.id);
       await uploadS3File(derived.bucket, derived.key, derivedImage);
     } catch (error) {
       // A concurrent request already cached this derived asset. The name is deterministic, so a
@@ -252,7 +253,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   }
 
   const sourceFilename = getAssetFilename(sourceAsset.id, sourceAsset.filename, sourceAsset.mime);
-  const { bucket, key } = getAppAssetLocation(appId, sourceAsset.id);
+  const { bucket, key } = getAppAssetLocation(app, sourceAsset.id);
   const stats = await getS3FileStats(bucket, key);
 
   setAssetHeaders(ctx, {

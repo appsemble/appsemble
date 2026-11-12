@@ -67,6 +67,7 @@ export async function createApp(ctx: Context): Promise<void> {
         msClarityID,
         password,
         readmes,
+        s3Bucket,
         screenshots,
         sentryDsn,
         sentryEnvironment,
@@ -167,6 +168,7 @@ export async function createApp(ctx: Context): Promise<void> {
       dbHost,
       dbPort,
       dbUser,
+      s3Bucket,
       supportedLanguages: supportedLanguagesArray.length
         ? supportedLanguagesArray
         : [definition.defaultLanguage ?? defaultLocale],

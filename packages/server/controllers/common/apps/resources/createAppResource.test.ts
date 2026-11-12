@@ -590,7 +590,7 @@ describe('createAppResource', () => {
         sha256: createHash('sha256').update(assetContent).digest('hex'),
       }),
     ]);
-    const { bucket, key } = getAppAssetLocation(app.id, assets[0].id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, assets[0].id);
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(assetContent);
   });
 
@@ -625,7 +625,7 @@ describe('createAppResource', () => {
       filename: 'clip.mp4',
       mime: 'video/mp4',
     });
-    const { bucket, key } = getAppAssetLocation(app.id, assetId);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, assetId);
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(videoContent);
   });
 
@@ -825,11 +825,11 @@ describe('createAppResource', () => {
       }),
     ]);
 
-    const assetALocation = getAppAssetLocation(app.id, assetAId);
+    const assetALocation = getAppAssetLocation({ id: app.id }, assetAId);
     expect(await getS3FileBuffer(assetALocation.bucket, assetALocation.key)).toStrictEqual(
       assetAContent,
     );
-    const assetBLocation = getAppAssetLocation(app.id, assetBId);
+    const assetBLocation = getAppAssetLocation({ id: app.id }, assetBId);
     expect(await getS3FileBuffer(assetBLocation.bucket, assetBLocation.key)).toStrictEqual(
       assetBContent,
     );
@@ -1251,7 +1251,7 @@ describe('createAppResource', () => {
     ]);
     const ephemeraAssetsData = await Promise.all(
       ephemeralAssets.map((asset) => {
-        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
         return getS3FileBuffer(bucket, key);
       }),
     );
@@ -1409,7 +1409,7 @@ describe('createAppResource', () => {
     ]);
     const seedAssetsData = await Promise.all(
       seedAssets.map((asset) => {
-        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
         return getS3FileBuffer(bucket, key);
       }),
     );
@@ -1581,7 +1581,7 @@ describe('createAppResource', () => {
     ]);
     const seedAssetsData = await Promise.all(
       seedAssets.map((asset) => {
-        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
         return getS3FileBuffer(bucket, key);
       }),
     );
@@ -1616,7 +1616,7 @@ describe('createAppResource', () => {
     ]);
     const ephemeralAssetsData = await Promise.all(
       ephemeralAssets.map((asset) => {
-        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
         return getS3FileBuffer(bucket, key);
       }),
     );

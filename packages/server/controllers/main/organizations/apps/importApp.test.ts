@@ -190,7 +190,7 @@ describe('importApp', () => {
 
     const asset = (await Asset.findOne())!;
 
-    const { bucket, key } = getAppAssetLocation(1, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: 1 }, asset.id);
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(await readFixture('10x50.png'));
     expect(indexes.map(({ name }) => name)).toContain(
       getResourceUniqueIndexName(

@@ -699,7 +699,7 @@ describe('actions', () => {
         mime: 'application/json',
         filename: 'test.json',
       });
-      const { bucket, key } = getAppAssetLocation(1, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: 1 }, asset.id);
       await uploadS3File(bucket, key, buffer);
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
         to: 'test@example.com',
@@ -836,7 +836,7 @@ describe('actions', () => {
         mime: 'text/plain',
         filename: 'test.txt',
       });
-      const { bucket, key } = getAppAssetLocation(1, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: 1 }, asset.id);
       await uploadS3File(bucket, key, buffer);
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
         to: 'test@example.com',
@@ -906,7 +906,7 @@ describe('actions', () => {
         filename: 'test2.txt',
       });
       for (const { id } of [asset, asset2]) {
-        const { bucket, key } = getAppAssetLocation(1, id);
+        const { bucket, key } = getAppAssetLocation({ id: 1 }, id);
         await uploadS3File(bucket, key, buffer);
       }
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {
@@ -955,7 +955,7 @@ describe('actions', () => {
       const buffer = Buffer.from('test');
       const { Asset } = await getAppDB(1);
       const asset = await Asset.create({ mime: 'text/plain', filename: 'test.txt', name: 'test' });
-      const { bucket, key } = getAppAssetLocation(1, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: 1 }, asset.id);
       await uploadS3File(bucket, key, buffer);
 
       const response = await request.post('/api/apps/1/actions/pages.0.blocks.0.actions.email', {

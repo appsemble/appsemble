@@ -34,11 +34,10 @@ export async function createAppResourcesWithAssets({
   const { Asset, Resource, sequelize } = await getAppDB(app.id!);
   const appMember = await getCurrentAppMember({ context, app });
   const resourceDefinition = getResourceDefinition(app.definition, resourceType);
+  const persistedApp = (await App.findOne({ where: { id: app.id } }))!;
 
   if (preparedAssets.length) {
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
-    await uploadAssets(app.id, preparedAssets);
+    await uploadAssets(persistedApp, preparedAssets);
   }
 
   let createdResources: Resource[] = [];
@@ -148,7 +147,7 @@ export async function createAppResourcesWithAssets({
   } catch (error) {
     if (preparedAssets.length) {
       await deleteAppAssetObjects(
-        app.id!,
+        persistedApp,
         preparedAssets.map((asset) => asset.id),
       );
     }
@@ -164,8 +163,6 @@ export async function createAppResourcesWithAssets({
 
     throw error;
   }
-
-  const persistedApp = (await App.findOne({ where: { id: app.id } }))!;
 
   const notify = (): void => {
     processReferenceHooks(persistedApp, createdResources[0], 'create', options, context);

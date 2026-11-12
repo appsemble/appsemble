@@ -1,6 +1,6 @@
 import { deleteAppAssetObjects, type DeleteAppAssetParams } from '@appsemble/node-utils';
 
-import { getAppDB } from '../models/index.js';
+import { App, getAppDB } from '../models/index.js';
 
 export async function deleteAppAsset({
   app: { id: AppId },
@@ -8,6 +8,7 @@ export async function deleteAppAsset({
   transaction,
 }: DeleteAppAssetParams): Promise<number> {
   const { Asset } = await getAppDB(AppId!);
-  await deleteAppAssetObjects(AppId!, [id]);
+  const owner = (await App.findByPk(AppId, { attributes: ['id', 's3Bucket'] }))!;
+  await deleteAppAssetObjects(owner, [id]);
   return Asset.destroy({ where: { id }, transaction });
 }

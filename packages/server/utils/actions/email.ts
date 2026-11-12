@@ -138,7 +138,7 @@ export async function email({
       const ext = extension(attachment?.accept || asset.mime);
       const filename =
         attachment?.filename || asset.filename || (ext ? `${asset.id}.${ext}` : asset.id);
-      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      const { bucket, key } = getAppAssetLocation(app, asset.id);
       attachments.push({
         content: await getS3FileBuffer(bucket, key),
         filename,

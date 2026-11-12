@@ -120,6 +120,6 @@ describe('resource cleanup', () => {
     });
 
     expect(await Asset.findByPk('old-asset')).toBeNull();
-    expect(cleanupSpy).toHaveBeenCalledWith(app.id, ['old-asset']);
+    expect(cleanupSpy).toHaveBeenCalledWith(expect.objectContaining({ id: app.id }), ['old-asset']);
   });
 });

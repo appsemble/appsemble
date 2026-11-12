@@ -258,6 +258,9 @@ export class App extends Model {
   @Column(DataType.BLOB)
   declare dbPassword: Buffer;
 
+  @Column(DataType.STRING)
+  declare s3Bucket: string;
+
   @UpdatedAt
   declare updated: Date;
 
