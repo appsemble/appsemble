@@ -1,5 +1,6 @@
 import { type AddressInfo, createServer as createTcpServer, type Socket } from 'node:net';
 
+import { logger } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
@@ -1110,6 +1111,51 @@ _Test App_
       await sendAppEmail('127.0.0.1', (smtpServer.address() as AddressInfo).port);
 
       expect(message).toContain('Subject: Test');
+    });
+  });
+
+  describe('logging', () => {
+    const text = 'Reset your password [here](https://example.com/reset?token=abcdefg).';
+    const { level } = logger;
+
+    afterEach(() => {
+      logger.level = level;
+    });
+
+    async function sendAndReadInfoLog(): Promise<string> {
+      vi.spyOn(logger, 'info');
+      await mailer.sendEmail({
+        to: 'test@example.com',
+        subject: 'Reset your password',
+        text,
+        html: '<p>Reset your password</p>',
+        attachments: [],
+      });
+      return vi
+        .mocked(logger.info)
+        .mock.calls.map(([message]) => String(message))
+        .join('\n');
+    }
+
+    it('should leave the body out of the info log when SMTP is configured', async () => {
+      setArgv({ ...baseArgv, imapCopyToSentFolder: true });
+      mailer.transport = { sendMail: vi.fn() } as Partial<Transporter> as Transporter;
+
+      const log = await sendAndReadInfoLog();
+
+      expect(log).toContain('Subject: Reset your password');
+      expect(log).not.toContain('token=abcdefg');
+    });
+
+    it('should log the body when verbose logging is enabled', async () => {
+      logger.level = 'verbose';
+      mailer.transport = { sendMail: vi.fn() } as Partial<Transporter> as Transporter;
+
+      expect(await sendAndReadInfoLog()).toContain('token=abcdefg');
+    });
+
+    it('should log the body when SMTP is not configured', async () => {
+      expect(await sendAndReadInfoLog()).toContain('token=abcdefg');
     });
   });
 });
