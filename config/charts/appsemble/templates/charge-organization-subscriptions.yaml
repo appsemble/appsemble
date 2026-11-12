@@ -20,6 +20,10 @@ spec:
             {{ include "appsemble.gitlab" . | indent 12 }}
         spec:
           restartPolicy: Never
+          {{- with .Values.hostAliases }}
+          hostAliases:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           containers:
             - name: {{ include "appsemble.fullname" . }}-cronjob-charge-organization-subscriptions
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"

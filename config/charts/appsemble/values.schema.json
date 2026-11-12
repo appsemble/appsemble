@@ -329,6 +329,26 @@
     "tolerations": {
       "type": "array"
     },
+    "hostAliases": {
+      "type": "array",
+      "description": "Extra hosts file entries for the pods that send email: the server, run-cronjobs and charge-organization-subscriptions. For example, map the host name on an SMTP relay's certificate to the relay's internal address.",
+      "items": {
+        "type": "object",
+        "required": ["ip", "hostnames"],
+        "properties": {
+          "ip": {
+            "type": "string"
+          },
+          "hostnames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "default": []
+    },
     "affinity": {
       "type": "object"
     },
