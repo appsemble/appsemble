@@ -2,6 +2,7 @@ import { createHmac, randomBytes } from 'node:crypto';
 
 import {
   assertKoaCondition,
+  isLayoutBucket,
   getSupportedLanguages,
   logger,
   mergeMessages,
@@ -446,7 +447,9 @@ export async function assertAppS3Bucket(
   appId?: number,
 ): Promise<void> {
   assertKoaCondition(
-    Boolean(argv.s3AppBucketPrefix) && s3Bucket.startsWith(argv.s3AppBucketPrefix),
+    Boolean(argv.s3AppBucketPrefix) &&
+      s3Bucket.startsWith(argv.s3AppBucketPrefix) &&
+      !isLayoutBucket(s3Bucket),
     ctx,
     400,
     `Apps on this server cannot use bucket “${s3Bucket}”`,

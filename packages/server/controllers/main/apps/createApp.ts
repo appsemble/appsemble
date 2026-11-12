@@ -86,10 +86,6 @@ export async function createApp(ctx: Context): Promise<void> {
 
   const supportedLanguagesArray = JSON.parse(supportedLanguages ?? '[]');
 
-  if (s3Bucket) {
-    await assertAppS3Bucket(ctx, s3Bucket);
-  }
-
   const organization = await Organization.findByPk(OrganizationId, {
     attributes: {
       include: ['id', 'name', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
@@ -104,6 +100,10 @@ export async function createApp(ctx: Context): Promise<void> {
     organizationId: OrganizationId,
     requiredPermissions: [OrganizationPermission.CreateApps],
   });
+
+  if (s3Bucket) {
+    await assertAppS3Bucket(ctx, s3Bucket);
+  }
 
   try {
     const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;

@@ -92,6 +92,16 @@ describe('bucket-per-app layout', () => {
     ]);
   });
 
+  it('never creates the own bucket of an app', async () => {
+    send.mockRejectedValueOnce(s3Error('NoSuchBucket'));
+
+    await expect(uploadS3File('tst-kcc', 'asset-id', 'payload')).rejects.toThrow();
+
+    expect(sentCommands()).toStrictEqual([
+      ['PutObjectCommand', expect.objectContaining({ Bucket: 'tst-kcc', Key: 'asset-id' })],
+    ]);
+  });
+
   it('creates a bucket in the configured region', async () => {
     initS3Client({ ...credentials, region: 'eu-central-1' });
     send.mockRejectedValueOnce(s3Error('NotFound'));
@@ -481,10 +491,10 @@ describe('object store', () => {
   });
 
   it('creates a missing bucket in the bucket-per-app layout before applying its policy', async () => {
-    await expect(listS3Files('policy-bucket')).rejects.toMatchObject({ name: 'NoSuchBucket' });
+    await expect(listS3Files('app-404040')).rejects.toMatchObject({ name: 'NoSuchBucket' });
 
     await setS3BucketPolicy(
-      'policy-bucket',
+      'app-404040',
       JSON.stringify({
         Version: '2012-10-17',
         Statement: [
@@ -492,16 +502,16 @@ describe('object store', () => {
             Effect: 'Allow',
             Principal: '*',
             Action: ['s3:GetObject'],
-            Resource: ['arn:aws:s3:::policy-bucket/*'],
+            Resource: ['arn:aws:s3:::app-404040/*'],
           },
         ],
       }),
     );
 
-    expect(await listS3Files('policy-bucket')).toStrictEqual([]);
-    await uploadS3File('policy-bucket', 'public.txt', 'readable by anyone');
+    expect(await listS3Files('app-404040')).toStrictEqual([]);
+    await uploadS3File('app-404040', 'public.txt', 'readable by anyone');
     const { data, status } = await axios.get(
-      `http://${store.endPoint}:${store.port}/policy-bucket/public.txt`,
+      `http://${store.endPoint}:${store.port}/app-404040/public.txt`,
     );
     expect(status).toBe(200);
     expect(data).toBe('readable by anyone');

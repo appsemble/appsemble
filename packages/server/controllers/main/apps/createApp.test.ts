@@ -3162,6 +3162,29 @@ describe('createApp', () => {
     expect(response.status).toBe(400);
   });
 
+  it('should not let apps name a bucket the server manages', async () => {
+    setArgv({ ...argv, s3AppBucketPrefix: 'app-' });
+    authorizeStudio();
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        s3Bucket: 'app-12',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+  });
+
   it('should not let two apps share a bucket', async () => {
     setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
     authorizeStudio();

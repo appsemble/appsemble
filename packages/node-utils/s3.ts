@@ -151,6 +151,15 @@ export function getAppAssetLocation(app: AssetOwner, assetId: string): S3Locatio
   };
 }
 
+/**
+ * @param name The name of a bucket.
+ * @returns Whether the server names this bucket itself: the single bucket, the block assets bucket
+ *   or an app’s default bucket. No app may name it as its own bucket.
+ */
+export function isLayoutBucket(name: string): boolean {
+  return name === s3Bucket || name === blockAssetsBucketName || /^app-\d+$/.test(name);
+}
+
 export function getBlockAssetLocation(storageKey: string): S3Location {
   return s3Bucket
     ? { bucket: s3Bucket, key: `blocks/${storageKey}` }
@@ -162,7 +171,8 @@ export function isS3ErrorCode(error: unknown, code: string): boolean {
 }
 
 async function ensureBucket(name: string): Promise<void> {
-  if (s3Bucket) {
+  // An app's own bucket is provisioned by its owner and never created by the server.
+  if (s3Bucket || !isLayoutBucket(name)) {
     return;
   }
   try {
@@ -253,7 +263,12 @@ export async function uploadS3File(
     await ensureBucket(bucket);
     await putObject(bucket, key, content, size, metadata);
   } catch (error) {
-    if (isS3ErrorCode(error, 'NoSuchBucket') && !s3Bucket && !(content instanceof Readable)) {
+    if (
+      isS3ErrorCode(error, 'NoSuchBucket') &&
+      !s3Bucket &&
+      isLayoutBucket(bucket) &&
+      !(content instanceof Readable)
+    ) {
       logger.warn(error);
       await ensureBucket(bucket);
       await putObject(bucket, key, content, size, metadata);

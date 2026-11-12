@@ -3508,6 +3508,31 @@ describe('patchApp', () => {
     `);
   });
 
+  it('should require permission to update app settings to name a bucket', async () => {
+    setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Member },
+      { where: { OrganizationId: organization.id, UserId: user.id } },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ s3Bucket: 'tst-patched-bucket' }),
+    );
+
+    expect(response.status).toBe(403);
+    await app.reload();
+    expect(app.s3Bucket).toBeNull();
+  });
+
   it('should keep later assets in the bucket the app is patched to name', async () => {
     vi.useRealTimers();
     setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
