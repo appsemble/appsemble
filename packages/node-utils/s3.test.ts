@@ -95,7 +95,9 @@ describe('bucket-per-app layout', () => {
   it('never creates the own bucket of an app', async () => {
     send.mockRejectedValueOnce(s3Error('NoSuchBucket'));
 
-    await expect(uploadS3File('tst-kcc', 'asset-id', 'payload')).rejects.toThrow();
+    await expect(uploadS3File('tst-kcc', 'asset-id', 'payload')).rejects.toMatchObject({
+      name: 'NoSuchBucket',
+    });
 
     expect(sentCommands()).toStrictEqual([
       ['PutObjectCommand', expect.objectContaining({ Bucket: 'tst-kcc', Key: 'asset-id' })],

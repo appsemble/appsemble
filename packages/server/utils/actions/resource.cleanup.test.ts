@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { type ActionDefinition } from '@appsemble/lang-sdk';
-import { TempFile } from '@appsemble/node-utils';
+import { getS3FileBuffer, TempFile, uploadS3File } from '@appsemble/node-utils';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as resourceActions from './resource.js';
@@ -77,15 +77,13 @@ describe('resource cleanup', () => {
 
   it('should delete dereferenced s3 assets after resource.patch commit', async () => {
     vi.useRealTimers();
-    const cleanupSpy = vi
-      .spyOn(resourceActions.resourceCleanup, 'deleteDereferencedS3Assets')
-      .mockResolvedValue();
-
     const action: ActionDefinition = {
       type: 'resource.patch',
       resource: 'testAssets',
     };
     const app = await exampleApp('testorg', action);
+    await app.update({ s3Bucket: 'tst-cleanup' });
+    await uploadS3File('tst-cleanup', 'old-asset', Buffer.from('old asset'));
     const { Asset, Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
       type: 'testAssets',
@@ -120,6 +118,8 @@ describe('resource cleanup', () => {
     });
 
     expect(await Asset.findByPk('old-asset')).toBeNull();
-    expect(cleanupSpy).toHaveBeenCalledWith(expect.objectContaining({ id: app.id }), ['old-asset']);
+    await expect(getS3FileBuffer('tst-cleanup', 'old-asset')).rejects.toMatchObject({
+      name: 'NoSuchKey',
+    });
   });
 });
