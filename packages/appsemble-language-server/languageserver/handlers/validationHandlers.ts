@@ -15,6 +15,20 @@ import { type SettingsState } from '../../yamlSettings.js';
 import { type BlockManifestCacher } from '../utils/BlockManifestCacher.js';
 import { type YamlCacher } from '../utils/YamlCacher.js';
 
+/**
+ * Wait until the connection has read and handled the messages that arrived during a validation
+ * step, so that a newer edit aborts an outdated validation and waiting requests get their answers
+ * in between. Reading a message and handling it take a turn of the event loop each. `setTimeout`
+ * exists in Node.js and in web workers alike.
+ */
+async function handleWaitingMessages(): Promise<void> {
+  for (let turn = 0; turn < 2; turn += 1) {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+  }
+}
+
 interface ValidationOptions {
   refreshBlockSchemas?: boolean;
 }
@@ -173,10 +187,15 @@ export class ValidationHandler {
       }
     }
 
+    await handleWaitingMessages();
+    if (signal.aborted) {
+      return [];
+    }
     const diagnosticResults = await this.languageService.doValidation(
       textDocument,
       isKubernetesAssociatedDocument(textDocument, this.yamlSettings.specificValidatorPaths),
     );
+    await handleWaitingMessages();
     if (signal.aborted) {
       return [];
     }
@@ -196,6 +215,10 @@ export class ValidationHandler {
     }
     this.connection.console.info(`Validating ${textDocument.uri}`);
     const validatorResult = this.appValidator.validateApp(definition);
+    await handleWaitingMessages();
+    if (signal.aborted) {
+      return [];
+    }
     const validationResult = await validateAppDefinition(
       definition,
       (blocks) => this.blockManifestCacher.getCachedBlockVersions(blocks),
