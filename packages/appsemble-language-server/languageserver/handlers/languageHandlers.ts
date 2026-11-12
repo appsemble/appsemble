@@ -249,15 +249,9 @@ export class LanguageHandlers {
     return (
       this.withDocument(textDocumentPosition.textDocument.uri, async (document) => {
         try {
-          const completions = await this.languageService.doComplete(
-            document,
-            textDocumentPosition.position,
-            isKubernetesAssociatedDocument(document, this.yamlSettings.specificValidatorPaths),
-          );
           if (appDefinitionFileNames.includes(basename(document.uri))) {
-            const known = new Set(completions.items.map((item) => item.label));
             // A failing binding must not take yaml-language-server's own completions down with it.
-            const added = await languageComponentCompletions(
+            const items = await languageComponentCompletions(
               document,
               textDocumentPosition.position,
             ).catch((error: unknown) => {
@@ -266,9 +260,17 @@ export class LanguageHandlers {
               );
               return [];
             });
-            completions.items.push(...added.filter((item) => !known.has(item.label)));
+            // Where a binding completes, its answer is the whole answer, which skips
+            // yaml-language-server's whole-document schema matching.
+            if (items.length) {
+              return { items, isIncomplete: false };
+            }
           }
-          return completions;
+          return await this.languageService.doComplete(
+            document,
+            textDocumentPosition.position,
+            isKubernetesAssociatedDocument(document, this.yamlSettings.specificValidatorPaths),
+          );
         } catch (error: unknown) {
           this.connection.console.error(
             `Completion failed for ${document.uri} at ${textDocumentPosition.position.line}:${textDocumentPosition.position.character}\n${describePosition(document, textDocumentPosition.position)}\n${formatError(error)}`,

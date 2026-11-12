@@ -56,6 +56,11 @@ describe('languageComponentCompletions', () => {
     expect(items.map((item) => item.label)).toContain('Editor');
   });
 
+  it('offers no values on a key', async () => {
+    // Line 15 is `    roles: []` of Other; character 6 is inside the key.
+    expect(await labelsAt(15, 6)).toStrictEqual([]);
+  });
+
   it('offers nothing where no component completes', async () => {
     expect(await labelsAt(0, 7)).toStrictEqual([]);
   });

@@ -7,6 +7,7 @@ import {
   type Position,
 } from 'vscode-languageserver-types';
 import { type ASTNode } from 'yaml-language-server/lib/esm/languageservice/jsonASTTypes.js';
+import { getNodeValue } from 'yaml-language-server/lib/esm/languageservice/parser/astNodeUtils.js';
 import { yamlDocumentsCache } from 'yaml-language-server/lib/esm/languageservice/parser/yaml-documents.js';
 import { matchOffsetToDocument } from 'yaml-language-server/lib/esm/languageservice/utils/arrUtils.js';
 
@@ -45,10 +46,15 @@ export async function languageComponentCompletions(
   if (!yamlDocument) {
     return [];
   }
+  const cursorNode = yamlDocument.getNodeFromOffset(offset, true);
+  // `complete` bindings offer values, so a key under the cursor gets none.
+  if (cursorNode?.parent?.type === 'property' && cursorNode.parent.keyNode === cursorNode) {
+    return [];
+  }
   appsembleLanguage ??= compileAppsembleDialect(appsembleCompletionDefs());
-  // App definitions reuse blocks and actions through YAML aliases far beyond the library's default cap.
-  const value = yamlDocument.internalDocument.toJS({ maxAliasCount: -1 });
-  const path = nodePath(yamlDocument.getNodeFromOffset(offset, true));
+  // The yaml-language-server AST has its aliases expanded already.
+  const value = getNodeValue(yamlDocument.root);
+  const path = nodePath(cursorNode);
   // Only the nodes along the path are resolved, never the whole document. The cursor may sit below
   // the last node that exists, like an element not written yet, so the walk stops there.
   let node: Node = appsembleLanguage.root(value);
