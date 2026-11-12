@@ -39,9 +39,17 @@ purge_release() {
   kubectl delete secret -l "owner=helm,name=$rel" --ignore-not-found=true || true
   kubectl delete namespace "companion-containers-$rel" --ignore-not-found=true || true
   kubectl delete secret "$rel-mailpit-tls" "$rel-valkey" "$rel-pgbouncer-userlist" "stripe-webhook-secret-$id" --ignore-not-found=true || true
-  delete_cert_manager_tls_secrets "$id"
+  # Public certificates are reused when the review ingress is recreated.
+  if [ "$3" != redeploy ]; then
+    delete_cert_manager_tls_secrets "$id"
+  fi
   "$(dirname "$0")/review-dns-records.sh" "$id" delete || true
 }
+
+if [ -n "${REDEPLOY_REVIEW_IID:-}" ]; then
+  purge_release "review-$REDEPLOY_REVIEW_IID" "$REDEPLOY_REVIEW_IID" redeploy
+  exit 0
+fi
 
 if [ -n "${PURGE_REVIEW_IID:-}" ]; then
   purge_release "review-$PURGE_REVIEW_IID" "$PURGE_REVIEW_IID" requested
