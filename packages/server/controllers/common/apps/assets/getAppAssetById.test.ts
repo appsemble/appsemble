@@ -86,19 +86,23 @@ describe('getAppAssetById', () => {
     });
   });
 
-  it('should serve an asset from the bucket the app names', async () => {
-    await app.update({ s3Bucket: 'tst-served-bucket' });
-    const { Asset } = await getAppDB(app.id);
-    const asset = await Asset.create({ mime: 'application/octet-stream' });
-    await uploadS3File('tst-served-bucket', asset.id, Buffer.from('own bucket'));
+  // The single-bucket test job only grants access to that one bucket.
+  it.skipIf(process.env.S3_BUCKET)(
+    'should serve an asset from the bucket the app names',
+    async () => {
+      await app.update({ s3Bucket: 'tst-served-bucket' });
+      const { Asset } = await getAppDB(app.id);
+      const asset = await Asset.create({ mime: 'application/octet-stream' });
+      await uploadS3File('tst-served-bucket', asset.id, Buffer.from('own bucket'));
 
-    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
-      responseType: 'arraybuffer',
-    });
+      const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+        responseType: 'arraybuffer',
+      });
 
-    expect(response.status).toBe(200);
-    expect(Buffer.from(response.data)).toStrictEqual(Buffer.from('own bucket'));
-  });
+      expect(response.status).toBe(200);
+      expect(Buffer.from(response.data)).toStrictEqual(Buffer.from('own bucket'));
+    },
+  );
 
   it('should be able to fetch an asset by name', async () => {
     const { Asset } = await getAppDB(app.id);

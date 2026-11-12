@@ -3087,16 +3087,19 @@ describe('createApp', () => {
     expect(decrypt(app!.dbPassword, 'testSecret')).toBe(databasePassword);
   });
 
-  it('should keep the assets of an app in the bucket it names', async () => {
-    vi.useRealTimers();
-    setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
-    authorizeStudio();
-    const { data: app } = await request.post<AppType>(
-      '/api/apps',
-      createFormData({
-        OrganizationId: organization.id,
-        s3Bucket: 'tst-named-bucket',
-        yaml: stripIndent(`
+  // The single-bucket test job only grants access to that one bucket.
+  it.skipIf(process.env.S3_BUCKET)(
+    'should keep the assets of an app in the bucket it names',
+    async () => {
+      vi.useRealTimers();
+      setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
+      authorizeStudio();
+      const { data: app } = await request.post<AppType>(
+        '/api/apps',
+        createFormData({
+          OrganizationId: organization.id,
+          s3Bucket: 'tst-named-bucket',
+          yaml: stripIndent(`
           name: Test App
           defaultPage: Test Page
           pages:
@@ -3105,16 +3108,17 @@ describe('createApp', () => {
                 - type: test
                   version: 0.0.0
         `),
-      }),
-    );
-    const file = Buffer.from('named bucket');
-    const { data: asset } = await request.post<{ id: string }>(
-      `/api/apps/${app.id}/assets`,
-      createFormData({ file, name: 'named' }),
-    );
+        }),
+      );
+      const file = Buffer.from('named bucket');
+      const { data: asset } = await request.post<{ id: string }>(
+        `/api/apps/${app.id}/assets`,
+        createFormData({ file, name: 'named' }),
+      );
 
-    expect(await getS3FileBuffer('tst-named-bucket', asset.id)).toStrictEqual(file);
-  });
+      expect(await getS3FileBuffer('tst-named-bucket', asset.id)).toStrictEqual(file);
+    },
+  );
 
   it('should not let apps name a bucket when the server sets no app bucket prefix', async () => {
     setArgv(argv);

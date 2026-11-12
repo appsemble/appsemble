@@ -3533,27 +3533,34 @@ describe('patchApp', () => {
     expect(app.s3Bucket).toBeNull();
   });
 
-  it('should keep later assets in the bucket the app is patched to name', async () => {
-    vi.useRealTimers();
-    setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
-    const app = await App.create({
-      path: 'bar',
-      definition: { name: 'Test App', defaultPage: 'Test Page' },
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
+  // The single-bucket test job only grants access to that one bucket.
+  it.skipIf(process.env.S3_BUCKET)(
+    'should keep later assets in the bucket the app is patched to name',
+    async () => {
+      vi.useRealTimers();
+      setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
+      const app = await App.create({
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      });
 
-    authorizeStudio();
-    await request.patch(`/api/apps/${app.id}`, createFormData({ s3Bucket: 'tst-patched-bucket' }));
-    const file = Buffer.from('patched bucket');
-    const { data: asset } = await request.post<{ id: string }>(
-      `/api/apps/${app.id}/assets`,
-      createFormData({ file, name: 'patched' }),
-    );
+      authorizeStudio();
+      await request.patch(
+        `/api/apps/${app.id}`,
+        createFormData({ s3Bucket: 'tst-patched-bucket' }),
+      );
+      const file = Buffer.from('patched bucket');
+      const { data: asset } = await request.post<{ id: string }>(
+        `/api/apps/${app.id}/assets`,
+        createFormData({ file, name: 'patched' }),
+      );
 
-    expect(await getS3FileBuffer('tst-patched-bucket', asset.id)).toStrictEqual(file);
-  });
+      expect(await getS3FileBuffer('tst-patched-bucket', asset.id)).toStrictEqual(file);
+    },
+  );
 
   it('should use passed database parameters if present', async () => {
     vi.useRealTimers();
