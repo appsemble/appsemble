@@ -3089,6 +3089,7 @@ describe('createApp', () => {
 
   it('should keep the assets of an app in the bucket it names', async () => {
     vi.useRealTimers();
+    setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
     authorizeStudio();
     const { data: app } = await request.post<AppType>(
       '/api/apps',
@@ -3113,6 +3114,95 @@ describe('createApp', () => {
     );
 
     expect(await getS3FileBuffer('tst-named-bucket', asset.id)).toStrictEqual(file);
+  });
+
+  it('should not let apps name a bucket when the server sets no app bucket prefix', async () => {
+    setArgv(argv);
+    authorizeStudio();
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        s3Bucket: 'tst-named-bucket',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it('should not let apps name a bucket outside the app bucket prefix', async () => {
+    setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
+    authorizeStudio();
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        s3Bucket: 'appsemble-block-assets',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it('should not let two apps share a bucket', async () => {
+    setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
+    authorizeStudio();
+    await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        s3Bucket: 'tst-shared-bucket',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        path: 'other-app',
+        s3Bucket: 'tst-shared-bucket',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 409,
+      data: { message: 'Another app already uses bucket “tst-shared-bucket”' },
+    });
   });
 
   it('should reject an invalid bucket name', async () => {

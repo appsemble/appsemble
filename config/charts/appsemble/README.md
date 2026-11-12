@@ -444,8 +444,9 @@ buckets, and buckets claimed through Kubernetes. `blockAssets.publicUrl` serves 
 `<publicUrl>/<bucket>/<key>` in both layouts.
 
 In either layout, an app published with `appsemble app publish --s3-bucket <name>` keeps its assets
-in that pre-provisioned bucket, key `<assetId>`. Changing the bucket later does not move existing
-assets.
+in that pre-provisioned bucket, key `<assetId>`. The name must start with `s3.appBucketPrefix`, and
+no two apps can share a bucket; when the prefix is empty, apps cannot name their own bucket.
+Changing the bucket later does not move existing assets.
 
 ### Provisioning the bucket
 

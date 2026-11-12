@@ -258,6 +258,7 @@ export class App extends Model {
   @Column(DataType.BLOB)
   declare dbPassword: Buffer;
 
+  @Index({ name: 'App_s3Bucket_key', unique: true })
   @Column(DataType.STRING)
   declare s3Bucket: string;
 

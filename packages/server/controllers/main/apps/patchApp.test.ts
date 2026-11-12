@@ -3510,6 +3510,7 @@ describe('patchApp', () => {
 
   it('should keep later assets in the bucket the app is patched to name', async () => {
     vi.useRealTimers();
+    setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
     const app = await App.create({
       path: 'bar',
       definition: { name: 'Test App', defaultPage: 'Test Page' },

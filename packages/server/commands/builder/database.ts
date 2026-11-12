@@ -73,6 +73,9 @@ export function databaseBuilder(yargs: Argv): Argv {
     .option('s3-bucket', {
       desc: 'The single, pre-provisioned bucket that holds all app and block assets. App assets are stored under apps/<appId>/ and block assets under blocks/. When unset, every app gets its own bucket and block assets live in the appsemble-block-assets bucket, both created on demand.',
     })
+    .option('s3-app-bucket-prefix', {
+      desc: 'The prefix the name of an app’s own bucket must start with. When unset, apps cannot name their own bucket.',
+    })
     .option('s3-region', {
       desc: 'The region to sign requests to the Amazon S3 compatible object storage server for',
       default: 'us-east-1',

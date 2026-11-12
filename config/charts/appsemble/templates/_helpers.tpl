@@ -164,6 +164,10 @@ Configure the environment variables for Appsemble to connect with the S3 compati
 - name: S3_BUCKET
   value: {{ . | quote }}
 {{- end }}
+{{- with .Values.s3.appBucketPrefix }}
+- name: S3_APP_BUCKET_PREFIX
+  value: {{ . | quote }}
+{{- end }}
 - name: S3_REGION
   value: {{ .Values.s3.region | quote }}
 - name: S3_PATH_STYLE

@@ -29,6 +29,7 @@ import {
   transactional,
 } from '../../../models/index.js';
 import {
+  assertAppS3Bucket,
   createAppReadmes,
   createAppScreenshots,
   handleAppValidationError,
@@ -84,6 +85,10 @@ export async function createApp(ctx: Context): Promise<void> {
   } = ctx;
 
   const supportedLanguagesArray = JSON.parse(supportedLanguages ?? '[]');
+
+  if (s3Bucket) {
+    await assertAppS3Bucket(ctx, s3Bucket);
+  }
 
   const organization = await Organization.findByPk(OrganizationId, {
     attributes: {

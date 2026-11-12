@@ -32,6 +32,7 @@ import {
   transactional,
 } from '../../../models/index.js';
 import {
+  assertAppS3Bucket,
   createAppReadmes,
   createAppScreenshots,
   getAppPasswordToken,
@@ -378,6 +379,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     }
 
     if (s3Bucket) {
+      await assertAppS3Bucket(ctx, s3Bucket, dbApp.id);
       result.s3Bucket = s3Bucket;
     }
 

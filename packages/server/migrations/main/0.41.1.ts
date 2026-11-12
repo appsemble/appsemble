@@ -6,6 +6,7 @@ export const key = '0.41.1';
 /**
  * Summary:
  * - Add column `s3Bucket` to table `App`
+ * - Add unique index `App_s3Bucket_key` to table `App`
  */
 
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
@@ -13,6 +14,13 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
 
   logger.info('Add column `s3Bucket` to table `App`');
   await queryInterface.addColumn('App', 's3Bucket', { type: DataTypes.STRING }, { transaction });
+
+  logger.info('Add unique index `App_s3Bucket_key` to table `App`');
+  await queryInterface.addIndex('App', ['s3Bucket'], {
+    name: 'App_s3Bucket_key',
+    unique: true,
+    transaction,
+  });
 }
 
 /**
