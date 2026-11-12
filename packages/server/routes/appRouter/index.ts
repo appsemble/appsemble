@@ -12,6 +12,10 @@ import getRawBody from 'raw-body';
 import { options } from '../../options/options.js';
 import { getApp, getAppPasswordToken } from '../../utils/app.js';
 import { setCookie } from '../../utils/appCookies.js';
+import {
+  isSlidingWindowRateLimited,
+  resetSlidingWindowRateLimit,
+} from '../../utils/ratelimit/assertSlidingWindowRateLimit.js';
 
 const router = createAppRouter(options);
 const supportedLanguages = getSupportedLanguages();
@@ -33,22 +37,31 @@ export const appRouter: Middleware = async (ctx, next) => {
     return;
   }
 
-  let error = false;
+  let error: 'incorrectPassword' | 'tooManyAttempts' | undefined;
   if (ctx.method === 'POST') {
-    const body = await getRawBody(ctx.req, { encoding: 'utf8', limit: '10kb' });
-    const password = new URLSearchParams(body).get('password') ?? '';
-    if (await compare(password, app.password!)) {
-      setCookie(ctx, 'app_password', passwordToken, {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: true,
-        signed: true,
-      });
-      ctx.redirect(ctx.url);
-      return;
+    // 10 attempts per 15 minutes per client keeps the shared password from being guessed.
+    const rateLimitKey = `appPassword:${app.id}`;
+    if (await isSlidingWindowRateLimited(ctx, rateLimitKey, 10, 15 * 60 * 1000)) {
+      error = 'tooManyAttempts';
+      ctx.status = 429;
+    } else {
+      const body = await getRawBody(ctx.req, { encoding: 'utf8', limit: '10kb' });
+      const password = new URLSearchParams(body).get('password') ?? '';
+      if (await compare(password, app.password!)) {
+        // Testers behind one IP address all enter the correct password, so only guesses add up.
+        await resetSlidingWindowRateLimit(ctx, rateLimitKey);
+        setCookie(ctx, 'app_password', passwordToken, {
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: true,
+          signed: true,
+        });
+        ctx.redirect(ctx.url);
+        return;
+      }
+      error = 'incorrectPassword';
+      ctx.status = 401;
     }
-    error = true;
-    ctx.status = 401;
   }
   const locale =
     detectLocale([...(await supportedLanguages)], ctx.acceptsLanguages()) || defaultLocale;
@@ -56,13 +69,12 @@ export const appRouter: Middleware = async (ctx, next) => {
   ctx.set('Content-Language', locale);
   ctx.vary('Accept-Language');
   return render(ctx, 'app/password.html', {
-    error,
+    error: error && messages[`server.passwordPage.${error}`],
     locale,
     message: app.passwordMessage,
     title: messages['server.passwordPage.title'],
     heading: messages['server.passwordPage.heading'],
     passwordLabel: messages['server.passwordPage.password'],
-    incorrectPassword: messages['server.passwordPage.incorrectPassword'],
     submitLabel: messages['server.passwordPage.submit'],
   });
 };

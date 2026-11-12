@@ -287,6 +287,7 @@
   "server.passwordPage.password": "Passwort",
   "server.passwordPage.submit": "Weiter",
   "server.passwordPage.title": "Passwort erforderlich",
+  "server.passwordPage.tooManyAttempts": "Zu viele Versuche. Versuchen Sie es später erneut.",
   "studio.+7+1T0": "Die Berechtigung zum Versenden manueller Push-Benachrichtigungen für eine App.",
   "studio.+7HI4W": "Beim Hochladen der Datei ist ein Problem aufgetreten. Bitte versuchen Sie es erneut.",
   "studio.+B//bs": "Stripe-API-Schlüssel",

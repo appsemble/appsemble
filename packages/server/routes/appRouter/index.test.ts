@@ -62,7 +62,7 @@ describe('appRouter', () => {
       headers: { 'cache-control': 'private,no-store', vary: 'Cookie, Accept-Language' },
       data: {
         filename: 'app/password.html',
-        data: { error: false, message: 'This app is in a closed test.\nAsk the team for access.' },
+        data: { message: 'This app is in a closed test.\nAsk the team for access.' },
       },
     });
   });
@@ -113,8 +113,36 @@ describe('appRouter', () => {
 
     expect(response).toMatchObject({
       status: 401,
-      data: { filename: 'app/password.html', data: { error: true } },
+      data: { filename: 'app/password.html', data: { error: 'The password is incorrect.' } },
     });
+  });
+
+  it('should stop accepting password attempts after too many guesses', async () => {
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      const response = await request.post('/', new URLSearchParams({ password: 'guess' }));
+      expect(response.status).toBe(401);
+    }
+
+    const response = await request.post('/', new URLSearchParams({ password: 'open sesame' }), {
+      maxRedirects: 0,
+    });
+
+    expect(response).toMatchObject({
+      status: 429,
+      data: {
+        filename: 'app/password.html',
+        data: { error: 'Too many attempts. Try again later.' },
+      },
+    });
+  });
+
+  it('should keep accepting the correct password from testers who share an IP address', async () => {
+    for (let tester = 0; tester < 11; tester += 1) {
+      const response = await request.post('/', new URLSearchParams({ password: 'open sesame' }), {
+        maxRedirects: 0,
+      });
+      expect(response.status).toBe(302);
+    }
   });
 
   it('should open the app after the password is entered', async () => {

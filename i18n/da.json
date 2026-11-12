@@ -287,6 +287,7 @@
   "server.passwordPage.password": "Adgangskode",
   "server.passwordPage.submit": "Fortsæt",
   "server.passwordPage.title": "Adgangskode påkrævet",
+  "server.passwordPage.tooManyAttempts": "For mange forsøg. Prøv igen senere.",
   "studio.+7+1T0": "Tilladelse til at sende manuelle push-beskeder for en app.",
   "studio.+7HI4W": "Der opstod et problem ved upload af filen. Prøv venligst igen.",
   "studio.+B//bs": "Stripe API-nøgle",

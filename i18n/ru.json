@@ -287,6 +287,7 @@
   "server.passwordPage.password": "Пароль",
   "server.passwordPage.submit": "Продолжить",
   "server.passwordPage.title": "Требуется пароль",
+  "server.passwordPage.tooManyAttempts": "Слишком много попыток. Повторите попытку позже.",
   "studio.+7+1T0": "Разрешение на отправку ручных push-уведомлений для приложения.",
   "studio.+7HI4W": "Возникла проблема при загрузке ресурса. Пожалуйста, попробуйте ещё раз.",
   "studio.+B//bs": "Ключ API Stripe",

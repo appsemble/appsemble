@@ -30,6 +30,9 @@ Send the testers the link to the app and the password. When they open the app, t
 page with the message. After they enter the password, they can use the app until they close the
 browser.
 
+After 10 wrong passwords within 15 minutes, the password page refuses every attempt from the same
+network, including the correct password, until the oldest of those attempts is 15 minutes old.
+
 Changing the password revokes the access of everyone who used the old password. Share the new
 password with the people who should keep access.
 

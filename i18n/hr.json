@@ -287,6 +287,7 @@
   "server.passwordPage.password": "Lozinka",
   "server.passwordPage.submit": "Nastavi",
   "server.passwordPage.title": "Potrebna je lozinka",
+  "server.passwordPage.tooManyAttempts": "Previše pokušaja. Pokušajte ponovno kasnije.",
   "studio.+7+1T0": "Dozvola za ručno slanje push obavijesti za aplikaciju.",
   "studio.+7HI4W": "Došlo je do problema pri prijenosu resursa. Pokušaj ponovo.",
   "studio.+B//bs": "Stripe API ključ",

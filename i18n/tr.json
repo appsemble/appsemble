@@ -287,6 +287,7 @@
   "server.passwordPage.password": "Parola",
   "server.passwordPage.submit": "Devam et",
   "server.passwordPage.title": "Parola gerekli",
+  "server.passwordPage.tooManyAttempts": "Çok fazla deneme. Daha sonra tekrar deneyin.",
   "studio.+7+1T0": "",
   "studio.+7HI4W": "",
   "studio.+B//bs": "",

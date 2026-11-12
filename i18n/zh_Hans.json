@@ -287,6 +287,7 @@
   "server.passwordPage.password": "密码",
   "server.passwordPage.submit": "继续",
   "server.passwordPage.title": "需要密码",
+  "server.passwordPage.tooManyAttempts": "尝试次数过多。请稍后再试。",
   "studio.+7+1T0": "",
   "studio.+7HI4W": "",
   "studio.+B//bs": "",

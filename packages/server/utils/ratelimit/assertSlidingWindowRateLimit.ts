@@ -44,11 +44,52 @@ end
 return 1
 `;
 
+function getRateLimitKey(
+  ctx: Context,
+  key: string,
+  { identifierFunction = (context) => context.ip }: SlidingWindowRateLimitOptions,
+): string {
+  return `${RATE_LIMIT_KEY_PREFIX}:${key}:${identifierFunction(ctx)}`;
+}
+
 /**
  * Implements a sliding window rate limiter using Redis sorted sets.
  * Each request is recorded with a timestamp, and old requests are removed based on the specified window.
- * If the number of requests in the current window exceeds the maximum allowed, the function will assert a 429 error.
  * The check is skipped while the Valkey client is not connected, so an outage never blocks the request.
+ *
+ * @param ctx Koa context object, used to extract the identifier (e.g., IP address).
+ * @param key A unique key to identify the rate limit (e.g., 'login', 'register').
+ * @param maxRequests The maximum number of allowed requests within the specified window.
+ * @param windowMs The time window in milliseconds for which the rate limit applies.
+ * @param options Optional configuration for the rate limiter, including a custom identifier function.
+ * @returns Whether the number of requests in the current window exceeds the maximum allowed.
+ */
+export async function isSlidingWindowRateLimited(
+  ctx: Context,
+  key: string,
+  maxRequests: number,
+  windowMs: number,
+  options: SlidingWindowRateLimitOptions = {},
+): Promise<boolean> {
+  const client = getValkeyClient();
+  if (client?.status !== 'ready') {
+    logger.warn(
+      `Valkey client ${client ? client.status : 'not initialized'}, skipping rate limit check`,
+    );
+    return false;
+  }
+  const response = await client.eval(
+    script,
+    1,
+    getRateLimitKey(ctx, key, options),
+    String(windowMs),
+    String(maxRequests),
+  );
+  return Number(response) === 1;
+}
+
+/**
+ * Asserts a 429 error if the client exceeds the sliding window rate limit.
  *
  * @param ctx Koa context object, used to extract the identifier (e.g., IP address) and to assert conditions.
  * @param key A unique key to identify the rate limit (e.g., 'login', 'register').
@@ -63,22 +104,28 @@ export async function assertSlidingWindowRateLimit(
   windowMs: number,
   options: SlidingWindowRateLimitOptions = {},
 ): Promise<void> {
-  const client = getValkeyClient();
-  if (client?.status !== 'ready') {
-    logger.warn(
-      `Valkey client ${client ? client.status : 'not initialized'}, skipping rate limit check`,
-    );
-    return;
-  }
-  const idFunction = options.identifierFunction ?? ((context) => context.ip);
-  const identifier = idFunction(ctx);
-  const fullKey = `${RATE_LIMIT_KEY_PREFIX}:${key}:${identifier}`;
-  const response = await client.eval(script, 1, fullKey, String(windowMs), String(maxRequests));
-  const isRateLimited = Number(response) === 1;
   assertKoaCondition(
-    !isRateLimited,
+    !(await isSlidingWindowRateLimited(ctx, key, maxRequests, windowMs, options)),
     ctx,
     429,
     options.errorMessage ?? 'Too many requests, please try again later.',
   );
+}
+
+/**
+ * Forget the requests recorded by {@link isSlidingWindowRateLimited} for the client.
+ *
+ * @param ctx Koa context object, used to extract the identifier (e.g., IP address).
+ * @param key The key that was passed to {@link isSlidingWindowRateLimited}.
+ * @param options The options that were passed to {@link isSlidingWindowRateLimited}.
+ */
+export async function resetSlidingWindowRateLimit(
+  ctx: Context,
+  key: string,
+  options: SlidingWindowRateLimitOptions = {},
+): Promise<void> {
+  const client = getValkeyClient();
+  if (client?.status === 'ready') {
+    await client.del(getRateLimitKey(ctx, key, options));
+  }
 }

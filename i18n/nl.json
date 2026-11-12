@@ -287,6 +287,7 @@
   "server.passwordPage.password": "Wachtwoord",
   "server.passwordPage.submit": "Doorgaan",
   "server.passwordPage.title": "Wachtwoord vereist",
+  "server.passwordPage.tooManyAttempts": "Te veel pogingen. Probeer het later opnieuw.",
   "studio.+7+1T0": "De toestemming om handmatige pushmeldingen voor een app te versturen.",
   "studio.+7HI4W": "Er is een probleem opgetreden bij het uploaden van het bestand. Probeer het nog eens.",
   "studio.+B//bs": "Stripe API-sleutel",

@@ -287,6 +287,7 @@
   "server.passwordPage.password": "비밀번호",
   "server.passwordPage.submit": "계속",
   "server.passwordPage.title": "비밀번호가 필요합니다",
+  "server.passwordPage.tooManyAttempts": "시도 횟수가 너무 많습니다. 나중에 다시 시도하세요.",
   "studio.+7+1T0": "",
   "studio.+7HI4W": "",
   "studio.+B//bs": "",

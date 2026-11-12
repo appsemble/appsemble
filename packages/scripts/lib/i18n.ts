@@ -58,6 +58,7 @@ const serverMessageKeys = [
   'server.passwordPage.password',
   'server.passwordPage.incorrectPassword',
   'server.passwordPage.submit',
+  'server.passwordPage.tooManyAttempts',
 ];
 
 export async function extractMessages(): Promise<Translations> {
