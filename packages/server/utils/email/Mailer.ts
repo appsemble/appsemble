@@ -540,7 +540,12 @@ export class Mailer {
     if (headers) {
       loggingMessage.push(`Headers: ${JSON.stringify(headers)}`);
     }
-    loggingMessage.push(`Subject: ${subject}`, '', text);
+    loggingMessage.push(`Subject: ${subject}`);
+    // The body can hold verification and password reset links and personal data. It is logged
+    // only without SMTP, where the log is how a developer reads the email, or when verbose.
+    if (!transport || logger.isVerboseEnabled()) {
+      loggingMessage.push('', text);
+    }
     logger.info(loggingMessage.join('\n'));
 
     if (attachments.length) {
@@ -593,7 +598,7 @@ export class Mailer {
       } else {
         logger.warn('IMAP hasn’t been configured. Not moving email to sent folder.');
       }
-      logger.info(String(message));
+      logger.verbose(String(message));
     }
   }
 
