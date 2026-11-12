@@ -236,12 +236,10 @@ async function handleRequestProxy(
     axiosConfig.httpsAgent = httpsAgent;
   }
 
-  logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
-  logger.verbose('Axios Config:');
-  logger.verbose(axiosConfig);
+  logger.verbose(`Forwarding request to ${proxyUrl.origin}${proxyUrl.pathname}`);
   try {
     response = await axios(axiosConfig);
-    logger.verbose(response);
+    logger.verbose(`Received status ${response.status}`);
   } catch (err: unknown) {
     // Check if this is an SSRF block from request-filtering-agent
     const errorMessage = err instanceof Error ? err.message : String(err);
@@ -283,8 +281,6 @@ async function handleRequestProxy(
       }
     } else {
       logger.error(err);
-      logger.verbose('Response:');
-      logger.verbose(response);
 
       throwKoaError(ctx, 502, 'Bad Gateway');
     }

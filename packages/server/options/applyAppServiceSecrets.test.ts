@@ -20,7 +20,6 @@ import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
 import { authorizeAppMember, createTestUser } from '../utils/test/authorization.js';
-import { applyAppServiceSecrets } from './applyAppServiceSecrets.js';
 
 let server: Koa;
 let user: User;
@@ -1289,17 +1288,14 @@ describe('applyAppServiceSecrets', () => {
     );
     const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
     mock.onPost(tokenUrl).reply(200, { access_token: 'access-token', expires_in: 3600 });
+    mock.onGet(baseURL).reply(418);
     let logs = '';
     const capture = (info: Record<symbol, string>): void => {
       logs += info[Symbol.for('message')];
     };
     logger.on('data', capture);
 
-    await applyAppServiceSecrets({
-      app: app.toJSON(),
-      axiosConfig: { url: baseURL },
-      context: server.context as ParameterizedContext,
-    });
+    await request.get('/api/apps/1/actions/pages.0.blocks.0.actions.get?data={}');
 
     logger.off('data', capture);
     mock.restore();
