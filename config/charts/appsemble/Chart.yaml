@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.12
-appVersion: 0.40.12
+version: 0.40.13
+appVersion: 0.40.13
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,52 +33,32 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "App: Send the password token of a password protected app with its
-        API requests."
+      description: "App: Add an opt-in page not found page through notFoundPage."
     - kind: added
-      description: "Server: Add a disableRegistration Helm chart value to turn off
-        registration with email and password."
+      description: "Cli: Add --password option to app publish, app update, and app patch."
     - kind: added
-      description: "Server: Add an OpenShift values preset to the Helm chart."
+      description: "Lang-sdk: Add the notFoundPage property to the app definition."
     - kind: added
-      description: "Server: Add password protection for apps, with a password page on
-        the app domains and a guarded app API."
-    - kind: added
-      description: "Studio: Add the password protection settings to the app settings page."
+      description: "Server: Accept a password when creating an app."
+    - kind: changed
+      description: "Server: Show the password page message from the
+        server.passwordPage.message app translation."
     - kind: removed
-      description: "Server: Remove the Helm values pgbouncer.auth.existingSecret and
-        pgbouncer.auth.userlistKey: PgBouncer reads the credentials from
-        postgresql.auth.existingSecret."
+      description: "Server: Remove the passwordMessage app property."
+    - kind: removed
+      description: "Studio: Remove the password page message setting, translate
+        server.passwordPage.message instead."
     - kind: fixed
-      description: "Node-utils: Fail S3 requests when no connection to the object
-        store is made within 10 seconds."
+      description: "Server: A failing app cron job no longer skips the remaining cron
+        jobs of that app."
     - kind: fixed
-      description: "Node-utils: Surface object store read errors instead of serving an
-        empty response."
+      description: "Server: Convert XML responses of server-side request actions that
+        define a schema."
     - kind: fixed
-      description: "Server: Apply the filename of an email action attachment to an
-        asset referenced by name."
-    - kind: fixed
-      description: "Server: Fail the email action when an attached asset cannot be read."
-    - kind: fixed
-      description: "Server: Leave the mailpit host out of the Helm chart Ingress when
-        Mailpit is disabled."
-    - kind: fixed
-      description: "Server: Request actions give up on an endpoint that does not
-        respond within 60 seconds."
-    - kind: fixed
-      description: "Server: Set the configured cert-manager issuer on existing
-        organization ingresses in reconcile-dns."
-    - kind: fixed
-      description: "Server: Stop a hung run-cronjobs job after four minutes, so it no
-        longer blocks the following runs."
-    - kind: fixed
-      description: "Server: Stop hung scale-containers, s3-assets-backup,
-        charge-organization-subscriptions and cleanup-soft-deleted-records jobs
-        after a deadline."
-    - kind: fixed
-      description: "Server: Stop the Helm chart main OpenShift Route claiming its
-        parent domain."
+      description: "Studio: Fix the Studio app settings and translations pages
+        crashing on an app language such as ang."
+    - kind: security
+      description: "Server: Rate limit password attempts on password protected apps."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

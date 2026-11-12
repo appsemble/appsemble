@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.13](https://gitlab.com/appsemble/appsemble/-/releases/0.40.13)] - 2026-11-12
+
+### Added
+
+- App: Add an opt-in page not found page through `notFoundPage`.
+- Cli: Add `--password` option to `app publish`, `app update`, and `app patch`.
+- Lang-sdk: Add the `notFoundPage` property to the app definition.
+- Server: Accept a password when creating an app.
+
+### Changed
+
+- Server: Show the password page message from the `server.passwordPage.message` app translation.
+
+### Removed
+
+- Server: Remove the `passwordMessage` app property.
+- Studio: Remove the password page message setting, translate `server.passwordPage.message` instead.
+
+### Fixed
+
+- Server: A failing app cron job no longer skips the remaining cron jobs of that app.
+- Server: Convert XML responses of server-side `request` actions that define a `schema`.
+- Studio: Fix the Studio app settings and translations pages crashing on an app language such as
+  `ang`.
+
+### Security
+
+- Server: Rate limit password attempts on password protected apps.
+
 ## \[[0.40.12](https://gitlab.com/appsemble/appsemble/-/releases/0.40.12)] - 2026-11-11
 
 ### Added
