@@ -41,6 +41,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
               totp: {
                 $ref: '#/components/schemas/App/properties/totp',
               },
+              password: {
+                type: 'string',
+                description: 'The password visitors must enter to open the app.',
+              },
               yaml: {
                 type: 'string',
                 description: 'The original YAML definition used to define the app.',

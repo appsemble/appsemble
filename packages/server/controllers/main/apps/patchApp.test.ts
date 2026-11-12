@@ -1929,6 +1929,10 @@ describe('patchApp', () => {
                   "format": "binary",
                   "type": "string",
                 },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
+                  "type": "string",
+                },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
                 },
@@ -2022,6 +2026,10 @@ describe('patchApp', () => {
                 "maskableIcon": {
                   "description": "The app icon.",
                   "format": "binary",
+                  "type": "string",
+                },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
                   "type": "string",
                 },
                 "path": {

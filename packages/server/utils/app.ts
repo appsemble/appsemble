@@ -12,6 +12,7 @@ import {
 } from '@appsemble/node-utils';
 import { type App as AppType } from '@appsemble/types';
 import { extractAppMessages, normalizeLocale, StyleValidationError } from '@appsemble/utils';
+import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 import tags from 'language-tags';
 import { lookup } from 'mime-types';
@@ -129,6 +130,24 @@ export function getAppPasswordToken({
   return password
     ? createHmac('sha256', argv.secret).update(`${id}:${password}`).digest('base64url')
     : undefined;
+}
+
+/**
+ * Hash the password visitors must enter to open an app.
+ *
+ * @param ctx The Koa context to throw a 400 error on if the password is too long.
+ * @param password The password to hash. An empty string turns password protection off.
+ * @returns The bcrypt hash of the password, or `null` if the password is empty.
+ */
+export function hashAppPassword(ctx: Context, password: string): Promise<string | null> {
+  // Bcrypt ignores everything after the first 72 bytes.
+  assertKoaCondition(
+    Buffer.byteLength(password, 'utf8') <= 72,
+    ctx,
+    400,
+    'The app password must not exceed 72 UTF-8 bytes.',
+  );
+  return password ? hash(password, 10) : Promise.resolve(null);
 }
 
 /**
