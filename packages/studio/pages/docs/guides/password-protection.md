@@ -23,6 +23,10 @@ version of the app definition does not change it.
 To change the password, enter a new one and save. To turn password protection off, uncheck
 **Password protection** and save.
 
+With the [Appsemble CLI](https://www.npmjs.com/package/@appsemble/cli), pass `--password` to
+`appsemble app publish`, `appsemble app update`, or `appsemble app patch`. For the latter two, an
+empty string, `--password ''`, turns password protection off.
+
 ## Password page message
 
 The password page can show a message above the password field, for example to explain why the app is

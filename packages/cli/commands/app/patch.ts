@@ -21,6 +21,7 @@ interface PatchAppArguments extends BaseArguments {
   displayAppMemberName?: boolean;
   displayInstallationPrompt?: boolean;
   enableSelfRegistration?: boolean;
+  password?: string;
 }
 
 export const command = 'patch';
@@ -84,6 +85,11 @@ export function builder(yargs: Argv): Argv<any> {
     .option('displayInstallationPrompt', {
       description: 'Whether to prompt the app users to display the installation prompts',
       type: 'boolean',
+    })
+    .option('password', {
+      description:
+        'The password visitors must enter to open the app. Pass an empty string to turn password protection off.',
+      type: 'string',
     })
     .option('force', {
       description: 'Whether the lock property should be ignored',
