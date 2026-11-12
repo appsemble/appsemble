@@ -75,6 +75,8 @@ export function databaseBuilder(yargs: Argv): Argv {
     })
     .option('s3-app-bucket-prefix', {
       desc: 'The prefix the name of an app’s own bucket must start with. When unset, apps cannot name their own bucket.',
+      requiresArg: true,
+      type: 'string',
     })
     .option('s3-region', {
       desc: 'The region to sign requests to the Amazon S3 compatible object storage server for',

@@ -2,10 +2,17 @@ import { randomUUID } from 'node:crypto';
 
 import { QueryTypes } from 'sequelize';
 import { describe, expect, it } from 'vitest';
+import yargs from 'yargs';
 
-import { migrateAppDatabases } from './migrate.js';
+import { builder, migrateAppDatabases } from './migrate.js';
 import { migrations } from '../migrations/apps/index.js';
 import { App, getAppDB, getDB, Organization } from '../models/index.js';
+
+it.each(['1e3', '001'])('preserves the literal app bucket prefix %s', (prefix) => {
+  const args = builder(yargs(['--s3-app-bucket-prefix', prefix])).parseSync();
+
+  expect(args['s3-app-bucket-prefix']).toBe(prefix);
+});
 
 describe('migrateAppDatabases', () => {
   it('should migrate the database of a soft-deleted app so the app can be restored', async () => {
