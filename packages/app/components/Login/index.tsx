@@ -6,7 +6,6 @@ import { Navigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import {
   apiUrl,
   appId,
@@ -27,15 +26,16 @@ type LoginState = 'demo' | 'form' | 'permission-error' | 'totp-setup' | 'totp';
 
 export function Login(): ReactNode {
   const { definition } = useAppDefinition();
-  const { appMemberRoles, isLoggedIn, totpPending } = useAppMember();
+  const { totpPending } = useAppMember();
   const { getAppMessage } = useAppMessages();
   const qs = useQuery();
   const redirect = qs.get('redirect');
 
-  if (isLoggedIn || !definition.security) {
-    const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
+  if (!definition.security) {
     return (
-      <Navigate to={redirect || getPagePathSegment({ name: defaultPageName }, getAppMessage)} />
+      <Navigate
+        to={redirect || `../${getPagePathSegment({ name: definition.defaultPage }, getAppMessage)}`}
+      />
     );
   }
 

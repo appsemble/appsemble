@@ -1,16 +1,10 @@
-import {
-  findPageById,
-  getPageAncestors,
-  normalize,
-  type PageDefinition,
-} from '@appsemble/lang-sdk';
+import { getPageAncestors, type PageDefinition } from '@appsemble/lang-sdk';
 import { useMemo } from 'react';
-import { useMatch } from 'react-router-dom';
 
 import { shouldShowPage } from './layout.js';
 import { useAppDefinition } from '../components/AppDefinitionProvider/index.js';
 import { useAppMember } from '../components/AppMemberProvider/index.js';
-import { useAppMessages } from '../components/AppMessagesProvider/index.js';
+import { usePage } from '../components/MenuProvider/index.js';
 
 /**
  * Select the current page or its nearest visible ancestor in the rendered navigation.
@@ -25,13 +19,9 @@ export function useActiveNavigation(
 ): (page: PageDefinition) => 'page' | 'location' | false {
   const { definition } = useAppDefinition();
   const { appMemberRoles, appMemberSelectedGroup } = useAppMember();
-  const { getAppMessage } = useAppMessages();
-  const pageId = useMatch('/:lang/:pageId/*')?.params.pageId;
+  const { page: currentPage } = usePage();
 
   return useMemo(() => {
-    const currentPage = pageId
-      ? findPageById(definition.pages, normalize(pageId), getAppMessage)
-      : null;
     const containers = new Map<PageDefinition, PageDefinition[]>();
     const visiblePages = new Set<PageDefinition>();
 
@@ -62,5 +52,5 @@ export function useActiveNavigation(
       }
       return Boolean(selected && containers.get(selected)?.includes(page)) && 'location';
     };
-  }, [pageId, definition, appMemberRoles, appMemberSelectedGroup, getAppMessage, nested, pages]);
+  }, [currentPage, definition, appMemberRoles, appMemberSelectedGroup, nested, pages]);
 }

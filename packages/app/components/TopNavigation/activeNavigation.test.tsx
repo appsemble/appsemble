@@ -1,7 +1,12 @@
-import { type AppDefinition, type PageDefinition } from '@appsemble/lang-sdk';
+import {
+  type AppDefinition,
+  findPageById,
+  normalize,
+  type PageDefinition,
+} from '@appsemble/lang-sdk';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
-import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Link, MemoryRouter, Route, Routes, useMatch } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { TopNavigation } from './index.js';
@@ -11,7 +16,10 @@ import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
+import * as menuProvider from '../MenuProvider/index.js';
 import { SideNavigation } from '../SideNavigation/index.js';
+
+const { usePage } = menuProvider;
 
 const pages: PageDefinition[] = [
   { name: 'Home', blocks: [] },
@@ -54,11 +62,21 @@ function renderNavigation(
     isLoggedIn: Boolean(roles.length),
   } as never);
   vi.spyOn(appMessagesProvider, 'useAppMessages').mockReturnValue({
-    getAppMessage: ({ defaultMessage, id }: { defaultMessage: string; id: string }) => ({
-      format: () => (id === 'pages.lot-details' ? 'Details' : defaultMessage),
+    getAppMessage: ({ defaultMessage }: { defaultMessage: string }) => ({
+      format: () => defaultMessage,
     }),
     getMessage: () => ({ format: () => '' }),
   } as never);
+  // The page component reports the page it renders. These tests render the navigation alone.
+  vi.spyOn(menuProvider, 'usePage').mockImplementation(() => {
+    const pageId = useMatch('/:lang/:pageId/*')?.params.pageId;
+    const { getAppMessage } = appMessagesProvider.useAppMessages();
+    return {
+      ...usePage(),
+      page:
+        (pageId && findPageById(definition.pages, normalize(pageId), getAppMessage)) || undefined,
+    };
+  });
   vi.spyOn(appVariablesProvider, 'useAppVariables').mockReturnValue({
     getVariable: vi.fn(),
   } as never);
@@ -148,11 +166,6 @@ describe.each(['top', 'side', 'bottom'])('%s navigation selection', (navigation)
     expect(selection()).toStrictEqual([['Overview Lots', 'location']]);
   });
 
-  it('should resolve translated page URLs', () => {
-    renderNavigation(navigation, '/nl/details/42');
-    expect(selection()).toStrictEqual([['Available Lots', 'location']]);
-  });
-
   it('should update selection when switching sections and clear it for an unrelated page', () => {
     renderNavigation(navigation, '/en/lot-details/42');
     expect(selection()).toStrictEqual([['Available Lots', 'location']]);
@@ -165,14 +178,11 @@ describe.each(['top', 'side', 'bottom'])('%s navigation selection', (navigation)
     expect(screen.queryByRole('link', { current: 'location' })).toBeNull();
   });
 
-  it.each(['/en/orphan', '/en/unknown', '/en/Settings'])(
-    'should leave navigation unselected at %s',
-    (path) => {
-      renderNavigation(navigation, path);
-      expect(screen.queryByRole('link', { current: 'page' })).toBeNull();
-      expect(screen.queryByRole('link', { current: 'location' })).toBeNull();
-    },
-  );
+  it('should leave navigation unselected on a page outside the navigation', () => {
+    renderNavigation(navigation, '/en/orphan');
+    expect(screen.queryByRole('link', { current: 'page' })).toBeNull();
+    expect(screen.queryByRole('link', { current: 'location' })).toBeNull();
+  });
 
   it.each([
     { hideNavTitle: true },

@@ -166,6 +166,19 @@ describe('AppRoutes', () => {
     expect(screen.getByText('Page route')).not.toBeNull();
   });
 
+  it.each(['Login', 'Register'])(
+    'should send a logged in member from the %s route to the default page',
+    async (route) => {
+      vi.spyOn(appMemberProvider, 'useAppMember').mockReturnValue({
+        appMemberRoles: [],
+        isLoggedIn: true,
+      } as never);
+      renderRoutes(`/nl/${route}`, { appMessages: { 'pages.home': 'Start' } });
+      await waitFor(() => expect(screen.getByText('/nl/start')).not.toBeNull());
+      expect(screen.getByText('Page route')).not.toBeNull();
+    },
+  );
+
   it('should leave focus alone on the first page the app redirects to', async () => {
     renderRoutes('/en');
     await waitFor(() => expect(screen.getByText('/en/home')).not.toBeNull());

@@ -196,20 +196,21 @@ selectors (`.message` and `.bottom-nav`) rather than a `data-grid-area` attribut
 
 The following pages exist. A page is only mounted if its condition holds.
 
-| Page name         | Route             | States                                                       | Mounted                                                                     |
-| ----------------- | ----------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| `login`           | `/Login`          | `form`, `demo`, `totp`, `totp-setup`, `permission-error`     | Logged out, and the app has no custom `Login` page or demo login is enabled |
-| `register`        | `/Register`       | `form`                                                       | Logged out, and the app has no custom `Register` page                       |
-| `reset-password`  | `/Reset-Password` | `form`, `success`                                            | Always                                                                      |
-| `edit-password`   | `/Edit-Password`  | `form`, `success`                                            | Always                                                                      |
-| `verify`          | `/Verify`         | `loading`, `success`, `error`                                | Always                                                                      |
-| `app-invite`      | `/App-Invite`     | `loading`, `error`, `accepted`, `declined`, `member`, `form` | Always                                                                      |
-| `group-invite`    | `/Group-Invite`   | `loading`, `error`, `accepted`, `declined`, `form`           | Logged in                                                                   |
-| `settings`        | `/Settings`       | `default`                                                    | Always                                                                      |
-| `feedback`        | `/Feedback`       | `form`                                                       | A Sentry DSN is configured                                                  |
-| `debug`           | `/debug`          | `default`                                                    | Always                                                                      |
-| `openid-callback` | `/Callback`       | `error`                                                      | The OAuth2 login failed                                                     |
-| `page-error`      | any page route    | `permission`                                                 | Logged in, and no page of the app is allowed for the member                 |
+| Page name         | Route             | States                                                       | Mounted                                                                          |
+| ----------------- | ----------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| `login`           | `/Login`          | `form`, `demo`, `totp`, `totp-setup`, `permission-error`     | Logged out, and the app has no custom `Login` page or demo login is enabled      |
+| `register`        | `/Register`       | `form`                                                       | Logged out, and the app has no custom `Register` page                            |
+| `reset-password`  | `/Reset-Password` | `form`, `success`                                            | Always                                                                           |
+| `edit-password`   | `/Edit-Password`  | `form`, `success`                                            | Always                                                                           |
+| `verify`          | `/Verify`         | `loading`, `success`, `error`                                | Always                                                                           |
+| `app-invite`      | `/App-Invite`     | `loading`, `error`, `accepted`, `declined`, `member`, `form` | Always                                                                           |
+| `group-invite`    | `/Group-Invite`   | `loading`, `error`, `accepted`, `declined`, `form`           | Logged in                                                                        |
+| `settings`        | `/Settings`       | `default`                                                    | Always                                                                           |
+| `feedback`        | `/Feedback`       | `form`                                                       | A Sentry DSN is configured                                                       |
+| `debug`           | `/debug`          | `default`                                                    | Always                                                                           |
+| `openid-callback` | `/Callback`       | `error`                                                      | The OAuth2 login failed                                                          |
+| `page-error`      | any page route    | `not-found`                                                  | The app sets `notFoundPage: true`, and the URL matches no page or its parameters |
+| `page-error`      | any page route    | `permission`                                                 | Logged in, and no page of the app is allowed for the member                      |
 
 ```css copy
 [data-appsemble-page='login'] [data-grid-area='title'] {

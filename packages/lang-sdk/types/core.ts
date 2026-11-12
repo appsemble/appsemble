@@ -79,6 +79,12 @@ export interface AppDefinition {
   defaultPage: string;
 
   /**
+   * What is displayed when the URL does not match a page: the built-in page if `true`, otherwise the
+   * page with this name.
+   */
+  notFoundPage?: string | true;
+
+  /**
    * The settings for the layout of the app.
    */
   layout?: {

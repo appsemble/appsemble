@@ -133,6 +133,41 @@ check it out.
 > and manager id, this would turn into: `.../{id}/{department}/{managerId}`. This can help in
 > reducing the amount of code you need to write.
 
+## Page not found
+
+A URL that matches no page redirects to the default page. Set `notFoundPage: true` in the app
+definition to show a built-in “Page not found” page instead, at the URL that was not found. It is
+also shown for path segments that don't match the [page parameters](#page-parameters) of a page,
+except on tabs pages.
+
+To build this page with blocks, for example to show the same footer as the other pages, set
+`notFoundPage` to the name of one of the pages:
+
+```yaml copy validate
+name: My app
+defaultPage: Home
+notFoundPage: Page not found
+
+pages:
+  - name: Home
+    blocks:
+      - type: markdown
+        version: 0.40.11-test.0
+        parameters:
+          content: Welcome!
+  - name: Page not found
+    hideNavTitle: true
+    blocks:
+      - type: markdown
+        version: 0.40.11-test.0
+        parameters:
+          content: The page you are looking for does not exist.
+```
+
+At a URL that matches no page, this page is shown regardless of its `roles`. It must be a top-level
+page, may not define page parameters, and may not be a container or tabs page. Set `hideNavTitle` to
+keep it out of the navigation menus.
+
 ## Theming
 
 You can use the page's name or index to apply specific styling to the page. This can be used as a

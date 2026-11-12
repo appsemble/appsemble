@@ -117,7 +117,10 @@ export function AppRoutes(): ReactNode {
     return <Loader />;
   }
 
-  const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
+  const defaultPageSegment = getPagePathSegment(
+    { name: getDefaultPageName(isLoggedIn, appMemberRoles, definition) },
+    getAppMessage,
+  );
   const hasCustomLogin = definition.pages.some((page) => page.name === 'Login');
   const hasCustomRegister = definition.pages.some((page) => page.name === 'Register');
 
@@ -129,11 +132,22 @@ export function AppRoutes(): ReactNode {
     'Edit-Password': <EditPassword />,
     Verify: <Verify />,
   };
-  if (!isLoggedIn && (!hasCustomLogin || showDemoLogin)) {
-    elements.Login = <Login />;
-  }
-  if (!isLoggedIn && !hasCustomRegister) {
-    elements.Register = <Register />;
+  if (isLoggedIn) {
+    // A member who logs in or registers without a redirect is still at the built-in route.
+    const defaultPage = <Navigate replace to={`../${defaultPageSegment}`} />;
+    if (!hasCustomLogin) {
+      elements.Login = defaultPage;
+    }
+    if (!hasCustomRegister) {
+      elements.Register = defaultPage;
+    }
+  } else {
+    if (!hasCustomLogin || showDemoLogin) {
+      elements.Login = <Login />;
+    }
+    if (!hasCustomRegister) {
+      elements.Register = <Register />;
+    }
   }
   if (sentryDsn) {
     elements.Feedback = <SentryFeedback />;
@@ -157,10 +171,7 @@ export function AppRoutes(): ReactNode {
           element={<Page key={appMemberSelectedGroup?.id ?? 'no-group'} />}
           path="/:pageId/*"
         />
-        <Route
-          element={<Navigate to={getPagePathSegment({ name: defaultPageName }, getAppMessage)} />}
-          path="*"
-        />
+        <Route element={<Navigate to={defaultPageSegment} />} path="*" />
       </Routes>
     </MetaProvider>
   );

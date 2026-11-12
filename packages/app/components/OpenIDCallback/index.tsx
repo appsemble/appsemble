@@ -98,7 +98,7 @@ export function OpenIDCallback(): ReactNode {
         to={
           showDemoLogin
             ? `/${loginSegment}`
-            : redirect || getPagePathSegment({ name: defaultPageName }, getAppMessage)
+            : redirect || `../${getPagePathSegment({ name: defaultPageName }, getAppMessage)}`
         }
       />
     );

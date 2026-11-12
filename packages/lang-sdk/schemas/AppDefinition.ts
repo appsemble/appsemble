@@ -74,6 +74,20 @@ strategy of those roles. Only roles assigned to the member count, not roles they
 This **must** match the name of a page defined for the app.
 `,
     },
+    notFoundPage: {
+      oneOf: [{ type: 'string' }, { enum: [true] }],
+      description: `What is displayed when the URL does not match a page.
+
+Set this to \`true\` to display a built-in “Page not found” page, or to the name of a page to display
+that page. The page **must** be a top-level page of the app, may not specify parameters, and may not
+be a container or tabs page. It is displayed at the URL that was not found, without checking the
+roles of the app member.
+
+The not found page is also displayed for path segments that don’t match the parameters of a page,
+except on tabs pages. If this is not specified, a URL that matches no page redirects to the default
+page.
+`,
+    },
     defaultLanguage: {
       type: 'string',
       default: defaultLocale,
