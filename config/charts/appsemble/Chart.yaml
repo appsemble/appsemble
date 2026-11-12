@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.14
-appVersion: 0.40.14
+version: 0.40.15
+appVersion: 0.40.15
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,8 +33,15 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Server: Map host names to addresses in the pods that send email
-        with the hostAliases Helm value."
+      description: "Cli: Store an app’s assets in the S3 bucket named by --s3-bucket
+        on app publish and app update."
+    - kind: added
+      description: "Server: Support named app asset buckets and apply bundled database
+        migrations by default."
+    - kind: security
+      description: "Server: Do not log service secret credentials."
+    - kind: security
+      description: "Server: Leave email bodies out of the info log when SMTP is configured."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

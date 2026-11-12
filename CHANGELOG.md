@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.15](https://gitlab.com/appsemble/appsemble/-/releases/0.40.15)] - 2026-11-12
+
+### Added
+
+- Cli: Store an app’s assets in the S3 bucket named by `--s3-bucket` on `app publish` and
+  `app update`.
+- Server: Support named app asset buckets and apply bundled database migrations by default.
+
+### Security
+
+- Server: Do not log service secret credentials.
+- Server: Leave email bodies out of the info log when SMTP is configured.
+
 ## \[[0.40.14](https://gitlab.com/appsemble/appsemble/-/releases/0.40.14)] - 2026-11-12
 
 ### Added

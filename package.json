@@ -52,7 +52,7 @@
     "vscode-languageserver-types": "3.17.5"
   },
   "devDependencies": {
-    "@appsemble/eslint-config": "0.40.14",
+    "@appsemble/eslint-config": "0.40.15",
     "@vitest/coverage-v8": "4.1.12",
     "@vitest/ui": "4.1.12",
     "cspell": "10.4.1",
