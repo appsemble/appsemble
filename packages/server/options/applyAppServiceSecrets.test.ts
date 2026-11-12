@@ -1,5 +1,5 @@
 import { type EmailActionDefinition } from '@appsemble/lang-sdk';
-import { version } from '@appsemble/node-utils';
+import { basicAuth, logger, version } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import axios, { type InternalAxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -20,6 +20,7 @@ import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
 import { authorizeAppMember, createTestUser } from '../utils/test/authorization.js';
+import { applyAppServiceSecrets } from './applyAppServiceSecrets.js';
 
 let server: Koa;
 let user: User;
@@ -1262,6 +1263,53 @@ describe('applyAppServiceSecrets', () => {
       host: new URL(proxiedRequest.defaults.baseURL!).host,
       'user-agent': `AppsembleServer/${version}`,
     });
+  });
+
+  it('should not log credentials', async () => {
+    const { baseURL } = proxiedRequest.defaults;
+    const tokenUrl = `${baseURL}oauth/token`;
+    const secrets = {
+      'client-credentials': 'client-secret',
+      'client-certificate': 'private-key',
+      'http-basic': 'basic-secret',
+      cookie: 'cookie-secret',
+      'custom-header': 'header-secret',
+      'query-parameter': 'query-secret',
+    };
+    const { AppServiceSecret } = await getAppDB(app.id);
+    await AppServiceSecret.bulkCreate(
+      Object.entries(secrets).map(([authenticationMethod, secret]) => ({
+        urlPatterns: `${baseURL}*`,
+        authenticationMethod,
+        identifier: 'id',
+        secret: encrypt(secret, argv.aesSecret),
+        tokenUrl,
+        public: true,
+      })),
+    );
+    const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
+    mock.onPost(tokenUrl).reply(200, { access_token: 'access-token', expires_in: 3600 });
+    let logs = '';
+    const capture = (info: Record<symbol, string>): void => {
+      logs += info[Symbol.for('message')];
+    };
+    logger.on('data', capture);
+
+    await applyAppServiceSecrets({
+      app: app.toJSON(),
+      axiosConfig: { url: baseURL },
+      context: server.context as ParameterizedContext,
+    });
+
+    logger.off('data', capture);
+    mock.restore();
+    const credentials = [
+      ...Object.values(secrets),
+      basicAuth('id', 'client-secret'),
+      basicAuth('id', 'basic-secret'),
+      'access-token',
+    ];
+    expect(credentials.filter((credential) => logs.includes(credential))).toStrictEqual([]);
   });
 
   describe('client credentials token failures', () => {
