@@ -103,9 +103,7 @@ it('should keep the saved password when other settings are saved afterwards', as
   fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
   await screen.findByLabelText('Password(Optional)');
 
-  fireEvent.change(screen.getByLabelText('Password page message(Optional)'), {
-    target: { value: 'Ask the team for access.' },
-  });
+  fireEvent.click(screen.getByLabelText('Show app definition'));
   fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
 
   await waitFor(() => expect(submittedPasswords).toStrictEqual(['open sesame', null]));

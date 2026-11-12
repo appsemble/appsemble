@@ -328,27 +328,6 @@ describe('patchApp', () => {
     expect(app.password).toBeNull();
   });
 
-  it('should set and clear the password page message', async () => {
-    const app = await App.create({
-      definition: { name: 'Test app', defaultPage: 'Test Page' },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-    authorizeStudio();
-
-    const { data } = await request.patch<AppType>(
-      `/api/apps/${app.id}`,
-      createFormData({ passwordMessage: 'Ask the team for access.' }),
-    );
-    await request.patch(`/api/apps/${app.id}`, createFormData({ passwordMessage: '' }));
-
-    await app.reload();
-    expect(data.passwordMessage).toBe('Ask the team for access.');
-    expect(app.passwordMessage).toBeNull();
-  });
-
   it('should keep only the latest build snapshot after repeated app definition updates', async () => {
     const app = await App.create({
       definition: {
@@ -3335,7 +3314,6 @@ describe('patchApp', () => {
         "messages": undefined,
         "metaPixelID": null,
         "msClarityID": null,
-        "passwordMessage": undefined,
         "passwordProtected": undefined,
         "path": "bar",
         "rating": undefined,

@@ -57,6 +57,7 @@ const serverMessageKeys = [
   'server.passwordPage.heading',
   'server.passwordPage.password',
   'server.passwordPage.incorrectPassword',
+  'server.passwordPage.message',
   'server.passwordPage.submit',
   'server.passwordPage.tooManyAttempts',
 ];

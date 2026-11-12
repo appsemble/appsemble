@@ -101,12 +101,6 @@ export class App extends Model {
   @Column(DataType.STRING)
   declare password?: string | null;
 
-  /**
-   * The message visitors see above the password field of a password protected app.
-   */
-  @Column(DataType.TEXT)
-  declare passwordMessage?: string | null;
-
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
@@ -482,7 +476,6 @@ export class App extends Model {
         : this.AppSnapshots?.[0]?.yaml || stringify(this.definition),
       showAppDefinition: this.showAppDefinition,
       passwordProtected: this.password ? true : undefined,
-      passwordMessage: this.passwordMessage ?? undefined,
       sentryDsn: this.sentryDsn,
       sentryEnvironment: this.sentryEnvironment,
       showAppsembleLogin: this.showAppsembleLogin ?? false,
