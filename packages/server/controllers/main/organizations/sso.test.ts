@@ -308,6 +308,45 @@ describe('organization single sign-on', () => {
     expect(response.status).toBe(403);
   });
 
+  it.each([false, true])(
+    'accepts an oidc login for guest=%s only from the organization provider',
+    async (guest) => {
+      await signInWithSso();
+      await Organization.create({ id: 'other' });
+      await OrganizationMember.create({
+        OrganizationId: 'other',
+        UserId: user.id,
+        role: PredefinedOrganizationRole.Member,
+        guest,
+      });
+      const other = await applyOrganizationSsoConfiguration(
+        'other',
+        { ...configuration, allowedLoginMethods: ['oidc'] },
+        'deployment',
+      );
+      const getOrganizationIds = async (): Promise<string[]> =>
+        (await request.get('/api/users/current/organizations')).data.map(
+          ({ id }: { id: string }) => id,
+        );
+      const foreign = await getOrganizationIds();
+      const identity = await OrganizationSsoIdentity.findOne({ where: { UserId: user.id } });
+      const session = await OrganizationSsoSession.create({
+        OrganizationId: 'other',
+        OrganizationSsoIdentityId: identity!.id,
+        configurationUpdated: other.configurationUpdated,
+        refreshTokenHash: 'hash',
+        accessTokenExpires: new Date(Date.now() + 3_600_000),
+        expires: new Date(Date.now() + 28_800_000),
+        groups: ['/editors'],
+      });
+      signIn({ loginMethod: 'oidc', organizationSsoSessionId: session.id });
+      expect({ foreign, own: await getOrganizationIds() }).toStrictEqual({
+        foreign: ['staff'],
+        own: ['other'],
+      });
+    },
+  );
+
   it('hides private apps and collections from a member using a disallowed login', async () => {
     await applyOrganizationSsoConfiguration(
       'staff',

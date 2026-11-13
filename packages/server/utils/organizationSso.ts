@@ -302,14 +302,14 @@ export async function getOrganizationMemberAccess(
   if (!sso) {
     return member.role ? member : null;
   }
-  if (member.guest) {
-    return sso.policy !== 'required' &&
-      member.role &&
-      sso.allowedLoginMethods.includes(ctx.state.loginMethod)
-      ? member
-      : null;
-  }
   const session = await validateOrganizationSsoSession(ctx, sso);
+  // An oidc login counts only through a session with this organization's own provider.
+  const loginAllowed =
+    sso.allowedLoginMethods.includes(ctx.state.loginMethod) &&
+    (ctx.state.loginMethod !== 'oidc' || session != null);
+  if (member.guest) {
+    return sso.policy !== 'required' && member.role && loginAllowed ? member : null;
+  }
   if (session) {
     return synchronizeOrganizationSsoMembership({
       organizationId,
@@ -317,11 +317,7 @@ export async function getOrganizationMemberAccess(
       groups: session.groups,
     });
   }
-  return sso.policy === 'optional' &&
-    member.role &&
-    sso.allowedLoginMethods.includes(ctx.state.loginMethod)
-    ? member
-    : null;
+  return sso.policy === 'optional' && member.role && loginAllowed ? member : null;
 }
 
 export function getOrganizationMemberRoles(
