@@ -99,6 +99,8 @@ export async function mainTokenHandler(ctx: Context): Promise<void> {
     throw error;
   }
 
+  ctx.set('Cache-Control', 'no-store');
+  ctx.set('Pragma', 'no-cache');
   ctx.body = createJWTResponse(sub, {
     aud,
     refreshToken,

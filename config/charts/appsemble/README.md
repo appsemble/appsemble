@@ -127,6 +127,9 @@ after migrations. Declared settings are read-only in Studio. Removing an organiz
 `organizationSso` revokes its SSO-derived grants and provider sessions; manually invited memberships
 remain. Studio-managed SSO settings are unaffected.
 
+Deployment-managed SSO uses installation-operator authority. Operators verify the provider
+connection and Owner mapping in a test environment and recover access through GitOps.
+
 `optional` permits the configured ordinary login methods, `required` requires the organization's SSO
 provider, and `required-with-guests` permits explicitly invited external guests to use the
 configured ordinary methods. Group values match exactly, and permissions from multiple mapped roles

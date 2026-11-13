@@ -14,7 +14,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Organization, OrganizationSso, OrganizationSsoSession } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
-import { encrypt } from '../../../utils/crypto.js';
+import { decrypt, encrypt } from '../../../utils/crypto.js';
 import { authorizeStudio, createTestUser, unauthorize } from '../../../utils/test/authorization.js';
 
 const issuer = 'https://idp.example/realms/staff';
@@ -35,7 +35,7 @@ let configuration: OrganizationSsoConfiguration;
 let userInfoClaims: Record<string, unknown>;
 let includeIdToken: boolean;
 
-function mockProvider(): void {
+function mockProvider(expiredRefreshToken?: string): void {
   const headers = { 'content-type': 'application/json' };
   mock.onGet(`${issuer}/.well-known/openid-configuration`).reply(
     200,
@@ -66,13 +66,13 @@ function mockProvider(): void {
       headers,
     );
   mock.onPost(`${issuer}/token`).reply((config) => {
+    const parameters = new URLSearchParams(config.data);
     if (providerUnavailable) {
       return [503, JSON.stringify({ error: 'temporarily_unavailable' }), headers];
     }
-    if (providerGrantRevoked) {
+    if (providerGrantRevoked || parameters.get('refresh_token') === expiredRefreshToken) {
       return [400, JSON.stringify({ error: 'invalid_grant' }), headers];
     }
-    const parameters = new URLSearchParams(config.data);
     if (parameters.get('client_secret') !== acceptedClientSecret) {
       return [401, JSON.stringify({ error: 'invalid_client' }), headers];
     }
@@ -90,7 +90,8 @@ function mockProvider(): void {
       200,
       JSON.stringify({
         access_token: 'provider-access-token',
-        refresh_token: 'provider-refresh-token',
+        refresh_token:
+          parameters.get('refresh_token') ?? `provider-refresh-${parameters.get('code')}`,
         token_type: 'Bearer',
         expires_in: providerLifetime,
         id_token: includeIdToken
@@ -157,7 +158,10 @@ function complete(flow: { state: string; cookie: string }): Promise<AxiosRespons
 
 async function signIn(): Promise<TokenResponse> {
   const response = await complete(await begin());
-  expect(response.status).toBe(200);
+  expect(response).toMatchObject({
+    status: 200,
+    headers: { 'cache-control': 'no-store', pragma: 'no-cache' },
+  });
   request.defaults.headers.common.authorization = `Bearer ${response.data.access_token}`;
   return response.data as TokenResponse;
 }
@@ -193,7 +197,10 @@ async function createPersonalCredentials(): Promise<{
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
     },
   );
-  expect(token.status).toBe(200);
+  expect(token).toMatchObject({
+    status: 200,
+    headers: { 'cache-control': 'no-store', pragma: 'no-cache' },
+  });
   return {
     id: credentials.data.id,
     secret: credentials.data.secret,
@@ -391,7 +398,10 @@ describe('organization OIDC sign-in', () => {
     const refreshed = await request.post('/api/auth/refresh-token', {
       refresh_token: first.refresh_token,
     });
-    expect(refreshed.status).toBe(200);
+    expect(refreshed).toMatchObject({
+      status: 200,
+      headers: { 'cache-control': 'no-store', pragma: 'no-cache' },
+    });
     const replay = await request.post('/api/auth/refresh-token', {
       refresh_token: first.refresh_token,
     });
@@ -479,6 +489,23 @@ describe('organization OIDC sign-in', () => {
     await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
     providerGrantRevoked = true;
     expect((await request.get('/api/users/current/organizations')).data).toStrictEqual([]);
+    expect((await request.get('/api/users/current')).status).toBe(401);
+  });
+
+  it('preserves an independent provider grant when another refresh token expires', async () => {
+    const expired = await signIn();
+    unauthorize();
+    const valid = await signIn();
+    const payload = jwt.decode(expired.access_token) as jwt.JwtPayload;
+    const session = await OrganizationSsoSession.findByPk(payload.organizationSsoSessionId);
+    mockProvider(decrypt(session!.refreshToken!, 'test-aes-secret'));
+    await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
+
+    request.defaults.headers.common.authorization = `Bearer ${expired.access_token}`;
+    expect((await request.get('/api/organizations/staff/members')).status).toBe(403);
+    request.defaults.headers.common.authorization = `Bearer ${valid.access_token}`;
+    expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
+    request.defaults.headers.common.authorization = `Bearer ${expired.access_token}`;
     expect((await request.get('/api/users/current')).status).toBe(401);
   });
 

@@ -14,6 +14,9 @@ export async function refreshToken(ctx: Context): Promise<void> {
     request: { body },
   } = ctx;
 
+  ctx.set('Cache-Control', 'no-store');
+  ctx.set('Pragma', 'no-cache');
+
   try {
     const payload = jwt.verify(body.refresh_token, argv.secret, {
       audience: argv.host,

@@ -372,7 +372,7 @@
       "description": "Deployment-managed single sign-on settings keyed by organization ID. Organizations omitted from this map lose deployment-managed SSO grants; Studio-managed settings are preserved.",
       "type": "object",
       "propertyNames": {
-        "pattern": "^([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)$",
+        "pattern": "^[0-9a-z]+(-[0-9a-z]+)*$",
         "maxLength": 30
       },
       "additionalProperties": {

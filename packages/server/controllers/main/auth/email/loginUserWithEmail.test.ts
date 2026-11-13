@@ -87,6 +87,7 @@ describe('loginUserWithEmail', () => {
     const refreshed = await request.post('/api/auth/refresh-token', {
       refresh_token: session.data.refresh_token,
     });
+    expect(refreshed.headers).toMatchObject({ 'cache-control': 'no-store', pragma: 'no-cache' });
     const headers = { authorization: `Bearer ${refreshed.data.access_token}` };
     const profile = await request.get('/api/users/current', { headers });
     const members = await request.get('/api/organizations/staff/members', { headers });

@@ -461,6 +461,8 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
       );
       return response;
     });
+    ctx.set('Cache-Control', 'no-store');
+    ctx.set('Pragma', 'no-cache');
     if (candidate) {
       logger.info(`Organization SSO settings saved by user ${ctx.user!.id} for ${organizationId}`);
     }
