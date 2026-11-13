@@ -24,6 +24,7 @@ export async function addOrganizationMember(ctx: Context): Promise<void> {
       ...new Set([
         OrganizationPermission.CreateOrganizationInvites,
         ...predefinedOrganizationRolePermissions[role as PredefinedOrganizationRole],
+        ...(guest ? [OrganizationPermission.UpdateOrganizationMemberRoles] : []),
       ]),
     ],
   });

@@ -401,7 +401,7 @@ describe('organization single sign-on', () => {
     async (endpoint) => {
       await OrganizationMember.update({ role: 'Maintainer' }, { where: { UserId: user.id } });
       await createTestUser('colleague@example.com');
-      const grant = { email: 'colleague@example.com', role: 'Owner', guest: true };
+      const grant = { email: 'colleague@example.com', role: 'Owner' };
       const response = await request.post(
         `/api/organizations/staff/${endpoint}`,
         endpoint === 'invites' ? [grant] : grant,
@@ -419,13 +419,26 @@ describe('organization single sign-on', () => {
     const response = await request.post('/api/organizations/staff/members', {
       email: 'colleague@example.com',
       role: 'AppManager',
-      guest: true,
     });
     expect(response).toMatchObject({
       status: 201,
-      data: { roles: ['AppManager'], guest: true },
+      data: { roles: ['AppManager'], guest: false },
     });
   });
+
+  it.each(['members', 'invites'])(
+    'requires Owner authority to grant a guest exception through %s',
+    async (endpoint) => {
+      await createTestUser('colleague@example.com');
+      const grant = { email: 'colleague@example.com', role: 'Member', guest: true };
+      const body = endpoint === 'invites' ? [grant] : grant;
+      await OrganizationMember.update({ role: 'Maintainer' }, { where: { UserId: user.id } });
+      const maintainer = await request.post(`/api/organizations/staff/${endpoint}`, body);
+      await OrganizationMember.update({ role: 'Owner' }, { where: { UserId: user.id } });
+      const owner = await request.post(`/api/organizations/staff/${endpoint}`, body);
+      expect([maintainer.status, owner.status]).toStrictEqual([403, 201]);
+    },
+  );
 
   it('does not orphan managed staff when the provider is removed', async () => {
     await applyOrganizationSsoConfiguration('staff', configuration, 'deployment');

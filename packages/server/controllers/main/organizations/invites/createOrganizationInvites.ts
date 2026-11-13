@@ -31,6 +31,9 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
         ...(body as OrganizationInvite[]).flatMap(
           ({ role }) => predefinedOrganizationRolePermissions[role],
         ),
+        ...((body as OrganizationInvite[]).some(({ guest }) => guest)
+          ? [OrganizationPermission.UpdateOrganizationMemberRoles]
+          : []),
       ]),
     ],
   });
