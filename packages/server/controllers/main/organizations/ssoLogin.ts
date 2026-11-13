@@ -449,7 +449,6 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
           id: sessionId,
           OrganizationId: organizationId,
           OrganizationSsoIdentityId: linkedIdentity.id,
-          accessToken: encrypt(tokens.access_token, argv.aesSecret),
           refreshToken: tokens.refresh_token ? encrypt(tokens.refresh_token, argv.aesSecret) : null,
           refreshTokenHash: createHash('sha256').update(response.refresh_token!).digest('hex'),
           accessTokenExpires: new Date(Date.now() + Math.min(tokens.expires_in!, 3600) * 1000),

@@ -1,4 +1,5 @@
 import { logger } from '@appsemble/node-utils';
+import { Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
@@ -282,7 +283,8 @@ export async function reencryptSecrets({
     }
     for (let offset = 0; ; offset += batch) {
       const sessions = await OrganizationSsoSession.findAll({
-        attributes: ['id', 'accessToken', 'refreshToken'],
+        attributes: ['id', 'refreshToken'],
+        where: { refreshToken: { [Op.not]: null } },
         order: [['id', 'ASC']],
         limit: batch,
         offset,
@@ -290,12 +292,7 @@ export async function reencryptSecrets({
       });
       for (const session of sessions) {
         await session.update(
-          {
-            accessToken: encrypt(decrypt(session.accessToken, oldAesSecret), newAesSecret),
-            ...(session.refreshToken
-              ? { refreshToken: encrypt(decrypt(session.refreshToken, oldAesSecret), newAesSecret) }
-              : {}),
-          },
+          { refreshToken: encrypt(decrypt(session.refreshToken!, oldAesSecret), newAesSecret) },
           { transaction },
         );
       }

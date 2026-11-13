@@ -73,7 +73,6 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      accessToken: { type: DataTypes.BLOB, allowNull: false },
       refreshToken: { type: DataTypes.BLOB },
       refreshTokenHash: { type: DataTypes.STRING(64), allowNull: false },
       interactiveRevoked: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
@@ -86,6 +85,14 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
+  await queryInterface.addIndex('OrganizationSsoSession', ['OrganizationId'], {
+    name: 'OrganizationSsoSession_OrganizationId_idx',
+    transaction,
+  });
+  await queryInterface.addIndex('OrganizationSsoSession', ['OrganizationSsoIdentityId'], {
+    name: 'OrganizationSsoSession_OrganizationSsoIdentityId_idx',
+    transaction,
+  });
   logger.info('Separate manual and group-managed organization access');
   await queryInterface.addColumn(
     'OAuth2ClientCredentials',
@@ -104,6 +111,10 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
     },
     { transaction },
   );
+  await queryInterface.addIndex('OAuth2ClientCredentials', ['OrganizationSsoSessionId'], {
+    name: 'OAuth2ClientCredentials_OrganizationSsoSessionId_idx',
+    transaction,
+  });
   await queryInterface.sequelize.query(
     'ALTER TABLE "OrganizationMember" ALTER COLUMN role DROP NOT NULL',
     { transaction },

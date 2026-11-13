@@ -6,6 +6,7 @@ import {
   CreatedAt,
   DataType,
   ForeignKey,
+  Index,
   Model,
   PrimaryKey,
   Table,
@@ -47,6 +48,7 @@ export class OAuth2ClientCredentials extends Model {
   declare loginMethod?: OrganizationLoginMethod;
 
   @ForeignKey(() => OrganizationSsoSession)
+  @Index({ name: 'OAuth2ClientCredentials_OrganizationSsoSessionId_idx' })
   @Column(DataType.UUID)
   declare OrganizationSsoSessionId?: string;
 

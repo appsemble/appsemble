@@ -59,7 +59,6 @@ async function signInWithSso(
     OrganizationId: 'staff',
     OrganizationSsoIdentityId: identity.id,
     configurationUpdated: sso.configurationUpdated,
-    accessToken: Buffer.from('token'),
     refreshTokenHash: 'hash',
     accessTokenExpires: new Date(Date.now() + 3_600_000),
     expires: new Date(Date.now() + 28_800_000),

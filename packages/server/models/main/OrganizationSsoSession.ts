@@ -6,6 +6,7 @@ import {
   DataType,
   Default,
   ForeignKey,
+  Index,
   Model,
   PrimaryKey,
   Table,
@@ -24,17 +25,15 @@ export class OrganizationSsoSession extends Model {
 
   @AllowNull(false)
   @ForeignKey(() => Organization)
+  @Index({ name: 'OrganizationSsoSession_OrganizationId_idx' })
   @Column(DataType.STRING)
   declare OrganizationId: string;
 
   @AllowNull(false)
   @ForeignKey(() => OrganizationSsoIdentity)
+  @Index({ name: 'OrganizationSsoSession_OrganizationSsoIdentityId_idx' })
   @Column(DataType.UUID)
   declare OrganizationSsoIdentityId: string;
-
-  @AllowNull(false)
-  @Column(DataType.BLOB)
-  declare accessToken: Buffer;
 
   @Column(DataType.BLOB)
   declare refreshToken?: Buffer;

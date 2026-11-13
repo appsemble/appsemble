@@ -46,7 +46,6 @@ describe('reencryptSecrets', () => {
     const session = await OrganizationSsoSession.create({
       OrganizationId: provider.OrganizationId,
       OrganizationSsoIdentityId: identity.id,
-      accessToken: encrypt('provider-access-token', OLD_AES_SECRET),
       refreshToken: encrypt('provider-refresh-token', OLD_AES_SECRET),
       refreshTokenHash: 'refresh-hash',
       accessTokenExpires: new Date(Date.now() + 300_000),
@@ -60,9 +59,8 @@ describe('reencryptSecrets', () => {
 
     expect([
       decrypt(provider.clientSecret, NEW_AES_SECRET),
-      decrypt(session.accessToken, NEW_AES_SECRET),
       decrypt(session.refreshToken!, NEW_AES_SECRET),
-    ]).toStrictEqual(['provider-secret', 'provider-access-token', 'provider-refresh-token']);
+    ]).toStrictEqual(['provider-secret', 'provider-refresh-token']);
   });
 
   it('should re-encrypt app dbPassword with the new AES secret', async () => {
