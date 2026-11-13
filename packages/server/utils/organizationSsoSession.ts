@@ -3,10 +3,8 @@ import { createHash } from 'node:crypto';
 import { type TokenResponse } from '@appsemble/types';
 import { type Context } from 'koa';
 import { ClientError, fetchUserInfo, refreshTokenGrant, ResponseBodyError } from 'openid-client';
-import { type Transaction } from 'sequelize';
 
 import {
-  getDB,
   type OAuth2ClientCredentials,
   OrganizationSso,
   OrganizationSsoIdentity,
@@ -49,124 +47,114 @@ export function createOrganizationSsoTokenResponse(
 }
 
 /**
- * Verify a provider-backed session and refresh its claims when its access token expires.
+ * Check that a session authenticates the request's account for an organization's provider.
  *
  * @param ctx The authenticated request.
+ * @param session The provider-backed session including its identity.
  * @param sso The required organization's provider.
- * @param transaction The transaction which serializes provider token renewal.
- * @param refreshToken The Studio refresh token, when rotating the Studio session.
- * @param userId The verified account id when credentials authenticate before ctx.user is assigned.
- * @returns The active session, or null when its authentication is no longer valid.
+ * @param userId The verified account id.
+ * @returns Whether the session is bound to the account and the current provider settings.
  */
-async function getActiveSession(
+function isSessionBound(
   ctx: Context,
+  session: OrganizationSsoSession,
   sso: OrganizationSso,
-  transaction: Transaction,
-  refreshToken?: string,
-  userId = ctx.user?.id,
-): Promise<OrganizationSsoSession | null> {
-  if (ctx.state.loginMethod !== 'oidc' || !ctx.state.organizationSsoSessionId || !userId) {
-    return null;
-  }
-  const initial = await OrganizationSsoSession.findByPk(ctx.state.organizationSsoSessionId, {
-    transaction,
-  });
-  if (!initial) {
-    return null;
-  }
-  const identity = await OrganizationSsoIdentity.findByPk(initial.OrganizationSsoIdentityId, {
-    transaction,
-    lock: transaction.LOCK.UPDATE,
-  });
-  const session = await OrganizationSsoSession.findByPk(initial.id, {
-    transaction,
-    lock: transaction.LOCK.UPDATE,
-  });
-  if (
-    !session ||
-    session.OrganizationId !== sso.OrganizationId ||
-    identity?.UserId !== userId ||
-    identity.issuer !== sso.issuer ||
-    session.configurationUpdated.getTime() !== sso.configurationUpdated.getTime() ||
-    (!ctx.state.clientCredentials &&
-      (session.interactiveRevoked || session.expires.getTime() <= Date.now()))
-  ) {
-    return null;
-  }
-  session.OrganizationSsoIdentity = identity;
-  if (
-    refreshToken &&
-    session.refreshTokenHash !== createHash('sha256').update(refreshToken).digest('hex')
-  ) {
-    await session.destroy({ transaction });
-    return null;
-  }
-  if (session.accessTokenExpires.getTime() > Date.now()) {
-    return session;
-  }
-  if (!session.refreshToken) {
-    await session.destroy({ transaction });
-    return null;
-  }
+  userId: string,
+): boolean {
+  const identity = session.OrganizationSsoIdentity!;
+  return (
+    session.OrganizationId === sso.OrganizationId &&
+    identity.UserId === userId &&
+    identity.issuer === sso.issuer &&
+    session.configurationUpdated.getTime() === sso.configurationUpdated.getTime() &&
+    (ctx.state.clientCredentials ||
+      (!session.interactiveRevoked && session.expires.getTime() > Date.now()))
+  );
+}
 
+/**
+ * Renew the provider grant of a session whose provider access token expired.
+ *
+ * The provider is contacted outside of any database transaction. Concurrent renewals of the same
+ * session are reconciled by comparing the stored provider refresh token.
+ *
+ * @param session The bound provider-backed session including its identity.
+ * @param sso The organization's provider.
+ * @returns The current provider groups, or null when the grant is not valid.
+ */
+async function renewSession(
+  session: OrganizationSsoSession,
+  sso: OrganizationSso,
+): Promise<string[] | null> {
+  if (session.accessTokenExpires.getTime() > Date.now()) {
+    return session.groups;
+  }
+  const { refreshToken } = session;
+  if (!refreshToken) {
+    await session.destroy();
+    return null;
+  }
+  const where = { id: session.id, refreshToken };
+  let renewal: { refreshToken?: Buffer; accessTokenExpires: Date; groups: string[] } | undefined;
   try {
     const config = await getOrganizationOidcConfiguration(sso);
-    const tokens = await refreshTokenGrant(config, decrypt(session.refreshToken, argv.aesSecret));
+    const tokens = await refreshTokenGrant(config, decrypt(refreshToken, argv.aesSecret));
     if (!tokens.expires_in || !Number.isFinite(tokens.expires_in) || tokens.expires_in <= 0) {
       throw new Error('The provider access token has no valid lifetime');
     }
     const claims = tokens.claims();
-    const { subject } = session.OrganizationSsoIdentity;
-    if (claims && claims.sub !== subject) {
-      await session.destroy({ transaction });
-      return null;
-    }
-    const info = config.serverMetadata().userinfo_endpoint
-      ? { ...claims, ...(await fetchUserInfo(config, tokens.access_token, subject)) }
-      : claims;
-    if (!info) {
-      throw new Error('The provider did not return refreshed identity claims');
-    }
-    const rawGroups = info[sso.groupClaim];
-    const groups = Array.isArray(rawGroups)
-      ? rawGroups.filter((group): group is string => typeof group === 'string')
-      : typeof rawGroups === 'string'
-        ? [rawGroups]
-        : [];
-    await OrganizationSsoSession.update(
-      { groups },
-      {
-        where: {
-          OrganizationId: session.OrganizationId,
-          OrganizationSsoIdentityId: session.OrganizationSsoIdentityId,
-        },
-        transaction,
-      },
-    );
-    await session.update(
-      {
-        accessToken: encrypt(tokens.access_token, argv.aesSecret),
+    const { subject } = session.OrganizationSsoIdentity!;
+    if (!claims || claims.sub === subject) {
+      const info = config.serverMetadata().userinfo_endpoint
+        ? { ...claims, ...(await fetchUserInfo(config, tokens.access_token, subject)) }
+        : claims;
+      if (!info) {
+        throw new Error('The provider did not return refreshed identity claims');
+      }
+      const rawGroups = info[sso.groupClaim];
+      renewal = {
         ...(tokens.refresh_token
           ? { refreshToken: encrypt(tokens.refresh_token, argv.aesSecret) }
           : {}),
         accessTokenExpires: new Date(Date.now() + Math.min(tokens.expires_in, 3600) * 1000),
-        groups,
-      },
-      { transaction },
-    );
-    return session;
+        groups: Array.isArray(rawGroups)
+          ? rawGroups.filter((group): group is string => typeof group === 'string')
+          : typeof rawGroups === 'string'
+            ? [rawGroups]
+            : [],
+      };
+    }
   } catch (error) {
-    if (
+    if (!(
       (error instanceof ResponseBodyError && error.error === 'invalid_grant') ||
       (error instanceof ClientError &&
         ['OAUTH_JWT_CLAIM_COMPARISON_FAILED', 'OAUTH_JSON_ATTRIBUTE_COMPARISON_FAILED'].includes(
           error.code ?? '',
         ))
-    ) {
-      await session.destroy({ transaction });
+    )) {
+      return null;
     }
+  }
+  if (renewal) {
+    const [renewed] = await OrganizationSsoSession.update(renewal, { where });
+    if (renewed) {
+      await OrganizationSsoSession.update(
+        { groups: renewal.groups },
+        {
+          where: {
+            OrganizationId: session.OrganizationId,
+            OrganizationSsoIdentityId: session.OrganizationSsoIdentityId,
+          },
+        },
+      );
+      return renewal.groups;
+    }
+  } else if (await OrganizationSsoSession.destroy({ where })) {
     return null;
   }
+  // Another request renewed this grant with a newer provider refresh token.
+  const current = await OrganizationSsoSession.findByPk(session.id);
+  return current && current.accessTokenExpires.getTime() > Date.now() ? current.groups : null;
 }
 
 /**
@@ -177,17 +165,23 @@ async function getActiveSession(
  * @param userId The verified account id when credentials authenticate before ctx.user is assigned.
  * @returns Fresh provider groups and subject, or null for an invalid session.
  */
-export function validateOrganizationSsoSession(
+export async function validateOrganizationSsoSession(
   ctx: Context,
   sso: OrganizationSso,
-  userId?: string,
+  userId = ctx.user?.id,
 ): Promise<VerifiedSession | null> {
-  return getDB().transaction(async (transaction) => {
-    const session = await getActiveSession(ctx, sso, transaction, undefined, userId);
-    return session
-      ? { groups: session.groups, subject: session.OrganizationSsoIdentity!.subject }
-      : null;
+  if (ctx.state.loginMethod !== 'oidc' || !ctx.state.organizationSsoSessionId || !userId) {
+    return null;
+  }
+  const session = await OrganizationSsoSession.findOne({
+    where: { id: ctx.state.organizationSsoSessionId, OrganizationId: sso.OrganizationId },
+    include: [OrganizationSsoIdentity],
   });
+  if (!session || !isSessionBound(ctx, session, sso, userId)) {
+    return null;
+  }
+  const groups = await renewSession(session, sso);
+  return groups && { groups, subject: session.OrganizationSsoIdentity!.subject };
 }
 
 /**
@@ -232,21 +226,33 @@ export async function refreshOrganizationSsoSession(
   ctx: Context,
   refreshToken: string,
 ): Promise<TokenResponse | null> {
-  const initial = await OrganizationSsoSession.findByPk(ctx.state.organizationSsoSessionId);
-  const sso = initial && (await OrganizationSso.findByPk(initial.OrganizationId));
-  if (!sso) {
+  if (ctx.state.loginMethod !== 'oidc') {
     return null;
   }
-  return getDB().transaction(async (transaction) => {
-    const session = await getActiveSession(ctx, sso, transaction, refreshToken);
-    if (!session) {
-      return null;
-    }
-    const response = createOrganizationSsoTokenResponse(session, ctx.user!.id, ctx.state.authTime);
-    await session.update(
-      { refreshTokenHash: createHash('sha256').update(response.refresh_token!).digest('hex') },
-      { transaction },
-    );
-    return response;
+  const session = await OrganizationSsoSession.findByPk(ctx.state.organizationSsoSessionId, {
+    include: [OrganizationSsoIdentity],
   });
+  const sso = session && (await OrganizationSso.findByPk(session.OrganizationId));
+  if (!sso || !isSessionBound(ctx, session, sso, ctx.user!.id)) {
+    return null;
+  }
+  const refreshTokenHash = createHash('sha256').update(refreshToken).digest('hex');
+  if (session.refreshTokenHash !== refreshTokenHash) {
+    await session.destroy();
+    return null;
+  }
+  if (!(await renewSession(session, sso))) {
+    return null;
+  }
+  const response = createOrganizationSsoTokenResponse(session, ctx.user!.id, ctx.state.authTime);
+  const [rotated] = await OrganizationSsoSession.update(
+    { refreshTokenHash: createHash('sha256').update(response.refresh_token!).digest('hex') },
+    { where: { id: session.id, refreshTokenHash } },
+  );
+  if (!rotated) {
+    // A concurrent refresh already redeemed this Studio refresh token.
+    await session.destroy();
+    return null;
+  }
+  return response;
 }

@@ -11,7 +11,13 @@ import { request, setTestApp } from 'axios-test-instance';
 import jwt from 'jsonwebtoken';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { Organization, OrganizationSso, OrganizationSsoSession } from '../../../models/index.js';
+import {
+  getDB,
+  Organization,
+  OrganizationSso,
+  OrganizationSsoSession,
+  User,
+} from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { decrypt, encrypt } from '../../../utils/crypto.js';
@@ -34,6 +40,7 @@ let acceptedClientSecret: string;
 let configuration: OrganizationSsoConfiguration;
 let userInfoClaims: Record<string, unknown>;
 let includeIdToken: boolean;
+let beforeTokenResponse: (() => Promise<void>) | undefined;
 
 function mockProvider(expiredRefreshToken?: string): void {
   const headers = { 'content-type': 'application/json' };
@@ -65,7 +72,8 @@ function mockProvider(expiredRefreshToken?: string): void {
       JSON.stringify({ keys: [{ ...publicKey.export({ format: 'jwk' }), kid: 'signing-key' }] }),
       headers,
     );
-  mock.onPost(`${issuer}/token`).reply((config) => {
+  mock.onPost(`${issuer}/token`).reply(async (config) => {
+    await beforeTokenResponse?.();
     const parameters = new URLSearchParams(config.data);
     if (providerUnavailable) {
       return [503, JSON.stringify({ error: 'temporarily_unavailable' }), headers];
@@ -249,6 +257,7 @@ describe('organization OIDC sign-in', () => {
     acceptedClientSecret = 'provider-secret';
     userInfoClaims = {};
     includeIdToken = true;
+    beforeTokenResponse = undefined;
     mockProvider();
   });
 
@@ -506,6 +515,92 @@ describe('organization OIDC sign-in', () => {
     providerUnavailable = true;
     expect((await request.get('/api/users/current/organizations')).data).toStrictEqual([]);
     providerUnavailable = false;
+    expect((await request.get('/api/users/current/organizations')).data).toMatchObject([
+      { id: 'staff' },
+    ]);
+  });
+
+  it('keeps database connections available while provider renewals wait', async () => {
+    const { maxSize } = (getDB().connectionManager as unknown as { pool: { maxSize: number } })
+      .pool;
+    const sessions: TokenResponse[] = [];
+    for (let index = 0; index < maxSize; index += 1) {
+      unauthorize();
+      sessions.push(await signIn());
+    }
+    await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
+    let waiting = 0;
+    let allWaiting!: () => void;
+    const renewalsWaiting = new Promise<void>((resolve) => {
+      allWaiting = resolve;
+    });
+    let release!: () => void;
+    const released = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    beforeTokenResponse = () => {
+      waiting += 1;
+      if (waiting === maxSize) {
+        allWaiting();
+      }
+      return released;
+    };
+    const renewals = sessions.map((session) =>
+      request.get('/api/users/current/organizations', {
+        headers: { authorization: `Bearer ${session.access_token}` },
+      }),
+    );
+    await renewalsWaiting;
+    expect(await User.count()).toBe(1);
+    release();
+    expect((await Promise.all(renewals)).map(({ data }) => data)).toStrictEqual(
+      sessions.map(() => [expect.objectContaining({ id: 'staff' })]),
+    );
+  });
+
+  it('keeps a grant renewed concurrently when the provider rejects the stale refresh token', async () => {
+    const tokens = await signIn();
+    await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
+    let bothWaiting!: () => void;
+    const renewalsWaiting = new Promise<void>((resolve) => {
+      bothWaiting = resolve;
+    });
+    let releaseStale!: () => void;
+    const staleReleased = new Promise<void>((resolve) => {
+      releaseStale = resolve;
+    });
+    let renewals = 0;
+    beforeTokenResponse = async () => {
+      renewals += 1;
+      if (renewals === 1) {
+        await renewalsWaiting;
+      } else {
+        bothWaiting();
+        await staleReleased;
+        providerGrantRevoked = true;
+      }
+    };
+    const requests = [1, 2].map(() => request.get('/api/users/current/organizations'));
+    await Promise.race(requests);
+    releaseStale();
+    expect((await Promise.all(requests)).map(({ data }) => data)).toStrictEqual([
+      [expect.objectContaining({ id: 'staff' })],
+      [expect.objectContaining({ id: 'staff' })],
+    ]);
+    request.defaults.headers.common.authorization = `Bearer ${tokens.access_token}`;
+    expect((await request.get('/api/users/current')).status).toBe(200);
+  });
+
+  it('retries provider discovery after an outage and reuses it during later outages', async () => {
+    const discoveryUrl = `${issuer}/.well-known/openid-configuration`;
+    mock.onGet(discoveryUrl).reply(503);
+    expect(
+      (await request.post(`${path}/login`, { link: false }, { headers: { origin } })).status,
+    ).not.toBe(200);
+    mockProvider();
+    await signIn();
+    await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
+    mock.onGet(discoveryUrl).reply(503);
     expect((await request.get('/api/users/current/organizations')).data).toMatchObject([
       { id: 'staff' },
     ]);

@@ -12,6 +12,11 @@ import { type OrganizationSso } from '../models/main/OrganizationSso.js';
 import { argv } from './argv.js';
 import { decrypt } from './crypto.js';
 
+const configurations = new Map<
+  string,
+  { configurationUpdated: number; configuration: Promise<Configuration> }
+>();
+
 /**
  * Check whether an organization may sign in through its provider.
  *
@@ -30,18 +35,7 @@ export function isOrganizationSsoIssuerAllowed(
   );
 }
 
-/**
- * Discover an organization's provider using the shared outbound request policy.
- *
- * @param sso The organization's provider configuration.
- * @returns The discovered OpenID Connect client configuration.
- */
-export function getOrganizationOidcConfiguration(sso: OrganizationSso): Promise<Configuration> {
-  if (!isOrganizationSsoIssuerAllowed(sso)) {
-    return Promise.reject(
-      new Error(`The installation does not allow the single sign-on issuer ${sso.issuer}`),
-    );
-  }
+function discover(sso: OrganizationSso): Promise<Configuration> {
   const issuer = new URL(sso.issuer);
   const localDevelopmentIssuer =
     process.env.NODE_ENV !== 'production' &&
@@ -70,4 +64,36 @@ export function getOrganizationOidcConfiguration(sso: OrganizationSso): Promise<
       ...(localDevelopmentIssuer ? [allowInsecureRequests] : []),
     ],
   });
+}
+
+/**
+ * Discover an organization's provider using the shared outbound request policy.
+ *
+ * A saved configuration reuses its successful discovery until its provider settings change.
+ *
+ * @param sso The organization's provider configuration.
+ * @returns The discovered OpenID Connect client configuration.
+ */
+export function getOrganizationOidcConfiguration(sso: OrganizationSso): Promise<Configuration> {
+  if (!isOrganizationSsoIssuerAllowed(sso)) {
+    return Promise.reject(
+      new Error(`The installation does not allow the single sign-on issuer ${sso.issuer}`),
+    );
+  }
+  if (sso.isNewRecord) {
+    return discover(sso);
+  }
+  const configurationUpdated = sso.configurationUpdated.getTime();
+  const cached = configurations.get(sso.OrganizationId);
+  if (cached?.configurationUpdated === configurationUpdated) {
+    return cached.configuration;
+  }
+  const configuration = discover(sso);
+  configurations.set(sso.OrganizationId, { configurationUpdated, configuration });
+  configuration.catch(() => {
+    if (configurations.get(sso.OrganizationId)?.configuration === configuration) {
+      configurations.delete(sso.OrganizationId);
+    }
+  });
+  return configuration;
 }
