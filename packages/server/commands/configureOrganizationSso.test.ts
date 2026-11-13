@@ -8,6 +8,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { getDB, Organization, OrganizationMember, OrganizationSso, User } from '../models/index.js';
+import { decrypt } from '../utils/crypto.js';
 
 let directory: string;
 let configurationPath: string;
@@ -84,6 +85,23 @@ describe('deployment-managed organization single sign-on', () => {
       roleMappings: [{ group: '/staff/owners', role: PredefinedOrganizationRole.Owner }],
       organizationName: 'Staff workspace',
     });
+  });
+
+  it('ignores the trailing newline of a client secret file', async () => {
+    await writeFile(clientSecretFile, 'provider-client-secret\n');
+    await configure({
+      staff: {
+        issuer: 'https://identity.example.com/realms/staff',
+        clientId: 'appsemble-studio',
+        clientSecretFile,
+        name: 'Staff sign-in',
+        policy: 'required',
+        roleMappings: [],
+      },
+    });
+
+    const sso = await OrganizationSso.findByPk('staff');
+    expect(decrypt(sso!.clientSecret, 'organization-sso-test-key')).toBe('provider-client-secret');
   });
 
   it('rolls back the declaration when another organization does not exist', async () => {

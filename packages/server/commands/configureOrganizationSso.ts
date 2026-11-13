@@ -44,7 +44,7 @@ export async function handler({ config }: { config: string }): Promise<void> {
   const configurations = await Promise.all(
     Object.entries(definitions).map(async ([organizationId, definition]) => {
       const { clientSecretFile, ...configuration } = definition;
-      const clientSecret = await readFile(clientSecretFile, 'utf8');
+      const clientSecret = (await readFile(clientSecretFile, 'utf8')).trim();
       if (!clientSecret) {
         throw new Error(`The single sign-on client secret for ${organizationId} is empty.`);
       }
