@@ -1,6 +1,7 @@
 import {
   Button,
   Content,
+  Loader,
   Message,
   SelectField,
   Title,
@@ -9,11 +10,13 @@ import {
 } from '@appsemble/react-components';
 import {
   getSubscriptionPlanByName,
+  type OrganizationSubscription,
   OrganizationPermission,
   SubscriptionPlanType,
 } from '@appsemble/types';
 import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
-import { type ReactNode, useState } from 'react';
+import axios from 'axios';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
@@ -34,10 +37,42 @@ export function SubscribePage(): ReactNode {
   const navigate = useNavigate();
   const modal = useToggle();
   const [selectedOrganizationId, setSelectedOrganizationId] = useState('');
+  const [currentPlans, setCurrentPlans] = useState<Record<string, SubscriptionPlanType>>();
 
   useMeta(messages.title);
 
-  if (!Object.values(SubscriptionPlanType).includes(subscriptionPlanName as SubscriptionPlanType)) {
+  const planExists =
+    subscriptionPlanName !== SubscriptionPlanType.Free &&
+    Object.values(SubscriptionPlanType).includes(subscriptionPlanName as SubscriptionPlanType);
+
+  const manageableOrganizations = useMemo(
+    () =>
+      organizations.filter((organization) =>
+        checkOrganizationRoleOrganizationPermissions(organization.role, [
+          OrganizationPermission.ManageOrganizationSubscriptions,
+        ]),
+      ),
+    [organizations],
+  );
+
+  useEffect(() => {
+    if (!planExists) {
+      return;
+    }
+    Promise.all(
+      manageableOrganizations.map(({ id }) =>
+        axios.get<OrganizationSubscription>(`/api/organizations/${id}/subscription`),
+      ),
+    ).then((responses) => {
+      setCurrentPlans(
+        Object.fromEntries(
+          responses.map(({ data }) => [data.organizationId, data.subscriptionPlan]),
+        ),
+      );
+    });
+  }, [manageableOrganizations, planExists]);
+
+  if (!planExists) {
     return (
       <Content main>
         <Message color="danger">
@@ -58,14 +93,17 @@ export function SubscribePage(): ReactNode {
       `/${lang}/organizations/${organizationId}/subscriptions/activate/${subscriptionPlanName}`,
     );
   };
-  const manageableOrganizations = organizations.filter((organization) =>
-    checkOrganizationRoleOrganizationPermissions(organization.role, [
-      OrganizationPermission.ManageOrganizationSubscriptions,
-    ]),
+
+  if (!currentPlans) {
+    return <Loader />;
+  }
+
+  const eligibleOrganizations = manageableOrganizations.filter(
+    ({ id }) => currentPlans[id] !== subscriptionPlanName,
   );
   const organizationId =
     selectedOrganizationId ||
-    (manageableOrganizations.length === 1 ? manageableOrganizations[0].id : '');
+    (eligibleOrganizations.length === 1 ? eligibleOrganizations[0].id : '');
 
   return (
     <Content main>
@@ -85,8 +123,16 @@ export function SubscribePage(): ReactNode {
             {formatMessage(messages.selectOrganization)}
           </option>
           {manageableOrganizations.map((organization) => (
-            <option key={organization.id} value={organization.id}>
-              {organization.name || organization.id}
+            <option
+              disabled={!eligibleOrganizations.includes(organization)}
+              key={organization.id}
+              value={organization.id}
+            >
+              {eligibleOrganizations.includes(organization)
+                ? organization.name || organization.id
+                : formatMessage(messages.currentPlan, {
+                    organization: organization.name || organization.id,
+                  })}
             </option>
           ))}
         </SelectField>

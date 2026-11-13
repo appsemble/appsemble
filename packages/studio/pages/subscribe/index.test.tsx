@@ -1,17 +1,31 @@
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import axios from 'axios';
+import axios, { type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SubscribePage } from './index.js';
 import { type UserOrganization } from '../../components/UserProvider/index.js';
 
 let organizations: Partial<UserOrganization>[];
 let emailVerified = true;
+let currentPlans: Record<string, string>;
 const transport = axios.defaults.adapter;
+
+function respond(config: InternalAxiosRequestConfig): Promise<AxiosResponse> {
+  const [, organizationId] = /^\/api\/organizations\/([^/]+)\/subscription$/.exec(config.url) ?? [];
+  return Promise.resolve({
+    data: organizationId
+      ? { organizationId, subscriptionPlan: currentPlans[organizationId] ?? 'free' }
+      : { id: 'created' },
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config,
+  });
+}
 
 vi.mock('../../components/UserProvider/index.js', () => ({
   useUser: () => ({
@@ -20,6 +34,11 @@ vi.mock('../../components/UserProvider/index.js', () => ({
     userInfo: { email_verified: emailVerified },
   }),
 }));
+
+beforeEach(() => {
+  currentPlans = {};
+  axios.defaults.adapter = respond;
+});
 
 afterEach(() => {
   axios.defaults.adapter = transport;
@@ -44,38 +63,42 @@ function renderPage(path: string): void {
 }
 
 describe('SubscribePage', () => {
-  it('should only offer organizations whose subscriptions the user may manage', () => {
+  it('should only offer organizations whose subscriptions the user may manage', async () => {
     organizations = [
       { id: 'owned', name: 'Owned', role: PredefinedOrganizationRole.Owner },
       { id: 'joined', name: 'Joined', role: PredefinedOrganizationRole.Member },
     ];
     renderPage('/en/subscribe/standard');
 
-    expect(screen.getByRole('heading', { name: 'STANDARD' })).toBeDefined();
+    expect(await screen.findByRole('heading', { name: 'STANDARD' })).toBeDefined();
     expect(screen.getByText('€25 per month')).toBeDefined();
     expect(screen.getByRole('option', { name: 'Owned' })).toBeDefined();
     expect(screen.queryByRole('option', { name: 'Joined' })).toBeNull();
   });
 
-  it('should continue to the activation page of the only eligible organization', () => {
-    organizations = [{ id: 'owned', name: 'Owned', role: PredefinedOrganizationRole.Owner }];
+  it('should continue to the activation page of the only eligible organization', async () => {
+    organizations = [
+      { id: 'subscribed', name: 'Subscribed', role: PredefinedOrganizationRole.Owner },
+      { id: 'owned', name: 'Owned', role: PredefinedOrganizationRole.Owner },
+    ];
+    currentPlans = { subscribed: 'standard' };
     renderPage('/en/subscribe/standard');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
 
     expect(screen.getByTestId('path').textContent).toBe(
       '/en/organizations/owned/subscriptions/activate/standard',
     );
   });
 
-  it('should continue to the activation page of the selected organization', () => {
+  it('should continue to the activation page of the selected organization', async () => {
     organizations = [
       { id: 'first', name: 'First', role: PredefinedOrganizationRole.Owner },
       { id: 'second', name: 'Second', role: PredefinedOrganizationRole.Owner },
     ];
     renderPage('/nl/subscribe/basic');
 
-    fireEvent.change(screen.getByLabelText('Organization'), {
+    fireEvent.change(await screen.findByLabelText('Organization'), {
       target: { value: 'second' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
@@ -85,11 +108,13 @@ describe('SubscribePage', () => {
     );
   });
 
-  it('should explain how to subscribe without an eligible organization', () => {
+  it('should explain how to subscribe without an eligible organization', async () => {
     organizations = [{ id: 'joined', name: 'Joined', role: PredefinedOrganizationRole.Member }];
     renderPage('/en/subscribe/standard');
 
-    expect(screen.getByText(/Create an organization to subscribe to this plan/)).toBeDefined();
+    expect(
+      await screen.findByText(/Create an organization to subscribe to this plan/),
+    ).toBeDefined();
     expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull();
   });
 
@@ -105,30 +130,34 @@ describe('SubscribePage', () => {
     expect(screen.getByTestId('path').textContent).toBe('/en/apps');
   });
 
-  it('should offer the free plan', () => {
+  it('should not offer the free plan', () => {
     organizations = [{ id: 'owned', name: 'Owned', role: PredefinedOrganizationRole.Owner }];
     renderPage('/en/subscribe/free');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(screen.getByText('This plan does not exist')).toBeDefined();
+    expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull();
+  });
 
-    expect(screen.getByTestId('path').textContent).toBe(
-      '/en/organizations/owned/subscriptions/activate/free',
-    );
+  it('should not continue for an organization already on the plan', async () => {
+    organizations = [
+      { id: 'subscribed', name: 'Subscribed', role: PredefinedOrganizationRole.Owner },
+    ];
+    currentPlans = { subscribed: 'standard' };
+    renderPage('/en/subscribe/standard');
+
+    const option = await screen.findByRole<HTMLOptionElement>('option', {
+      name: 'Subscribed (already on this plan)',
+    });
+
+    expect(option.disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
   });
 
   it('should continue to the activation page of a newly created organization', async () => {
     organizations = [];
-    axios.defaults.adapter = (config) =>
-      Promise.resolve({
-        data: { id: 'created' },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config,
-      });
     renderPage('/en/subscribe/standard');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Create new organization' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create new organization' }));
     const dialog = screen.getByRole('dialog');
     fireEvent.change(within(dialog).getByLabelText(/Organization ID/), {
       target: { value: 'created' },
@@ -142,11 +171,11 @@ describe('SubscribePage', () => {
     );
   });
 
-  it('should explain why an organization cannot be created before email verification', () => {
+  it('should explain why an organization cannot be created before email verification', async () => {
     organizations = [];
     emailVerified = false;
     renderPage('/en/subscribe/standard');
 
-    expect(screen.getByText(/you must first verify your email address/)).toBeDefined();
+    expect(await screen.findByText(/you must first verify your email address/)).toBeDefined();
   });
 });

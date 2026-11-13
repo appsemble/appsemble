@@ -25,6 +25,10 @@ export const messages = defineMessages({
     id: 'studio.MPQ0kS',
     defaultMessage: 'Select an organization',
   },
+  currentPlan: {
+    id: 'studio.2u1ing',
+    defaultMessage: '{organization} (already on this plan)',
+  },
   noOrganizations: {
     id: 'studio.SccZ2o',
     defaultMessage:
