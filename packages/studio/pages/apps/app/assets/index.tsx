@@ -70,7 +70,7 @@ export function AssetsPage(): ReactNode {
     })}`,
   );
 
-  const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
+  const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.roles;
   const mayUploadAsset =
     userRole &&
     checkOrganizationRoleOrganizationPermissions(userRole, [

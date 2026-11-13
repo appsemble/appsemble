@@ -91,7 +91,7 @@ export function AppRoutes(): ReactNode {
   );
 
   const userOrganizationRole = useMemo(
-    () => organization?.role || PredefinedOrganizationRole.Member,
+    () => organization?.roles ?? [PredefinedOrganizationRole.Member],
     [organization],
   );
 

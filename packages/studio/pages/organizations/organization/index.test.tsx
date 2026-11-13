@@ -18,7 +18,6 @@ const organization: Organization = {
   invoiceReference: '',
   locale: 'en',
   name: 'Example organization',
-  role: PredefinedOrganizationRole.Member,
   roles: [PredefinedOrganizationRole.Member],
   ssoRoles: [],
   guest: false,

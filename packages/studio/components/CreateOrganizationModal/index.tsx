@@ -178,7 +178,6 @@ export function CreateOrganizationModal({
         ...organizations,
         {
           ...data,
-          role: PredefinedOrganizationRole.Owner,
           roles: [PredefinedOrganizationRole.Owner],
           ssoRoles: [],
           guest: false,

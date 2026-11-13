@@ -18,7 +18,6 @@ export interface OrganizationMember {
 export interface Organization {
   id: string;
   name: string;
-  role: PredefinedOrganizationRole | null;
   roles: PredefinedOrganizationRole[];
   ssoRoles: PredefinedOrganizationRole[];
   guest: boolean;

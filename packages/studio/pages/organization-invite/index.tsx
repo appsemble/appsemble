@@ -52,7 +52,7 @@ export function OrganizationInvitePage(): ReactNode {
         if (response) {
           setOrganizations([
             ...organizations,
-            { ...organization, role: PredefinedOrganizationRole.Member },
+            { ...organization, roles: [PredefinedOrganizationRole.Member] },
           ]);
         }
       } catch (err) {
