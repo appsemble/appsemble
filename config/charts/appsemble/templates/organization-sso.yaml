@@ -44,7 +44,7 @@ spec:
           args:
             - configure-organization-sso
             - --config
-            - /run/appsemble-sso/configuration/configuration.yaml
+            - /etc/appsemble-sso/configuration.yaml
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
             - name: AES_SECRET
@@ -54,7 +54,7 @@ spec:
                   key: aes-secret
           volumeMounts:
             - name: configuration
-              mountPath: /run/appsemble-sso/configuration
+              mountPath: /etc/appsemble-sso
               readOnly: true
             {{- range $organizationId, $configuration := .Values.organizationSso }}
             - name: {{ printf "sso-%s" ($organizationId | sha256sum | trunc 12) }}
