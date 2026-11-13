@@ -114,7 +114,7 @@ organizationSso:
     scope: openid email profile
     groupClaim: groups
     policy: required-with-guests
-    allowedLoginMethods: [google, gitlab]
+    allowedLoginMethods: [oidc, google, gitlab]
     roleMappings:
       - group: /appsemble/owners
         role: Owner
@@ -125,16 +125,18 @@ organizationSso:
 The organization must exist. The provider's redirect URI is `https://<studio-host>/callback`. The
 chart reads the client secret from the referenced Kubernetes Secret and applies the configuration
 after migrations. Declared settings are read-only in Studio. Removing an organization from
-`organizationSso` revokes its SSO-derived grants and provider sessions; manually invited memberships
-remain. Studio-managed SSO settings are unaffected.
+`organizationSso` deletes its group-managed memberships and ends its sessions through the provider;
+manual and guest memberships remain. Studio-managed SSO settings are unaffected.
 
 Deployment-managed SSO uses installation-operator authority. Operators verify the provider
 connection and Owner mapping in a test environment and recover access through GitOps.
 
 `optional` permits the configured ordinary login methods, `required` requires the organization's SSO
 provider, and `required-with-guests` permits explicitly invited external guests to use the
-configured ordinary methods. Group values match exactly, and permissions from multiple mapped roles
-combine across the organization. Staff without a matching group have no organization access.
+configured ordinary methods. `allowedLoginMethods` takes `password`, `github`, `gitlab`, `google`
+and `oidc`, the organization's own provider, and defaults to all of them. Group values match
+exactly, and permissions from multiple mapped roles combine across the organization. Staff without a
+matching group have no organization access.
 
 ### Upgrading
 
