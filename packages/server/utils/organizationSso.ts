@@ -3,12 +3,12 @@ import {
   type OrganizationSsoConfiguration,
   type OrganizationSsoRoleMapping,
   type OrganizationSsoSettings,
-  type PredefinedOrganizationRole,
+  PredefinedOrganizationRole,
 } from '@appsemble/types';
 import { schemas } from '@appsemble/utils';
 import { type Schema, Validator } from 'jsonschema';
 import { type Context } from 'koa';
-import { type Transaction } from 'sequelize';
+import { Op, type Transaction, type WhereOptions } from 'sequelize';
 
 import { argv } from './argv.js';
 import { decrypt, encrypt } from './crypto.js';
@@ -184,6 +184,56 @@ export async function applyOrganizationSsoConfiguration(
   return transaction ? save(transaction) : getDB().transaction(save);
 }
 
+/**
+ * Check whether a membership change takes Owner access from the organization's last Owner.
+ *
+ * @param sso The single sign-on configuration of the member's organization.
+ * @param member The membership before the change.
+ * @param next The membership after the change, or `null` if the membership is removed.
+ * @param transaction The transaction in which to count the remaining Owners.
+ * @returns Whether the change leaves the organization without an Owner.
+ */
+export async function removesLastOrganizationOwner(
+  sso: OrganizationSso | null,
+  member: OrganizationMember,
+  next: Pick<OrganizationMember, 'role' | 'guest' | 'ssoRoles'> | null,
+  transaction?: Transaction,
+): Promise<boolean> {
+  const manualOwnersAllowed =
+    !sso || (sso.policy !== 'required' && sso.allowedLoginMethods.length > 0);
+  const hasOwnerAccess = (candidate: typeof next): boolean =>
+    candidate != null &&
+    ((Boolean(sso) &&
+      candidate.role == null &&
+      !candidate.guest &&
+      candidate.ssoRoles.includes(PredefinedOrganizationRole.Owner)) ||
+      (manualOwnersAllowed &&
+        candidate.role === PredefinedOrganizationRole.Owner &&
+        (sso?.policy !== 'required-with-guests' || candidate.guest)));
+  if (!hasOwnerAccess(member) || hasOwnerAccess(next)) {
+    return false;
+  }
+  const ownerSources: WhereOptions[] = [];
+  if (sso) {
+    ownerSources.push({
+      role: null,
+      guest: false,
+      ssoRoles: { [Op.contains]: [PredefinedOrganizationRole.Owner] },
+    });
+  }
+  if (manualOwnersAllowed) {
+    ownerSources.push({
+      role: PredefinedOrganizationRole.Owner,
+      ...(sso?.policy === 'required-with-guests' ? { guest: true } : {}),
+    });
+  }
+  const owners = await OrganizationMember.count({
+    where: { OrganizationId: member.OrganizationId, [Op.or]: ownerSources },
+    transaction,
+  });
+  return owners <= 1;
+}
+
 export async function synchronizeOrganizationSsoMembership({
   groups,
   organizationId,
@@ -219,8 +269,13 @@ export async function synchronizeOrganizationSsoMembership({
       { transaction },
     );
   }
+  const next = { role: null, guest: false, ssoRoles: roles };
+  // A sign-in keeps the manual role of the last Owner; the provider removes mapped Owners freely.
+  if (member.role != null && (await removesLastOrganizationOwner(sso, member, next, transaction))) {
+    return member;
+  }
   if (member.role != null || JSON.stringify(member.ssoRoles) !== JSON.stringify(roles)) {
-    await member.update({ role: null, ssoRoles: roles }, { transaction });
+    await member.update(next, { transaction });
   }
   return member;
 }

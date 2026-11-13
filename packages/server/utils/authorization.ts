@@ -10,21 +10,25 @@ import { appWideGroupId, assertKoaCondition } from '@appsemble/node-utils';
 import {
   appOrganizationPermissionMapping,
   OrganizationPermission,
-  PredefinedOrganizationRole,
+  type PredefinedOrganizationRole,
   predefinedOrganizationRolePermissions,
 } from '@appsemble/types';
 import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
-import { Op, type Transaction, type WhereOptions } from 'sequelize';
+import { Op, type Transaction } from 'sequelize';
 
 import { getAppPasswordToken } from './app.js';
-import { getOrganizationMemberAccess, getOrganizationMemberRoles } from './organizationSso.js';
+import {
+  getOrganizationMemberAccess,
+  getOrganizationMemberRoles,
+  removesLastOrganizationOwner,
+} from './organizationSso.js';
 import {
   App,
   type AppMember,
   getAppDB,
   Organization,
-  OrganizationMember,
+  type OrganizationMember,
   OrganizationSso,
 } from '../models/index.js';
 
@@ -271,39 +275,12 @@ export async function checkOrganizationOwnerRemoval(
   transaction: Transaction,
 ): Promise<void> {
   const sso = await OrganizationSso.findByPk(member.OrganizationId, { transaction });
-  const manualOwnersAllowed =
-    !sso || (sso.policy !== 'required' && sso.allowedLoginMethods.length > 0);
-  const hasOwnerAccess = (candidate: typeof next): boolean =>
-    candidate != null &&
-    ((Boolean(sso) &&
-      candidate.role == null &&
-      !candidate.guest &&
-      candidate.ssoRoles.includes(PredefinedOrganizationRole.Owner)) ||
-      (manualOwnersAllowed &&
-        candidate.role === PredefinedOrganizationRole.Owner &&
-        (sso?.policy !== 'required-with-guests' || candidate.guest)));
-  if (!hasOwnerAccess(member) || hasOwnerAccess(next)) {
-    return;
-  }
-  const ownerSources: WhereOptions[] = [];
-  if (sso) {
-    ownerSources.push({
-      role: null,
-      guest: false,
-      ssoRoles: { [Op.contains]: [PredefinedOrganizationRole.Owner] },
-    });
-  }
-  if (manualOwnersAllowed) {
-    ownerSources.push({
-      role: PredefinedOrganizationRole.Owner,
-      ...(sso?.policy === 'required-with-guests' ? { guest: true } : {}),
-    });
-  }
-  const owners = await OrganizationMember.count({
-    where: { OrganizationId: member.OrganizationId, [Op.or]: ownerSources },
-    transaction,
-  });
-  assertKoaCondition(owners > 1, context, 409, 'An organization must retain at least one Owner.');
+  assertKoaCondition(
+    !(await removesLastOrganizationOwner(sso, member, next, transaction)),
+    context,
+    409,
+    'An organization must retain at least one Owner.',
+  );
 }
 
 /**

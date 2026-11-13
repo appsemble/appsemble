@@ -223,6 +223,12 @@ describe('organization single sign-on', () => {
   );
 
   it('replaces a staff member manual grant with all mapped roles', async () => {
+    const colleague = await createTestUser('colleague@example.com');
+    await OrganizationMember.create({
+      OrganizationId: 'staff',
+      UserId: colleague.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
     await signInWithSso();
     const response = await request.get('/api/users/current/organizations');
     expect(response.data).toMatchObject([
@@ -232,6 +238,33 @@ describe('organization single sign-on', () => {
         roles: ['AppContentsManager', 'AppMemberManager'],
         guest: false,
       },
+    ]);
+  });
+
+  it('keeps the manual role of the last Owner when mapped groups do not grant Owner', async () => {
+    await signInWithSso();
+    const response = await request.get('/api/users/current/organizations');
+    expect(response.data).toMatchObject([
+      { id: 'staff', role: 'Owner', roles: ['Owner'], guest: false },
+    ]);
+  });
+
+  it('lets the provider downgrade the last mapped Owner', async () => {
+    await signInWithSso(['/owners'], {
+      ...configuration,
+      roleMappings: [
+        ...configuration.roleMappings,
+        { group: '/owners', role: PredefinedOrganizationRole.Owner },
+      ],
+    });
+    await request.get('/api/organizations/staff/members');
+    await OrganizationSsoSession.update(
+      { groups: ['/editors'] },
+      { where: { OrganizationId: 'staff' } },
+    );
+    const response = await request.get('/api/users/current/organizations');
+    expect(response.data).toMatchObject([
+      { id: 'staff', role: null, roles: ['AppContentsManager'], guest: false },
     ]);
   });
 
