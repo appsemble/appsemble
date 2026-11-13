@@ -822,7 +822,12 @@ describe('callAppWebhook permissions', () => {
       },
       'deployment',
     );
-    authorizeStudio(user);
+    const login = await request.post(
+      '/api/auth/email/login',
+      {},
+      { auth: { username: user.primaryEmail!, password: 'testpassword' } },
+    );
+    request.defaults.headers.common.authorization = `Bearer ${login.data.access_token}`;
     const response = await request.post(`/api/apps/${appWithSecurity.id}/webhooks/createRecord`, {
       foo: 'denied',
     });
