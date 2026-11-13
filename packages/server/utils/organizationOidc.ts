@@ -13,12 +13,35 @@ import { argv } from './argv.js';
 import { decrypt } from './crypto.js';
 
 /**
+ * Check whether an organization may sign in through its provider.
+ *
+ * Deployment-managed providers are authored by the installation operator. Studio-managed providers
+ * must use an issuer which the operator allows.
+ *
+ * @param sso The organization's provider configuration.
+ * @returns Whether the provider may be used.
+ */
+export function isOrganizationSsoIssuerAllowed(
+  sso: Pick<OrganizationSso, 'issuer' | 'managedBy'>,
+): boolean {
+  return (
+    sso.managedBy === 'deployment' ||
+    Boolean(argv.organizationSsoIssuers?.split(',').includes(sso.issuer))
+  );
+}
+
+/**
  * Discover an organization's provider using the shared outbound request policy.
  *
  * @param sso The organization's provider configuration.
  * @returns The discovered OpenID Connect client configuration.
  */
 export function getOrganizationOidcConfiguration(sso: OrganizationSso): Promise<Configuration> {
+  if (!isOrganizationSsoIssuerAllowed(sso)) {
+    return Promise.reject(
+      new Error(`The installation does not allow the single sign-on issuer ${sso.issuer}`),
+    );
+  }
   const issuer = new URL(sso.issuer);
   const localDevelopmentIssuer =
     process.env.NODE_ENV !== 'production' &&

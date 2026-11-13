@@ -12,6 +12,7 @@ import { Op, type Transaction, type WhereOptions } from 'sequelize';
 
 import { argv } from './argv.js';
 import { decrypt, encrypt } from './crypto.js';
+import { isOrganizationSsoIssuerAllowed } from './organizationOidc.js';
 import { validateOrganizationSsoSession } from './organizationSsoSession.js';
 import {
   getDB,
@@ -39,6 +40,7 @@ export function getOrganizationSsoSettings(sso: OrganizationSso): OrganizationSs
 
 export function validateOrganizationSsoConfiguration(
   configuration: OrganizationSsoConfiguration,
+  managedBy: OrganizationSsoSettings['managedBy'],
 ): OrganizationSsoConfiguration {
   const normalized = {
     ...configuration,
@@ -68,6 +70,9 @@ export function validateOrganizationSsoConfiguration(
       ))
   ) {
     throw new Error('The issuer must be an HTTPS URL without credentials, a query, or a fragment.');
+  }
+  if (!isOrganizationSsoIssuerAllowed({ issuer: normalized.issuer, managedBy })) {
+    throw new Error('This installation does not allow single sign-on with this issuer.');
   }
   if (!normalized.scope.split(/\s+/).includes('openid')) {
     throw new Error('The single sign-on scope must include openid.');
@@ -105,7 +110,7 @@ export async function applyOrganizationSsoConfiguration(
   managedBy: OrganizationSsoSettings['managedBy'],
   transaction?: Transaction,
 ): Promise<OrganizationSso> {
-  const normalized = validateOrganizationSsoConfiguration(configuration);
+  const normalized = validateOrganizationSsoConfiguration(configuration, managedBy);
   if (!(await Organization.findByPk(organizationId, { transaction }))) {
     throw new Error('Organization not found.');
   }

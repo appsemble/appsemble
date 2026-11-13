@@ -127,9 +127,9 @@ export async function startOrganizationSsoLogin(ctx: Context): Promise<void> {
     );
     let normalized: OrganizationSsoConfiguration;
     try {
-      normalized = validateOrganizationSsoConfiguration(configuration);
-    } catch {
-      throwKoaError(ctx, 400, 'The proposed SSO configuration is invalid');
+      normalized = validateOrganizationSsoConfiguration(configuration, 'studio');
+    } catch (error) {
+      throwKoaError(ctx, 400, (error as Error).message);
     }
     assertKoaCondition(
       Boolean(normalized.clientSecret) ||

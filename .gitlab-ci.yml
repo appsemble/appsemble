@@ -1109,6 +1109,7 @@ e2e studio oidc:
       variables:
         <<: *keycloak-appsemble-variables
         HOST: 'https://appsemble:9999'
+        ORGANIZATION_SSO_ISSUERS: https://keycloak:8443/realms/appsemble-e2e
         VALKEY_HOST: valkey
         VALKEY_PORT: 6379
         VALKEY_USERNAME: default

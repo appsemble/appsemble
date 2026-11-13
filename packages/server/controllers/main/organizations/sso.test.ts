@@ -90,7 +90,12 @@ async function authorizePersonalCli(): Promise<void> {
 describe('organization single sign-on', () => {
   beforeAll(async () => {
     vi.useFakeTimers();
-    setArgv({ host: 'http://localhost', secret: 'test', aesSecret: 'test-encryption' });
+    setArgv({
+      host: 'http://localhost',
+      secret: 'test',
+      aesSecret: 'test-encryption',
+      organizationSsoIssuers: configuration.issuer,
+    });
     await setTestApp(await createServer());
   });
 
@@ -184,6 +189,20 @@ describe('organization single sign-on', () => {
       expect(response.data[0].invoiceReference).toBe(billing);
     },
   );
+
+  it('rejects Studio settings for an issuer the installation does not allow', async () => {
+    await applyOrganizationSsoConfiguration('staff', configuration, 'studio');
+    const issuer = 'https://retired.example.com';
+    await OrganizationSso.update({ issuer }, { where: { OrganizationId: 'staff' } });
+    const response = await request.put('/api/organizations/staff/sso', {
+      ...configuration,
+      issuer,
+    });
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'This installation does not allow single sign-on with this issuer.' },
+    });
+  });
 
   it('keeps deployment-managed configuration read-only in Studio', async () => {
     await applyOrganizationSsoConfiguration('staff', configuration, 'deployment');

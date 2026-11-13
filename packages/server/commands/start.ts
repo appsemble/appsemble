@@ -51,6 +51,9 @@ export function builder(yargs: Argv): Argv {
       desc: 'The secret key to be used for GitLab OAuth2.',
       implies: ['gitlab-client-id'],
     })
+    .option('organization-sso-issuers', {
+      desc: 'Comma separated OpenID Connect issuers which organization owners may configure for single sign-on in Studio.',
+    })
     .option('stripe-api-secret-key', {
       desc: 'The API key for stripe.',
     })

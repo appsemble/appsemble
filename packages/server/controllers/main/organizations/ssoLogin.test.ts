@@ -210,7 +210,12 @@ async function createPersonalCredentials(): Promise<{
 
 describe('organization OIDC sign-in', () => {
   beforeEach(async () => {
-    setArgv({ host: origin, secret: 'test', aesSecret: 'test-aes-secret' });
+    setArgv({
+      host: origin,
+      secret: 'test',
+      aesSecret: 'test-aes-secret',
+      organizationSsoIssuers: issuer,
+    });
     await setTestApp(await createServer());
     await Organization.create({ id: 'staff', name: 'Staff' });
     configuration = {
@@ -342,6 +347,24 @@ describe('organization OIDC sign-in', () => {
     const flow = await begin();
     expect((await complete(flow)).status).toBe(200);
     expect((await complete(flow)).status).toBe(401);
+  });
+
+  it('stops sign-in and renewal through a Studio provider whose issuer is no longer allowed', async () => {
+    await signIn();
+    const flow = await begin();
+    setArgv({ host: origin, secret: 'test', aesSecret: 'test-aes-secret' });
+    expect((await complete(flow)).status).toBe(401);
+    await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
+    expect((await request.get('/api/users/current/organizations')).data).toStrictEqual([]);
+  });
+
+  it('signs in through a deployment-managed provider without an installation allowance', async () => {
+    setArgv({ host: origin, secret: 'test', aesSecret: 'test-aes-secret' });
+    await OrganizationSso.update(
+      { managedBy: 'deployment' },
+      { where: { OrganizationId: 'staff' } },
+    );
+    expect((await complete(await begin())).status).toBe(200);
   });
 
   it('does not grant access when no group maps to an organization role', async () => {
@@ -528,6 +551,22 @@ describe('organization OIDC sign-in', () => {
     expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
     request.defaults.headers.common.authorization = `Bearer ${expired.access_token}`;
     expect((await request.get('/api/users/current')).status).toBe(401);
+  });
+
+  it('rejects verifying a provider whose issuer the installation does not allow', async () => {
+    await signInAsOwner();
+    const response = await request.post(
+      `${path}/login`,
+      {
+        link: true,
+        configuration: { ...configuration, issuer: 'https://idp.example/realms/other' },
+      },
+      { headers: { origin } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'This installation does not allow single sign-on with this issuer.' },
+    });
   });
 
   it('preserves the active connection and Owner access when a proposed client secret is wrong', async () => {

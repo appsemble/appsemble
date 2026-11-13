@@ -82,6 +82,7 @@ passed as a command line parameter instead, if desired.
 | `ENABLE_APP_EMAIL_QUOTA_ALERTS` | `false`      | If specified, alerts will be sent to the Appsemble administrator when an app exceeds its daily quota.                  |
 | `DISABLE_REGISTRATION`          | `false`      | If specified, user registration will be disabled on the server                                                         |
 | `REJECT_BREACHED_PASSWORDS`     | `false`      | If specified, new passwords that appear in the Have I Been Pwned Pwned Passwords data set are rejected.                |
+| `ORGANIZATION_SSO_ISSUERS`      |              | Comma separated OpenID Connect issuers which organization owners may configure for single sign-on in Studio.           |
 | `HOST`                          |              | The external host on which the server is available. This should include the protocol, hostname, and optionally port.   |
 | `REMOTE`                        | `null`       | A remote Appsemble server to connect to in order to synchronize blocks.                                                |
 

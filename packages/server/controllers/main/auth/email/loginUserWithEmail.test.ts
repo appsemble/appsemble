@@ -26,7 +26,12 @@ function login(email: string): Promise<AxiosResponse> {
 
 describe('loginUserWithEmail', () => {
   beforeAll(async () => {
-    setArgv({ host: 'http://localhost', secret: 'test', aesSecret: 'test-encryption' });
+    setArgv({
+      host: 'http://localhost',
+      secret: 'test',
+      aesSecret: 'test-encryption',
+      organizationSsoIssuers: 'https://identity.example.com',
+    });
     const server = await createServer();
     await setTestApp(server);
   });

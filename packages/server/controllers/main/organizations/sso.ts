@@ -56,7 +56,7 @@ export async function putOrganizationSso(ctx: Context): Promise<void> {
   );
   let configuration: OrganizationSsoConfiguration;
   try {
-    configuration = validateOrganizationSsoConfiguration(ctx.request.body);
+    configuration = validateOrganizationSsoConfiguration(ctx.request.body, 'studio');
   } catch (error) {
     throwKoaError(ctx, 400, (error as Error).message);
   }

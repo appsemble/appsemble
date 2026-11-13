@@ -99,8 +99,9 @@ to. These roles are the following:
 
 Owners configure OpenID Connect in **Organization settings > Single sign-on**. Register a
 confidential client with the identity provider and use `https://<studio-host>/callback` as its
-redirect URI. Enter the issuer URL, client ID and client secret. The scope includes `openid`; the
-default scope is `openid email profile` and the default group claim is `groups`.
+redirect URI. Enter the issuer URL, client ID and client secret. The installation operator decides
+which issuers Owners may use. The scope includes `openid`; the default scope is
+`openid email profile` and the default group claim is `groups`.
 
 Map provider groups to the organization roles listed above. Group values match exactly, including
 paths such as `/appsemble/maintainers`. A staff member receives the combined permissions of all
