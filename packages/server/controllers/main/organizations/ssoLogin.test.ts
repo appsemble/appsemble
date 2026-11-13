@@ -9,11 +9,12 @@ import axios, { type AxiosResponse } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import jwt from 'jsonwebtoken';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   getDB,
   Organization,
+  OrganizationMember,
   OrganizationSso,
   OrganizationSsoSession,
   User,
@@ -263,6 +264,7 @@ describe('organization OIDC sign-in', () => {
 
   afterEach(() => {
     mock.reset();
+    vi.useRealTimers();
   });
 
   it('grants the combined organization roles from trusted provider groups', async () => {
@@ -306,6 +308,24 @@ describe('organization OIDC sign-in', () => {
     const flow = await begin();
     const response = await complete({ ...flow, state: 'another-state' });
     expect(response.status).toBe(401);
+  });
+
+  it.each([
+    ['origin', { origin: 'https://attacker.example' }],
+    ['referer', { referer: 'https://attacker.example/sign-in' }],
+  ])('rejects starting sign-in from another %s', async (header, headers) => {
+    const response = await request.post(`${path}/login`, { link: false }, { headers });
+    expect(response.status).toBe(403);
+  });
+
+  it('rejects completing sign-in from another origin', async () => {
+    const flow = await begin();
+    const response = await request.post(
+      `${path}/callback`,
+      { code: flow.state, state: flow.state, iss: issuer, timezone: 'Europe/Amsterdam' },
+      { headers: { origin: 'https://attacker.example', cookie: flow.cookie } },
+    );
+    expect(response.status).toBe(403);
   });
 
   it('rejects an ID token signed by a different key', async () => {
@@ -382,6 +402,36 @@ describe('organization OIDC sign-in', () => {
     expect(response.status).toBe(403);
   });
 
+  it('grants a mapped role only for the exact provider group', async () => {
+    groups = ['/staff', '/staff/translators/extra', '/staff/content-extra'];
+    const response = await complete(await begin());
+    expect(response.status).toBe(403);
+  });
+
+  it.each([
+    { policy: 'required', allowedLoginMethods: ['oidc'], status: 403 },
+    { policy: 'required-with-guests', allowedLoginMethods: ['password'], status: 403 },
+    { policy: 'required-with-guests', allowedLoginMethods: ['oidc'], status: 200 },
+  ] as const)(
+    'returns $status to a guest signing in under $policy with $allowedLoginMethods',
+    async ({ allowedLoginMethods, policy, status }) => {
+      const guest = await createTestUser('staff@example.com');
+      await OrganizationMember.create({
+        OrganizationId: 'staff',
+        UserId: guest.id,
+        role: PredefinedOrganizationRole.Member,
+        guest: true,
+      });
+      await OrganizationSso.update(
+        { policy, allowedLoginMethods: [...allowedLoginMethods] },
+        { where: { OrganizationId: 'staff' } },
+      );
+      groups = [];
+      authorizeStudio(guest);
+      expect((await complete(await begin(true))).status).toBe(status);
+    },
+  );
+
   it('requires explicit authenticated linking when the email already belongs to an account', async () => {
     const user = await createTestUser('staff@example.com');
     const collision = await complete(await begin());
@@ -392,6 +442,20 @@ describe('organization OIDC sign-in', () => {
     request.defaults.headers.common.authorization = `Bearer ${linked.data.access_token}`;
     const current = await request.get('/api/users/current');
     expect(current.data.sub).toBe(user.id);
+  });
+
+  it('completes linking only for the account which started it', async () => {
+    authorizeStudio(await createTestUser('staff@example.com'));
+    const flow = await begin(true);
+    authorizeStudio(await createTestUser('other@example.com'));
+    expect((await complete(flow)).status).toBe(401);
+  });
+
+  it('does not link an identity which belongs to another account', async () => {
+    authorizeStudio(await createTestUser('staff@example.com'));
+    expect((await complete(await begin(true))).status).toBe(200);
+    authorizeStudio(await createTestUser('other@example.com'));
+    expect((await complete(await begin(true))).status).toBe(403);
   });
 
   it('does not allow a password login to use the linked staff membership', async () => {
@@ -471,6 +535,37 @@ describe('organization OIDC sign-in', () => {
       (await request.post('/api/auth/refresh-token', { refresh_token: tokens.refresh_token }))
         .status,
     ).toBe(401);
+  });
+
+  it('ends the Studio session eight hours after signing in', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    const tokens = await signIn();
+    vi.setSystemTime(Date.now() + 8 * 60 * 60 * 1000 - 60_000);
+    const renewed = await request.post('/api/auth/refresh-token', {
+      refresh_token: tokens.refresh_token,
+    });
+    vi.setSystemTime(Date.now() + 120_000);
+    const expired = await request.post('/api/auth/refresh-token', {
+      refresh_token: renewed.data.refresh_token,
+    });
+    expect([renewed.status, expired.status]).toStrictEqual([200, 401]);
+  });
+
+  it('checks provider groups at least hourly when the provider token lasts longer', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    providerLifetime = 24 * 60 * 60;
+    let tokens = await signIn();
+    const refreshAnHourLater = async (): Promise<void> => {
+      vi.setSystemTime(Date.now() + 60 * 60 * 1000 + 1000);
+      ({ data: tokens } = await request.post('/api/auth/refresh-token', {
+        refresh_token: tokens.refresh_token,
+      }));
+      request.defaults.headers.common.authorization = `Bearer ${tokens.access_token}`;
+    };
+    await refreshAnHourLater();
+    groups = [];
+    await refreshAnHourLater();
+    expect((await request.get('/api/users/current/organizations')).data).toStrictEqual([]);
   });
 
   it('keeps personal credentials independent of Studio logout while checking current provider groups', async () => {
@@ -613,6 +708,14 @@ describe('organization OIDC sign-in', () => {
     expect((await request.get('/api/users/current/organizations')).data).toStrictEqual([]);
   });
 
+  it('revokes a provider grant whose renewal identifies another subject', async () => {
+    await signIn();
+    await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
+    claims = { sub: 'another-subject' };
+    expect((await request.get('/api/users/current/organizations')).data).toStrictEqual([]);
+    expect((await request.get('/api/users/current')).status).toBe(401);
+  });
+
   it('uses fresh ID-token group claims when UserInfo does not include groups', async () => {
     userInfoClaims = { groups: undefined };
     await signIn();
@@ -662,6 +765,50 @@ describe('organization OIDC sign-in', () => {
       status: 400,
       data: { message: 'This installation does not allow single sign-on with this issuer.' },
     });
+  });
+
+  it('does not let a member without Owner permission verify a proposed provider', async () => {
+    await signIn();
+    const response = await request.post(
+      `${path}/login`,
+      { link: true, configuration: { ...configuration, name: 'Proposed provider' } },
+      { headers: { origin } },
+    );
+    expect(response.status).toBe(403);
+  });
+
+  it('does not save a proposed provider after the verifying member loses Owner permission', async () => {
+    await signInAsOwner();
+    const flow = await begin(true, { ...configuration, name: 'Proposed provider' });
+    await OrganizationSsoSession.update({ groups: ['/staff/translators'] }, { where: {} });
+    expect((await complete(flow)).status).toBe(403);
+    expect((await OrganizationSso.findByPk('staff'))!.name).toBe('Staff SSO');
+  });
+
+  it('requires signing in again before verifying a proposed provider after ten minutes', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    await signInAsOwner();
+    vi.setSystemTime(Date.now() + 601_000);
+    const response = await request.post(
+      `${path}/login`,
+      { link: true, configuration: { ...configuration, name: 'Proposed provider' } },
+      { headers: { origin } },
+    );
+    expect(response.status).toBe(403);
+  });
+
+  it('does not verify a replacement for a deployment-managed provider', async () => {
+    await signInAsOwner();
+    await OrganizationSso.update(
+      { managedBy: 'deployment' },
+      { where: { OrganizationId: 'staff' } },
+    );
+    const response = await request.post(
+      `${path}/login`,
+      { link: true, configuration: { ...configuration, name: 'Proposed provider' } },
+      { headers: { origin } },
+    );
+    expect(response.status).toBe(409);
   });
 
   it('preserves the active connection and Owner access when a proposed client secret is wrong', async () => {

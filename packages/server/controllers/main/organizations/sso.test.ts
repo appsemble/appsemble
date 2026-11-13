@@ -373,12 +373,69 @@ describe('organization single sign-on', () => {
     const apps = await request.get('/api/organizations/staff/apps');
     const collections = await request.get('/api/organizations/staff/app-collections');
     const privateCollection = await request.get(`/api/app-collections/${collection.id}`);
+    const currentUserApps = await request.get('/api/users/current/apps');
+    const allCollections = await request.get('/api/app-collections');
+    const privateCollectionApps = await request.get(`/api/app-collections/${collection.id}/apps`);
     expect({
       apps: apps.data,
       collections: collections.data,
       privateCollection: privateCollection.status,
-    }).toStrictEqual({ apps: [], collections: [], privateCollection: 403 });
+      currentUserApps: currentUserApps.data,
+      allCollections: allCollections.data,
+      privateCollectionApps: privateCollectionApps.status,
+    }).toStrictEqual({
+      apps: [],
+      collections: [],
+      privateCollection: 403,
+      currentUserApps: [],
+      allCollections: [],
+      privateCollectionApps: 403,
+    });
   });
+
+  it('does not admit a member using a disallowed login to organization details or apps', async () => {
+    await applyOrganizationSsoConfiguration(
+      'staff',
+      { ...configuration, policy: 'required' },
+      'deployment',
+    );
+    const app = await App.create({
+      OrganizationId: 'staff',
+      path: 'staff-app',
+      definition: {
+        name: 'Staff App',
+        defaultPage: 'Home',
+        security: { default: { role: 'User', policy: 'organization' }, roles: { User: {} } },
+      },
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const organization = await request.get('/api/organizations/staff');
+    const consent = await request.post(
+      `/api/users/current/auth/oauth2/apps/${app.id}/consent/agree`,
+      { redirectUri: 'http://staff-app.staff.localhost', scope: 'openid' },
+    );
+    expect({ organization: organization.status, consent: consent.status }).toStrictEqual({
+      organization: 404,
+      consent: 401,
+    });
+  });
+
+  it.each([
+    { allowedLoginMethods: ['password'], status: 200 },
+    { allowedLoginMethods: ['oidc'], status: 403 },
+  ] as const)(
+    'returns $status to a manual member under optional SSO allowing $allowedLoginMethods',
+    async ({ allowedLoginMethods, status }) => {
+      await applyOrganizationSsoConfiguration(
+        'staff',
+        { ...configuration, allowedLoginMethods: [...allowedLoginMethods] },
+        'deployment',
+      );
+      const response = await request.get('/api/organizations/staff/members');
+      expect(response.status).toBe(status);
+    },
+  );
 
   it('blocks an existing provider session after organization membership is removed', async () => {
     await signInWithSso();
@@ -434,6 +491,26 @@ describe('organization single sign-on', () => {
       denied: 409,
       converted: { role: 'Member', roles: ['Member'], ssoRoles: [], guest: true },
     });
+  });
+
+  it('does not convert staff to a guest while the organization requires SSO', async () => {
+    await signInWithSso(['/owners'], {
+      ...configuration,
+      policy: 'required',
+      roleMappings: [{ group: '/owners', role: PredefinedOrganizationRole.Owner }],
+    });
+    const colleague = await createTestUser('colleague@example.com');
+    await OrganizationMember.create({
+      OrganizationId: 'staff',
+      UserId: colleague.id,
+      role: null,
+      ssoRoles: ['AppManager'],
+    });
+    const response = await request.put(`/api/organizations/staff/members/${colleague.id}/role`, {
+      role: 'Member',
+      guest: true,
+    });
+    expect(response.status).toBe(409);
   });
 
   it('preserves guest status when an Owner reduces a guest manual role', async () => {

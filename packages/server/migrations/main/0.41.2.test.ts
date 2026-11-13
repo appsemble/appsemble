@@ -53,4 +53,20 @@ describe('migration 0.41.2', () => {
       await transaction.rollback();
     }
   });
+
+  it('requires a manual role for every membership after rolling back', async () => {
+    const db = getDB();
+    const transaction = await db.transaction();
+    try {
+      await down(transaction, db);
+      const [columns] = await db.query(
+        `SELECT is_nullable FROM information_schema.columns
+          WHERE table_name = 'OrganizationMember' AND column_name = 'role'`,
+        { transaction },
+      );
+      expect(columns).toStrictEqual([{ is_nullable: 'NO' }]);
+    } finally {
+      await transaction.rollback();
+    }
+  });
 });

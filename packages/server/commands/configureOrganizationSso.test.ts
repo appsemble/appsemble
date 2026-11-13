@@ -104,6 +104,26 @@ describe('deployment-managed organization single sign-on', () => {
     expect(decrypt(sso!.clientSecret, 'organization-sso-test-key')).toBe('provider-client-secret');
   });
 
+  it.each([
+    ['a plain HTTP issuer', { issuer: 'http://identity.example.com/realms/staff' }],
+    ['a scope without openid', { scope: 'email profile' }],
+  ])('rejects a declaration with %s', async (description, override) => {
+    await expect(
+      configure({
+        staff: {
+          issuer: 'https://identity.example.com/realms/staff',
+          clientId: 'appsemble-studio',
+          clientSecretFile,
+          name: 'Staff sign-in',
+          policy: 'required',
+          roleMappings: [],
+          ...override,
+        },
+      }),
+    ).rejects.toMatchObject({ code: 1 });
+    expect(await OrganizationSso.count()).toBe(0);
+  });
+
   it('rolls back the declaration when another organization does not exist', async () => {
     const configuration = {
       issuer: 'https://identity.example.com/realms/staff',
