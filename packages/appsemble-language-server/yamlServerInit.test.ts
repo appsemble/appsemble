@@ -4,6 +4,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  CancellationTokenSource,
   createConnection,
   createMessageConnection,
   type CompletionItem,
@@ -11,6 +12,7 @@ import {
   type Diagnostic,
   DiagnosticSeverity,
   type Hover,
+  LSPErrorCodes,
   type MessageConnection,
   type Position,
   StreamMessageReader,
@@ -18,6 +20,7 @@ import {
 } from 'vscode-languageserver/node.js';
 import { workspaceContext } from 'yaml-language-server/lib/esm/languageservice/services/schemaRequestHandler.js';
 
+import { connectionStrategy } from './languageserver/connectionStrategy.js';
 import { TelemetryImpl } from './languageserver/telemetry.js';
 import { ConnectionLogger } from './Logger.js';
 import { YAMLServerInit } from './yamlServerInit.js';
@@ -171,6 +174,7 @@ async function startServer(): Promise<Client> {
   const serverConnection = createConnection(
     new StreamMessageReader(toServer),
     new StreamMessageWriter(toClient),
+    connectionStrategy,
   );
   const settings = new SettingsState();
   const telemetry = new TelemetryImpl(serverConnection, new ConnectionLogger(serverConnection));
@@ -454,5 +458,37 @@ describe('completion and hover across block set changes', () => {
     await client.settle();
 
     expect(await inspect(text)).toStrictEqual(answersFromBlockAndAppSchemas);
+  });
+});
+
+describe('requests the editor no longer needs', () => {
+  it('answers a request about a document that changed meanwhile with content modified', async () => {
+    client.open(app([alpha]));
+    await client.settle();
+
+    const outdated = client.connection.sendRequest('textDocument/foldingRange', {
+      textDocument: { uri },
+    });
+    client.change(app([alpha, beta]));
+
+    await expect(outdated).rejects.toMatchObject({ code: LSPErrorCodes.ContentModified });
+    expect(
+      await client.connection.sendRequest('textDocument/foldingRange', { textDocument: { uri } }),
+    ).not.toHaveLength(0);
+  });
+
+  it('answers a request cancelled before it runs as cancelled', async () => {
+    client.open(app([alpha]));
+    await client.settle();
+
+    const cancellation = new CancellationTokenSource();
+    const cancelled = client.connection.sendRequest(
+      'textDocument/foldingRange',
+      { textDocument: { uri } },
+      cancellation.token,
+    );
+    cancellation.cancel();
+
+    await expect(cancelled).rejects.toMatchObject({ code: LSPErrorCodes.RequestCancelled });
   });
 });

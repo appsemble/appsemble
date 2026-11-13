@@ -13,21 +13,8 @@ import { type LanguageService } from 'yaml-language-server/lib/esm/languageservi
 
 import { type SettingsState } from '../../yamlSettings.js';
 import { type BlockManifestCacher } from '../utils/BlockManifestCacher.js';
+import { handleWaitingMessages } from '../utils/handleWaitingMessages.js';
 import { type YamlCacher } from '../utils/YamlCacher.js';
-
-/**
- * Wait until the connection has read and handled the messages that arrived during a validation
- * step, so that a newer edit aborts an outdated validation and waiting requests get their answers
- * in between. Reading a message and handling it take a turn of the event loop each. `setTimeout`
- * exists in Node.js and in web workers alike.
- */
-async function handleWaitingMessages(): Promise<void> {
-  for (let turn = 0; turn < 2; turn += 1) {
-    await new Promise((resolve) => {
-      setTimeout(resolve, 0);
-    });
-  }
-}
 
 interface ValidationOptions {
   refreshBlockSchemas?: boolean;

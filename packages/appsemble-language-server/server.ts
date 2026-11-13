@@ -12,6 +12,7 @@ import { createConnection, ProposedFeatures } from 'vscode-languageserver/node.j
 import { workspaceContext } from 'yaml-language-server/lib/esm/languageservice/services/schemaRequestHandler.js';
 import { convertErrorToTelemetryMsg } from 'yaml-language-server/lib/esm/languageservice/utils/objects.js';
 
+import { connectionStrategy } from './languageserver/connectionStrategy.js';
 import { TelemetryImpl } from './languageserver/telemetry.js';
 import { ConnectionLogger } from './Logger.js';
 import { DefaultSchemaRequestWrapper } from './SchemaRequestWrapper.js';
@@ -21,8 +22,8 @@ import { SettingsState } from './yamlSettings.js';
 // Create a connection for the server.
 
 const connection = process.argv.includes('--stdio')
-  ? createConnection()
-  : createConnection(ProposedFeatures.all);
+  ? createConnection(connectionStrategy)
+  : createConnection(ProposedFeatures.all, connectionStrategy);
 
 process.on('uncaughtException', (err: Error) => {
   // Send all uncaught exception to telemetry with stack traces
