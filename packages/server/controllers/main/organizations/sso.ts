@@ -7,6 +7,7 @@ import {
 import { type Context } from 'koa';
 
 import {
+  getDB,
   OrganizationMember,
   OrganizationSso,
   OrganizationSsoSession,
@@ -118,15 +119,25 @@ export async function deleteOrganizationSso(ctx: Context): Promise<void> {
     403,
     'Sign in again before changing single sign-on settings.',
   );
-  assertKoaCondition(
-    (await OrganizationMember.count({ where: { OrganizationId: organizationId, role: null } })) ===
-      0,
-    ctx,
-    409,
-    'Convert or remove group-managed members before removing single sign-on.',
-  );
-  await OrganizationSsoSession.destroy({ where: { OrganizationId: organizationId } });
-  await sso?.destroy();
+  await getDB().transaction(async (transaction) => {
+    // The removing Owner keeps Owner access when their role is group-managed.
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Owner },
+      {
+        where: { OrganizationId: organizationId, UserId: ctx.user!.id, role: null, guest: false },
+        transaction,
+      },
+    );
+    await OrganizationMember.destroy({
+      where: { OrganizationId: organizationId, role: null, guest: false },
+      transaction,
+    });
+    await OrganizationSsoSession.destroy({
+      where: { OrganizationId: organizationId },
+      transaction,
+    });
+    await sso?.destroy({ transaction });
+  });
   logger.info(
     `User ${ctx.user!.id} removed single sign-on settings for organization ${organizationId}`,
   );

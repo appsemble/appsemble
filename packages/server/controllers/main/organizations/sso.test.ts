@@ -440,13 +440,45 @@ describe('organization single sign-on', () => {
     },
   );
 
-  it('does not orphan managed staff when the provider is removed', async () => {
-    await applyOrganizationSsoConfiguration('staff', configuration, 'deployment');
-    const colleague = await createTestUser('colleague@example.com');
-    await OrganizationMember.create({ OrganizationId: 'staff', UserId: colleague.id, role: null });
+  it('removes group-managed staff and keeps the removing Owner when the provider is removed', async () => {
+    await signInWithSso(['/owners'], {
+      ...configuration,
+      roleMappings: [{ group: '/owners', role: PredefinedOrganizationRole.Owner }],
+    });
+    await request.get('/api/organizations/staff/members');
     await OrganizationSso.update({ managedBy: 'studio' }, { where: { OrganizationId: 'staff' } });
+    for (const [email, role, guest] of [
+      ['staff@example.com', null, false],
+      ['manual@example.com', 'Member', false],
+      ['guest@example.com', 'Member', true],
+    ] as const) {
+      const colleague = await createTestUser(email);
+      await OrganizationMember.create({
+        OrganizationId: 'staff',
+        UserId: colleague.id,
+        role,
+        guest,
+        ssoRoles: role ? [] : [PredefinedOrganizationRole.AppManager],
+      });
+    }
     const response = await request.delete('/api/organizations/staff/sso');
-    expect(response.status).toBe(409);
+    signIn();
+    const members = await request.get<{ primaryEmail: string; roles: string[] }[]>(
+      '/api/organizations/staff/members',
+    );
+    expect({
+      status: response.status,
+      members: members.data
+        .map(({ primaryEmail, roles }) => ({ primaryEmail, roles }))
+        .sort((a, b) => a.primaryEmail.localeCompare(b.primaryEmail)),
+    }).toStrictEqual({
+      status: 204,
+      members: [
+        { primaryEmail: 'guest@example.com', roles: ['Member'] },
+        { primaryEmail: 'manual@example.com', roles: ['Member'] },
+        { primaryEmail: 'test@example.com', roles: ['Owner'] },
+      ],
+    });
   });
 
   it('reconciles mapped Owner grants before a member leaves after mapping changes', async () => {

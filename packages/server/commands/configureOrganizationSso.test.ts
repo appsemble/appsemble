@@ -119,20 +119,36 @@ describe('deployment-managed organization single sign-on', () => {
       { managedBy: 'studio' },
       { where: { OrganizationId: 'customer' } },
     );
-    const user = await User.create({ name: 'Staff member', timezone: 'Europe/Amsterdam' });
-    await OrganizationMember.create({
-      OrganizationId: 'staff',
-      UserId: user.id,
-      role: null,
-      ssoRoles: [PredefinedOrganizationRole.Maintainer],
-    });
+    const members = [
+      { name: 'Staff member', role: null, guest: false },
+      { name: 'Manual member', role: PredefinedOrganizationRole.Member, guest: false },
+      { name: 'Guest member', role: PredefinedOrganizationRole.Member, guest: true },
+    ];
+    for (const { guest, name, role } of members) {
+      const user = await User.create({ name, timezone: 'Europe/Amsterdam' });
+      await OrganizationMember.create({
+        OrganizationId: 'staff',
+        UserId: user.id,
+        role,
+        guest,
+        ssoRoles: role ? [] : [PredefinedOrganizationRole.Maintainer],
+      });
+    }
 
     await configure({});
 
+    const remaining = await OrganizationMember.findAll({
+      where: { OrganizationId: 'staff' },
+      include: [User],
+    });
     expect({
       staff: Boolean(await OrganizationSso.findByPk('staff')),
       customer: Boolean(await OrganizationSso.findByPk('customer')),
-      staffRoles: (await OrganizationMember.findOne({ where: { UserId: user.id } }))?.ssoRoles,
-    }).toStrictEqual({ staff: false, customer: true, staffRoles: [] });
+      members: remaining.map(({ User: user }) => user!.name).sort(),
+    }).toStrictEqual({
+      staff: false,
+      customer: true,
+      members: ['Guest member', 'Manual member'],
+    });
   });
 });

@@ -78,10 +78,10 @@ export async function handler({ config }: { config: string }): Promise<void> {
         transaction,
       });
       for (const sso of removed) {
-        await OrganizationMember.update(
-          { ssoRoles: [] },
-          { where: { OrganizationId: sso.OrganizationId }, transaction },
-        );
+        await OrganizationMember.destroy({
+          where: { OrganizationId: sso.OrganizationId, role: null, guest: false },
+          transaction,
+        });
         await OrganizationSsoSession.destroy({
           where: { OrganizationId: sso.OrganizationId },
           transaction,
