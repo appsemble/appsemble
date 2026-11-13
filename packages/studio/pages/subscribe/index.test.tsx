@@ -1,6 +1,6 @@
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import axios, { type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
@@ -151,6 +151,20 @@ describe('SubscribePage', () => {
 
     expect(option.disabled).toBe(true);
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
+  });
+
+  it('should report plans that could not be loaded', async () => {
+    organizations = [{ id: 'owned', name: 'Owned', role: PredefinedOrganizationRole.Owner }];
+    axios.defaults.adapter = (config) =>
+      Promise.reject(new AxiosError('Internal Server Error', '500', config));
+    renderPage('/en/subscribe/standard');
+
+    expect(
+      await screen.findByText(
+        'Something went wrong when trying to fetch the plans of your organizations.',
+      ),
+    ).toBeDefined();
+    expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull();
   });
 
   it('should continue to the activation page of a newly created organization', async () => {

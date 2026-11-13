@@ -38,6 +38,7 @@ export function SubscribePage(): ReactNode {
   const modal = useToggle();
   const [selectedOrganizationId, setSelectedOrganizationId] = useState('');
   const [currentPlans, setCurrentPlans] = useState<Record<string, SubscriptionPlanType>>();
+  const [currentPlansError, setCurrentPlansError] = useState(false);
 
   useMeta(messages.title);
 
@@ -63,13 +64,16 @@ export function SubscribePage(): ReactNode {
       manageableOrganizations.map(({ id }) =>
         axios.get<OrganizationSubscription>(`/api/organizations/${id}/subscription`),
       ),
-    ).then((responses) => {
-      setCurrentPlans(
-        Object.fromEntries(
-          responses.map(({ data }) => [data.organizationId, data.subscriptionPlan]),
-        ),
-      );
-    });
+    ).then(
+      (responses) => {
+        setCurrentPlans(
+          Object.fromEntries(
+            responses.map(({ data }) => [data.organizationId, data.subscriptionPlan]),
+          ),
+        );
+      },
+      () => setCurrentPlansError(true),
+    );
   }, [manageableOrganizations, planExists]);
 
   if (!planExists) {
@@ -93,6 +97,16 @@ export function SubscribePage(): ReactNode {
       `/${lang}/organizations/${organizationId}/subscriptions/activate/${subscriptionPlanName}`,
     );
   };
+
+  if (currentPlansError) {
+    return (
+      <Content main>
+        <Message color="danger">
+          <FormattedMessage {...messages.currentPlansError} />
+        </Message>
+      </Content>
+    );
+  }
 
   if (!currentPlans) {
     return <Loader />;

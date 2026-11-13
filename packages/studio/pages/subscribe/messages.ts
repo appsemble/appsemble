@@ -29,6 +29,10 @@ export const messages = defineMessages({
     id: 'studio.2u1ing',
     defaultMessage: '{organization} (already on this plan)',
   },
+  currentPlansError: {
+    id: 'studio.BDwtdF',
+    defaultMessage: 'Something went wrong when trying to fetch the plans of your organizations.',
+  },
   noOrganizations: {
     id: 'studio.SccZ2o',
     defaultMessage:
