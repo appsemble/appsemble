@@ -410,6 +410,27 @@ describe('organization OIDC sign-in', () => {
     expect((await request.get('/api/users/current')).status).toBe(401);
   });
 
+  it('revokes credentials from a replayed session while preserving independent sessions', async () => {
+    const independent = await signIn();
+    unauthorize();
+    const compromised = await signIn();
+    const refreshed = await request.post('/api/auth/refresh-token', {
+      refresh_token: compromised.refresh_token,
+    });
+    request.defaults.headers.common.authorization = `Bearer ${refreshed.data.access_token}`;
+    const credentials = await createPersonalCredentials();
+    request.defaults.headers.common.authorization = `Bearer ${credentials.accessToken}`;
+    expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
+
+    const replay = await request.post('/api/auth/refresh-token', {
+      refresh_token: compromised.refresh_token,
+    });
+    expect(replay.status).toBe(401);
+    expect((await request.get('/api/organizations/staff/members')).status).toBe(401);
+    request.defaults.headers.common.authorization = `Bearer ${independent.access_token}`;
+    expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
+  });
+
   it('revokes existing access and refresh tokens when the user signs out', async () => {
     const tokens = await signIn();
     expect((await request.post('/api/auth/logout')).status).toBe(204);

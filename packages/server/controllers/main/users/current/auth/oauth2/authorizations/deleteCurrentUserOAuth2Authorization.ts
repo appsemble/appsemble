@@ -1,7 +1,11 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { OAuthAuthorization, User } from '../../../../../../../models/index.js';
+import {
+  OAuthAuthorization,
+  OrganizationSsoIdentity,
+  User,
+} from '../../../../../../../models/index.js';
 
 export async function deleteCurrentUserOAuth2Authorization(ctx: Context): Promise<void> {
   const {
@@ -26,7 +30,11 @@ export async function deleteCurrentUserOAuth2Authorization(ctx: Context): Promis
   ctx.message = 'The account was unlinked successfully.';
   ctx.status = 204;
 
-  if (dbUser.OAuthAuthorizations.length === 0 && !dbUser.password) {
+  if (
+    dbUser.OAuthAuthorizations.length === 0 &&
+    !dbUser.password &&
+    !(await OrganizationSsoIdentity.count({ where: { UserId: user.id } }))
+  ) {
     ctx.status = 201;
     ctx.body = dbUser.OAuthAuthorizations.length === 0 && !dbUser.password;
   }

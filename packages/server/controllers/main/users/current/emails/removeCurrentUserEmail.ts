@@ -1,7 +1,12 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { EmailAuthorization, OAuthAuthorization, type User } from '../../../../../models/index.js';
+import {
+  EmailAuthorization,
+  OAuthAuthorization,
+  OrganizationSsoIdentity,
+  type User,
+} from '../../../../../models/index.js';
 
 export async function removeCurrentUserEmail(ctx: Context): Promise<void> {
   const { request } = ctx;
@@ -29,7 +34,9 @@ export async function removeCurrentUserEmail(ctx: Context): Promise<void> {
   );
   assertKoaCondition(
     !(
-      (user as User).EmailAuthorizations.length === 1 && !(user as User).OAuthAuthorizations.length
+      (user as User).EmailAuthorizations.length === 1 &&
+      !(user as User).OAuthAuthorizations.length &&
+      !(await OrganizationSsoIdentity.count({ where: { UserId: user.id } }))
     ),
     ctx,
     406,

@@ -98,7 +98,7 @@ async function getActiveSession(
     refreshToken &&
     session.refreshTokenHash !== createHash('sha256').update(refreshToken).digest('hex')
   ) {
-    await session.update({ interactiveRevoked: true }, { transaction });
+    await session.destroy({ transaction });
     return null;
   }
   if (session.accessTokenExpires.getTime() > Date.now()) {

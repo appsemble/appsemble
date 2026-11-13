@@ -3,7 +3,11 @@ import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { OAuthAuthorization, User } from '../../../../../../../models/index.js';
+import {
+  OAuthAuthorization,
+  OrganizationSsoIdentity,
+  User,
+} from '../../../../../../../models/index.js';
 import { setArgv } from '../../../../../../../utils/argv.js';
 import { createServer } from '../../../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../../../utils/test/authorization.js';
@@ -66,6 +70,59 @@ describe('deleteCurrentUserOAuth2Authorization', () => {
         message: 'OAuth2 account to unlink not found',
         statusCode: 404,
       },
+    });
+  });
+
+  it('should retain a login method when organization SSO remains after unlinking social login', async () => {
+    await user.update({ password: null });
+    await OAuthAuthorization.create({
+      UserId: user.id,
+      email: '',
+      accessToken: '',
+      authorizationUrl: 'https://a.example',
+      sub: 'legacy-staff',
+    });
+    await OrganizationSsoIdentity.create({
+      UserId: user.id,
+      issuer: 'https://sso.example/realms/staff',
+      subject: 'staff',
+    });
+    authorizeStudio();
+
+    const response = await request.delete('/api/users/current/auth/oauth2/authorizations', {
+      params: { authorizationUrl: 'https://a.example' },
+    });
+
+    expect({ status: response.status, data: response.data }).toStrictEqual({
+      status: 204,
+      data: '',
+    });
+  });
+
+  it('should report no login methods when only another user has organization SSO', async () => {
+    await user.update({ password: null });
+    await OAuthAuthorization.create({
+      UserId: user.id,
+      email: '',
+      accessToken: '',
+      authorizationUrl: 'https://a.example',
+      sub: 'legacy-staff',
+    });
+    const otherUser = await User.create({ timezone: 'Europe/Amsterdam' });
+    await OrganizationSsoIdentity.create({
+      UserId: otherUser.id,
+      issuer: 'https://sso.example/realms/staff',
+      subject: 'other-staff',
+    });
+    authorizeStudio();
+
+    const response = await request.delete('/api/users/current/auth/oauth2/authorizations', {
+      params: { authorizationUrl: 'https://a.example' },
+    });
+
+    expect({ status: response.status, data: response.data }).toStrictEqual({
+      status: 201,
+      data: true,
     });
   });
 });

@@ -4,9 +4,11 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   EmailAuthorization,
+  OAuthAuthorization,
   Organization,
   OrganizationMember,
-  type User,
+  OrganizationSsoIdentity,
+  User,
 } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
@@ -87,5 +89,49 @@ describe('removeCurrentUserEmail', () => {
         message: 'Deleting this email results in the inability to access this account.',
       },
     });
+  });
+
+  it.each(['social login', 'organization SSO'])(
+    'should allow removal of the last email when %s remains registered',
+    async (method) => {
+      await user.update({ password: null });
+      await (method === 'social login'
+        ? OAuthAuthorization.create({
+            UserId: user.id,
+            email: '',
+            accessToken: '',
+            authorizationUrl: 'https://a.example',
+            sub: 'legacy-staff',
+          })
+        : OrganizationSsoIdentity.create({
+            UserId: user.id,
+            issuer: 'https://sso.example/realms/staff',
+            subject: 'staff',
+          }));
+      authorizeStudio();
+
+      const response = await request.delete('/api/users/current/emails', {
+        data: { email: 'test@example.com' },
+      });
+      const { data: emails } = await request.get('/api/users/current/emails');
+
+      expect({ status: response.status, emails }).toStrictEqual({ status: 204, emails: [] });
+    },
+  );
+
+  it('should keep the last email when only another user has organization SSO', async () => {
+    const otherUser = await User.create({ timezone: 'Europe/Amsterdam' });
+    await OrganizationSsoIdentity.create({
+      UserId: otherUser.id,
+      issuer: 'https://sso.example/realms/staff',
+      subject: 'other-staff',
+    });
+    authorizeStudio();
+
+    const response = await request.delete('/api/users/current/emails', {
+      data: { email: 'test@example.com' },
+    });
+
+    expect(response.status).toBe(406);
   });
 });
