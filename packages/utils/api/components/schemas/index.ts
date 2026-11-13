@@ -26,6 +26,7 @@ export * from './ScimSecret.js';
 export * from './ScimUser.js';
 export * from './SSLSecret.js';
 export * from './SSOConfiguration.js';
+export * from './SubscriptionPlan.js';
 export * from './User.js';
 export * from './UserInfo.js';
 export * from './Training.js';

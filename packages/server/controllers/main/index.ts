@@ -13,5 +13,6 @@ export * from './emails/index.js';
 
 export { checkHealth } from './checkHealth.js';
 export { getSslStatus } from './getSslStatus.js';
+export { getSubscriptionPlans } from './getSubscriptionPlans.js';
 export { getTimezones } from './getTimezones.js';
 export { getContainerLogs } from './getContainerLogs.js';
