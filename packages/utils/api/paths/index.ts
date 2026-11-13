@@ -149,6 +149,7 @@ import { pathItems as organizationSubscriptionsOrganizationSubscriptionId } from
 import { pathItems as acceptPayment } from './payments/acceptPayment.js';
 import { pathItems as sendInvoice } from './payments/payment.js';
 import { pathItems as ssl } from './ssl.js';
+import { pathItems as subscriptionPlans } from './subscriptionPlans.js';
 import { pathItems as timezones } from './timezones.js';
 import { pathItems as completedTrainings } from './trainings/completedTrainings.js';
 import { pathItems as completeTraining } from './trainings/completeTraining.js';
@@ -338,6 +339,7 @@ export const paths = {
   '/api/organization-subscriptions/{organizationSubscriptionId}':
     organizationSubscriptionsOrganizationSubscriptionId,
   '/api/ssl': ssl,
+  '/api/subscription-plans': subscriptionPlans,
   '/api/apps/{appId}/group-invites/{token}/respond': groupInvitesTokenRespond,
   '/api/apps/{appId}/group-invites/{token}': groupInvitesToken,
   '/api/apps/{appId}/group-members/{groupMemberId}/role': groupsMembersGroupMemberIdRole,
