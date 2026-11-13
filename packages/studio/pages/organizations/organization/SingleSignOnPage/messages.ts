@@ -132,8 +132,9 @@ export const messages = defineMessages({
     defaultMessage: 'Remove single sign-on configuration',
   },
   removeBody: {
-    id: 'studio.W29XoK',
-    defaultMessage: "Remove this organization's single sign-on configuration?",
+    id: 'studio.mY5/Zt',
+    defaultMessage:
+      "Remove this organization's single sign-on configuration? Members managed by single sign-on are removed from the organization; you keep Owner access.",
   },
   cancel: {
     id: 'studio.47FYwb',
