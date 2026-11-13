@@ -11,6 +11,7 @@ import {
 } from '@appsemble/react-components';
 import {
   type OrganizationInvite,
+  OrganizationPermission,
   PredefinedOrganizationRole,
   predefinedOrganizationRolePermissions,
   predefinedOrganizationRoles,
@@ -61,6 +62,9 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
   const [invites, setInvites] = useState<OrganizationInvite[]>([defaultInvite]);
   const [submitting, setSubmitting] = useState(false);
   const organization = organizations.find((org) => org.id === organizationId.replace('@', ''));
+  const mayGrantGuests = checkOrganizationRoleOrganizationPermissions(organization.roles, [
+    OrganizationPermission.UpdateOrganizationMemberRoles,
+  ]);
 
   const reset = useCallback(() => {
     setInvites([defaultInvite]);
@@ -217,15 +221,17 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
                   </option>
                 ))}
             </Select>
-            <Checkbox
-              className="ml-3"
-              disabled={submitting}
-              id={`guest-${index}`}
-              label={<FormattedMessage {...messages.guest} />}
-              name="guest"
-              onChange={onChange}
-              value={member.guest}
-            />
+            {mayGrantGuests ? (
+              <Checkbox
+                className="ml-3"
+                disabled={submitting}
+                id={`guest-${index}`}
+                label={<FormattedMessage {...messages.guest} />}
+                name="guest"
+                onChange={onChange}
+                value={member.guest}
+              />
+            ) : null}
           </div>
         ))}
       </FormComponent>
