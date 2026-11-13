@@ -98,8 +98,9 @@ helm install my-appsemble appsemble/appsemble --set 'ingress.host=my-appsemble.e
 
 ### Organization single sign-on
 
-Organization Owners manage Studio single sign-on in their organization's settings. Operators can
-manage the same configuration through `organizationSso`:
+Organization Owners manage Studio single sign-on in their organization's settings, using an issuer
+listed in `organizationSsoIssuers`. Operators can manage the same configuration, with any issuer,
+through `organizationSso`:
 
 ```yaml
 organizationSso:
@@ -683,6 +684,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `smtpSecret`                                | `smtp`                         | The secret to use for configuring SMTP. The secret should contain the following values: `host`, `port`, `secure`, `user`, `pass`, `from`. |
 | `oauthSecret`                               | `nil`                          | The secret which holds client ids and client secrets for OAuth2 providers.                                                                |
 | `organizationSso`                           | `{}`                           | Deployment-managed organization SSO settings and Kubernetes client-secret references.                                                     |
+| `organizationSsoIssuers`                    | `[]`                           | OpenID Connect issuers which organization Owners may configure for single sign-on in Studio.                                              |
 | `sentry.allowedDomains`                     | `[]`                           | A list of domains on which Sentry integration will be enabled. Wildcards are supported.                                                   |
 | `sentry.secret`                             | `nil`                          | The secret from which to read the [Sentry] DSN.                                                                                           |
 | `sentry.environment`                        | `nil`                          | The environment to send with Sentry error reports.                                                                                        |

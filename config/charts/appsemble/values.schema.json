@@ -446,6 +446,15 @@
         }
       }
     },
+    "organizationSsoIssuers": {
+      "type": "array",
+      "description": "OpenID Connect issuers which organization Owners may configure for single sign-on in Studio. Settings in `organizationSso` may use any issuer.",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "default": []
+    },
     "oauthSecret": {
       "type": ["string", "null"],
       "description": "The secret which holds client ids and client secrets for OAuth2 providers."
