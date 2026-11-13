@@ -81,7 +81,10 @@ async function getOrganizationOwners(
   const members = await OrganizationMember.findAll({
     where: {
       OrganizationId: organizationId,
-      role: PredefinedOrganizationRole.Owner,
+      [Op.or]: [
+        { role: PredefinedOrganizationRole.Owner },
+        { ssoRoles: { [Op.contains]: [PredefinedOrganizationRole.Owner] } },
+      ],
     },
     include: [
       {

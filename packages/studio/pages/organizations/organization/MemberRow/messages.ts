@@ -1,6 +1,14 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
+  guest: {
+    id: 'studio.f6U5Gw',
+    defaultMessage: 'External guest',
+  },
+  managedRoles: {
+    id: 'studio.Tmgs0I',
+    defaultMessage: 'Managed by single sign-on:',
+  },
   Member: {
     id: 'studio.7L86Z5',
     defaultMessage: 'Member',

@@ -32,10 +32,9 @@ interface UserProviderProps {
  * The representation of an organization that the user is a member of.
  */
 export interface UserOrganization extends Organization {
-  /**
-   * The user’s role within the organization.
-   */
-  role: PredefinedOrganizationRole;
+  roles: PredefinedOrganizationRole[];
+  ssoRoles: PredefinedOrganizationRole[];
+  guest: boolean;
 }
 
 /**
@@ -103,12 +102,21 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   }, []);
 
   const logout = useCallback(() => {
+    const accessToken = accessTokenRef.current;
+    if (accessToken) {
+      axios
+        .post('/api/auth/logout', undefined, {
+          headers: { authorization: `Bearer ${accessToken}` },
+        })
+        .catch(() => false);
+    }
     setSentryUser(null);
     setUserInfo(null);
     setOrganizations([]);
     accessTokenRef.current = null;
     delete localStorage.access_token;
     delete localStorage.refresh_token;
+    setTokenResponse((current) => (current.access_token || current.refresh_token ? {} : current));
   }, []);
 
   const value = useMemo(
@@ -126,9 +134,37 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   );
 
   useEffect(() => {
+    const synchronize = (event: StorageEvent): void => {
+      if (
+        event.storageArea !== localStorage ||
+        (event.key !== 'access_token' && event.key !== 'refresh_token' && event.key != null)
+      ) {
+        return;
+      }
+      const response = {
+        access_token: localStorage.access_token,
+        refresh_token: localStorage.refresh_token,
+      };
+      accessTokenRef.current = response.access_token;
+      setTokenResponse((current) =>
+        current.access_token === response.access_token &&
+        current.refresh_token === response.refresh_token
+          ? current
+          : response,
+      );
+    };
+    window.addEventListener('storage', synchronize);
+    return () => window.removeEventListener('storage', synchronize);
+  }, []);
+
+  useEffect(() => {
     const interceptor = axios.interceptors.request.use((config) => {
       // Only add the authorization headers for internal requests.
-      if (config.url.startsWith('/') && accessTokenRef.current) {
+      if (
+        config.url.startsWith('/') &&
+        accessTokenRef.current &&
+        !config.headers.has('authorization')
+      ) {
         (config.headers as AxiosHeaders).set('authorization', `Bearer ${accessTokenRef.current}`);
       }
       return config;
@@ -150,14 +186,36 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     const { exp } = jwtDecode<JwtPayload>(tokenResponse.access_token);
     const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
     const refresh = async (): Promise<void> => {
-      try {
-        const { data } = await axios.post<TokenResponse>('/api/auth/refresh-token', {
-          refresh_token: tokenResponse.refresh_token,
-        });
-        login(data);
-      } catch {
-        logout();
-      }
+      const refreshStoredTokens = async (): Promise<void> => {
+        const accessToken = localStorage.access_token;
+        const refreshToken = localStorage.refresh_token;
+        if (!accessToken || !refreshToken) {
+          logout();
+          return;
+        }
+        const payload = jwtDecode<JwtPayload>(accessToken);
+        if (payload.exp * 1e3 - REFRESH_BUFFER > Date.now()) {
+          accessTokenRef.current = accessToken;
+          setTokenResponse({ access_token: accessToken, refresh_token: refreshToken });
+          return;
+        }
+        try {
+          const { data } = await axios.post<TokenResponse>('/api/auth/refresh-token', {
+            refresh_token: refreshToken,
+          });
+          if (localStorage.refresh_token === refreshToken) {
+            login(data);
+          }
+        } catch {
+          if (localStorage.refresh_token === refreshToken) {
+            logout();
+          }
+        }
+      };
+      // The Web Locks API is only available in secure contexts.
+      await (navigator.locks
+        ? navigator.locks.request('appsemble-studio-refresh', refreshStoredTokens)
+        : refreshStoredTokens());
     };
     const timeoutId = setTimeout(refresh, timeout);
 
@@ -165,7 +223,8 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     // refresh it before loading children.
     const waitForAccessToken = exp * 1e3 < Date.now() ? refresh : Promise.resolve.bind(Promise);
     waitForAccessToken()
-      .then(fetchUser)
+      .then(() => (accessTokenRef.current ? fetchUser() : undefined))
+      .catch(logout)
       .finally(() => {
         setInitialized(true);
       });

@@ -1,5 +1,6 @@
 import { Button, Title, useClickOutside, useToggle } from '@appsemble/react-components';
-import { defaultLocale } from '@appsemble/utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions, defaultLocale } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
@@ -90,7 +91,12 @@ export function IndexPage(): ReactNode {
 
   const showExport = organizations.some((organization) => organization.id === app.OrganizationId);
   const showExportResources = organizations.some(
-    (organization) => organization.id === app.OrganizationId && organization.role >= 'AppEditor',
+    (organization) =>
+      organization.id === app.OrganizationId &&
+      checkOrganizationRoleOrganizationPermissions(organization.roles, [
+        OrganizationPermission.QueryAppResources,
+        OrganizationPermission.QueryAppAssets,
+      ]),
   );
   const { disable, enabled: showAppShare, toggle } = useToggle();
   const appShareRef = useRef<HTMLDivElement | null>();

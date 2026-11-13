@@ -1,5 +1,9 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/types';
+import {
+  OrganizationPermission,
+  type PredefinedOrganizationRole,
+  predefinedOrganizationRolePermissions,
+} from '@appsemble/types';
 import { type Context } from 'koa';
 
 import { EmailAuthorization, OrganizationMember, User } from '../../../../models/index.js';
@@ -9,14 +13,19 @@ export async function addOrganizationMember(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId },
     request: {
-      body: { email, role },
+      body: { email, guest = false, role },
     },
   } = ctx;
 
   await checkUserOrganizationPermissions({
     context: ctx,
     organizationId,
-    requiredPermissions: [OrganizationPermission.CreateOrganizationInvites],
+    requiredPermissions: [
+      ...new Set([
+        OrganizationPermission.CreateOrganizationInvites,
+        ...predefinedOrganizationRolePermissions[role as PredefinedOrganizationRole],
+      ]),
+    ],
   });
 
   const emailAuthorization = await EmailAuthorization.findOne({
@@ -53,7 +62,7 @@ export async function addOrganizationMember(ctx: Context): Promise<void> {
     'This account is already a member of this organization.',
   );
 
-  await OrganizationMember.create({ OrganizationId: organizationId, UserId: user.id, role });
+  await OrganizationMember.create({ OrganizationId: organizationId, UserId: user.id, role, guest });
 
   ctx.status = 201;
   ctx.body = {
@@ -61,5 +70,8 @@ export async function addOrganizationMember(ctx: Context): Promise<void> {
     name: user.name,
     primaryEmail: user.primaryEmail,
     role,
+    roles: [role],
+    ssoRoles: [],
+    guest,
   };
 }

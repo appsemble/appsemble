@@ -542,8 +542,8 @@ describe('appsTokenHandler', () => {
       await expect(authCode.reload()).rejects.toThrow(
         'Instance could not be reloaded because it does not exist anymore (find call returned null)',
       );
-      const payload = jwt.decode(response.data.access_token);
-      expect(payload).toStrictEqual({
+      const payload = jwt.verify(response.data.access_token, 'test');
+      expect(payload).toMatchObject({
         aud: 'app:1',
         exp: 946_688_400,
         iat: 946_684_800,
@@ -599,8 +599,8 @@ describe('appsTokenHandler', () => {
       await expect(authCode.reload()).rejects.toThrow(
         'Instance could not be reloaded because it does not exist anymore (find call returned null)',
       );
-      const payload = jwt.decode(response.data.access_token);
-      expect(payload).toStrictEqual({
+      const payload = jwt.verify(response.data.access_token, 'test');
+      expect(payload).toMatchObject({
         aud: `app:${app.id}`,
         exp: 946_688_400,
         iat: 946_684_800,
@@ -735,8 +735,8 @@ describe('appsTokenHandler', () => {
           token_type: 'bearer',
         },
       });
-      const payload = jwt.decode(response.data.access_token);
-      expect(payload).toStrictEqual({
+      const payload = jwt.verify(response.data.access_token, 'test');
+      expect(payload).toMatchObject({
         aud: 'testClientId',
         exp: 946_688_400,
         iat: 946_684_800,
@@ -966,8 +966,8 @@ describe('appsTokenHandler', () => {
       });
       expect(response.data.access_token).not.toBe(response.data.refresh_token);
       expectAppAuthCookies(response, app.id);
-      const payload = jwt.decode(response.data.access_token);
-      expect(payload).toStrictEqual({
+      const payload = jwt.verify(response.data.access_token, 'test');
+      expect(payload).toMatchObject({
         aud: `app:${app.id}`,
         exp: 946_688_400,
         iat: 946_684_800,
@@ -1320,8 +1320,8 @@ describe('appsTokenHandler', () => {
         },
       });
       expect(response.data.access_token).not.toBe(response.data.refresh_token);
-      const payload = jwt.decode(response.data.access_token);
-      expect(payload).toStrictEqual({
+      const payload = jwt.verify(response.data.access_token, 'test');
+      expect(payload).toMatchObject({
         aud: `app:${appId}`,
         exp: 946_688_400,
         iat: 946_684_800,

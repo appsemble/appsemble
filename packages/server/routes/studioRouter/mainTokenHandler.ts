@@ -7,7 +7,9 @@ import raw from 'raw-body';
 
 import { OAuth2ClientCredentials } from '../../models/index.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
+import { type OrganizationLoginMethod } from '@appsemble/types';
 import { checkTokenRequestParameters, GrantError, hasScope } from '../../utils/oauth2.js';
+import { validateOrganizationSsoCredential } from '../../utils/organizationSsoSession.js';
 
 /**
  * Get an access token for a client.
@@ -22,6 +24,8 @@ export async function mainTokenHandler(ctx: Context): Promise<void> {
   let refreshToken: boolean;
   let scope: string;
   let sub: string;
+  let loginMethod: OrganizationLoginMethod | undefined;
+  let organizationSsoSessionId: string | undefined;
 
   try {
     if (!ctx.is('application/x-www-form-urlencoded')) {
@@ -46,7 +50,15 @@ export async function mainTokenHandler(ctx: Context): Promise<void> {
         }
         const [, id, secret] = credentials;
         const client = await OAuth2ClientCredentials.findOne({
-          attributes: ['expires', 'id', 'scopes', 'secret', 'UserId'],
+          attributes: [
+            'expires',
+            'id',
+            'scopes',
+            'secret',
+            'UserId',
+            'loginMethod',
+            'OrganizationSsoSessionId',
+          ],
           where: { id },
         });
         if (!client) {
@@ -64,10 +76,15 @@ export async function mainTokenHandler(ctx: Context): Promise<void> {
         if (!hasScope(client.scopes, requestedScope || '')) {
           throw new GrantError('invalid_scope');
         }
+        if (!(await validateOrganizationSsoCredential(ctx, client))) {
+          throw new GrantError('invalid_grant');
+        }
         aud = id;
         refreshToken = false;
         scope = requestedScope;
         sub = client.UserId;
+        loginMethod = client.loginMethod;
+        organizationSsoSessionId = client.OrganizationSsoSessionId;
         break;
       }
       default:
@@ -82,5 +99,11 @@ export async function mainTokenHandler(ctx: Context): Promise<void> {
     throw error;
   }
 
-  ctx.body = createJWTResponse(sub, { aud, refreshToken, scope });
+  ctx.body = createJWTResponse(sub, {
+    aud,
+    refreshToken,
+    scope,
+    loginMethod,
+    organizationSsoSessionId,
+  });
 }

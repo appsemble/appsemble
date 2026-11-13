@@ -73,27 +73,27 @@ export function MembersPage(): ReactNode {
     [addMembersModal, invites, setInvites],
   );
 
-  const mayUpdateRoles = checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+  const mayUpdateRoles = checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
     OrganizationPermission.UpdateAppMemberRoles,
   ]);
 
-  const mayPatchProperties = checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+  const mayPatchProperties = checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
     OrganizationPermission.PatchAppMemberProperties,
   ]);
 
-  const mayDelete = checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+  const mayDelete = checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
     OrganizationPermission.DeleteAppMembers,
   ]);
 
   const mayInvite =
     userOrganization &&
-    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+    checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
       OrganizationPermission.CreateAppInvites,
     ]);
 
   const mayDeleteInvites =
     userOrganization &&
-    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+    checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
       OrganizationPermission.DeleteAppInvites,
     ]);
 

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import { type TokenResponse } from '@appsemble/types';
+import { type OrganizationLoginMethod, type TokenResponse } from '@appsemble/types';
 import jwt from 'jsonwebtoken';
 
 import { argv } from './argv.js';
@@ -22,6 +22,14 @@ interface Options {
    */
   refreshToken?: boolean;
 
+  refreshExpires?: number;
+
+  loginMethod?: OrganizationLoginMethod;
+
+  organizationSsoSessionId?: string;
+
+  authTime?: number;
+
   /**
    * The scope to set on the access token and refresh token.
    */
@@ -38,7 +46,16 @@ interface Options {
  */
 export function createJWTResponse(
   sub: string,
-  { aud = argv.host, expires = 3600, refreshToken = true, scope }: Options = {},
+  {
+    aud = argv.host,
+    expires = 3600,
+    refreshToken = true,
+    refreshExpires = 60 * 60 * 24 * 30,
+    scope,
+    loginMethod,
+    organizationSsoSessionId,
+    authTime = Math.floor(Date.now() / 1000),
+  }: Options = {},
 ): TokenResponse {
   const iat = Math.floor(Date.now() / 1000);
   const payload = {
@@ -51,6 +68,9 @@ export function createJWTResponse(
     scope,
     // This token can be used to authenticate the user having this id.
     sub,
+    ...(loginMethod ? { loginMethod } : {}),
+    ...(organizationSsoSessionId ? { organizationSsoSessionId } : {}),
+    authTime,
   };
   const response: TokenResponse = {
     // The access token expires in an hour.
@@ -60,10 +80,9 @@ export function createJWTResponse(
     token_type: 'bearer',
   };
   if (refreshToken) {
-    // The refresh token expires in a month.
     response.refresh_token = jwt.sign(
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      { ...payload, exp: iat + 60 * 60 * 24 * 30, rti: randomUUID(), token_use: 'refresh' },
+      { ...payload, exp: iat + refreshExpires, rti: randomUUID(), token_use: 'refresh' },
       argv.secret,
     );
   }

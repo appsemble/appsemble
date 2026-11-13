@@ -67,7 +67,14 @@ export function InviteRow({ invite, mayInvite, onDeleted }: InviteRowProps): Rea
 
   return (
     <tr>
-      <td>{invite.email}</td>
+      <td>
+        {invite.email}
+        {invite.guest ? (
+          <span className="ml-2 tag">
+            <FormattedMessage {...messages.guest} />
+          </span>
+        ) : null}
+      </td>
       <td align="right">
         {mayInvite ? (
           <AsyncButton className="mr-2" disabled={resent} onClick={resendInvitation}>

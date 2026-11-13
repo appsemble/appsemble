@@ -226,15 +226,12 @@ export async function getSigningCertificate(token: string, realm: string): Promi
 }
 
 /**
- * Create a confidential OIDC client whose tokens carry group memberships as a `groups` claim.
- *
- * This mirrors the client the plain OIDC login test uses, but points its redirect URI at a
- * Keycloak identity broker endpoint so a broker realm can federate to this realm.
+ * Create a confidential OIDC client with group claims for app, Studio, or broker sign-in.
  *
  * @param token A Keycloak admin bearer token.
- * @param realm The upstream realm name.
+ * @param realm The realm name.
  * @param client The client to create: `clientId`, `clientSecret`, and the allowed `redirectUris`
- *   (typically the broker endpoint).
+ *   and whether PKCE S256 is required.
  */
 export async function createUpstreamOidcClient(
   token: string,
@@ -243,12 +240,14 @@ export async function createUpstreamOidcClient(
     clientId,
     clientSecret,
     redirectUris,
-  }: { clientId: string; clientSecret: string; redirectUris: string[] },
+    requirePkce,
+  }: { clientId: string; clientSecret: string; redirectUris: string[]; requirePkce?: boolean },
 ): Promise<void> {
   await requestKc(`/admin/realms/${realm}/clients`, {
     body: JSON.stringify({
       clientAuthenticatorType: 'client-secret',
       clientId,
+      ...(requirePkce ? { attributes: { 'pkce.code.challenge.method': 'S256' } } : {}),
       directAccessGrantsEnabled: true,
       enabled: true,
       protocol: 'openid-connect',

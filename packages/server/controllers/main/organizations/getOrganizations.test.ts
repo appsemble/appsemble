@@ -162,4 +162,19 @@ describe('getOrganizations', () => {
       ],
     });
   });
+
+  it('omits billing details from the public organization catalog', async () => {
+    await organization.update({ invoiceReference: 'Internal account code' });
+    await BlockVersion.create({
+      name: 'public-block',
+      version: '0.0.0',
+      OrganizationId: organization.id,
+      parameters: {},
+    });
+
+    const response = await request.get('/api/organizations');
+
+    expect(response.status).toBe(200);
+    expect(response.data[0]).not.toHaveProperty('invoiceReference');
+  });
 });

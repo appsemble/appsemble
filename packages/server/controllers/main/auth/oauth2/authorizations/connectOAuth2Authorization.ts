@@ -1,5 +1,6 @@
 import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
+import { type OrganizationLoginMethod } from '@appsemble/types';
 import { DatabaseError } from 'sequelize';
 
 import {
@@ -107,5 +108,7 @@ export async function connectOAuth2Authorization(ctx: Context): Promise<void> {
     });
     user = user!;
   }
-  ctx.body = createJWTResponse(user.id);
+  ctx.body = createJWTResponse(user.id, {
+    loginMethod: preset.name.toLowerCase() as OrganizationLoginMethod,
+  });
 }

@@ -10,6 +10,10 @@ import {
   getAppStoreListing,
   parseLanguage,
 } from '../../../../../utils/app.js';
+import {
+  getOrganizationMemberAccess,
+  getOrganizationMemberRoles,
+} from '../../../../../utils/organizationSso.js';
 
 export async function queryCurrentUserApps(ctx: Context): Promise<void> {
   const user = ctx.user!;
@@ -19,11 +23,18 @@ export async function queryCurrentUserApps(ctx: Context): Promise<void> {
     query: languageQuery,
   } = parseLanguage(ctx, ctx.query?.language ?? []);
 
-  const memberships = await OrganizationMember.findAll({
+  const organizationMemberships = await OrganizationMember.findAll({
     attributes: ['OrganizationId', 'role'],
     raw: true,
     where: { UserId: user.id },
   });
+  const memberships = (
+    await Promise.all(
+      organizationMemberships.map(({ OrganizationId }) =>
+        getOrganizationMemberAccess(ctx, OrganizationId),
+      ),
+    )
+  ).filter(Boolean);
 
   const apps = await App.findAll({
     attributes: {
@@ -66,7 +77,7 @@ export async function queryCurrentUserApps(ctx: Context): Promise<void> {
       },
       ...languageQuery,
     ],
-    where: { OrganizationId: { [Op.in]: memberships.map((m) => m.OrganizationId) } },
+    where: { OrganizationId: { [Op.in]: memberships.map((m) => m!.OrganizationId) } },
   });
 
   const ratings = await AppRating.findAll({
@@ -98,9 +109,11 @@ export async function queryCurrentUserApps(ctx: Context): Promise<void> {
     .map((app) =>
       app.password &&
       !memberships.some(
-        ({ OrganizationId, role }) =>
-          OrganizationId === app.OrganizationId &&
-          checkOrganizationRoleOrganizationPermissions(role, [OrganizationPermission.QueryApps]),
+        (member) =>
+          member!.OrganizationId === app.OrganizationId &&
+          checkOrganizationRoleOrganizationPermissions(getOrganizationMemberRoles(member!), [
+            OrganizationPermission.QueryApps,
+          ]),
       )
         ? getAppStoreListing(app)
         : Object.assign(app.toJSON(['yaml']), {

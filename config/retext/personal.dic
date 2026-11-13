@@ -107,6 +107,7 @@ OAuth2
 OData
 OpenAPI
 OpenID
+PKCE
 OpenStreetMap
 PEM
 Preact

@@ -31,7 +31,7 @@ export function IndexPage({ organization }: IndexPageProps): ReactNode {
   const userOrganization = organizations?.find((org) => org.id === organization.id);
   const mayEditOrganization =
     userOrganization &&
-    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+    checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
       OrganizationPermission.UpdateOrganizations,
     ]);
 

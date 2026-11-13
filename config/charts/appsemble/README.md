@@ -96,6 +96,42 @@ helm repo update
 helm install my-appsemble appsemble/appsemble --set 'ingress.host=my-appsemble.example.com'
 ```
 
+### Organization single sign-on
+
+Organization Owners manage Studio single sign-on in their organization's settings. Operators can
+manage the same configuration through `organizationSso`:
+
+```yaml
+organizationSso:
+  example:
+    issuer: https://identity.example.com/realms/staff
+    clientId: appsemble-studio
+    clientSecretRef:
+      name: studio-sso
+      key: client-secret
+    name: Staff sign-in
+    scope: openid email profile
+    groupClaim: groups
+    policy: required-with-guests
+    allowedLoginMethods: [google, gitlab]
+    roleMappings:
+      - group: /appsemble/owners
+        role: Owner
+      - group: /appsemble/maintainers
+        role: Maintainer
+```
+
+The organization must exist. The provider's redirect URI is `https://<studio-host>/callback`. The
+chart reads the client secret from the referenced Kubernetes Secret and applies the configuration
+after migrations. Declared settings are read-only in Studio. Removing an organization from
+`organizationSso` revokes its SSO-derived grants and provider sessions; manually invited memberships
+remain. Studio-managed SSO settings are unaffected.
+
+`optional` permits the configured ordinary login methods, `required` requires the organization's SSO
+provider, and `required-with-guests` permits explicitly invited external guests to use the
+configured ordinary methods. Group values match exactly, and permissions from multiple mapped roles
+combine across the organization. Staff without a matching group have no organization access.
+
 ### Upgrading
 
 ```sh
@@ -643,6 +679,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `hostAliases`                               | `[]`                           | Extra hosts file entries for the pods that send email, such as an SMTP relay reached under its certificate name.                          |
 | `smtpSecret`                                | `smtp`                         | The secret to use for configuring SMTP. The secret should contain the following values: `host`, `port`, `secure`, `user`, `pass`, `from`. |
 | `oauthSecret`                               | `nil`                          | The secret which holds client ids and client secrets for OAuth2 providers.                                                                |
+| `organizationSso`                           | `{}`                           | Deployment-managed organization SSO settings and Kubernetes client-secret references.                                                     |
 | `sentry.allowedDomains`                     | `[]`                           | A list of domains on which Sentry integration will be enabled. Wildcards are supported.                                                   |
 | `sentry.secret`                             | `nil`                          | The secret from which to read the [Sentry] DSN.                                                                                           |
 | `sentry.environment`                        | `nil`                          | The environment to send with Sentry error reports.                                                                                        |

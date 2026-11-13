@@ -1,3 +1,4 @@
+import { type OrganizationLoginMethod } from '@appsemble/types';
 import {
   AllowNull,
   BelongsTo,
@@ -11,6 +12,7 @@ import {
 } from 'sequelize-typescript';
 
 import { User } from '../index.js';
+import { OrganizationSsoSession } from './OrganizationSsoSession.js';
 
 @Table({ tableName: 'OAuth2ClientCredentials', updatedAt: false })
 export class OAuth2ClientCredentials extends Model {
@@ -40,6 +42,16 @@ export class OAuth2ClientCredentials extends Model {
   @ForeignKey(() => User)
   @Column(DataType.UUID)
   declare UserId: string;
+
+  @Column(DataType.STRING)
+  declare loginMethod?: OrganizationLoginMethod;
+
+  @ForeignKey(() => OrganizationSsoSession)
+  @Column(DataType.UUID)
+  declare OrganizationSsoSessionId?: string;
+
+  @BelongsTo(() => OrganizationSsoSession, { onDelete: 'SET NULL' })
+  declare OrganizationSsoSession?: Awaited<OrganizationSsoSession>;
 
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
   declare User?: Awaited<User>;

@@ -431,7 +431,10 @@ export class Mailer {
           });
           const members = await OrganizationMember.findAll({
             where: {
-              role: PredefinedOrganizationRole.Owner,
+              [Op.or]: [
+                { role: PredefinedOrganizationRole.Owner },
+                { ssoRoles: { [Op.contains]: [PredefinedOrganizationRole.Owner] } },
+              ],
               // @ts-expect-error 18048 variable is possibly null (strictNullChecks)
               OrganizationId: fullApp.OrganizationId,
             },

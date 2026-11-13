@@ -7,13 +7,8 @@ import { type Promisable } from 'type-fest';
 
 import { argv } from './argv.js';
 import { type Mailer } from './email/Mailer.js';
-import {
-  type App,
-  EmailAuthorization,
-  getAppDB,
-  OrganizationMember,
-  User,
-} from '../models/index.js';
+import { getOrganizationMemberAccess } from './organizationSso.js';
+import { type App, EmailAuthorization, getAppDB, User } from '../models/index.js';
 
 export async function processEmailAuthorization(
   mailer: Mailer,
@@ -46,7 +41,11 @@ export async function processEmailAuthorization(
   }
 }
 
-export async function checkAppSecurityPolicy(app: App, authSubjectId?: string): Promise<boolean> {
+export async function checkAppSecurityPolicy(
+  app: App,
+  authSubjectId?: string,
+  ctx?: Context,
+): Promise<boolean> {
   const policy = app.definition?.security?.default?.policy ?? 'everyone';
 
   if (policy === 'invite') {
@@ -58,11 +57,7 @@ export async function checkAppSecurityPolicy(app: App, authSubjectId?: string): 
   }
 
   if (policy === 'organization' && authSubjectId) {
-    return Boolean(
-      await OrganizationMember.count({
-        where: { OrganizationId: app.OrganizationId, UserId: authSubjectId },
-      }),
-    );
+    return Boolean(ctx && (await getOrganizationMemberAccess(ctx, app.OrganizationId)));
   }
 
   return false;

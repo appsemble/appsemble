@@ -11,8 +11,11 @@ import {
   AppMessages,
   AppRating,
   Organization,
-  OrganizationMember,
 } from '../../../../models/index.js';
+import {
+  getOrganizationMemberAccess,
+  getOrganizationMemberRoles,
+} from '../../../../utils/organizationSso.js';
 import {
   applyAppMessages,
   compareApps,
@@ -23,7 +26,6 @@ import {
 export async function queryAppCollectionApps(ctx: Context): Promise<void> {
   const {
     pathParams: { appCollectionId },
-    user,
   } = ctx;
   const { baseLanguage, language } = parseLanguage(ctx, ctx.query?.language ?? []);
 
@@ -33,13 +35,7 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
 
   assertKoaCondition(collection != null, ctx, 404, 'App collection not found');
 
-  const organizationMember = await OrganizationMember.findOne({
-    where: {
-      UserId: user?.id ?? null,
-      OrganizationId: collection.OrganizationId,
-    },
-    attributes: ['OrganizationId'],
-  });
+  const organizationMember = await getOrganizationMemberAccess(ctx, collection.OrganizationId);
 
   assertKoaCondition(
     !(collection.visibility === 'private' && !organizationMember),
@@ -98,17 +94,15 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
 
   assertKoaCondition(apps != null, ctx, 404, 'App collection apps not found');
 
-  const memberships = user
-    ? await OrganizationMember.findAll({
-        attributes: ['OrganizationId', 'role'],
-        where: {
-          UserId: user.id,
-          OrganizationId: apps
-            .filter(({ App: app }) => app!.password)
-            .map(({ App: app }) => app!.OrganizationId),
-        },
-      })
-    : [];
+  const memberships = (
+    await Promise.all(
+      [
+        ...new Set(
+          apps.filter(({ App: app }) => app!.password).map(({ App: app }) => app!.OrganizationId),
+        ),
+      ].map((organizationId) => getOrganizationMemberAccess(ctx, organizationId)),
+    )
+  ).filter(Boolean);
 
   const ratingsMap = new Map(
     (
@@ -159,9 +153,9 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
       Object.assign(
         app.password &&
           !memberships.some(
-            ({ OrganizationId, role }) =>
-              OrganizationId === app.OrganizationId &&
-              checkOrganizationRoleOrganizationPermissions(role, [
+            (member) =>
+              member!.OrganizationId === app.OrganizationId &&
+              checkOrganizationRoleOrganizationPermissions(getOrganizationMemberRoles(member!), [
                 OrganizationPermission.QueryApps,
               ]),
           )

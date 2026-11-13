@@ -1,6 +1,10 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
+  guest: {
+    id: 'studio.f6U5Gw',
+    defaultMessage: 'External guest',
+  },
   title: {
     id: 'studio.5zgvJw',
     defaultMessage: 'Add new members',

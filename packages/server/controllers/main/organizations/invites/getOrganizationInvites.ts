@@ -26,7 +26,9 @@ export async function getOrganizationInvites(ctx: Context): Promise<void> {
     },
   });
 
-  ctx.body = organizationInvites.map(({ email }) => ({
+  ctx.body = organizationInvites.map(({ email, guest, role }) => ({
     email,
+    role,
+    guest,
   }));
 }

@@ -40,11 +40,11 @@ export function CreateAppButton({ className }: { readonly className?: string }):
   const { organizations, userInfo } = useUser();
 
   const organizationIndex = organizations?.findIndex((org) =>
-    checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
+    checkOrganizationRoleOrganizationPermissions(org.roles, [OrganizationPermission.CreateApps]),
   );
 
   const createOrganizations = organizations?.filter((org) =>
-    checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
+    checkOrganizationRoleOrganizationPermissions(org.roles, [OrganizationPermission.CreateApps]),
   );
 
   const defaultValues = {

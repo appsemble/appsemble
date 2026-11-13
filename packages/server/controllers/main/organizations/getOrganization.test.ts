@@ -126,4 +126,39 @@ describe('getOrganization', () => {
       data: { error: 'Not Found', statusCode: 404, message: 'Organization not found.' },
     });
   });
+
+  it('hides a private organization from an unrelated authenticated account', async () => {
+    await createTestUser('outsider@example.com');
+    authorizeStudio();
+
+    const response = await request.get('/api/organizations/testorganization');
+
+    expect(response.status).toBe(404);
+  });
+
+  it('keeps billing details available to the organization Owner', async () => {
+    await organization.update({ invoiceReference: 'Internal account code' });
+    authorizeStudio();
+
+    const response = await request.get('/api/organizations/testorganization');
+
+    expect({ status: response.status, reference: response.data.invoiceReference }).toStrictEqual({
+      status: 200,
+      reference: 'Internal account code',
+    });
+  });
+
+  it('shows a member the organization profile without billing details', async () => {
+    await organization.update({ invoiceReference: 'Internal account code' });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Member },
+      { where: { OrganizationId: organization.id, UserId: user.id } },
+    );
+    authorizeStudio();
+
+    const response = await request.get('/api/organizations/testorganization');
+
+    expect(response.status).toBe(200);
+    expect(response.data).not.toHaveProperty('invoiceReference');
+  });
 });

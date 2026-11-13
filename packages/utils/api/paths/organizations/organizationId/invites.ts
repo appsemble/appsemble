@@ -21,6 +21,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                     type: 'string',
                     format: 'email',
                   },
+                  guest: { type: 'boolean', default: false },
                   role: {
                     type: 'string',
                     enum: predefinedOrganizationRoles,
@@ -53,6 +54,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                   type: 'string',
                   format: 'email',
                 },
+                guest: { type: 'boolean', default: false },
                 role: {
                   type: 'string',
                   enum: predefinedOrganizationRoles,

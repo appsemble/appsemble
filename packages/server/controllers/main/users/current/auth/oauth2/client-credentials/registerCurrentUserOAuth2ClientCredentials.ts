@@ -31,6 +31,8 @@ export async function registerCurrentUserOAuth2ClientCredentials(ctx: Context): 
     scopes,
     secret: await hash(secret, 10),
     UserId: user.id,
+    loginMethod: ctx.state.loginMethod,
+    OrganizationSsoSessionId: ctx.state.organizationSsoSessionId,
   });
 
   ctx.body = {

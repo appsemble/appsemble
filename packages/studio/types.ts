@@ -9,13 +9,19 @@ export interface OrganizationMember {
   id: string;
   name?: string;
   primaryEmail?: string;
-  role: PredefinedOrganizationRole;
+  role: PredefinedOrganizationRole | null;
+  roles: PredefinedOrganizationRole[];
+  ssoRoles: PredefinedOrganizationRole[];
+  guest: boolean;
 }
 
 export interface Organization {
   id: string;
   name: string;
-  role: PredefinedOrganizationRole;
+  role: PredefinedOrganizationRole | null;
+  roles: PredefinedOrganizationRole[];
+  ssoRoles: PredefinedOrganizationRole[];
+  guest: boolean;
   description: string;
   website: string;
   email: string;
@@ -48,6 +54,7 @@ export interface Page {
  */
 export interface ExtendedOAuth2State extends OAuth2State {
   id: string;
+  organizationId?: string;
   appRequest?: string;
   userinfo?: UserInfo & { profile: string };
 }

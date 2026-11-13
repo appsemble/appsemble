@@ -141,6 +141,10 @@ import { pathItems as organizationsOrganizationIdInvites } from './organizations
 import { pathItems as organizationsOrganizationIdMembersMemberIdRole } from './organizations/organizationId/members/memberId/role.js';
 import { pathItems as organizationsOrganizationIdMembersMemberId } from './organizations/organizationId/members/memberId.js';
 import { pathItems as organizationsOrganizationIdMembers } from './organizations/organizationId/members.js';
+import { pathItems as organizationsOrganizationIdSso } from './organizations/organizationId/sso.js';
+import { pathItems as organizationsOrganizationIdSsoLogin } from './organizations/organizationId/sso/login.js';
+import { pathItems as organizationsOrganizationIdSsoCallback } from './organizations/organizationId/sso/callback.js';
+import { pathItems as authLogout } from './auth/logout.js';
 import { pathItems as organizationsOrganizationIdOrganizationSubscriptionPrice } from './organizations/organizationId/organizationSubscriptionPrice.js';
 import { pathItems as organizationsOrganizationIdOrganizationSubscription } from './organizations/organizationId/subscription.js';
 import { pathItems as organizationsOrganizationId } from './organizations/organizationId.js';
@@ -298,6 +302,7 @@ export const paths = {
   '/api/auth/oauth2/authorizations/connect': authOAuth2AuthorizationsConnect,
   '/api/auth/oauth2/authorizations/register': authOAuth2AuthorizationsRegister,
   '/api/auth/refresh-token': authRefreshToken,
+  '/api/auth/logout': authLogout,
   '/api/blocks/@{organizationId}/{blockId}': blocksOrganizationIdBlockId,
   '/api/blocks/@{organizationId}/{blockId}/versions': blocksOrganizationIdBlockIdVersions,
   '/api/blocks/@{organizationId}/{blockId}/versions/list': blocksOrganizationIdBlockIdVersionsList,
@@ -330,6 +335,9 @@ export const paths = {
   '/api/organizations/{organizationId}/members/{organizationMemberId}':
     organizationsOrganizationIdMembersMemberId,
   '/api/organizations/{organizationId}/members': organizationsOrganizationIdMembers,
+  '/api/organizations/{organizationId}/sso/login': organizationsOrganizationIdSsoLogin,
+  '/api/organizations/{organizationId}/sso/callback': organizationsOrganizationIdSsoCallback,
+  '/api/organizations/{organizationId}/sso': organizationsOrganizationIdSso,
   '/api/organizations/{organizationId}/subscription':
     organizationsOrganizationIdOrganizationSubscription,
   '/api/organizations/{organizationId}/subscription/price':

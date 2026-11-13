@@ -25,7 +25,8 @@ export function ProtectedRoute({ organization, permissions }: ProtectedRouteProp
 
   if (
     permissions &&
-    (!organization || !checkOrganizationRoleOrganizationPermissions(organization.role, permissions))
+    (!organization ||
+      !checkOrganizationRoleOrganizationPermissions(organization.roles, permissions))
   ) {
     return <Navigate to="/" />;
   }

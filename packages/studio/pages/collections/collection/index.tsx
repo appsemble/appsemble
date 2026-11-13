@@ -42,7 +42,7 @@ export function CollectionRoutes({ fallbackCollectionId }: CollectionRoutesProps
 
   const mayEdit =
     userOrganization &&
-    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+    checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
       OrganizationPermission.UpdateAppCollections,
     ]);
 

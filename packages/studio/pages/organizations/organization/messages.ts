@@ -1,6 +1,10 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
+  singleSignOn: {
+    id: 'studio.YQJkxw',
+    defaultMessage: 'Single sign-on',
+  },
   organization: {
     id: 'studio.K56Dim',
     defaultMessage: 'Organization',
