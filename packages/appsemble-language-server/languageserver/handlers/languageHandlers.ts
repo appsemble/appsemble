@@ -214,20 +214,23 @@ export class LanguageHandlers {
    * @returns Promise<Hover | undefined>
    */
   hoverHandler(textDocumentPositionParams: TextDocumentPositionParams): Promise<Hover | undefined> {
-    return this.withDocument(textDocumentPositionParams.textDocument.uri, async (document) => {
-      try {
-        const hover = await this.languageService.doHover(
-          document,
-          textDocumentPositionParams.position,
-        );
-        return hover || undefined;
-      } catch (error: unknown) {
-        this.connection.console.error(
-          `Hover failed for ${document.uri} at ${textDocumentPositionParams.position.line}:${textDocumentPositionParams.position.character}\n${describePosition(document, textDocumentPositionParams.position)}\n${formatError(error)}`,
-        );
-        return undefined;
-      }
-    });
+    return this.withDocument(
+      textDocumentPositionParams.textDocument.uri,
+      async (document): Promise<Hover | undefined> => {
+        try {
+          const hover = await this.languageService.doHover(
+            document,
+            textDocumentPositionParams.position,
+          );
+          return hover || undefined;
+        } catch (error: unknown) {
+          this.connection.console.error(
+            `Hover failed for ${document.uri} at ${textDocumentPositionParams.position.line}:${textDocumentPositionParams.position.character}\n${describePosition(document, textDocumentPositionParams.position)}\n${formatError(error)}`,
+          );
+          return undefined;
+        }
+      },
+    );
   }
 
   /**
@@ -359,6 +362,10 @@ export class LanguageHandlers {
    * document takes long to parse, so answering outdated requests builds up a queue that delays the
    * answers that are still wanted. The editor ignores a content modified error, as the language
    * server protocol prescribes.
+   *
+   * @param uri The URI of the document the request is about.
+   * @param callback Computes the answer from the document.
+   * @returns The answer, or `undefined` if the document is not open.
    */
   private async withDocument<T>(
     uri: string,
