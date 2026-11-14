@@ -13,7 +13,7 @@ import { type LanguageService } from 'yaml-language-server/lib/esm/languageservi
 
 import { type SettingsState } from '../../yamlSettings.js';
 import { type BlockManifestCacher } from '../utils/BlockManifestCacher.js';
-import { handleWaitingMessages } from '../utils/handleWaitingMessages.js';
+import { answerWaitingRequests } from '../utils/handleWaitingMessages.js';
 import { type YamlCacher } from '../utils/YamlCacher.js';
 
 interface ValidationOptions {
@@ -174,7 +174,7 @@ export class ValidationHandler {
       }
     }
 
-    await handleWaitingMessages();
+    await answerWaitingRequests();
     if (signal.aborted) {
       return [];
     }
@@ -182,7 +182,7 @@ export class ValidationHandler {
       textDocument,
       isKubernetesAssociatedDocument(textDocument, this.yamlSettings.specificValidatorPaths),
     );
-    await handleWaitingMessages();
+    await answerWaitingRequests();
     if (signal.aborted) {
       return [];
     }
@@ -202,7 +202,7 @@ export class ValidationHandler {
     }
     this.connection.console.info(`Validating ${textDocument.uri}`);
     const validatorResult = this.appValidator.validateApp(definition);
-    await handleWaitingMessages();
+    await answerWaitingRequests();
     if (signal.aborted) {
       return [];
     }

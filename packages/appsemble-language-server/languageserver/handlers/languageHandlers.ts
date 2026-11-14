@@ -43,7 +43,7 @@ import { appDefinitionFileNames } from '../../appsembleSchemaConfig.js';
 import { ResultLimitReachedNotification } from '../../requestTypes.js';
 import { type SettingsState } from '../../yamlSettings.js';
 import { languageComponentCompletions } from '../languageComponentCompletion.js';
-import { handleWaitingMessages } from '../utils/handleWaitingMessages.js';
+import { answerRequest, handleWaitingMessages } from '../utils/handleWaitingMessages.js';
 
 function formatError(error: unknown): string {
   if (error instanceof Error) {
@@ -367,20 +367,22 @@ export class LanguageHandlers {
    * @param callback Computes the answer from the document.
    * @returns The answer, or `undefined` if the document is not open.
    */
-  private async withDocument<T>(
+  private withDocument<T>(
     uri: string,
     callback: (document: TextDocument) => PromiseLike<T> | T,
   ): Promise<T | undefined> {
-    const version = this.yamlSettings.documents.get(uri)?.version;
-    await handleWaitingMessages();
-    const document = this.yamlSettings.documents.get(uri);
-    if (!document) {
-      return undefined;
-    }
-    if (document.version !== version) {
-      throw new ResponseError(LSPErrorCodes.ContentModified, `${uri} changed`);
-    }
-    return callback(document);
+    return answerRequest(async (): Promise<T | undefined> => {
+      const version = this.yamlSettings.documents.get(uri)?.version;
+      await handleWaitingMessages();
+      const document = this.yamlSettings.documents.get(uri);
+      if (!document) {
+        return undefined;
+      }
+      if (document.version !== version) {
+        throw new ResponseError(LSPErrorCodes.ContentModified, `${uri} changed`);
+      }
+      return callback(document);
+    });
   }
 
   // Adapted from:

@@ -20,7 +20,7 @@ import {
 } from 'vscode-languageserver/node.js';
 import { workspaceContext } from 'yaml-language-server/lib/esm/languageservice/services/schemaRequestHandler.js';
 
-import { connectionStrategy } from './languageserver/connectionStrategy.js';
+import { connectionOptions } from './languageserver/connectionOptions.js';
 import { TelemetryImpl } from './languageserver/telemetry.js';
 import { ConnectionLogger } from './Logger.js';
 import { YAMLServerInit } from './yamlServerInit.js';
@@ -174,7 +174,7 @@ async function startServer(): Promise<Client> {
   const serverConnection = createConnection(
     new StreamMessageReader(toServer),
     new StreamMessageWriter(toClient),
-    connectionStrategy,
+    connectionOptions,
   );
   const settings = new SettingsState();
   const telemetry = new TelemetryImpl(serverConnection, new ConnectionLogger(serverConnection));

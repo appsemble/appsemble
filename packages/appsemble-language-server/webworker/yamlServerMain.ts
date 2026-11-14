@@ -11,7 +11,7 @@ import {
 } from 'vscode-languageserver/browser.js';
 import { workspaceContext } from 'yaml-language-server/lib/esm/languageservice/services/schemaRequestHandler.js';
 
-import { connectionStrategy } from '../languageserver/connectionStrategy.js';
+import { connectionOptions } from '../languageserver/connectionOptions.js';
 import { TelemetryImpl } from '../languageserver/telemetry.js';
 import { ConnectionLogger } from '../Logger.js';
 import { DefaultSchemaRequestWrapper } from '../SchemaRequestWrapper.js';
@@ -26,7 +26,7 @@ namespace FSReadFile {
 const messageReader = new BrowserMessageReader(globalThis);
 const messageWriter = new BrowserMessageWriter(globalThis);
 
-const connection = createConnection(messageReader, messageWriter, connectionStrategy);
+const connection = createConnection(messageReader, messageWriter, connectionOptions);
 
 const yamlSettings = new SettingsState();
 
