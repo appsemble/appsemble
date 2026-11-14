@@ -33,6 +33,7 @@ import {
   type App,
   type AppSubscription,
   getAppDB,
+  getDB,
   type Resource,
   trackBackgroundTask,
 } from '../models/index.js';
@@ -77,7 +78,9 @@ export function renameODataWithCasting(name: string, type?: FieldType): Literal 
     case 'Position':
       return 'Position';
     default:
-      return type === 'string' ? `data.${name}` : literal(`("Resource"."data"#>'{${name}}')`);
+      return type === 'string'
+        ? `data.${name}`
+        : literal(`("Resource"."data"#>${getDB().escape(`{${name}}`)})`);
   }
 }
 
