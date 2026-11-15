@@ -329,8 +329,8 @@ const fields = block?.children();
 ```
 
 The eager `walk` deliberately does NOT mint a `Node` per document node (it steps over transient
-frames — see `PERFORMANCE.md`). Nodes are minted only where navigation is needed: `root`,
-`cursorAt`, `boundaryAt`, and `MountIndex.nodeAt`.
+frames). Nodes are minted only where navigation is needed: `root`, `cursorAt`, `boundaryAt`, and
+`MountIndex.nodeAt`.
 
 ## Declaring components and behaviors
 
