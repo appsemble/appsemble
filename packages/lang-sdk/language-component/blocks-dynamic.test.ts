@@ -11,7 +11,7 @@ import {
 } from './index.js';
 
 /*
- * Blocks via the value-directed resolver (Approach B in language-component/BLOCKS.md).
+ * Blocks via the value-directed resolver (language-component/BLOCKS.md).
  *
  * The base BlockDefinition leaves `parameters` open -- no oneOf, no allOf, no if/then, so the
  * structural walk mounts BlockDefinition and stops. A `dynamicChild` hook reads the block's
@@ -77,7 +77,7 @@ const schemas: Record<string, Schema> = LanguageComponent.schemas([
   ),
 ]);
 
-describe('blocks via value-directed resolver (Approach B)', () => {
+describe('blocks via value-directed resolver', () => {
   it('mounts block parameters resolved by type+version, with no union in the schema', () => {
     const app = {
       pages: [
