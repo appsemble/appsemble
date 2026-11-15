@@ -66,15 +66,17 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  vi.useRealTimers();
   await dropAndCloseAllAppDBs();
   await testDB.truncate({ truncate: true, cascade: true, force: true, restartIdentity: true });
-  vi.useRealTimers();
   mockPwnedPasswords([]);
   await clearAllS3Buckets();
   await getValkeyClient()?.flushdb();
 });
 
 afterEach(async () => {
+  // Closing a connection pool polls with timers, so a test's fake timers would hang the teardown.
+  vi.useRealTimers();
   await dropAndCloseAllAppDBs();
 });
 
