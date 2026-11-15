@@ -1494,6 +1494,13 @@ export interface MarkdownField extends AbstractField {
   requirements?: MarkdownRequirement[];
 }
 
+/**
+ * Any of the form field types.
+ *
+ * The GUI editor identifies a field by its `label`, falling back to its `name` when no label is set.
+ *
+ * @x-appsemble-gui {"labelFromProperties":[{"keys":["label"]},{"keys":["name"]}]}
+ */
 export type Field =
   | BooleanField
   | DateField

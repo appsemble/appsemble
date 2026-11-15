@@ -2326,6 +2326,15 @@ describe('patchApp', () => {
                           "$ref": "#/components/schemas/ContainerPageDefinition",
                         },
                       ],
+                      "x-appsemble-discriminator": {
+                        "default": "basic",
+                        "mapping": {
+                          "basic": "#/components/schemas/PageDefinition",
+                        },
+                        "propertyNames": [
+                          "type",
+                        ],
+                      },
                     },
                     "minItems": 1,
                     "type": "array",
@@ -2574,6 +2583,15 @@ describe('patchApp', () => {
                           "$ref": "#/components/schemas/ContainerPageDefinition",
                         },
                       ],
+                      "x-appsemble-discriminator": {
+                        "default": "basic",
+                        "mapping": {
+                          "basic": "#/components/schemas/PageDefinition",
+                        },
+                        "propertyNames": [
+                          "type",
+                        ],
+                      },
                     },
                     "minItems": 1,
                     "type": "array",

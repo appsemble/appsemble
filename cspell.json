@@ -214,6 +214,7 @@
     "otplib",
     "Otplib",
     "reencrypted",
+    "Flexib",
     "datname",
     "securitytxt",
     "httponly",
@@ -230,6 +231,11 @@
     "CREATEDB",
     "Voss",
     "dockercompose",
-    "languageservice"
+    "languageservice",
+    "distinguishability",
+    "componentized",
+    "componentizes",
+    "derefs",
+    "dispatchable"
   ]
 }

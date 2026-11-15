@@ -5,7 +5,7 @@
 
 import { basename } from 'node:path';
 
-import { type Connection } from 'vscode-languageserver';
+import { type Connection, LSPErrorCodes, ResponseError } from 'vscode-languageserver';
 import { type TextDocument } from 'vscode-languageserver-textdocument';
 import {
   type CodeActionParams,
@@ -39,8 +39,11 @@ import { matchOffsetToDocument } from 'yaml-language-server/lib/esm/languageserv
 import { type LanguageService } from 'yaml-language-server/lib/esm/languageservice/yamlLanguageService.js';
 
 import { type ValidationHandler } from './validationHandlers.js';
+import { appDefinitionFileNames } from '../../appsembleSchemaConfig.js';
 import { ResultLimitReachedNotification } from '../../requestTypes.js';
 import { type SettingsState } from '../../yamlSettings.js';
+import { languageComponentCompletions } from '../languageComponentCompletion.js';
+import { answerRequest, handleWaitingMessages } from '../utils/handleWaitingMessages.js';
 
 function formatError(error: unknown): string {
   if (error instanceof Error) {
@@ -143,11 +146,11 @@ export class LanguageHandlers {
     );
   }
 
-  documentLinkHandler(params: DocumentLinkParams): Promise<DocumentLink[]> {
+  async documentLinkHandler(params: DocumentLinkParams): Promise<DocumentLink[]> {
     return (
-      this.withDocument(params.textDocument.uri, (document) =>
+      (await this.withDocument(params.textDocument.uri, (document) =>
         this.languageService.findLinks(document),
-      ) ?? Promise.resolve([])
+      )) ?? []
     );
   }
 
@@ -160,7 +163,7 @@ export class LanguageHandlers {
    */
   documentSymbolHandler(
     documentSymbolParams: DocumentSymbolParams,
-  ): DocumentSymbol[] | SymbolInformation[] | undefined {
+  ): Promise<DocumentSymbol[] | SymbolInformation[] | undefined> {
     return this.withDocument(documentSymbolParams.textDocument.uri, (document) => {
       const onResultLimitExceeded = this.onResultLimitExceeded(
         document.uri,
@@ -184,22 +187,20 @@ export class LanguageHandlers {
    * @param formatParams {DocumentFormattingParams}
    * @returns Promise<TextEdit[] | undefined>
    */
-  formatterHandler(formatParams: DocumentFormattingParams): Promise<TextEdit[] | undefined> {
+  async formatterHandler(formatParams: DocumentFormattingParams): Promise<TextEdit[] | undefined> {
     return (
-      this.withDocument(formatParams.textDocument.uri, (document) => {
+      (await this.withDocument(formatParams.textDocument.uri, (document) => {
         const customFormatterSettings = {
           tabWidth: formatParams.options.tabSize,
           ...this.yamlSettings.yamlFormatterSettings,
         };
 
         return this.languageService.doFormat(document, customFormatterSettings);
-      }) ?? Promise.resolve([])
+      })) ?? []
     );
   }
 
-  formatOnTypeHandler(
-    params: DocumentOnTypeFormattingParams,
-  ): Promise<TextEdit[] | undefined> | TextEdit[] | undefined {
+  formatOnTypeHandler(params: DocumentOnTypeFormattingParams): Promise<TextEdit[] | undefined> {
     return this.withDocument(params.textDocument.uri, (document) =>
       this.languageService.doDocumentOnTypeFormatting(document, params),
     );
@@ -212,23 +213,24 @@ export class LanguageHandlers {
    * @param textDocumentPositionParams {TextDocumentPositionParams}
    * @returns Promise<Hover | undefined>
    */
-  async hoverHandler(
-    textDocumentPositionParams: TextDocumentPositionParams,
-  ): Promise<Hover | undefined> {
-    try {
-      const hover = await this.withDocument(
-        textDocumentPositionParams.textDocument.uri,
-        (document) => this.languageService.doHover(document, textDocumentPositionParams.position),
-      );
-      return hover || undefined;
-    } catch (error: unknown) {
-      this.withDocument(textDocumentPositionParams.textDocument.uri, (document) => {
-        this.connection.console.error(
-          `Hover failed for ${document.uri} at ${textDocumentPositionParams.position.line}:${textDocumentPositionParams.position.character}\n${describePosition(document, textDocumentPositionParams.position)}\n${formatError(error)}`,
-        );
-      });
-      return undefined;
-    }
+  hoverHandler(textDocumentPositionParams: TextDocumentPositionParams): Promise<Hover | undefined> {
+    return this.withDocument(
+      textDocumentPositionParams.textDocument.uri,
+      async (document): Promise<Hover | undefined> => {
+        try {
+          const hover = await this.languageService.doHover(
+            document,
+            textDocumentPositionParams.position,
+          );
+          return hover || undefined;
+        } catch (error: unknown) {
+          this.connection.console.error(
+            `Hover failed for ${document.uri} at ${textDocumentPositionParams.position.line}:${textDocumentPositionParams.position.character}\n${describePosition(document, textDocumentPositionParams.position)}\n${formatError(error)}`,
+          );
+          return undefined;
+        }
+      },
+    );
   }
 
   /**
@@ -238,15 +240,34 @@ export class LanguageHandlers {
    * @param textDocumentPosition {TextDocumentPositionParams}
    * @returns Promise<CompletionList>
    */
-  completionHandler(textDocumentPosition: TextDocumentPositionParams): Promise<CompletionList> {
+  async completionHandler(
+    textDocumentPosition: TextDocumentPositionParams,
+  ): Promise<CompletionList> {
     const result: CompletionList = {
       items: [],
       isIncomplete: false,
     };
 
     return (
-      this.withDocument(textDocumentPosition.textDocument.uri, async (document) => {
+      (await this.withDocument(textDocumentPosition.textDocument.uri, async (document) => {
         try {
+          if (appDefinitionFileNames.includes(basename(document.uri))) {
+            // A failing binding must not take yaml-language-server's own completions down with it.
+            const items = await languageComponentCompletions(
+              document,
+              textDocumentPosition.position,
+            ).catch((error: unknown) => {
+              this.connection.console.error(
+                `Language component completion failed for ${document.uri}\n${formatError(error)}`,
+              );
+              return [];
+            });
+            // Where a binding completes, its answer is the whole answer, which skips
+            // yaml-language-server's whole-document schema matching.
+            if (items.length) {
+              return { items, isIncomplete: false };
+            }
+          }
           return await this.languageService.doComplete(
             document,
             textDocumentPosition.position,
@@ -258,7 +279,7 @@ export class LanguageHandlers {
           );
           return result;
         }
-      }) ?? Promise.resolve(result)
+      })) ?? result
     );
   }
 
@@ -284,9 +305,7 @@ export class LanguageHandlers {
     }
   }
 
-  foldingRangeHandler(
-    params: FoldingRangeParams,
-  ): FoldingRange[] | Promise<FoldingRange[] | undefined> | undefined {
+  foldingRangeHandler(params: FoldingRangeParams): Promise<FoldingRange[] | undefined> {
     return this.withDocument(params.textDocument.uri, (document) => {
       const capabilities = this.yamlSettings.capabilities.textDocument?.foldingRange;
       const rangeLimit = capabilities?.rangeLimit || this.yamlSettings.maxItemsComputed;
@@ -307,13 +326,13 @@ export class LanguageHandlers {
     });
   }
 
-  selectionRangeHandler(params: SelectionRangeParams): SelectionRange[] | undefined {
+  selectionRangeHandler(params: SelectionRangeParams): Promise<SelectionRange[] | undefined> {
     return this.withDocument(params.textDocument.uri, (document) =>
       this.languageService.getSelectionRanges(document, params.positions),
     );
   }
 
-  codeActionHandler(params: CodeActionParams): CodeAction[] | undefined {
+  codeActionHandler(params: CodeActionParams): Promise<CodeAction[] | undefined> {
     return this.withDocument(params.textDocument.uri, (document) =>
       this.languageService
         .getCodeAction(document, params)
@@ -321,9 +340,7 @@ export class LanguageHandlers {
     );
   }
 
-  codeLensHandler(
-    params: CodeLensParams,
-  ): CodeLens[] | PromiseLike<CodeLens[] | undefined> | undefined {
+  codeLensHandler(params: CodeLensParams): Promise<CodeLens[] | undefined> {
     return this.withDocument(params.textDocument.uri, (document) =>
       this.languageService.getCodeLens(document),
     );
@@ -333,15 +350,39 @@ export class LanguageHandlers {
     return this.languageService.resolveCodeLens(param);
   }
 
-  definitionHandler(params: DefinitionParams): DefinitionLink[] | undefined {
+  definitionHandler(params: DefinitionParams): Promise<DefinitionLink[] | undefined> {
     return this.withDocument(params.textDocument.uri, (document) =>
       this.languageService.doDefinition(document, params),
     );
   }
 
-  private withDocument<T>(uri: string, callback: (document: TextDocument) => T): T | undefined {
-    const document = this.yamlSettings.documents.get(uri);
-    return document ? callback(document) : undefined;
+  /**
+   * Answer a request about a document, unless the document changed after the request was sent.
+   * Editors send requests such as folding ranges after every edit, and each new version of a large
+   * document takes long to parse, so answering outdated requests builds up a queue that delays the
+   * answers that are still wanted. The editor ignores a content modified error, as the language
+   * server protocol prescribes.
+   *
+   * @param uri The URI of the document the request is about.
+   * @param callback Computes the answer from the document.
+   * @returns The answer, or `undefined` if the document is not open.
+   */
+  private withDocument<T>(
+    uri: string,
+    callback: (document: TextDocument) => PromiseLike<T> | T,
+  ): Promise<T | undefined> {
+    return answerRequest(async (): Promise<T | undefined> => {
+      const version = this.yamlSettings.documents.get(uri)?.version;
+      await handleWaitingMessages();
+      const document = this.yamlSettings.documents.get(uri);
+      if (!document) {
+        return undefined;
+      }
+      if (document.version !== version) {
+        throw new ResponseError(LSPErrorCodes.ContentModified, `${uri} changed`);
+      }
+      return callback(document);
+    });
   }
 
   // Adapted from:

@@ -94,6 +94,18 @@ describe('BlockManifestCacher', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  it('does not request a block whose name or version is still being typed', async () => {
+    const cacher = new BlockManifestCacher('https://blocks.example.com', logger);
+
+    const manifests = await cacher.getCachedBlockVersions([
+      { type: 'markdown', version: '0.40.' },
+      { type: '@appsemble/', version: '1.2.3' },
+    ]);
+
+    expect(manifests).toStrictEqual([]);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('keeps other blocks when one block fails to fetch', async () => {
     const failing: IdentifiableBlock = { type: 'unreachable', version: '1.0.0' };
     fetchMock.mockImplementation((url: string) =>

@@ -2363,6 +2363,15 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/ContainerPageDefinition",
             },
           ],
+          "x-appsemble-discriminator": {
+            "default": "basic",
+            "mapping": {
+              "basic": "#/components/schemas/PageDefinition",
+            },
+            "propertyNames": [
+              "type",
+            ],
+          },
         },
         "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>,<#/components/schemas/LoopPageDefinition>,<#/components/schemas/ContainerPageDefinition>",
       },
@@ -4737,6 +4746,15 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/ContainerPageDefinition",
             },
           ],
+          "x-appsemble-discriminator": {
+            "default": "basic",
+            "mapping": {
+              "basic": "#/components/schemas/PageDefinition",
+            },
+            "propertyNames": [
+              "type",
+            ],
+          },
         },
         "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>,<#/components/schemas/LoopPageDefinition>,<#/components/schemas/ContainerPageDefinition>",
       },

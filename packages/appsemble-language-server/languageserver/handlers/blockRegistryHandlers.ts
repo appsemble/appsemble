@@ -1,4 +1,4 @@
-import { getAppBlocks, type IdentifiableBlock, parseBlockName, semver } from '@appsemble/lang-sdk';
+import { getAppBlocks, type IdentifiableBlock, parseBlockName } from '@appsemble/lang-sdk';
 import { isEqual as deepEquals, set } from 'lodash-es';
 import { type BlockSchemaRequestHandler } from '../../BlockSchemaRequestHandler.js';
 import { type Logger } from '../../Logger.js';
@@ -28,10 +28,6 @@ export class BlockRegistryHandlers {
   private updateCounter = 0;
 
   private updatePromise: Promise<boolean> | undefined;
-
-  private isCompleteBlock(block: IdentifiableBlock): boolean {
-    return Boolean(parseBlockName(block.type) && semver.test(String(block.version)));
-  }
 
   constructor(
     yamlSettings: SettingsState,
@@ -82,9 +78,6 @@ export class BlockRegistryHandlers {
         continue;
       }
       for (const block of appBlocks) {
-        if (!this.isCompleteBlock(block)) {
-          continue;
-        }
         candidateBlocks.set(`${block.type}@${block.version}`, block);
       }
     }

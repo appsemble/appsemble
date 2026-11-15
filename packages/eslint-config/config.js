@@ -105,7 +105,15 @@ export default defineConfig([
       'jsdoc/check-tag-names': [
         'error',
         {
-          definedTags: [...BasicAnnotationsReader.textTags, ...BasicAnnotationsReader.jsonTags],
+          // Custom Appsemble JSDoc tags the CLI block builder reads into a block's parameter schema
+          // (see `extraTags` in packages/cli/lib/config.ts): GUI-editor metadata and the
+          // language-component identity declaration.
+          definedTags: [
+            ...BasicAnnotationsReader.textTags,
+            ...BasicAnnotationsReader.jsonTags,
+            'x-appsemble-gui',
+            'x-appsemble-language-component',
+          ],
         },
       ],
 

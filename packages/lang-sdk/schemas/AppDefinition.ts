@@ -119,7 +119,17 @@ The most basic resource has a \`schema\` property and defines the minimal securi
       type: 'array',
       minItems: 1,
       description: 'The pages of the app.',
+      // Pages are discriminated by `type`: tabs/flow/loop/container each carry a `type` enum, while a
+      // basic page has none — so `default: 'basic'` (mapped to `PageDefinition`) resolves the untagged
+      // basic page in O(1) instead of a fallback walk. Both the resolver and the GUI read this instead
+      // of guessing which field is the discriminant. Cast because openapi-types doesn't model our
+      // `x-appsemble-discriminator` vendor extension on a schema object.
       items: {
+        'x-appsemble-discriminator': {
+          propertyNames: ['type'],
+          default: 'basic',
+          mapping: { basic: '#/components/schemas/PageDefinition' },
+        },
         anyOf: [
           { $ref: '#/components/schemas/PageDefinition' },
           { $ref: '#/components/schemas/TabsPageDefinition' },
@@ -127,7 +137,7 @@ The most basic resource has a \`schema\` property and defines the minimal securi
           { $ref: '#/components/schemas/LoopPageDefinition' },
           { $ref: '#/components/schemas/ContainerPageDefinition' },
         ],
-      },
+      } as OpenAPIV3.NonArraySchemaObject,
     },
     theme: {
       $ref: '#/components/schemas/Theme',

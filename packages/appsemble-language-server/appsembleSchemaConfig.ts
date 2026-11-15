@@ -9,18 +9,14 @@ function mapValues<T, U>(record: Record<string, T>, fn: (value: T) => U): Record
 }
 
 function rewriteOpenApiSchemaReferences<T>(value: T): T {
+  if (typeof value === 'string') {
+    return value.replace(/^#\/components\/schemas\//, '#/definitions/') as T;
+  }
   if (Array.isArray(value)) {
     return value.map(rewriteOpenApiSchemaReferences) as T;
   }
   if (value && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value).map(([key, entry]) => [
-        key,
-        key === '$ref' && typeof entry === 'string'
-          ? entry.replace(/^#\/components\/schemas\//, '#/definitions/')
-          : rewriteOpenApiSchemaReferences(entry),
-      ]),
-    ) as T;
+    return mapValues(value as Record<string, unknown>, rewriteOpenApiSchemaReferences) as T;
   }
   return value;
 }
@@ -49,6 +45,9 @@ function addMarkdownDescriptions(schema: Schema): Schema {
   return result;
 }
 
+// The file names the language server treats as Appsemble app definitions.
+export const appDefinitionFileNames = ['app-definition.yaml', 'app-definition.yml'];
+
 interface CreateAppsembleSchemaConfigOptions {
   readonly referenceUri?: string;
 }
@@ -67,7 +66,7 @@ export function createAppsembleSchemaConfig({
   return [
     {
       uri: 'appsemble://schema.json',
-      fileMatch: ['app-definition.yaml', 'app-definition.yml'],
+      fileMatch: appDefinitionFileNames,
       schema: {
         id: 'appsemble://schema.json',
         url: referenceUri,
