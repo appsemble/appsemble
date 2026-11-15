@@ -90,9 +90,16 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     setTokenResponse(response);
   }, []);
 
-  const fetchOrganizations = useCallback(async () => {
-    const { data } = await axios.get<UserOrganization[]>('/api/users/current/organizations');
-    setOrganizations(data);
+  // The user info and organizations are published together, because pages behind a
+  // `ProtectedRoute` render as soon as the user info is set and may depend on the organizations.
+  const fetchUser = useCallback(async () => {
+    const [{ data: user }, { data: userOrganizations }] = await Promise.all([
+      axios.get<UserInfo>('/api/users/current'),
+      axios.get<UserOrganization[]>('/api/users/current/organizations'),
+    ]);
+    setOrganizations(userOrganizations);
+    setSentryUser({ id: user.sub });
+    setUserInfo(user);
   }, []);
 
   const logout = useCallback(() => {
@@ -158,7 +165,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     // refresh it before loading children.
     const waitForAccessToken = exp * 1e3 < Date.now() ? refresh : Promise.resolve.bind(Promise);
     waitForAccessToken()
-      .then(() => Promise.all([refreshUserInfo(), fetchOrganizations()]))
+      .then(fetchUser)
       .finally(() => {
         setInitialized(true);
       });
@@ -166,7 +173,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [fetchOrganizations, login, logout, tokenResponse, refreshUserInfo]);
+  }, [fetchUser, login, logout, tokenResponse]);
 
   if (!initialized) {
     return <Loader />;
