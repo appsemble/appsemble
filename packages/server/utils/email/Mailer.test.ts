@@ -6,17 +6,7 @@ import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
 import { type ImapFlow, type MailboxLockObject } from 'imapflow';
 import { type Transporter } from 'nodemailer';
-import {
-  afterAll,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  type Mock,
-  onTestFinished,
-  vi,
-} from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type Mock, onTestFinished, vi } from 'vitest';
 
 import { Mailer } from './Mailer.js';
 import { App, AppMessages, Organization, OrganizationMember, User } from '../../models/index.js';
@@ -614,7 +604,7 @@ _Test App_
       vi.setSystemTime(0);
     });
 
-    afterAll(() => {
+    afterEach(() => {
       vi.runOnlyPendingTimers();
       vi.useRealTimers();
     });
