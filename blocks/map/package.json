@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@testing-library/dom": "10.4.2",
-    "@testing-library/user-event": "14.6.9",
+    "@testing-library/user-event": "14.6.10",
     "vitest": "4.1.12"
   }
 }
