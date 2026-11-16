@@ -33,9 +33,8 @@ export function LoginPage(): ReactNode {
           headers: { authorization: `Basic ${btoa(`${email}:${password}`)}` },
         });
         login(data);
-      } catch (error: unknown) {
+      } finally {
         busy.disable();
-        throw error;
       }
     },
     [busy, login],

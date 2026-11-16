@@ -1,13 +1,11 @@
-import { useToggle } from '@appsemble/react-components';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import axios from 'axios';
-import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
-import { OrganizationLogin } from './index.js';
 import { UserProvider } from '../../../components/UserProvider/index.js';
+import { LoginPage } from '../index.js';
 
 vi.hoisted(() => {
   window.settings = {
@@ -42,11 +40,16 @@ beforeEach(() => {
   axios.defaults.adapter = (config) =>
     Promise.resolve({
       data:
-        config.url === '/api/users/current'
-          ? { sub: 'owner', email: 'owner@example.com' }
-          : config.url === '/api/users/current/organizations'
-            ? []
-            : { name: 'Staff SSO', policy, allowedLoginMethods: ['oidc', 'password', 'gitlab'] },
+        config.url === '/api/auth/email/login'
+          ? {
+              access_token: `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`,
+              refresh_token: 'refresh',
+            }
+          : config.url === '/api/users/current'
+            ? { sub: 'owner', email: 'owner@example.com' }
+            : config.url === '/api/users/current/organizations'
+              ? []
+              : { name: 'Staff SSO', policy, allowedLoginMethods: ['oidc', 'password', 'gitlab'] },
       status: 200,
       statusText: 'OK',
       headers: {},
@@ -59,23 +62,12 @@ afterEach(() => {
   localStorage.clear();
 });
 
-function OrganizationSignIn(): ReactNode {
-  const busy = useToggle();
-  return (
-    <OrganizationLogin
-      busy={busy}
-      onPasswordLogin={() => Promise.resolve()}
-      organizationId="example"
-    />
-  );
-}
-
-function renderLogin(initialEntry = '/'): void {
+function renderLogin(initialEntry = '/login?organization=example'): void {
   render(
     <IntlProvider locale="en" messages={{}}>
       <MemoryRouter initialEntries={[initialEntry]}>
         <UserProvider>
-          <OrganizationSignIn />
+          <LoginPage />
         </UserProvider>
       </MemoryRouter>
     </IntlProvider>,
@@ -103,6 +95,20 @@ it('should show only permitted alternative providers for invited guests', async 
   ).toStrictEqual(['Login with Staff SSO', 'Login with GitLab']);
 });
 
+it('should allow linking organization single sign-on after signing in with a password', async () => {
+  policy = 'required-with-guests';
+  renderLogin();
+  fireEvent.change(await screen.findByRole('textbox', { name: 'Email' }), {
+    target: { value: 'owner@example.com' },
+  });
+  fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Login', exact: true }));
+
+  expect(
+    await screen.findByRole('button', { name: 'Link organization single sign-on' }),
+  ).toHaveProperty('disabled', false);
+});
+
 it.each([
   // eslint-disable-next-line no-script-url -- The fixture verifies rejection of executable redirects.
   'javascript:alert(1)',
@@ -113,7 +119,7 @@ it.each([
   async (redirect) => {
     localStorage.access_token = `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`;
     localStorage.refresh_token = 'refresh';
-    renderLogin(`/?${new URLSearchParams({ redirect })}`);
+    renderLogin(`/login?${new URLSearchParams({ organization: 'example', redirect })}`);
 
     expect(await screen.findByText('The sign-in destination is invalid.')).toBeDefined();
   },
