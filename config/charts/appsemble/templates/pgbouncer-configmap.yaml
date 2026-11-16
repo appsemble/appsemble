@@ -50,6 +50,11 @@ data:
     {{- end }}
     max_user_connections = {{ div (int .Values.pgbouncer.maxUserConnections) (int .Values.pgbouncer.replicaCount) }}
     server_idle_timeout = 30
+    ; A new server connection resolves the host again once the last lookup is older than this
+    ; (default 15 seconds), and every lookup of a short name walks the DNS search list up to a
+    ; query that leaves the cluster. A Service keeps its ClusterIP; an external host that moves on
+    ; failover is followed within five minutes.
+    dns_max_ttl = 300
     ; After a failed server login PgBouncer rejects every client for this many seconds (default
     ; 15). A PostgreSQL failover or switchover makes the new primary available within seconds, so
     ; retry quickly instead of failing requests long after the database is back.
