@@ -200,7 +200,9 @@ test.describe('App Collections', () => {
     await page.click('#app-options-menu');
     await page.getByRole('button', { name: 'Add to collection' }).click();
     await page.getByRole('combobox').selectOption({ label: appCollectionName });
+    const addResponse = page.waitForResponse(`**/api/app-collections/${appCollectionId}/apps`);
     await page.locator('form').getByRole('button', { name: 'Add to collection' }).click();
+    await addResponse;
 
     await page.goto(`/en/collections/${appCollectionId}`);
     await expect(page.getByRole('link', { name: appName })).toBeVisible();
