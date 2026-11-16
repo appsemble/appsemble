@@ -30,7 +30,7 @@
     ],
     "*.{js,md,ts,tsx}": [
       "eslint",
-      "npx -- cspell"
+      "npx -- cspell --no-must-find-files"
     ],
     "{apps,blocks,packages}/**/*.ts?(x)": [
       "sh -c 'npx --workspaces tsc --incremental --noEmit'"
