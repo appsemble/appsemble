@@ -47,6 +47,7 @@ spec:
             - /etc/appsemble-sso/configuration.yaml
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 12 }}
             - name: AES_SECRET
               valueFrom:
                 secretKeyRef:
@@ -56,6 +57,7 @@ spec:
             - name: configuration
               mountPath: /etc/appsemble-sso
               readOnly: true
+{{ include "appsemble.trustedCaBundle.volumeMount" . | indent 12 }}
             {{- range $organizationId, $configuration := .Values.organizationSso }}
             - name: {{ printf "sso-%s" ($organizationId | sha256sum | trunc 12) }}
               mountPath: {{ printf "/run/appsemble-sso/%s" $organizationId | quote }}
@@ -65,6 +67,7 @@ spec:
         - name: configuration
           configMap:
             name: {{ include "appsemble.fullname" . }}-organization-sso
+{{ include "appsemble.trustedCaBundle.volume" . | indent 8 }}
         {{- range $organizationId, $configuration := .Values.organizationSso }}
         - name: {{ printf "sso-%s" ($organizationId | sha256sum | trunc 12) }}
           secret:
