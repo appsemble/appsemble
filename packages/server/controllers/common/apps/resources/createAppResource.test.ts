@@ -1130,7 +1130,7 @@ describe('createAppResource', () => {
         timezone: 'Europe/Amsterdam',
       });
       await AppSubscription.create({
-        endpoint: `https://push.example.com/${role}`,
+        endpoint: `https://192.0.2.1/${role}`,
         p256dh: 'p256dh',
         auth: 'auth',
         AppMemberId: member.id,
@@ -1144,14 +1144,14 @@ describe('createAppResource', () => {
 
     await vi.waitFor(() =>
       expect(sendNotification).toHaveBeenCalledWith(
-        expect.objectContaining({ endpoint: 'https://push.example.com/Reader' }),
+        expect.objectContaining({ endpoint: 'https://192.0.2.1/Reader' }),
         expect.any(String),
         expect.any(Object),
       ),
     );
     expect(sendNotification.mock.calls.map(([{ endpoint }]) => endpoint).toSorted()).toStrictEqual([
-      'https://push.example.com/Admin',
-      'https://push.example.com/Reader',
+      'https://192.0.2.1/Admin',
+      'https://192.0.2.1/Reader',
     ]);
   });
 

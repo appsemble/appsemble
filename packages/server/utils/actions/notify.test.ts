@@ -63,13 +63,13 @@ describe('notify', () => {
     });
     managerId = manager.id;
     await AppSubscription.create({
-      endpoint: 'https://push.example/manager',
+      endpoint: 'https://192.0.2.1/manager',
       p256dh: 'p256dh',
       auth: 'auth',
       AppMemberId: manager.id,
     });
     await AppSubscription.create({
-      endpoint: 'https://push.example/staff',
+      endpoint: 'https://192.0.2.1/staff',
       p256dh: 'p256dh',
       auth: 'auth',
       AppMemberId: staff.id,
@@ -84,7 +84,7 @@ describe('notify', () => {
     await runNotify('Manager');
 
     await vi.waitFor(() => {
-      expect(pushedEndpoints).toStrictEqual(['https://push.example/manager']);
+      expect(pushedEndpoints).toStrictEqual(['https://192.0.2.1/manager']);
     });
   });
 
@@ -92,7 +92,7 @@ describe('notify', () => {
     await runNotify(managerId);
 
     await vi.waitFor(() => {
-      expect(pushedEndpoints).toStrictEqual(['https://push.example/manager']);
+      expect(pushedEndpoints).toStrictEqual(['https://192.0.2.1/manager']);
     });
   });
 
@@ -101,8 +101,8 @@ describe('notify', () => {
 
     await vi.waitFor(() => {
       expect(pushedEndpoints.toSorted()).toStrictEqual([
-        'https://push.example/manager',
-        'https://push.example/staff',
+        'https://192.0.2.1/manager',
+        'https://192.0.2.1/staff',
       ]);
     });
   });

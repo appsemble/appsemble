@@ -378,13 +378,13 @@ describe('updateAppResource', () => {
       timezone: 'Europe/Amsterdam',
     });
     await AppSubscription.create({
-      endpoint: 'https://push.example.com/author',
+      endpoint: 'https://192.0.2.1/author',
       p256dh: 'p256dh',
       auth: 'auth',
       AppMemberId: author.id,
     });
     await AppSubscription.create({
-      endpoint: 'https://push.example.com/other',
+      endpoint: 'https://192.0.2.1/other',
       p256dh: 'p256dh',
       auth: 'auth',
       AppMemberId: other.id,
@@ -404,13 +404,13 @@ describe('updateAppResource', () => {
 
     await vi.waitFor(() =>
       expect(sendNotification).toHaveBeenCalledWith(
-        expect.objectContaining({ endpoint: 'https://push.example.com/author' }),
+        expect.objectContaining({ endpoint: 'https://192.0.2.1/author' }),
         expect.any(String),
         expect.any(Object),
       ),
     );
     expect(sendNotification.mock.calls.map(([{ endpoint }]) => endpoint)).toStrictEqual([
-      'https://push.example.com/author',
+      'https://192.0.2.1/author',
     ]);
   });
 
