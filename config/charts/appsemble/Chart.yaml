@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.15
-appVersion: 0.40.15
+version: 0.40.16
+appVersion: 0.40.16
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,15 +33,22 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Cli: Store an app’s assets in the S3 bucket named by --s3-bucket
-        on app publish and app update."
+      description: "Appsemble-language-server: Complete role names in page roles."
     - kind: added
-      description: "Server: Support named app asset buckets and apply bundled database
-        migrations by default."
+      description: "Server: Add public GET /api/subscription-plans endpoint listing
+        the subscription plans."
+    - kind: added
+      description: "Studio: Add subscribe page to choose an organization for a
+        subscription plan."
+    - kind: changed
+      description: "Studio: Use PostgreSQL 18 in the Docker Compose docs; dump and
+        restore existing data."
+    - kind: fixed
+      description: "App: Restore the missing link text in the German permissions error."
+    - kind: fixed
+      description: "Studio: Restore the missing link text in translated messages."
     - kind: security
-      description: "Server: Do not log service secret credentials."
-    - kind: security
-      description: "Server: Leave email bodies out of the info log when SMTP is configured."
+      description: "Server: Update the PostgreSQL client tools in the Docker image to 18.7."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

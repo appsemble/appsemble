@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.16](https://gitlab.com/appsemble/appsemble/-/releases/0.40.16)] - 2026-11-16
+
+### Added
+
+- Appsemble-language-server: Complete role names in page `roles`.
+- Server: Add public `GET /api/subscription-plans` endpoint listing the subscription plans.
+- Studio: Add subscribe page to choose an organization for a subscription plan.
+
+### Changed
+
+- Studio: Use PostgreSQL 18 in the Docker Compose docs; dump and restore existing data.
+
+### Fixed
+
+- App: Restore the missing link text in the German permissions error.
+- Studio: Restore the missing link text in translated messages.
+
+### Security
+
+- Server: Update the PostgreSQL client tools in the Docker image to 18.7.
+
 ## \[[0.40.15](https://gitlab.com/appsemble/appsemble/-/releases/0.40.15)] - 2026-11-12
 
 ### Added
