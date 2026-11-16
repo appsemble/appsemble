@@ -13,3 +13,8 @@ it('should announce its label as a status', () => {
   render(<Loader label="Loading" />);
   expect(screen.getByRole('status').textContent).toBe('Loading');
 });
+
+it('should not render an empty label', () => {
+  render(<Loader />);
+  expect(screen.getByRole('status').textContent).toBe('');
+});

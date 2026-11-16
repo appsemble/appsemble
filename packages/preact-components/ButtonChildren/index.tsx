@@ -1,0 +1,67 @@
+import { type IconReference } from '@appsemble/lang-sdk';
+import { type BulmaColor, type BulmaSize } from '@appsemble/types';
+import { type ComponentChildren } from 'preact';
+
+import { Icon } from '../index.js';
+
+export interface ButtonChildrenProps {
+  /**
+   * Children to render
+   */
+  readonly children?: ComponentChildren;
+
+  /**
+   * A Font Awesome icon name or an `icon:<key>` reference to render left of the button text.
+   */
+  readonly icon?: IconReference;
+
+  /**
+   * The position of the icon.
+   *
+   * @default 'left'
+   */
+  readonly iconPosition?: 'left' | 'right';
+
+  /**
+   * The size that should be used for the button’s icons.
+   */
+  readonly iconSize?: Exclude<BulmaSize, 'normal'>;
+
+  /**
+   * The size modifier that should be used for the button’s icons.
+   */
+  readonly iconSizeModifier?: '2x' | '3x' | 'lg';
+
+  /**
+   * The color that should be used for the button's icons.
+   */
+  readonly iconColor?: BulmaColor;
+}
+
+/**
+ * Various button-like Bulma components have a layout where children may be rendered with an
+ * optional icon. If the icon is specified, the DOM layout is different. This component handles
+ * abstracts that.
+ */
+export function ButtonChildren({
+  children,
+  icon,
+  iconColor,
+  iconPosition = 'left',
+  iconSize,
+  iconSizeModifier,
+}: ButtonChildrenProps): ComponentChildren {
+  return icon ? (
+    <>
+      {iconPosition === 'left' && (
+        <Icon color={iconColor} icon={icon} iconSize={iconSizeModifier} size={iconSize} />
+      )}
+      {children ? <span>{children}</span> : null}
+      {iconPosition === 'right' && (
+        <Icon color={iconColor} icon={icon} iconSize={iconSizeModifier} size={iconSize} />
+      )}
+    </>
+  ) : (
+    children
+  );
+}

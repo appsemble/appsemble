@@ -12,7 +12,7 @@ export interface LoaderProps {
   /**
    * The text announced to assistive technology while loading.
    */
-  readonly label: string;
+  readonly label?: string;
 }
 
 export function Loader({ className, component: Component = 'div', label }: LoaderProps): VNode {
@@ -25,7 +25,7 @@ export function Loader({ className, component: Component = 'div', label }: Loade
       data-testid="loader-comp"
       role="status"
     >
-      <span className="is-sr-only">{label}</span>
+      {label ? <span className="is-sr-only">{label}</span> : null}
     </C>
   );
 }

@@ -1,7 +1,7 @@
 import { type BulmaColor } from '@appsemble/types';
 import { getMessageIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
-import { type VNode } from 'preact';
+import { type ComponentChildren, type VNode } from 'preact';
 
 import styles from './index.module.css';
 import { Icon } from '../index.js';
@@ -10,7 +10,7 @@ interface MessageProps {
   /**
    * The message content.
    */
-  readonly children: VNode;
+  readonly children: ComponentChildren;
 
   /**
    * Additional class names to assign to the message element.
@@ -25,7 +25,7 @@ interface MessageProps {
   /**
    * An optional header for the message.
    */
-  readonly header?: VNode;
+  readonly header?: ComponentChildren;
 
   /**
    * The live region role, so assistive technology announces the message.

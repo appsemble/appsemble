@@ -59,6 +59,7 @@ export interface InputProps extends Omit<
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
+      className,
       errorLinkRef,
       datalist,
       error,
@@ -69,6 +70,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       readOnly,
       type,
       id = name,
+      list,
       ...props
     },
     ref,
@@ -93,12 +95,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           {...aria}
           {...props}
-          className={classNames('input', {
+          className={classNames('input', className, {
             'has-background-white-bis': readOnly,
             'is-danger': error,
             'is-loading': loading,
           })}
           id={id}
+          list={datalist ? `${id}-dataset` : list}
           name={name}
           onInput={handleChange}
           pattern={pattern instanceof RegExp ? pattern.source : pattern}
