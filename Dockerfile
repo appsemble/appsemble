@@ -101,7 +101,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   && apt-get install --yes --no-install-recommends ca-certificates postgresql-common \
   && /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y \
   && apt-get update \
-  && apt-get install --yes --no-install-recommends postgresql-client-18 \
+  && apt-get install --yes --no-install-recommends postgresql-client-18=18.7-1.pgdg13+2 \
     libaom3 libarchive13t64 libcgif0 libde265-0 libexif12 libexpat1 libfontconfig1 \
     libglib2.0-0t64 libhwy1t64 libimagequant0 libjpeg62-turbo liblcms2-2 \
     libpango-1.0-0 libpangocairo-1.0-0 libpng16-16t64 librsvg2-2 \
