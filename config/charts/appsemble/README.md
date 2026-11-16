@@ -128,6 +128,9 @@ after migrations. Declared settings are read-only in Studio. Removing an organiz
 `organizationSso` deletes its group-managed memberships and ends its sessions through the provider;
 manual and guest memberships remain. Studio-managed SSO settings are unaffected.
 
+Studio organization SSO requires Valkey for connection verification and serialized provider
+renewals.
+
 Deployment-managed SSO uses installation-operator authority. Operators verify the provider
 connection and Owner mapping in a test environment and recover access through GitOps.
 
@@ -410,7 +413,7 @@ readiness. `/api/health` is a deprecated alias of `/health/ready`.
 
 ## Valkey
 
-The chart deploys one Valkey pod by default. Valkey holds only the app-serving cache (with a default
+The chart deploys one Valkey pod by default. Valkey holds the app-serving cache (with a default
 `appServingCacheTtl` of 300 seconds) and the sliding-window counters for e-mail registration and app
 password rate limits. It holds no sessions or queues. If Valkey restarts, the cache and counters
 reset; the server keeps serving requests and reconnects when Valkey returns. Cache operations fail
