@@ -1,11 +1,7 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import {
-  OAuthAuthorization,
-  OrganizationSsoIdentity,
-  User,
-} from '../../../../../../../models/index.js';
+import { OAuthAuthorization, User } from '../../../../../../../models/index.js';
 
 export async function deleteCurrentUserOAuth2Authorization(ctx: Context): Promise<void> {
   const {
@@ -24,17 +20,13 @@ export async function deleteCurrentUserOAuth2Authorization(ctx: Context): Promis
     include: [OAuthAuthorization],
   }))!;
 
-  // Return false if any login method is left
-  // 201 is needed so that a body can be attatched
+  // Organization-controlled SSO cannot provide independent account recovery.
+  // 201 is needed so that a body can be attached
 
   ctx.message = 'The account was unlinked successfully.';
   ctx.status = 204;
 
-  if (
-    dbUser.OAuthAuthorizations.length === 0 &&
-    !dbUser.password &&
-    !(await OrganizationSsoIdentity.count({ where: { UserId: user.id } }))
-  ) {
+  if (dbUser.OAuthAuthorizations.length === 0 && !dbUser.password) {
     ctx.status = 201;
     ctx.body = dbUser.OAuthAuthorizations.length === 0 && !dbUser.password;
   }

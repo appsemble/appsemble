@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   OAuthAuthorization,
+  Organization,
+  OrganizationSso,
   OrganizationSsoIdentity,
   User,
 } from '../../../../../../../models/index.js';
@@ -73,20 +75,19 @@ describe('deleteCurrentUserOAuth2Authorization', () => {
     });
   });
 
-  it('should retain a login method when organization SSO remains after unlinking social login', async () => {
+  it('should keep personal access when another social login remains registered', async () => {
     await user.update({ password: null });
-    await OAuthAuthorization.create({
-      UserId: user.id,
-      email: '',
-      accessToken: '',
-      authorizationUrl: 'https://a.example',
-      sub: 'legacy-staff',
-    });
-    await OrganizationSsoIdentity.create({
-      UserId: user.id,
-      issuer: 'https://sso.example/realms/staff',
-      subject: 'staff',
-    });
+    await OAuthAuthorization.bulkCreate(
+      ['https://a.example', 'https://accounts.google.com/o/oauth2/auth'].map(
+        (authorizationUrl) => ({
+          UserId: user.id,
+          email: '',
+          accessToken: '',
+          authorizationUrl,
+          sub: 'staff',
+        }),
+      ),
+    );
     authorizeStudio();
 
     const response = await request.delete('/api/users/current/auth/oauth2/authorizations', {
@@ -99,30 +100,49 @@ describe('deleteCurrentUserOAuth2Authorization', () => {
     });
   });
 
-  it('should report no login methods when only another user has organization SSO', async () => {
-    await user.update({ password: null });
-    await OAuthAuthorization.create({
-      UserId: user.id,
-      email: '',
-      accessToken: '',
-      authorizationUrl: 'https://a.example',
-      sub: 'legacy-staff',
-    });
-    const otherUser = await User.create({ timezone: 'Europe/Amsterdam' });
-    await OrganizationSsoIdentity.create({
-      UserId: otherUser.id,
-      issuer: 'https://sso.example/realms/staff',
-      subject: 'other-staff',
-    });
-    authorizeStudio();
+  it.each(['configured', 'removed'])(
+    'should request personal recovery after unlinking the last social login with organization SSO %s',
+    async (provider) => {
+      await user.update({ password: null });
+      await OAuthAuthorization.create({
+        UserId: user.id,
+        email: '',
+        accessToken: '',
+        authorizationUrl: 'https://a.example',
+        sub: 'legacy-staff',
+      });
+      await Organization.create({ id: 'staff', name: 'Staff' });
+      const sso = await OrganizationSso.create({
+        OrganizationId: 'staff',
+        issuer: 'https://sso.example/realms/staff',
+        clientId: 'studio',
+        clientSecret: Buffer.from('secret'),
+        name: 'Staff',
+        scope: 'openid',
+        groupClaim: 'groups',
+        policy: 'optional',
+        managedBy: 'deployment',
+        allowedLoginMethods: ['password'],
+        configurationUpdated: new Date(),
+      });
+      await OrganizationSsoIdentity.create({
+        UserId: user.id,
+        issuer: sso.issuer,
+        subject: 'staff',
+      });
+      if (provider === 'removed') {
+        await sso.destroy();
+      }
+      authorizeStudio();
 
-    const response = await request.delete('/api/users/current/auth/oauth2/authorizations', {
-      params: { authorizationUrl: 'https://a.example' },
-    });
+      const response = await request.delete('/api/users/current/auth/oauth2/authorizations', {
+        params: { authorizationUrl: 'https://a.example' },
+      });
 
-    expect({ status: response.status, data: response.data }).toStrictEqual({
-      status: 201,
-      data: true,
-    });
-  });
+      expect({ status: response.status, data: response.data }).toStrictEqual({
+        status: 201,
+        data: true,
+      });
+    },
+  );
 });

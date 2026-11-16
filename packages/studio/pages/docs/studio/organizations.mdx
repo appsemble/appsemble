@@ -138,7 +138,8 @@ Studio session while the provider grant remains valid.
 Removing the single sign-on configuration deletes group-managed memberships and keeps manual and
 guest memberships; the removing Owner keeps the Owner role. It ends all sessions through the
 provider. Accounts that only sign in through the provider regain access through password recovery
-for their verified email address.
+for their verified email address. Keep a personal password or social login for account recovery
+because the organization controls access through its single sign-on provider.
 
 Operators can declare organization single sign-on through the [Helm chart](../deployment/helm.md).
 Deployment-managed settings are read-only in Studio. Operators recover access by correcting the
