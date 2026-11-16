@@ -1,0 +1,25 @@
+.root {
+  height: 3rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon {
+  cursor: pointer;
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.active {
+  background-color: var(--primary-color);
+  color: var(--primary-color-invert);
+}

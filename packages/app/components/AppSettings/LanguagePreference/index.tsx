@@ -1,4 +1,4 @@
-import { SelectField } from '@appsemble/react-components';
+import { SelectField } from '@appsemble/preact-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

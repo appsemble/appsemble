@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProfileSettings } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
+import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
 
 const appMemberInfo = {
   sub: 'randomly-generated',
@@ -66,8 +67,12 @@ describe('ProfileDropdown', () => {
       <IntlProvider locale="en" messages={{}}>
         <ProfileSettings />
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
     expect(container.getElementsByClassName('field')).toMatchSnapshot();
+    expect((screen.getByPlaceholderText('Display name') as HTMLInputElement).value).toBe(
+      'Test User',
+    );
     expect(screen.getByRole('button', { name: 'Camera' })).toBeDefined();
   });
 
@@ -108,6 +113,7 @@ describe('ProfileDropdown', () => {
       <IntlProvider locale="en" messages={{}}>
         <ProfileSettings />
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
     expect(container.getElementsByClassName('field')).toMatchSnapshot();
   });
@@ -144,6 +150,7 @@ describe('ProfileDropdown', () => {
       <IntlProvider locale="en" messages={{}}>
         <ProfileSettings />
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
     expect(container.getElementsByClassName('field')).toMatchInlineSnapshot('HTMLCollection []');
   });

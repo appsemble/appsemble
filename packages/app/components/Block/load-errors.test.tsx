@@ -1,7 +1,6 @@
 import { EventEmitter } from 'node:events';
 
 import { type AppDefinition, type BlockDefinition } from '@appsemble/lang-sdk';
-import { ErrorHandler } from '@appsemble/react-components';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
 import { noop } from '@appsemble/utils';
@@ -9,6 +8,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { IntlProvider } from 'react-intl';
 import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ErrorHandler } from '../ErrorHandler/index.js';
 
 import { Block } from './index.js';
 import { type AppStorage } from '../../utils/storage.js';
@@ -19,6 +19,7 @@ import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
+import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
 
 let failingFile: string | undefined;
 let blockRoot: HTMLElement | undefined;
@@ -150,6 +151,7 @@ describe('block load failure', () => {
             </ErrorHandler>
           </MemoryRouter>
         </IntlProvider>,
+        { wrapper: IconTestWrapper },
       );
       await waitFor(() =>
         expect(screen.getByText('An unexpected error has occurred.')).toBeDefined(),

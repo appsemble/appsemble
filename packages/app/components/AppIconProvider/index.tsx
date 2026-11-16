@@ -1,4 +1,4 @@
-import { IconProvider } from '@appsemble/react-components';
+import { IconProvider } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
 
 import { apiUrl, appId, iconAssetIds, passwordToken } from '../../utils/settings.js';

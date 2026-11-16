@@ -1,5 +1,5 @@
 import { getPagePathSegment } from '@appsemble/lang-sdk';
-import { Message, useQuery } from '@appsemble/react-components';
+import { Message } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate } from 'react-router-dom';
@@ -21,6 +21,7 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
 import { MainLogin } from '../MainLogin/index.js';
+import { useQuery } from '../../utils/useQuery.js';
 
 type LoginState = 'demo' | 'form' | 'permission-error' | 'totp-setup' | 'totp';
 

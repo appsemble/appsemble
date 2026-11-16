@@ -1,8 +1,9 @@
-import { ModalCard, useToggle } from '@appsemble/react-components';
+import { useToggle } from '@appsemble/preact-components';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
+import { ModalCard } from '../ModalCard/index.js';
 import { displayInstallationPrompt } from '../../utils/settings.js';
 
 interface BeforeInstallPromptEvent extends Event {

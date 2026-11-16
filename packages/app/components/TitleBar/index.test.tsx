@@ -1,5 +1,4 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { SideMenuProvider } from '@appsemble/react-components';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { type ComponentProps } from 'react';
 import { IntlProvider } from 'react-intl';
@@ -13,6 +12,7 @@ import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import * as menuProvider from '../MenuProvider/index.js';
+import { SideMenuProvider } from '../SideMenu/index.js';
 
 const appDefinition = {
   name: 'Test App',

@@ -1,5 +1,5 @@
 import { type AppDefinition, type PageDefinition, remap, type Remapper } from '@appsemble/lang-sdk';
-import { IconProvider } from '@appsemble/react-components';
+import { IconProvider } from '@appsemble/preact-components';
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';

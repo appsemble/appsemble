@@ -7,19 +7,16 @@ import {
   type PageDefinition,
   type Remapper,
 } from '@appsemble/lang-sdk';
-import {
-  Title,
-  trackShadowModalDialogs,
-  useIsInModalDialog,
-  useMessages,
-} from '@appsemble/react-components';
 import { type BlockUtils } from '@appsemble/sdk';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import { createIconElement, fa, getIconAsset, resolveIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'preact/compat';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useMessages } from '../MessagesProvider/index.js';
+import { trackShadowModalDialogs, useIsInModalDialog } from '../ModalCard/useModalDialog.js';
+import { Title } from '../Title/index.js';
 
 import styles from './index.module.css';
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
@@ -411,9 +408,8 @@ export function Block({
       );
 
       // A float block in a dialog stays inside it, so it is shown above the dialog and isn't blocked
-      // like the page behind it. The app's JSX is typed with React's types, while Preact's portal
-      // is typed as a Preact node.
-      return isInModalDialog ? float : (createPortal(float, document.body) as ReactNode);
+      // like the page behind it.
+      return isInModalDialog ? float : createPortal(float, document.body);
     }
 
     return (

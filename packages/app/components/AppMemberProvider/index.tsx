@@ -1,5 +1,4 @@
 import { type AppRole, getRouteSegment } from '@appsemble/lang-sdk';
-import { Loader } from '@appsemble/react-components';
 import { type AppMemberGroup, type AppMemberInfo } from '@appsemble/types';
 import { setUser as setSentryUser } from '@sentry/browser';
 import axios from 'axios';
@@ -19,6 +18,7 @@ import {
 } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
+import { Loader } from '../Loader/index.js';
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId } from '../../utils/settings.js';

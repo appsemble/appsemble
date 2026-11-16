@@ -1,5 +1,5 @@
 import { type ResourceHooks } from '@appsemble/lang-sdk';
-import { CheckboxField, FormComponent, Loader, useMessages } from '@appsemble/react-components';
+import { CheckboxField, FormComponent } from '@appsemble/preact-components';
 import { resourceSubscribableAction, type SubscriptionResponse } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import axios from 'axios';
@@ -8,6 +8,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { Loader } from '../../Loader/index.js';
+import { useMessages } from '../../MessagesProvider/index.js';
 import { getNotificationStrategy } from '../../../utils/notifications.js';
 import { apiUrl, appId } from '../../../utils/settings.js';
 import { useAppDefinition } from '../../AppDefinitionProvider/index.js';

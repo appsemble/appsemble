@@ -11,8 +11,8 @@ import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 
-vi.mock('@appsemble/react-components', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@appsemble/react-components')>();
+vi.mock('../SideMenu/index.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../SideMenu/index.js')>();
 
   return {
     ...actual,

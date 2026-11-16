@@ -1,5 +1,5 @@
 import { getRouteSegment } from '@appsemble/lang-sdk';
-import { Button } from '@appsemble/react-components';
+import { Button } from '@appsemble/preact-components';
 import { type ReactNode, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';

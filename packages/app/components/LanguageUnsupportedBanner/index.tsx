@@ -1,4 +1,4 @@
-import { Button, Message } from '@appsemble/react-components';
+import { Button, Message } from '@appsemble/preact-components';
 import { type ReactNode, useCallback, useMemo, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';

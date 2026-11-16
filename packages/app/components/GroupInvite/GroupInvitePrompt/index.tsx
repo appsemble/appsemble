@@ -1,4 +1,4 @@
-import { AsyncButton, Message, useData, useQuery } from '@appsemble/react-components';
+import { AsyncButton, Message } from '@appsemble/preact-components';
 import { type GroupInvite as GroupInviteType } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
@@ -9,6 +9,8 @@ import { messages } from './messages.js';
 import { apiUrl, appId } from '../../../utils/settings.js';
 import { useAppMember } from '../../AppMemberProvider/index.js';
 import { BuiltinPage, BuiltinPageLoader } from '../../BuiltinPage/index.js';
+import { useData } from '../../../utils/useData.js';
+import { useQuery } from '../../../utils/useQuery.js';
 
 export function GroupInvitePrompt(): ReactNode {
   const query = useQuery();

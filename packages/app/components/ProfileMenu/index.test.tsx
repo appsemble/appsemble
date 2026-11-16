@@ -9,6 +9,7 @@ import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
+import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
 
 const appDefinition = {
   name: 'Test App',
@@ -40,6 +41,7 @@ function renderProfileMenuItems(
         <ProfileMenuItems onDemoLogin={vi.fn()} />
       </MemoryRouter>
     </IntlProvider>,
+    { wrapper: IconTestWrapper },
   );
 }
 

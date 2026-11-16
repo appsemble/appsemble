@@ -1,10 +1,10 @@
-import { ResetPassword as ResetPasswordForm } from '@appsemble/react-components';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { ResetPasswordForm } from '../ResetPasswordForm/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
 

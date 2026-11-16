@@ -5,12 +5,12 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
-  Title,
-} from '@appsemble/react-components';
+} from '@appsemble/preact-components';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
+import { Title } from '../Title/index.js';
 
 interface TotpLoginProps {
   readonly onVerify: (token: string) => Promise<void>;

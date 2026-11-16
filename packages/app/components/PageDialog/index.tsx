@@ -1,8 +1,8 @@
-import { ModalCard } from '@appsemble/react-components';
 import classNames from 'classnames';
 import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
 import styles from './index.module.css';
+import { ModalCard } from '../ModalCard/index.js';
 import { type ShowDialogParams } from '../../types.js';
 import { BlockList } from '../BlockList/index.js';
 

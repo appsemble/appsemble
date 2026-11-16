@@ -3,13 +3,14 @@ import { EventEmitter } from 'node:events';
 import { type AppDefinition, type BlockDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
-import { MessagesProvider, ModalCard } from '@appsemble/react-components';
 import { noop } from '@appsemble/utils';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import { type ReactNode, useEffect, useState } from 'react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MessagesProvider } from '../MessagesProvider/index.js';
+import { ModalCard } from '../ModalCard/index.js';
 
 import { Block } from './index.js';
 import { type ShowDialogParams } from '../../types.js';
@@ -22,6 +23,7 @@ import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 import { PageDialog } from '../PageDialog/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
+import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
 
 let blockRoot: HTMLElement | undefined;
 let blockVersion = 0;
@@ -163,6 +165,7 @@ describe('block viewport mode', () => {
           />
         </MemoryRouter>
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
     await waitFor(() =>
       expect(within(blockRoot!).getByRole('button', { name: label })).toBeDefined(),
@@ -213,6 +216,7 @@ describe('float layout', () => {
           </ModalCard>
         </MemoryRouter>
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
 
     await waitFor(() => within(blockRoot!).getByRole('button'));
@@ -277,6 +281,7 @@ describe('modal dialogs', () => {
           </MemoryRouter>
         </MessagesProvider>
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
 
     const message = await screen.findByRole('alert');
@@ -398,6 +403,7 @@ describe('block loading state', () => {
           />
         </MemoryRouter>
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
 
     const busy = (): string | null | undefined =>

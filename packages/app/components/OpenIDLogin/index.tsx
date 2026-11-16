@@ -1,4 +1,4 @@
-import { SSOLoginButton, useQuery, useToggle } from '@appsemble/react-components';
+import { SSOLoginButton, useToggle } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -7,6 +7,7 @@ import { messages } from './messages.js';
 import { type Login } from '../../types.js';
 import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId } from '../../utils/settings.js';
+import { useQuery } from '../../utils/useQuery.js';
 
 export interface OpenIDLoginProps {
   readonly disabled: boolean;

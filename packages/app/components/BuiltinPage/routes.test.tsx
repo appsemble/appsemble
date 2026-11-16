@@ -25,6 +25,7 @@ import { ResetPassword } from '../ResetPassword/index.js';
 import { SentryFeedback } from '../SentryFeedback/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
 import { Verify } from '../Verify/index.js';
+import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
 
 const settings = vi.hoisted(() => ({
   development: false,
@@ -152,6 +153,7 @@ function renderRoute(element: ReactNode, path = '/en/Page'): void {
         </MenuProvider>
       </MemoryRouter>
     </IntlProvider>,
+    { wrapper: IconTestWrapper },
   );
 }
 

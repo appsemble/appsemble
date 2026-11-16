@@ -1,4 +1,4 @@
-import { useObjectURL, useSimpleForm } from '@appsemble/react-components';
+import { useObjectURL, useSimpleForm } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 

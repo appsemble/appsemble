@@ -1,4 +1,4 @@
-import { Message, useQuery } from '@appsemble/react-components';
+import { Message } from '@appsemble/preact-components';
 import axios from 'axios';
 import { type ReactNode, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -8,6 +8,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
+import { useQuery } from '../../utils/useQuery.js';
 
 export function Verify(): ReactNode {
   const [submitting, setSubmitting] = useState(true);

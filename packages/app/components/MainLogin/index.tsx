@@ -1,19 +1,13 @@
 import { getRouteSegment } from '@appsemble/lang-sdk';
-import {
-  Button,
-  type LoginFormValues,
-  Message,
-  Login as PasswordLogin,
-  useQuery,
-  useMessages,
-  useToggle,
-} from '@appsemble/react-components';
+import { Button, Message, useToggle } from '@appsemble/preact-components';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { type LoginFormValues, LoginForm as PasswordLogin } from '../LoginForm/index.js';
+import { useMessages } from '../MessagesProvider/index.js';
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import {
   enableSelfRegistration,
@@ -27,6 +21,7 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { OpenIDLogin, type OpenIDLoginProps } from '../OpenIDLogin/index.js';
 import { TotpLogin } from '../TotpLogin/index.js';
 import { TotpSetup, type TotpSetupTokenResponse } from '../TotpSetup/index.js';
+import { useQuery } from '../../utils/useQuery.js';
 
 export function MainLogin(): ReactNode {
   const { lang } = useParams<{ lang: string }>();

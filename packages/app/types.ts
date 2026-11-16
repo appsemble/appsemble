@@ -1,5 +1,6 @@
 import { type EventEmitter } from 'events';
 
+import { type ShowMessage } from './components/MessagesProvider/index.js';
 import {
   type ActionDefinition,
   type AppConfigEntryGetter,
@@ -9,7 +10,6 @@ import {
   type MessageGetter,
   type Remapper,
 } from '@appsemble/lang-sdk';
-import { type ShowMessage } from '@appsemble/react-components';
 import {
   type AppMemberGroup,
   type AppMemberInfo,

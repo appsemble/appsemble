@@ -7,7 +7,7 @@ import {
   type Remapper,
   type RemapperContext,
 } from '@appsemble/lang-sdk';
-import { applyRefs, Loader, useMessages, useMeta } from '@appsemble/react-components';
+import { applyRefs } from '@appsemble/preact-components';
 import { type BootstrapParams } from '@appsemble/sdk';
 import {
   type MutableRefObject,
@@ -19,6 +19,9 @@ import {
   useState,
 } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Loader } from '../Loader/index.js';
+import { useMessages } from '../MessagesProvider/index.js';
+import { useMeta } from '../Meta/index.js';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';

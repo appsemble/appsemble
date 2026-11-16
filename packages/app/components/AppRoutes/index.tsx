@@ -5,10 +5,11 @@ import {
   translatableRoutes,
   type TranslatableRoute,
 } from '@appsemble/lang-sdk';
-import { Loader, MetaProvider } from '@appsemble/react-components';
 import { type ReactNode, useEffect, useRef } from 'react';
 import { Navigate, Route, Routes, useLocation, useMatch, useParams } from 'react-router-dom';
 
+import { Loader } from '../Loader/index.js';
+import { MetaProvider } from '../Meta/index.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { AppDebug } from '../AppDebug/index.js';

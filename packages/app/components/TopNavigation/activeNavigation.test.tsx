@@ -18,6 +18,7 @@ import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
 import * as menuProvider from '../MenuProvider/index.js';
 import { SideNavigation } from '../SideNavigation/index.js';
+import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
 
 const { usePage } = menuProvider;
 
@@ -105,6 +106,7 @@ function renderNavigation(
         </Routes>
       </MemoryRouter>
     </IntlProvider>,
+    { wrapper: IconTestWrapper },
   );
 }
 

@@ -1,6 +1,5 @@
 import { type AppDefinition, type PageDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
-import { MetaProvider } from '@appsemble/react-components';
 import { noop } from '@appsemble/utils';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
@@ -11,6 +10,7 @@ import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom
 import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { Page } from './index.js';
+import { MetaProvider } from '../Meta/index.js';
 import * as bootstrapper from '../../utils/bootstrapper.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
@@ -20,6 +20,7 @@ import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 import { MenuProvider } from '../MenuProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
+import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
 
 vi.mock('../TitleBar/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention -- This mocks a component export.
@@ -73,7 +74,7 @@ function renderApp(path = '/en/home'): () => void {
       </MemoryRouter>
     </IntlProvider>
   );
-  const { rerender } = render(app());
+  const { rerender } = render(app(), { wrapper: IconTestWrapper });
   return () => rerender(app());
 }
 
@@ -148,6 +149,7 @@ it('should redirect a canonical page path to the translated path', async () => {
         </MenuProvider>
       </MemoryRouter>
     </IntlProvider>,
+    { wrapper: IconTestWrapper },
   );
 
   await waitFor(() => expect(screen.getByText('/en/start?foo=bar#section')).not.toBeNull());
@@ -185,6 +187,7 @@ it('should redirect a container page to the translated path of its first sub pag
         </MenuProvider>
       </MemoryRouter>
     </IntlProvider>,
+    { wrapper: IconTestWrapper },
   );
 
   await waitFor(() => expect(screen.getByText('/en/everyday?foo=bar')).not.toBeNull());
@@ -203,6 +206,7 @@ it('should leave its navigation behind when a built-in page replaces it', async 
         </MenuProvider>
       </MemoryRouter>
     </IntlProvider>,
+    { wrapper: IconTestWrapper },
   );
   await waitFor(() => expect(document.querySelector('nav.bottom-nav')).not.toBeNull());
 
@@ -289,6 +293,7 @@ describe('page not found', () => {
           </MetaProvider>
         </MemoryRouter>
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
   }
 
@@ -411,6 +416,7 @@ describe('page not found', () => {
           </MenuProvider>
         </MemoryRouter>
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
     await waitFor(() => expect(blocks.map(({ data }) => data)).toStrictEqual([{ name: 'Ada' }]));
 

@@ -1,5 +1,5 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { useEventListener } from '@appsemble/react-components';
+import { useEventListener } from '@appsemble/preact-components';
 import { type BlockManifest, type ProjectImplementations } from '@appsemble/types';
 import {
   createContext,

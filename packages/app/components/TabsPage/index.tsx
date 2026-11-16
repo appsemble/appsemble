@@ -8,7 +8,7 @@ import {
   type SubPageDefinition,
   type TabsPageDefinition,
 } from '@appsemble/lang-sdk';
-import { MetaSwitch, Tab, Tabs } from '@appsemble/react-components';
+import { Tab, Tabs } from '@appsemble/preact-components';
 import {
   type ComponentPropsWithoutRef,
   type ReactNode,
@@ -21,6 +21,7 @@ import {
 import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { TabContent } from './TabContent/index.js';
+import { MetaSwitch } from '../Meta/index.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { createEvents } from '../../utils/events.js';
 import { appId } from '../../utils/settings.js';

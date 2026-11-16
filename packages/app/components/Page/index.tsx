@@ -14,14 +14,7 @@ import {
   type PageDefinition,
   type Remapper,
 } from '@appsemble/lang-sdk';
-import {
-  Button,
-  Content,
-  Message,
-  MetaSwitch,
-  useLocationString,
-  useMessages,
-} from '@appsemble/react-components';
+import { Button, Content, Message } from '@appsemble/preact-components';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import classNames from 'classnames';
 import {
@@ -44,6 +37,9 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
+import { useMessages } from '../MessagesProvider/index.js';
+import { MetaSwitch } from '../Meta/index.js';
+import { useLocationString } from '../../utils/useLocationString.js';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';

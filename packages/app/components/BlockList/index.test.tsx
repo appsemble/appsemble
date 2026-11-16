@@ -1,13 +1,13 @@
 import { EventEmitter } from 'node:events';
 
 import { remap, type AppDefinition, type BlockDefinition } from '@appsemble/lang-sdk';
-import { MessagesProvider } from '@appsemble/react-components';
 import { type EventParams } from '@appsemble/sdk';
 import { noop } from '@appsemble/utils';
 import { cleanup, render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, expect, it, vi } from 'vitest';
+import { MessagesProvider } from '../MessagesProvider/index.js';
 
 import { BlockList } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
@@ -15,6 +15,7 @@ import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
+import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
 
 vi.mock('../../utils/settings.js', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../utils/settings.js')>()),
@@ -107,6 +108,7 @@ it('should display error and success messages from controller action callbacks',
         </MemoryRouter>
       </MessagesProvider>
     </IntlProvider>,
+    { wrapper: IconTestWrapper },
   );
 
   expect(await screen.findByText('Bluetooth permission was denied.')).toBeDefined();

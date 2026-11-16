@@ -1,4 +1,4 @@
-import { Icon, NavbarDropdown, useToggle } from '@appsemble/react-components';
+import { Icon, NavbarDropdown, useToggle } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';

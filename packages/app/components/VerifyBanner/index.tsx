@@ -1,5 +1,5 @@
 import { resendBannerGridArea } from '@appsemble/lang-sdk';
-import { Message } from '@appsemble/react-components';
+import { Message } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 

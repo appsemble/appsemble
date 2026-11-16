@@ -1,20 +1,15 @@
 import {
-  BreachedPasswordSimpleFormError,
   Button,
   FileUpload,
   FormButtons,
   Icon,
-  PasswordField,
   SelectField,
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
   Table,
-  Title,
-  useMessages,
-  WebcamImageUpload,
-} from '@appsemble/react-components';
+} from '@appsemble/preact-components';
 import { emailPattern, getLanguageDisplayName } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
@@ -23,6 +18,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { PicturePreview } from './PicturePreview/index.js';
+import { BreachedPasswordSimpleFormError } from '../BreachedPasswordSimpleFormError/index.js';
+import { useMessages } from '../MessagesProvider/index.js';
+import { PasswordField } from '../PasswordField/index.js';
+import { Title } from '../Title/index.js';
+import { WebcamImageUpload } from '../WebcamImageUpload/index.js';
 import { apiUrl, appId, demoMode, languages, supportedLanguages } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -157,7 +157,6 @@ export function ProfileSettings(): ReactNode {
         {enabledSettings.includes('picture') ? (
           <SimpleFormField
             accept="image/jpeg, image/png, image/tiff, image/webp"
-            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             component={FileUpload}
             fileButtonLabel={<FormattedMessage {...messages.picture} />}
             fileLabel={<FormattedMessage {...messages.selectFile} />}
@@ -176,7 +175,6 @@ export function ProfileSettings(): ReactNode {
           <SimpleFormField
             clickButtonAriaLabel={formatMessage(messages.camera)}
             clickButtonLabel={<Icon icon="camera" size="large" />}
-            // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
             component={WebcamImageUpload}
             help={<FormattedMessage {...messages.clickDescription} />}
             onCapture={onCapture}

@@ -5,28 +5,24 @@ import {
   type PageDefinition,
   remap,
 } from '@appsemble/lang-sdk';
-import {
-  Button,
-  CollapsibleMenuSection,
-  MenuButton,
-  MenuItem,
-  MenuSection,
-} from '@appsemble/react-components';
+import { Button, MenuButton, MenuSection } from '@appsemble/preact-components';
 import { Fragment, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { CollapsibleMenuSection } from '../CollapsibleMenuSection/index.js';
+import { MenuItem } from '../MenuItem/index.js';
 import { shouldShowPage } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useActiveNavigation } from '../../utils/useActiveNavigation.js';
-import { usePWAInstall } from '../../utils/usePWAInstall.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { type BlockMenuItem } from '../MenuProvider/index.js';
+import { usePWAInstall } from '../../utils/usePWAInstall.js';
 
 interface SideNavigationProps {
   readonly pages: PageDefinition[];

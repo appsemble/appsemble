@@ -7,12 +7,15 @@ import {
   hasBuiltinPagesGridArea,
   resendBannerGridArea,
 } from '@appsemble/lang-sdk';
-import { Content, Loader, Title, useMeta } from '@appsemble/react-components';
+import { Content } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
+import { Loader } from '../Loader/index.js';
+import { useMeta } from '../Meta/index.js';
+import { Title } from '../Title/index.js';
 import { titleBarShowsPageName } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';

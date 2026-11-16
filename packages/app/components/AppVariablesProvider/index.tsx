@@ -1,5 +1,5 @@
 import { type AppConfigEntryGetter } from '@appsemble/lang-sdk';
-import { Content, Loader, Message } from '@appsemble/react-components';
+import { Content, Message } from '@appsemble/preact-components';
 import { type AppConfigEntry, type ValueFromProcess } from '@appsemble/types';
 import axios from 'axios';
 import {
@@ -12,6 +12,7 @@ import {
   useState,
 } from 'react';
 
+import { Loader } from '../Loader/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 
 type AppVariables = Record<string, ValueFromProcess>;

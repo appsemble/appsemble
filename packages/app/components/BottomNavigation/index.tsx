@@ -5,7 +5,7 @@ import {
   remap,
   type RemapperContext,
 } from '@appsemble/lang-sdk';
-import { Button, Icon } from '@appsemble/react-components';
+import { Button, Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -17,12 +17,12 @@ import { messages } from './messages.js';
 import { getNavPages, shouldShowMenu } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useActiveNavigation } from '../../utils/useActiveNavigation.js';
-import { usePWAInstall } from '../../utils/usePWAInstall.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { usePage } from '../MenuProvider/index.js';
+import { usePWAInstall } from '../../utils/usePWAInstall.js';
 
 interface BottomNavigationProps {
   /**

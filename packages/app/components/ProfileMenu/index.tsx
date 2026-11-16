@@ -4,20 +4,20 @@ import {
   getRouteSegment,
   type PageDefinition,
 } from '@appsemble/lang-sdk';
-import { NavbarItem } from '@appsemble/react-components';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
+import { NavbarItem } from '../NavbarItem/index.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { getNotificationStrategy } from '../../utils/notifications.js';
 import { demoMode, displayAppMemberName, sentryDsn, showDemoLogin } from '../../utils/settings.js';
-import { usePWAInstall } from '../../utils/usePWAInstall.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { messages } from '../ProfileDropdown/messages.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
+import { usePWAInstall } from '../../utils/usePWAInstall.js';
 
 interface ProfileMenu {
   readonly isLoggedIn: boolean;

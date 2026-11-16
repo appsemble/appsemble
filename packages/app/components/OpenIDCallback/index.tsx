@@ -1,5 +1,5 @@
 import { getPagePathSegment, getRouteSegment } from '@appsemble/lang-sdk';
-import { Button, Message, useMeta, useQuery } from '@appsemble/react-components';
+import { Button, Message } from '@appsemble/preact-components';
 import { clearOAuth2State, loadOAuth2State, type OAuth2State } from '@appsemble/web-utils';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -7,6 +7,7 @@ import { Link, Navigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useMeta } from '../Meta/index.js';
 import { startAccountLinking } from '../../utils/accountLinking.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { showDemoLogin } from '../../utils/settings.js';
@@ -14,6 +15,7 @@ import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
+import { useQuery } from '../../utils/useQuery.js';
 
 /**
  * Handle the OAuth2 callback.

@@ -6,7 +6,7 @@ import {
   type PageDefinition,
   type Remapper,
 } from '@appsemble/lang-sdk';
-import { Icon } from '@appsemble/react-components';
+import { Icon } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useLocation, useParams } from 'react-router-dom';

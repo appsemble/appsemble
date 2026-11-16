@@ -1,16 +1,11 @@
 import {
   AsyncButton,
-  BreachedPasswordSimpleFormError,
   Button,
   Message,
-  PasswordField,
-  PasswordStrengthIndicator,
   SimpleForm,
   SimpleFormField,
   SimpleSubmit,
-  useData,
-  useQuery,
-} from '@appsemble/react-components';
+} from '@appsemble/preact-components';
 import { type AppInvite as AppInviteType, type AppMemberInfo } from '@appsemble/types';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
@@ -19,11 +14,16 @@ import { FormattedMessage } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { BreachedPasswordSimpleFormError } from '../BreachedPasswordSimpleFormError/index.js';
+import { PasswordField } from '../PasswordField/index.js';
+import { PasswordStrengthIndicator } from '../PasswordStrengthIndicator/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
+import { useData } from '../../utils/useData.js';
+import { useQuery } from '../../utils/useQuery.js';
 
 interface AppInviteFormProps {
   readonly password: string;

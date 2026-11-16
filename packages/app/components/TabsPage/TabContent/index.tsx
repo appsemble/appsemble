@@ -1,8 +1,8 @@
 import { type Remapper } from '@appsemble/lang-sdk';
-import { useMeta } from '@appsemble/react-components';
 import { type ComponentPropsWithoutRef, type ReactNode, useCallback } from 'react';
 
 import { BlockList } from '../../BlockList/index.js';
+import { useMeta } from '../../Meta/index.js';
 
 interface TabContentProps extends ComponentPropsWithoutRef<typeof BlockList> {
   /**

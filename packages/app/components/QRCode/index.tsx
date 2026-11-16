@@ -1,6 +1,6 @@
 import { generate } from 'lean-qr';
 import { toSvgPath } from 'lean-qr/extras/svg';
-import { type ReactNode } from 'react';
+import { type ReactNode, useMemo } from 'react';
 
 interface QRCodeProps {
   /**
@@ -18,7 +18,8 @@ interface QRCodeProps {
  * Render a value as a black on white QR code.
  */
 export function QRCode({ size, value }: QRCodeProps): ReactNode {
-  const code = generate(value);
+  const code = useMemo(() => generate(value), [value]);
+  const path = useMemo(() => toSvgPath(code), [code]);
 
   return (
     <svg
@@ -28,7 +29,7 @@ export function QRCode({ size, value }: QRCodeProps): ReactNode {
       width={size}
     >
       <rect fill="#fff" height={code.size} width={code.size} />
-      <path d={toSvgPath(code)} fill="#000" />
+      <path d={path} fill="#000" />
     </svg>
   );
 }

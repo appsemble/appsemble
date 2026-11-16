@@ -1,5 +1,5 @@
 import { defaultLocale, type IntlMessage, type MessageGetter } from '@appsemble/lang-sdk';
-import { Content, Loader, Message, useLocationString } from '@appsemble/react-components';
+import { Content, Message } from '@appsemble/preact-components';
 import { type AppMessages } from '@appsemble/types';
 import { detectLocale, has, objectCache } from '@appsemble/utils';
 import { memoize } from '@formatjs/fast-memoize';
@@ -17,8 +17,10 @@ import {
 import { IntlProvider } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { Loader } from '../Loader/index.js';
 import { apiUrl, appId, languages } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useLocationString } from '../../utils/useLocationString.js';
 
 interface IntlMessagesProviderProps {
   readonly children: ReactNode;

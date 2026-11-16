@@ -12,10 +12,12 @@ import {
   type Remapper,
   resendBannerGridArea,
 } from '@appsemble/lang-sdk';
-import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
 import { type ProjectImplementations } from '@appsemble/types';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState, Fragment } from 'react';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Loader } from '../Loader/index.js';
+import { useMessages } from '../MessagesProvider/index.js';
+import { useLocationString } from '../../utils/useLocationString.js';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { type ActionCreators } from '../../utils/actions/index.js';

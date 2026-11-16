@@ -1,4 +1,3 @@
-import { ModalCard } from '@appsemble/react-components';
 import { type ResourceSubscribableAction } from '@appsemble/types';
 import { urlB64ToUint8Array } from '@appsemble/web-utils';
 import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
@@ -17,6 +16,7 @@ import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { ModalCard } from '../ModalCard/index.js';
 import { type Permission, type ServiceWorkerRegistrationContextType } from '../../types.js';
 import { getAppAssets } from '../../utils/appAssets.js';
 import {

@@ -1,7 +1,6 @@
 import { type AppRole, getAppRoles } from '@appsemble/lang-sdk';
 import {
   type MinimalHTMLElement,
-  ModalCard,
   SelectField,
   SimpleForm,
   SimpleFormError,
@@ -9,7 +8,7 @@ import {
   SimpleSubmit,
   type Toggle,
   useToggle,
-} from '@appsemble/react-components';
+} from '@appsemble/preact-components';
 import { type AppMemberInfo } from '@appsemble/types';
 import { type ChangeEvent, type ReactNode, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -20,6 +19,7 @@ import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
+import { ModalCard } from '../ModalCard/index.js';
 
 interface DemoLoginProps {
   readonly modal?: Toggle;
@@ -68,14 +68,15 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
 
   const selectedAppRoleDescription = getRoleDescription(selectedAppRole);
 
-  const changeDemoAppMember = (event: ChangeEvent<MinimalHTMLElement>): void => {
+  const changeDemoAppMember = (event: ChangeEvent<EventTarget & MinimalHTMLElement>): void => {
     setSelectedDemoAppMember(
-      demoAppMembers.find((appMember) => appMember.sub === event.target.value) ?? demoAppMembers[0],
+      demoAppMembers.find((appMember) => appMember.sub === event.currentTarget.value) ??
+        demoAppMembers[0],
     );
   };
 
-  const changeAppRole = (event: ChangeEvent<MinimalHTMLElement>): void => {
-    setSelectedAppRole(event.target.value);
+  const changeAppRole = (event: ChangeEvent<EventTarget & MinimalHTMLElement>): void => {
+    setSelectedAppRole(event.currentTarget.value);
   };
 
   const setLogin = (): void => {

@@ -5,7 +5,6 @@ import {
   type PageDefinition,
   pageHasGridArea,
 } from '@appsemble/lang-sdk';
-import { SideMenuProvider } from '@appsemble/react-components';
 import { type MenuItem } from '@appsemble/sdk';
 import { noop } from '@appsemble/utils';
 import {
@@ -22,6 +21,7 @@ import { FormattedMessage } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { SideMenuProvider } from '../SideMenu/index.js';
 import { getNavPages, shouldShowMenu } from '../../utils/layout.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';

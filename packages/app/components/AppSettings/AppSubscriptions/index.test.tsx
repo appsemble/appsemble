@@ -1,5 +1,4 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { MessagesProvider } from '@appsemble/react-components';
 import { render, screen } from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -9,6 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppSubscriptions } from './index.js';
 import * as appDefinitionProvider from '../../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../../AppMemberProvider/index.js';
+import { MessagesProvider } from '../../MessagesProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../../ServiceWorkerRegistrationProvider/index.js';
 
 const appDefinition = {

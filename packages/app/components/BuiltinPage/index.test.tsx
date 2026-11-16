@@ -12,6 +12,7 @@ import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import { MenuProvider } from '../MenuProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
+import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
 
 vi.mock('../TitleBar/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention -- This mocks a component export.
@@ -76,6 +77,7 @@ function renderPage(children: ReactNode): void {
         </MenuProvider>
       </MemoryRouter>
     </IntlProvider>,
+    { wrapper: IconTestWrapper },
   );
 }
 
