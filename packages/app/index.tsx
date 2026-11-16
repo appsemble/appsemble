@@ -38,9 +38,9 @@ const serviceWorkerRegistrationPromise = (async () => {
   }
 })();
 
-render(
-  <App serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise} />,
-  document.getElementById('app')!,
-);
+const container = document.getElementById('app')!;
+// The container holds the fallback content shown when the app can't run.
+container.replaceChildren();
+render(<App serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise} />, container);
 
 window.appsembleHasLoaded = true;
