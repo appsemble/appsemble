@@ -20,9 +20,7 @@ export default {
       deps: {
         // Externalized dependencies skip the aliases, so the libraries that import React are
         // inlined.
-        inline: [
-          /node_modules\/(qrcode\.react|react-intl|react-router|react-router-dom|react-use-pwa-install)\//,
-        ],
+        inline: [/node_modules\/(react-intl|react-router|react-router-dom)\//],
       },
     },
   },

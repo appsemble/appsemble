@@ -13,11 +13,11 @@ import {
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { QRCodeSVG } from 'qrcode.react';
 
 import { messages } from './messages.js';
 import { apiUrl, appId, demoMode, totp as totpSetting } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
+import { QRCode } from '../QRCode/index.js';
 
 interface SetupResponse {
   secret: string;
@@ -117,7 +117,7 @@ export function TotpSettings(): ReactNode {
           <FormattedMessage {...messages.setupDescription} />
         </p>
         <div className="has-text-centered mb-4">
-          <QRCodeSVG size={200} value={setupData.otpauthUrl} />
+          <QRCode size={200} value={setupData.otpauthUrl} />
         </div>
         <FormOutput
           copyErrorMessage={formatMessage(messages.copyError)}

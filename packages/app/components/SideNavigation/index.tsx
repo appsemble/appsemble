@@ -15,13 +15,13 @@ import {
 import { Fragment, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import { usePWAInstall } from 'react-use-pwa-install';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { shouldShowPage } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useActiveNavigation } from '../../utils/useActiveNavigation.js';
+import { usePWAInstall } from '../../utils/usePWAInstall.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';

@@ -10,12 +10,12 @@ import { Button, Icon, NavbarBurger, useToggle } from '@appsemble/react-componen
 import { type ReactNode, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, NavLink, useParams } from 'react-router-dom';
-import { usePWAInstall } from 'react-use-pwa-install';
 
 import styles from './index.module.css';
 import { getNavPages, shouldShowPage } from '../../utils/layout.js';
 import { appId, sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { useActiveNavigation } from '../../utils/useActiveNavigation.js';
+import { usePWAInstall } from '../../utils/usePWAInstall.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';

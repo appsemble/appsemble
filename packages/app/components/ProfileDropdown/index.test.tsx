@@ -16,10 +16,6 @@ vi.mock('../../utils/authorization.js', async (importActual) => ({
   checkPagePermissions: () => true,
 }));
 
-vi.mock('react-use-pwa-install', () => ({
-  usePWAInstall: () => null,
-}));
-
 const appDefinition = {
   name: 'Test App',
   defaultPage: 'Home',
