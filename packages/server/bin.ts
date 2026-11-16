@@ -52,6 +52,60 @@ const parser = yargs()
     desc: 'The Sentry environment to use for error reporting. See https://sentry.io for details.',
     type: 'string',
   })
+  .option('smtp-host', {
+    desc: 'The host of the SMTP server to connect to.',
+    type: 'string',
+  })
+  .option('smtp-port', {
+    desc: 'The port of the SMTP server to connect to.',
+    type: 'number',
+  })
+  .option('smtp-secure', {
+    desc: 'Use TLS when connecting to the SMTP server.',
+    type: 'boolean',
+    default: false,
+  })
+  .option('smtp-user', {
+    desc: 'The user to use to login to the SMTP server.',
+    type: 'string',
+    implies: ['smtp-pass', 'smtp-from'],
+  })
+  .option('smtp-pass', {
+    desc: 'The password to use to login to the SMTP server.',
+    type: 'string',
+    implies: ['smtp-user', 'smtp-from'],
+  })
+  .option('smtp-from', {
+    desc: 'The address to use when sending emails.',
+    type: 'string',
+    implies: ['smtp-user', 'smtp-pass'],
+  })
+  .option('imap-host', {
+    desc: 'The host of the IMAP server to connect to.',
+    type: 'string',
+  })
+  .option('imap-port', {
+    desc: 'The port of the IMAP server to connect to.',
+    type: 'number',
+  })
+  .option('imap-secure', {
+    desc: 'Use TLS when connecting to the IMAP server.',
+    type: 'boolean',
+    default: false,
+  })
+  .option('imap-user', {
+    desc: 'The user to use to login to the IMAP server.',
+    type: 'string',
+  })
+  .option('imap-pass', {
+    desc: 'The password to use to login to the IMAP server.',
+    type: 'string',
+  })
+  .option('imap-copy-to-sent-folder', {
+    desc: 'Copy sent emails to the Sent folder of the IMAP server.',
+    type: 'boolean',
+    default: false,
+  })
   .middleware([setArgv as (...args: Parameters<typeof setArgv>) => void, configureLogger])
   .command(cleanup as CommandModule)
   .command(reconcile as CommandModule)

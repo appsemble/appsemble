@@ -24,31 +24,7 @@ export const description =
   'Sends emails to organization owners for app and app collection domains that no longer resolve and sets the domain to null.';
 
 export function builder(yargs: Argv): Argv {
-  return databaseBuilder(yargs)
-    .option('smtp-host', {
-      desc: 'The host of the SMTP server to connect to.',
-    })
-    .option('smtp-port', {
-      desc: 'The port of the SMTP server to connect to.',
-      type: 'number',
-    })
-    .option('smtp-secure', {
-      desc: 'Use TLS when connecting to the SMTP server.',
-      type: 'boolean',
-      default: false,
-    })
-    .option('smtp-user', {
-      desc: 'The user to use to login to the SMTP server.',
-      implies: ['smtp-pass', 'smtp-from'],
-    })
-    .option('smtp-pass', {
-      desc: 'The password to use to login to the SMTP server.',
-      implies: ['smtp-user', 'smtp-from'],
-    })
-    .option('smtp-from', {
-      desc: 'The address to use when sending emails.',
-      implies: ['smtp-user', 'smtp-pass'],
-    });
+  return databaseBuilder(yargs);
 }
 
 interface DomainCheckResult {

@@ -1,0 +1,1 @@
+Respect `false` in `IMAP_COPY_TO_SENT_FOLDER`, `IMAP_SECURE` and `SMTP_SECURE`
