@@ -36,4 +36,7 @@ spec:
                       name: {{ .Values.secretSecret | quote }}
                       key: aes-secret
 {{ include "appsemble.postgres" . | indent 16 }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 16 }}
+{{ include "appsemble.trustedCaBundle.volumeMounts" . | indent 14 }}
+{{ include "appsemble.trustedCaBundle.volumes" . | indent 10 }}
 {{ end }}

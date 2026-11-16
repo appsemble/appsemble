@@ -117,4 +117,7 @@ spec:
                       name: {{ . | quote }}
                       key: imap-copy-to-sent-folder
                 {{- end }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 16 }}
+{{ include "appsemble.trustedCaBundle.volumeMounts" . | indent 14 }}
+{{ include "appsemble.trustedCaBundle.volumes" . | indent 10 }}
 {{ end }}

@@ -38,4 +38,7 @@ spec:
                 - name: SERVICE_NAME
                   value: {{ include "appsemble.fullname" . }}
 {{ include "appsemble.postgres" . | indent 16 }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 16 }}
+{{ include "appsemble.trustedCaBundle.volumeMounts" . | indent 14 }}
+{{ include "appsemble.trustedCaBundle.volumes" . | indent 10 }}
 {{ end }}
