@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.40.17](https://gitlab.com/appsemble/appsemble/-/releases/0.40.17)] - 2026-11-16
+
+### Added
+
+- Server: Trust a private certificate authority with the `trustedCaBundle` Helm value.
+
+### Changed
+
+- Server: Run PgBouncer from the CloudNativePG image, which resolves hosts without DNS failures.
+
+### Fixed
+
+- Server: Do not fail sending an email when copying it to the IMAP sent folder fails.
+- Server: Respect `false` in `IMAP_COPY_TO_SENT_FOLDER`, `IMAP_SECURE` and `SMTP_SECURE`.
+
+### Security
+
+- Server: Leave email bodies and SMTP traffic out of verbose logs when SMTP is configured.
+
 ## \[[0.40.16](https://gitlab.com/appsemble/appsemble/-/releases/0.40.16)] - 2026-11-16
 
 ### Added

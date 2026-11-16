@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.16
-appVersion: 0.40.16
+version: 0.40.17
+appVersion: 0.40.17
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,22 +33,20 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Appsemble-language-server: Complete role names in page roles."
-    - kind: added
-      description: "Server: Add public GET /api/subscription-plans endpoint listing
-        the subscription plans."
-    - kind: added
-      description: "Studio: Add subscribe page to choose an organization for a
-        subscription plan."
+      description: "Server: Trust a private certificate authority with the
+        trustedCaBundle Helm value."
     - kind: changed
-      description: "Studio: Use PostgreSQL 18 in the Docker Compose docs; dump and
-        restore existing data."
+      description: "Server: Run PgBouncer from the CloudNativePG image, which resolves
+        hosts without DNS failures."
     - kind: fixed
-      description: "App: Restore the missing link text in the German permissions error."
+      description: "Server: Do not fail sending an email when copying it to the IMAP
+        sent folder fails."
     - kind: fixed
-      description: "Studio: Restore the missing link text in translated messages."
+      description: "Server: Respect false in IMAP_COPY_TO_SENT_FOLDER, IMAP_SECURE and
+        SMTP_SECURE."
     - kind: security
-      description: "Server: Update the PostgreSQL client tools in the Docker image to 18.7."
+      description: "Server: Leave email bodies and SMTP traffic out of verbose logs
+        when SMTP is configured."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
