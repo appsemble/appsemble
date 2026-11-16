@@ -594,7 +594,13 @@ export class Mailer {
         .compile()
         .build();
       if (argv.imapHost) {
-        await this.copyToSentFolder(message);
+        try {
+          await this.copyToSentFolder(message);
+        } catch (error) {
+          // Archiving is best effort: the email has already been sent.
+          logger.error('Failed to copy the email to the sent folder.');
+          logger.error(error);
+        }
       } else {
         logger.warn('IMAP hasn’t been configured. Not moving email to sent folder.');
       }

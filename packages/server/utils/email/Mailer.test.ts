@@ -24,6 +24,58 @@ const baseArgv: Partial<Argv> = {
   aesSecret: 'testSecret',
 };
 
+/**
+ * Listen on 127.0.0.1 for an email delivered over SMTP.
+ *
+ * The server is closed when the current test finishes.
+ *
+ * @returns The port listened on, and the message data received so far.
+ */
+async function receiveEmail(): Promise<{ message: string; port: number }> {
+  const smtp = { message: '', port: 0 };
+  const sockets: Socket[] = [];
+  const server = createTcpServer((socket) => {
+    sockets.push(socket);
+    let receivingData = false;
+    socket.write('220 localhost ESMTP\r\n');
+    socket.on('data', (chunk) => {
+      if (receivingData) {
+        smtp.message += chunk;
+        if (smtp.message.endsWith('\r\n.\r\n')) {
+          receivingData = false;
+          socket.write('250 OK\r\n');
+        }
+        return;
+      }
+      switch (String(chunk).slice(0, 4).toUpperCase()) {
+        case 'EHLO':
+          socket.write('250-localhost\r\n250 AUTH PLAIN\r\n');
+          break;
+        case 'AUTH':
+          socket.write('235 OK\r\n');
+          break;
+        case 'DATA':
+          receivingData = true;
+          socket.write('354 OK\r\n');
+          break;
+        default:
+          socket.write('250 OK\r\n');
+      }
+    });
+  });
+  onTestFinished(() => {
+    for (const socket of sockets) {
+      socket.destroy();
+    }
+    server.close();
+  });
+  await new Promise<void>((resolve) => {
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  smtp.port = (server.address() as AddressInfo).port;
+  return smtp;
+}
+
 describe('Mailer', () => {
   beforeEach(() => {
     vi.useRealTimers();
@@ -706,6 +758,29 @@ _Test App_
       expect(appendCallBody).toMatchSnapshot();
       expect(appendMock.mock.calls[0][2]).toStrictEqual(['\\Seen']);
     });
+
+    it('should send the email if copying it to the sent folder fails', async () => {
+      const smtp = await receiveEmail();
+      // The IMAP server closes every connection, so the copy fails.
+      const imap = await countConnections();
+      mailer = new Mailer({
+        smtpHost: '127.0.0.1',
+        smtpPort: smtp.port,
+        imapHost: '127.0.0.1',
+        imapPort: imap.port,
+      });
+
+      await mailer.sendEmail({
+        to: 'test@example.com',
+        subject: 'Test',
+        text: 'Test',
+        html: '<p>Test</p>',
+        attachments: [],
+      });
+
+      expect(smtp.message).toContain('Subject: Test');
+      expect(imap.connections).toBe(1);
+    });
   });
 
   describe('emailQuota', () => {
@@ -1057,50 +1132,11 @@ _Test App_
 
     it('should send email through an SMTP server on an allowed address', async () => {
       vi.stubEnv('SSRF_ALLOW_IP_ADDRESS_LIST', '127.0.0.1');
-      let message = '';
-      const sockets: Socket[] = [];
-      const smtpServer = createTcpServer((socket) => {
-        sockets.push(socket);
-        let receivingData = false;
-        socket.write('220 localhost ESMTP\r\n');
-        socket.on('data', (chunk) => {
-          if (receivingData) {
-            message += chunk;
-            if (message.endsWith('\r\n.\r\n')) {
-              receivingData = false;
-              socket.write('250 OK\r\n');
-            }
-            return;
-          }
-          switch (String(chunk).slice(0, 4).toUpperCase()) {
-            case 'EHLO':
-              socket.write('250-localhost\r\n250 AUTH PLAIN\r\n');
-              break;
-            case 'AUTH':
-              socket.write('235 OK\r\n');
-              break;
-            case 'DATA':
-              receivingData = true;
-              socket.write('354 OK\r\n');
-              break;
-            default:
-              socket.write('250 OK\r\n');
-          }
-        });
-      });
-      onTestFinished(() => {
-        for (const socket of sockets) {
-          socket.destroy();
-        }
-        smtpServer.close();
-      });
-      await new Promise<void>((resolve) => {
-        smtpServer.listen(0, '127.0.0.1', resolve);
-      });
+      const smtp = await receiveEmail();
 
-      await sendAppEmail('127.0.0.1', (smtpServer.address() as AddressInfo).port);
+      await sendAppEmail('127.0.0.1', smtp.port);
 
-      expect(message).toContain('Subject: Test');
+      expect(smtp.message).toContain('Subject: Test');
     });
   });
 
