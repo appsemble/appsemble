@@ -19,7 +19,7 @@ import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
 
-let blockRoot: HTMLElement;
+let blockRoot: HTMLElement | undefined;
 let blockVersion = 0;
 
 function loadControls({ shadowRoot, utils }: BootstrapParams): void {
@@ -109,6 +109,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  blockRoot = undefined;
   loadBlock = loadControls;
   vi.unstubAllGlobals();
   document.head.innerHTML = '';
@@ -160,7 +161,7 @@ describe('block viewport mode', () => {
       </IntlProvider>,
     );
     await waitFor(() =>
-      expect(within(blockRoot).getByRole('button', { name: label })).toBeDefined(),
+      expect(within(blockRoot!).getByRole('button', { name: label })).toBeDefined(),
     );
   });
 });
@@ -210,7 +211,7 @@ describe('float layout', () => {
       </IntlProvider>,
     );
 
-    await waitFor(() => within(blockRoot).getByRole('button'));
+    await waitFor(() => within(blockRoot!).getByRole('button'));
     expect(screen.getByRole('dialog').contains((blockRoot as unknown as ShadowRoot).host)).toBe(
       true,
     );

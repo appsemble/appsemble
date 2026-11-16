@@ -192,7 +192,7 @@ describe('ServiceWorkerRegistrationProvider', () => {
         renderProvider(registration);
       });
 
-      expect(screen.getByText('ServiceWorkerError')).toBeDefined();
+      expect(await screen.findByText('ServiceWorkerError')).toBeDefined();
     },
   );
 
