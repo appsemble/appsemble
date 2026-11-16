@@ -169,4 +169,5 @@ generic secret names must be unique for the variable and secret remappers to wor
 App variables and secrets can be configured in the corresponding pages in the Appsemble studio.
 
 When cloning a template app, app variables and secrets will be copied to the new app without their
-secret values.
+secret values. The copied service and OAuth2 secrets and the SCIM token are
+[incomplete](#incomplete-secrets) until they get a value.
