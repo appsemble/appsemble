@@ -1,6 +1,6 @@
 import { setupSentry } from '@appsemble/web-utils';
 import axios from 'axios';
-import { createRoot } from 'react-dom/client';
+import { render } from 'preact';
 
 import { App } from './components/App/index.js';
 import './index.css';
@@ -38,8 +38,9 @@ const serviceWorkerRegistrationPromise = (async () => {
   }
 })();
 
-createRoot(document.getElementById('app')!).render(
+render(
   <App serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise} />,
+  document.getElementById('app')!,
 );
 
 window.appsembleHasLoaded = true;

@@ -18,7 +18,7 @@ import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import { createIconElement, fa, getIconAsset, resolveIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { createPortal } from 'preact/compat';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -401,8 +401,9 @@ export function Block({
       );
 
       // A float block in a dialog stays inside it, so it is shown above the dialog and isn't blocked
-      // like the page behind it.
-      return isInModalDialog ? float : createPortal(float, document.body);
+      // like the page behind it. The app's JSX is typed with React's types, while Preact's portal
+      // is typed as a Preact node.
+      return isInModalDialog ? float : (createPortal(float, document.body) as ReactNode);
     }
 
     return (
