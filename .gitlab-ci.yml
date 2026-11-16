@@ -261,7 +261,7 @@ seed database:
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: database
       variables:
         POSTGRES_DB: appsemble
@@ -332,7 +332,9 @@ seed database:
       --s3-access-key admin
       --s3-secret-key password
   after_script:
-    - apt-get update && apt-get install -y postgresql-client
+    - apt-get update && apt-get install -y postgresql-common
+    - /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+    - apt-get install -y postgresql-client-18
     - PGPASSWORD="password" pg_dump -h database -U admin --no-owner --no-acl appsemble > seededDb.sql
   artifacts:
     name: Default database dump
@@ -355,7 +357,7 @@ build seeded db image:
     - cp seededDb.sql db-image/
     - |
       cat > db-image/Dockerfile <<'EOF'
-      FROM postgres:17
+      FROM postgres:18.7
 
       COPY seededDb.sql /docker-entrypoint-initdb.d/seededDb.sql
 
@@ -499,7 +501,7 @@ stylelint:
 test node:
   extends: .npm
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: postgres
     - name: valkey/valkey:9.1.3
       alias: valkey
@@ -555,7 +557,7 @@ test node:
 test node single bucket:
   extends: .npm
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: postgres
     - name: valkey/valkey:9.1.3
       alias: valkey
@@ -638,7 +640,7 @@ check migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -654,7 +656,7 @@ check down migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -670,7 +672,7 @@ fuzz migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: postgres
   variables:
     POSTGRES_DB: testAppsemble

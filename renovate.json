@@ -44,6 +44,13 @@
       ],
       "depNameTemplate": "@playwright/test",
       "datasourceTemplate": "npm"
+    },
+    {
+      "description": "Track the postgres image of the 'build seeded db image' job's inline Dockerfile, which the gitlabci manager does not read",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.gitlab-ci\\.yml$/"],
+      "matchStrings": ["FROM (?<depName>postgres):(?<currentValue>\\S+)"],
+      "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
