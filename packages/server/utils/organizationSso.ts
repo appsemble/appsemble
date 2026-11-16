@@ -274,6 +274,21 @@ export async function synchronizeOrganizationSsoMembership({
       { transaction },
     );
   }
+  if (member.role === PredefinedOrganizationRole.Owner && !transaction) {
+    return getDB().transaction(async (saveTransaction) => {
+      await Organization.findByPk(organizationId, {
+        attributes: ['id'],
+        lock: saveTransaction.LOCK.UPDATE,
+        transaction: saveTransaction,
+      });
+      return synchronizeOrganizationSsoMembership({
+        groups,
+        organizationId,
+        transaction: saveTransaction,
+        userId,
+      });
+    });
+  }
   const next = { role: null, guest: false, ssoRoles: roles };
   // A sign-in keeps the manual role of the last Owner; the provider removes mapped Owners freely.
   if (member.role != null && (await removesLastOrganizationOwner(sso, member, next, transaction))) {

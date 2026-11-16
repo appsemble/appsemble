@@ -353,9 +353,9 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
 
   try {
     ctx.body = await getDB().transaction(async (transaction) => {
+      await Organization.findByPk(organizationId, { transaction, lock: transaction.LOCK.UPDATE });
       let activeSso = sso;
       if (candidate) {
-        await Organization.findByPk(organizationId, { transaction, lock: transaction.LOCK.UPDATE });
         const saved = await OrganizationSso.findByPk(organizationId, {
           transaction,
           lock: transaction.LOCK.UPDATE,

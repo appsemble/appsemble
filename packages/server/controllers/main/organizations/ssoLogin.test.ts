@@ -1,4 +1,5 @@
-import { createHash, generateKeyPairSync } from 'node:crypto';
+import { createHash, generateKeyPairSync, randomUUID } from 'node:crypto';
+import { setTimeout } from 'node:timers/promises';
 
 import {
   type OrganizationSsoConfiguration,
@@ -9,6 +10,7 @@ import axios, { type AxiosResponse } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import jwt from 'jsonwebtoken';
+import { QueryTypes } from 'sequelize';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -34,6 +36,7 @@ let groups: string[];
 let claims: Record<string, unknown>;
 let challenges: Map<string, string>;
 let redeemed: Set<string>;
+let providerGrants: Map<string, { current: string; revoked: boolean }>;
 let providerLifetime: number | undefined;
 let providerUnavailable: boolean;
 let providerGrantRevoked: boolean;
@@ -95,12 +98,24 @@ function mockProvider(expiredRefreshToken?: string): void {
       }
       redeemed.add(code);
     }
+    const previousRefreshToken = parameters.get('refresh_token');
+    const grant = previousRefreshToken
+      ? providerGrants.get(previousRefreshToken)
+      : { current: '', revoked: false };
+    if (!grant || grant.revoked) {
+      return [400, JSON.stringify({ error: 'invalid_grant' }), headers];
+    }
+    if (previousRefreshToken && grant.current !== previousRefreshToken) {
+      grant.revoked = true;
+      return [400, JSON.stringify({ error: 'invalid_grant' }), headers];
+    }
+    grant.current = randomUUID();
+    providerGrants.set(grant.current, grant);
     return [
       200,
       JSON.stringify({
         access_token: 'provider-access-token',
-        refresh_token:
-          parameters.get('refresh_token') ?? `provider-refresh-${parameters.get('code')}`,
+        refresh_token: grant.current,
         token_type: 'Bearer',
         expires_in: providerLifetime,
         id_token: includeIdToken
@@ -252,6 +267,7 @@ describe('organization OIDC sign-in', () => {
     claims = {};
     challenges = new Map();
     redeemed = new Set();
+    providerGrants = new Map();
     providerLifetime = 300;
     providerUnavailable = false;
     providerGrantRevoked = false;
@@ -282,6 +298,51 @@ describe('organization OIDC sign-in', () => {
         },
       ],
     });
+  });
+
+  it('keeps an Owner when manual Owners adopt group-managed access concurrently', async () => {
+    const first = await signIn();
+    unauthorize();
+    claims = { sub: 'second-staff-subject' };
+    userInfoClaims = { sub: 'second-staff-subject', email: 'second@example.com' };
+    const second = await signIn();
+    await OrganizationSso.update(
+      { policy: 'optional', allowedLoginMethods: ['password', 'oidc'] },
+      { where: { OrganizationId: 'staff' } },
+    );
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Owner },
+      { where: { OrganizationId: 'staff' } },
+    );
+
+    const transaction = await getDB().transaction();
+    await OrganizationMember.findAll({
+      where: { OrganizationId: 'staff' },
+      lock: transaction.LOCK.UPDATE,
+      transaction,
+    });
+    const requests = [first, second].map((tokens) =>
+      request.get('/api/users/current/organizations', {
+        headers: { authorization: `Bearer ${tokens.access_token}` },
+      }),
+    );
+    try {
+      await vi.waitUntil(async () => {
+        const [{ count }] = await getDB().query<{ count: number }>(
+          `SELECT count(*)::integer FROM pg_stat_activity
+            WHERE datname = current_database() AND wait_event_type = 'Lock'`,
+          { type: QueryTypes.SELECT },
+        );
+        return count === 2;
+      });
+    } finally {
+      await transaction.rollback();
+    }
+    const responses = await Promise.all(requests);
+
+    expect(responses.map(({ data }) => data[0].roles)).toContainEqual([
+      PredefinedOrganizationRole.Owner,
+    ]);
   });
 
   it.each([
@@ -653,37 +714,19 @@ describe('organization OIDC sign-in', () => {
     );
   });
 
-  it('keeps a grant renewed concurrently when the provider rejects the stale refresh token', async () => {
-    const tokens = await signIn();
+  it('keeps concurrent organization requests usable with rotating provider refresh tokens', async () => {
+    await signIn();
     await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
-    let bothWaiting!: () => void;
-    const renewalsWaiting = new Promise<void>((resolve) => {
-      bothWaiting = resolve;
-    });
-    let releaseStale!: () => void;
-    const staleReleased = new Promise<void>((resolve) => {
-      releaseStale = resolve;
-    });
-    let renewals = 0;
-    beforeTokenResponse = async () => {
-      renewals += 1;
-      if (renewals === 1) {
-        await renewalsWaiting;
-      } else {
-        bothWaiting();
-        await staleReleased;
-        providerGrantRevoked = true;
-      }
-    };
+    beforeTokenResponse = () => setTimeout(100);
     const requests = [1, 2].map(() => request.get('/api/users/current/organizations'));
-    await Promise.race(requests);
-    releaseStale();
-    expect((await Promise.all(requests)).map(({ data }) => data)).toStrictEqual([
+    const responses = await Promise.all(requests);
+    await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
+    const nextRenewal = await request.get('/api/users/current/organizations');
+    expect([...responses, nextRenewal].map(({ data }) => data)).toStrictEqual([
+      [expect.objectContaining({ id: 'staff' })],
       [expect.objectContaining({ id: 'staff' })],
       [expect.objectContaining({ id: 'staff' })],
     ]);
-    request.defaults.headers.common.authorization = `Bearer ${tokens.access_token}`;
-    expect((await request.get('/api/users/current')).status).toBe(200);
   });
 
   it('retries provider discovery after an outage and reuses it during later outages', async () => {

@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { type TokenResponse } from '@appsemble/types';
 import { type Context } from 'koa';
 import { ClientError, fetchUserInfo, refreshTokenGrant, ResponseBodyError } from 'openid-client';
+import { Mutex } from 'redis-semaphore';
 
 import {
   type OAuth2ClientCredentials,
@@ -14,6 +15,7 @@ import { argv } from './argv.js';
 import { createJWTResponse } from './createJWTResponse.js';
 import { decrypt, encrypt } from './crypto.js';
 import { getOrganizationOidcConfiguration } from './organizationOidc.js';
+import { getValkeyClient } from './valkey.js';
 
 interface VerifiedSession {
   groups: string[];
@@ -75,86 +77,117 @@ function isSessionBound(
 /**
  * Renew the provider grant of a session whose provider access token expired.
  *
- * The provider is contacted outside of any database transaction. Concurrent renewals of the same
- * session are reconciled by comparing the stored provider refresh token.
+ * The provider is contacted outside of any database transaction. A distributed mutex serializes
+ * renewals so a provider cannot treat concurrent requests as refresh-token reuse.
  *
- * @param session The bound provider-backed session including its identity.
+ * @param initialSession The bound provider-backed session including its identity.
  * @param sso The organization's provider.
  * @returns The current provider groups, or null when the grant is not valid.
  */
 async function renewSession(
-  session: OrganizationSsoSession,
+  initialSession: OrganizationSsoSession,
   sso: OrganizationSso,
 ): Promise<string[] | null> {
-  if (session.accessTokenExpires.getTime() > Date.now()) {
-    return session.groups;
+  if (initialSession.accessTokenExpires.getTime() > Date.now()) {
+    return initialSession.groups;
   }
-  const { refreshToken } = session;
-  if (!refreshToken) {
-    await session.destroy();
+  const cache = getValkeyClient();
+  if (cache?.status !== 'ready') {
     return null;
   }
-  const where = { id: session.id, refreshToken };
-  let renewal: { refreshToken?: Buffer; accessTokenExpires: Date; groups: string[] } | undefined;
+  const mutex = new Mutex(cache, `organization-sso-renewal:${initialSession.id}`, {
+    acquireTimeout: 30_000,
+    lockTimeout: 180_000,
+    refreshInterval: 0,
+    retryInterval: 100,
+  });
   try {
-    const config = await getOrganizationOidcConfiguration(sso);
-    const tokens = await refreshTokenGrant(config, decrypt(refreshToken, argv.aesSecret));
-    if (!tokens.expires_in || !Number.isFinite(tokens.expires_in) || tokens.expires_in <= 0) {
-      throw new Error('The provider access token has no valid lifetime');
-    }
-    const claims = tokens.claims();
-    const { subject } = session.OrganizationSsoIdentity!;
-    if (!claims || claims.sub === subject) {
-      const info = config.serverMetadata().userinfo_endpoint
-        ? { ...claims, ...(await fetchUserInfo(config, tokens.access_token, subject)) }
-        : claims;
-      if (!info) {
-        throw new Error('The provider did not return refreshed identity claims');
-      }
-      const rawGroups = info[sso.groupClaim];
-      renewal = {
-        ...(tokens.refresh_token
-          ? { refreshToken: encrypt(tokens.refresh_token, argv.aesSecret) }
-          : {}),
-        accessTokenExpires: new Date(Date.now() + Math.min(tokens.expires_in, 3600) * 1000),
-        groups: Array.isArray(rawGroups)
-          ? rawGroups.filter((group): group is string => typeof group === 'string')
-          : typeof rawGroups === 'string'
-            ? [rawGroups]
-            : [],
-      };
-    }
-  } catch (error) {
-    if (!(
-      (error instanceof ResponseBodyError && error.error === 'invalid_grant') ||
-      (error instanceof ClientError &&
-        ['OAUTH_JWT_CLAIM_COMPARISON_FAILED', 'OAUTH_JSON_ATTRIBUTE_COMPARISON_FAILED'].includes(
-          error.code ?? '',
-        ))
-    )) {
+    await mutex.acquire();
+  } catch {
+    return null;
+  }
+  try {
+    const session = await OrganizationSsoSession.findOne({
+      where: {
+        id: initialSession.id,
+        OrganizationId: sso.OrganizationId,
+        configurationUpdated: sso.configurationUpdated,
+      },
+      include: [OrganizationSsoIdentity],
+    });
+    if (!session) {
       return null;
     }
-  }
-  if (renewal) {
-    const [renewed] = await OrganizationSsoSession.update(renewal, { where });
-    if (renewed) {
-      await OrganizationSsoSession.update(
-        { groups: renewal.groups },
-        {
-          where: {
-            OrganizationId: session.OrganizationId,
-            OrganizationSsoIdentityId: session.OrganizationSsoIdentityId,
-          },
-        },
-      );
-      return renewal.groups;
+    if (session.accessTokenExpires.getTime() > Date.now()) {
+      return session.groups;
     }
-  } else if (await OrganizationSsoSession.destroy({ where })) {
+    const { refreshToken } = session;
+    if (!refreshToken) {
+      await session.destroy();
+      return null;
+    }
+    const where = { id: session.id, refreshToken };
+    let renewal: { refreshToken?: Buffer; accessTokenExpires: Date; groups: string[] } | undefined;
+    try {
+      const config = await getOrganizationOidcConfiguration(sso);
+      const tokens = await refreshTokenGrant(config, decrypt(refreshToken, argv.aesSecret));
+      if (!tokens.expires_in || !Number.isFinite(tokens.expires_in) || tokens.expires_in <= 0) {
+        throw new Error('The provider access token has no valid lifetime');
+      }
+      const claims = tokens.claims();
+      const { subject } = session.OrganizationSsoIdentity!;
+      if (!claims || claims.sub === subject) {
+        const info = config.serverMetadata().userinfo_endpoint
+          ? { ...claims, ...(await fetchUserInfo(config, tokens.access_token, subject)) }
+          : claims;
+        if (!info) {
+          throw new Error('The provider did not return refreshed identity claims');
+        }
+        const rawGroups = info[sso.groupClaim];
+        renewal = {
+          ...(tokens.refresh_token
+            ? { refreshToken: encrypt(tokens.refresh_token, argv.aesSecret) }
+            : {}),
+          accessTokenExpires: new Date(Date.now() + Math.min(tokens.expires_in, 3600) * 1000),
+          groups: Array.isArray(rawGroups)
+            ? rawGroups.filter((group): group is string => typeof group === 'string')
+            : typeof rawGroups === 'string'
+              ? [rawGroups]
+              : [],
+        };
+      }
+    } catch (error) {
+      if (!(
+        (error instanceof ResponseBodyError && error.error === 'invalid_grant') ||
+        (error instanceof ClientError &&
+          ['OAUTH_JWT_CLAIM_COMPARISON_FAILED', 'OAUTH_JSON_ATTRIBUTE_COMPARISON_FAILED'].includes(
+            error.code ?? '',
+          ))
+      )) {
+        return null;
+      }
+    }
+    if (renewal) {
+      const [renewed] = await OrganizationSsoSession.update(renewal, { where });
+      if (renewed) {
+        await OrganizationSsoSession.update(
+          { groups: renewal.groups },
+          {
+            where: {
+              OrganizationId: session.OrganizationId,
+              OrganizationSsoIdentityId: session.OrganizationSsoIdentityId,
+            },
+          },
+        );
+        return renewal.groups;
+      }
+    } else {
+      await OrganizationSsoSession.destroy({ where });
+    }
     return null;
+  } finally {
+    await mutex.release();
   }
-  // Another request renewed this grant with a newer provider refresh token.
-  const current = await OrganizationSsoSession.findByPk(session.id);
-  return current && current.accessTokenExpires.getTime() > Date.now() ? current.groups : null;
 }
 
 /**
