@@ -63,10 +63,14 @@ function renderPage(path: string): void {
 }
 
 describe('SubscribePage', () => {
-  it('should only offer organizations whose subscriptions the user may manage', async () => {
+  it('should offer organizations with subscription authority from mapped roles', async () => {
     organizations = [
-      { id: 'owned', name: 'Owned', role: PredefinedOrganizationRole.Owner },
-      { id: 'joined', name: 'Joined', role: PredefinedOrganizationRole.Member },
+      {
+        id: 'owned',
+        name: 'Owned',
+        roles: [PredefinedOrganizationRole.Member, PredefinedOrganizationRole.Owner],
+      },
+      { id: 'joined', name: 'Joined', roles: [PredefinedOrganizationRole.Member] },
     ];
     renderPage('/en/subscribe/standard');
 
@@ -78,8 +82,8 @@ describe('SubscribePage', () => {
 
   it('should continue to the activation page of the only eligible organization', async () => {
     organizations = [
-      { id: 'subscribed', name: 'Subscribed', role: PredefinedOrganizationRole.Owner },
-      { id: 'owned', name: 'Owned', role: PredefinedOrganizationRole.Owner },
+      { id: 'subscribed', name: 'Subscribed', roles: [PredefinedOrganizationRole.Owner] },
+      { id: 'owned', name: 'Owned', roles: [PredefinedOrganizationRole.Owner] },
     ];
     currentPlans = { subscribed: 'standard' };
     renderPage('/en/subscribe/standard');
@@ -93,8 +97,8 @@ describe('SubscribePage', () => {
 
   it('should continue to the activation page of the selected organization', async () => {
     organizations = [
-      { id: 'first', name: 'First', role: PredefinedOrganizationRole.Owner },
-      { id: 'second', name: 'Second', role: PredefinedOrganizationRole.Owner },
+      { id: 'first', name: 'First', roles: [PredefinedOrganizationRole.Owner] },
+      { id: 'second', name: 'Second', roles: [PredefinedOrganizationRole.Owner] },
     ];
     renderPage('/nl/subscribe/basic');
 
@@ -109,7 +113,7 @@ describe('SubscribePage', () => {
   });
 
   it('should explain how to subscribe without an eligible organization', async () => {
-    organizations = [{ id: 'joined', name: 'Joined', role: PredefinedOrganizationRole.Member }];
+    organizations = [{ id: 'joined', name: 'Joined', roles: [PredefinedOrganizationRole.Member] }];
     renderPage('/en/subscribe/standard');
 
     expect(
@@ -119,7 +123,7 @@ describe('SubscribePage', () => {
   });
 
   it('should report an unknown plan', () => {
-    organizations = [{ id: 'owned', name: 'Owned', role: PredefinedOrganizationRole.Owner }];
+    organizations = [{ id: 'owned', name: 'Owned', roles: [PredefinedOrganizationRole.Owner] }];
     renderPage('/en/subscribe/platinum');
 
     expect(screen.getByText('This plan does not exist')).toBeDefined();
@@ -131,7 +135,7 @@ describe('SubscribePage', () => {
   });
 
   it('should not offer the free plan', () => {
-    organizations = [{ id: 'owned', name: 'Owned', role: PredefinedOrganizationRole.Owner }];
+    organizations = [{ id: 'owned', name: 'Owned', roles: [PredefinedOrganizationRole.Owner] }];
     renderPage('/en/subscribe/free');
 
     expect(screen.getByText('This plan does not exist')).toBeDefined();
@@ -140,7 +144,7 @@ describe('SubscribePage', () => {
 
   it('should not continue for an organization already on the plan', async () => {
     organizations = [
-      { id: 'subscribed', name: 'Subscribed', role: PredefinedOrganizationRole.Owner },
+      { id: 'subscribed', name: 'Subscribed', roles: [PredefinedOrganizationRole.Owner] },
     ];
     currentPlans = { subscribed: 'standard' };
     renderPage('/en/subscribe/standard');
@@ -154,7 +158,7 @@ describe('SubscribePage', () => {
   });
 
   it('should report plans that could not be loaded', async () => {
-    organizations = [{ id: 'owned', name: 'Owned', role: PredefinedOrganizationRole.Owner }];
+    organizations = [{ id: 'owned', name: 'Owned', roles: [PredefinedOrganizationRole.Owner] }];
     axios.defaults.adapter = (config) =>
       Promise.reject(new AxiosError('Internal Server Error', '500', config));
     renderPage('/en/subscribe/standard');

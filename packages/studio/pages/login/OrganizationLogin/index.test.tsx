@@ -102,7 +102,7 @@ it('should allow linking organization single sign-on after signing in with a pas
     target: { value: 'owner@example.com' },
   });
   fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password' } });
-  fireEvent.click(screen.getByRole('button', { name: 'Login', exact: true }));
+  fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
   expect(
     await screen.findByRole('button', { name: 'Link organization single sign-on' }),
