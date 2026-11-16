@@ -1,1 +1,1 @@
-Add organization single sign-on and managed staff access
+Add organization single sign-on and linked identity management

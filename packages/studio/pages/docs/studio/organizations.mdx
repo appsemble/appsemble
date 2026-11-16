@@ -130,6 +130,12 @@ link accounts. Password recovery and other linked sign-in methods cannot bypass 
 required single sign-on, and a sign-in through another organization's provider does not count for
 this organization.
 
+Manage linked organization identities under **Settings > Social login**. **Unlink single sign-on**
+requires recent authentication and a verified recovery email or personal social login. Unlinking
+ends that identity's sessions and revokes its personal CLI credentials while keeping other linked
+identities, manual memberships and guest grants. An organization must retain an Owner. To link the
+identity again, sign in to the existing Appsemble account and use the organization's sign-in page.
+
 Provider groups are refreshed when the provider access token expires, at most one hour after the
 previous refresh, and a Studio session ends after eight hours. Removing a group therefore takes
 effect at the next refresh, including for personal CLI credentials, which keep working beyond the

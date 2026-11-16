@@ -18,12 +18,14 @@ import {
   Organization,
   OrganizationMember,
   OrganizationSso,
+  OrganizationSsoIdentity,
   OrganizationSsoSession,
   User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { decrypt, encrypt } from '../../../utils/crypto.js';
+import { applyOrganizationSsoConfiguration } from '../../../utils/organizationSso.js';
 import { authorizeStudio, createTestUser, unauthorize } from '../../../utils/test/authorization.js';
 
 const issuer = 'https://idp.example/realms/staff';
@@ -504,6 +506,85 @@ describe('organization OIDC sign-in', () => {
     const current = await request.get('/api/users/current');
     expect(current.data.sub).toBe(user.id);
   });
+
+  it('does not restore an account connection unlinked while sign-in is completing', async () => {
+    const tokens = await signIn();
+    const identity = (await OrganizationSsoIdentity.findOne({
+      where: { issuer, subject: 'staff-subject' },
+    }))!;
+    const user = (await User.findByPk(identity.UserId))!;
+    const flow = await begin(true);
+    const barrier = await getDB().transaction();
+    await getDB().query('SELECT pg_advisory_xact_lock(hashtext(:issuer), hashtext(:subject))', {
+      replacements: { issuer, subject: identity.subject },
+      transaction: barrier,
+    });
+    const deleted = request.delete(`/api/users/current/auth/oidc/identities/${identity.id}`);
+    let callback: Promise<AxiosResponse>;
+    try {
+      await vi.waitUntil(async () => {
+        const [{ count }] = await getDB().query<{ count: number }>(
+          `SELECT count(*)::integer FROM pg_stat_activity WHERE datname = current_database() AND wait_event = 'advisory'`,
+          { type: QueryTypes.SELECT },
+        );
+        return count === 1;
+      });
+      callback = complete(flow);
+      await vi.waitUntil(async () => {
+        const [{ count }] = await getDB().query<{ count: number }>(
+          `SELECT count(*)::integer FROM pg_stat_activity WHERE datname = current_database() AND wait_event = 'advisory'`,
+          { type: QueryTypes.SELECT },
+        );
+        return count === 2;
+      });
+    } finally {
+      await barrier.rollback();
+    }
+    const [unlink, completed] = await Promise.all([deleted, callback!]);
+    request.defaults.headers.common.authorization = `Bearer ${tokens.access_token}`;
+    const revoked = await request.get('/api/users/current');
+    authorizeStudio(user);
+    const identities = await request.get('/api/users/current/auth/oidc/identities');
+    expect({
+      unlink: unlink.status,
+      completed: completed.status,
+      revoked: revoked.status,
+      identities: identities.data,
+    }).toStrictEqual({ unlink: 200, completed: 409, revoked: 401, identities: [] });
+  });
+
+  it.each(['connection', 'role mappings'])(
+    'rejects completing sign-in after its %s change',
+    async (change) => {
+      let entered!: () => void;
+      const requested = new Promise<void>((resolve) => {
+        entered = resolve;
+      });
+      let release!: () => void;
+      const released = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      beforeTokenResponse = () => {
+        entered();
+        return released;
+      };
+      const callback = complete(await begin());
+      try {
+        await requested;
+        await applyOrganizationSsoConfiguration(
+          'staff',
+          {
+            ...configuration,
+            ...(change === 'connection' ? { groupClaim: 'new-groups' } : { roleMappings: [] }),
+          },
+          'deployment',
+        );
+      } finally {
+        release();
+      }
+      expect((await callback).status).toBe(change === 'connection' ? 401 : 403);
+    },
+  );
 
   it('completes linking only for the account which started it', async () => {
     authorizeStudio(await createTestUser('staff@example.com'));

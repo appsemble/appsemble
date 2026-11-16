@@ -270,7 +270,7 @@ export async function checkUserOrganizationPermissions({
 
 export async function checkOrganizationOwnerRemoval(
   context: Context,
-  member: OrganizationMember,
+  member: Pick<OrganizationMember, 'OrganizationId' | 'UserId' | 'role' | 'guest' | 'ssoRoles'>,
   next: Pick<OrganizationMember, 'role' | 'guest' | 'ssoRoles'> | null,
   transaction: Transaction,
 ): Promise<void> {

@@ -200,7 +200,7 @@ export async function applyOrganizationSsoConfiguration(
  */
 export async function removesLastOrganizationOwner(
   sso: OrganizationSso | null,
-  member: OrganizationMember,
+  member: Pick<OrganizationMember, 'OrganizationId' | 'UserId' | 'role' | 'guest' | 'ssoRoles'>,
   next: Pick<OrganizationMember, 'role' | 'guest' | 'ssoRoles'> | null,
   transaction?: Transaction,
 ): Promise<boolean> {
@@ -233,34 +233,108 @@ export async function removesLastOrganizationOwner(
     });
   }
   const owners = await OrganizationMember.count({
-    where: { OrganizationId: member.OrganizationId, [Op.or]: ownerSources },
+    where: {
+      OrganizationId: member.OrganizationId,
+      UserId: { [Op.ne]: member.UserId },
+      [Op.or]: ownerSources,
+    },
     transaction,
   });
-  return owners <= 1;
+  return owners === 0;
+}
+
+export async function lockOrganizationSsoIdentity(
+  identity: Pick<OrganizationSsoIdentity, 'issuer' | 'subject'>,
+  transaction: Transaction,
+): Promise<void> {
+  await getDB().query('SELECT pg_advisory_xact_lock(hashtext(:issuer), hashtext(:subject))', {
+    replacements: { issuer: identity.issuer, subject: identity.subject },
+    transaction,
+  });
 }
 
 export async function synchronizeOrganizationSsoMembership({
   groups,
   organizationId,
+  sessionId,
+  clientCredentials = false,
   transaction,
   userId,
 }: {
   organizationId: string;
   userId: string;
   groups: readonly string[];
+  sessionId?: string;
+  clientCredentials?: boolean;
   transaction?: Transaction;
 }): Promise<OrganizationMember | null> {
   const sso = await OrganizationSso.findByPk(organizationId, { transaction });
   if (!sso) {
     return null;
   }
-  const roles = resolveOrganizationSsoRoles(groups, sso.roleMappings);
+  const source =
+    sessionId && transaction
+      ? await OrganizationSsoSession.findOne({
+          where: {
+            id: sessionId,
+            OrganizationId: organizationId,
+            configurationUpdated: sso.configurationUpdated,
+            accessTokenExpires: { [Op.gt]: new Date() },
+            ...(!clientCredentials && {
+              expires: { [Op.gt]: new Date() },
+              interactiveRevoked: false,
+            }),
+          },
+          include: [
+            { model: OrganizationSsoIdentity, where: { UserId: userId, issuer: sso.issuer } },
+          ],
+          transaction,
+        })
+      : null;
+  if (sessionId && transaction && !source) {
+    return null;
+  }
+  const roles = resolveOrganizationSsoRoles(source ? source.groups : groups, sso.roleMappings);
   const member = await OrganizationMember.findOne({
     where: { OrganizationId: organizationId, UserId: userId },
     transaction,
   });
   if (member?.guest) {
     return sso.policy !== 'required' && sso.allowedLoginMethods.includes('oidc') ? member : null;
+  }
+  if (
+    !transaction &&
+    ((sessionId &&
+      (!member ||
+        member.role != null ||
+        JSON.stringify(member.ssoRoles) !== JSON.stringify(roles))) ||
+      member?.role === PredefinedOrganizationRole.Owner)
+  ) {
+    return getDB().transaction(async (saveTransaction) => {
+      if (sessionId) {
+        const session = await OrganizationSsoSession.findByPk(sessionId, {
+          include: [OrganizationSsoIdentity],
+          transaction: saveTransaction,
+        });
+        if (!session) {
+          return null;
+        }
+        await lockOrganizationSsoIdentity(session.OrganizationSsoIdentity!, saveTransaction);
+      }
+      await Organization.findByPk(organizationId, {
+        attributes: ['id'],
+        lock: saveTransaction.LOCK.UPDATE,
+        transaction: saveTransaction,
+      });
+      return synchronizeOrganizationSsoMembership({
+        groups,
+        organizationId,
+        sessionId,
+        clientCredentials,
+        transaction: saveTransaction,
+        userId,
+      });
+    });
   }
   if (!roles.length) {
     if (member) {
@@ -273,21 +347,6 @@ export async function synchronizeOrganizationSsoMembership({
       { OrganizationId: organizationId, UserId: userId, role: null, ssoRoles: roles },
       { transaction },
     );
-  }
-  if (member.role === PredefinedOrganizationRole.Owner && !transaction) {
-    return getDB().transaction(async (saveTransaction) => {
-      await Organization.findByPk(organizationId, {
-        attributes: ['id'],
-        lock: saveTransaction.LOCK.UPDATE,
-        transaction: saveTransaction,
-      });
-      return synchronizeOrganizationSsoMembership({
-        groups,
-        organizationId,
-        transaction: saveTransaction,
-        userId,
-      });
-    });
   }
   const next = { role: null, guest: false, ssoRoles: roles };
   // A sign-in keeps the manual role of the last Owner; the provider removes mapped Owners freely.
@@ -330,6 +389,8 @@ export async function getOrganizationMemberAccess(
       organizationId,
       userId: ctx.user.id,
       groups: session.groups,
+      sessionId: ctx.state.organizationSsoSessionId,
+      clientCredentials: Boolean(ctx.state.clientCredentials),
     });
   }
   return sso.policy === 'optional' && member.role && loginAllowed ? member : null;

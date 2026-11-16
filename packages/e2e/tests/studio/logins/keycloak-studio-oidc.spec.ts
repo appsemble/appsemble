@@ -1,3 +1,7 @@
+import {
+  createUser as createStudioUser,
+  deleteUser as deleteStudioUser,
+} from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { type Page } from '@playwright/test';
 
@@ -17,13 +21,20 @@ const clientId = 'appsemble-studio';
 const clientSecret = 'studio-e2e-secret';
 const password = 'studio-e2e-password';
 
-async function signInAtKeycloak(
-  page: Page,
-  email: string,
-  organizationId: string,
-): Promise<string> {
+async function signInWithPassword(page: Page, email: string): Promise<string> {
+  await page.goto('/en/login');
+  await page.getByRole('textbox', { name: 'Email', exact: true }).fill(email);
+  await page.getByLabel('Password').fill(password);
+  const response = page.waitForResponse('**/api/auth/email/login');
+  await page.getByRole('button', { name: 'Login', exact: true }).click();
+  const login = await response;
+  expect(login.status()).toBe(200);
+  await expect(page.getByText('My apps', { exact: true })).toBeVisible();
+  return ((await login.json()) as { access_token: string }).access_token;
+}
+
+async function submitKeycloakPassword(page: Page, organizationId: string): Promise<string> {
   const callback = page.waitForResponse(`**/api/organizations/${organizationId}/sso/callback`);
-  await page.getByRole('textbox', { name: /username or email/i }).fill(email);
   await page.getByRole('textbox', { name: 'Password', exact: true }).fill(password);
   await page.getByRole('button', { name: /sign in/i }).click();
   const response = await callback;
@@ -31,10 +42,19 @@ async function signInAtKeycloak(
   return ((await response.json()) as { access_token: string }).access_token;
 }
 
+async function signInAtKeycloak(
+  page: Page,
+  email: string,
+  organizationId: string,
+): Promise<string> {
+  await page.getByRole('textbox', { name: /username or email/i }).fill(email);
+  return submitKeycloakPassword(page, organizationId);
+}
+
 test.describe('Studio organization Keycloak OIDC', () => {
   test.skip(!KEYCLOAK_BASE_URL, 'Studio OIDC login requires KEYCLOAK_BASE_URL');
 
-  test('Owners configure SSO and staff return with current group permissions', async ({
+  test('Owners configure SSO and staff manage their group access and linked identity', async ({
     baseURL,
     browser,
     createOrganization,
@@ -76,6 +96,14 @@ test.describe('Studio organization Keycloak OIDC', () => {
     });
     await joinGroup(token, KEYCLOAK_REALM, staff, translators);
     await joinGroup(token, KEYCLOAK_REALM, staff, contentManagers);
+    const unlinkEmail = `unlink-${randomTestId()}@appsemble.com`;
+    const unlinkUser = await createUser(token, KEYCLOAK_REALM, {
+      email: unlinkEmail,
+      firstName: 'Studio',
+      lastName: 'Unlink',
+      password,
+    });
+    await joinGroup(token, KEYCLOAK_REALM, unlinkUser, translators);
     const organization = await createOrganization({
       id: randomTestId(),
       name: 'Studio SSO Integration',
@@ -84,6 +112,7 @@ test.describe('Studio organization Keycloak OIDC', () => {
     let cleanupFailure: unknown;
 
     try {
+      await createStudioUser('Studio Unlink', unlinkEmail, password);
       await page.goto(`/en/organizations/${organization.id}/sso`);
       await page
         .getByRole('textbox', { name: 'Provider name', exact: true })
@@ -129,6 +158,11 @@ test.describe('Studio organization Keycloak OIDC', () => {
         ignoreHTTPSErrors: true,
         storageState: { cookies: [], origins: [] },
       });
+      const personalContext = await browser.newContext({
+        baseURL,
+        ignoreHTTPSErrors: true,
+        storageState: { cookies: [], origins: [] },
+      });
       try {
         await firstStaffPage.goto(`/en/login?organization=${organization.id}`);
         await expect(
@@ -169,8 +203,91 @@ test.describe('Studio organization Keycloak OIDC', () => {
         await expect(returningStaffRow).not.toContainText('AppContentsManager');
         await firstStaffPage.reload();
         await expect(firstStaffRow).not.toContainText('AppContentsManager');
+
+        const personalPage = await personalContext.newPage();
+        const personalToken = await signInWithPassword(personalPage, unlinkEmail);
+        const before = await request.get('/api/users/current', {
+          headers: { authorization: `Bearer ${personalToken}` },
+        });
+        expect(before.status()).toBe(200);
+        const account = (await before.json()) as { sub: string };
+        await personalPage.goto(`/en/login?organization=${organization.id}`);
+        await personalPage
+          .getByRole('button', { name: 'Link organization single sign-on', exact: true })
+          .click();
+        const linkedToken = await signInAtKeycloak(personalPage, unlinkEmail, organization.id);
+        await expect(personalPage).toHaveURL(
+          new RegExp(`/organizations/${organization.id}(?:/|$)`),
+        );
+        const linkedIdentity = await request.get('/api/users/current/auth/oidc/identities', {
+          headers: { authorization: `Bearer ${linkedToken}` },
+        });
+        expect(await linkedIdentity.json()).toEqual([
+          expect.objectContaining({
+            issuer: `${KEYCLOAK_BASE_URL}/realms/${KEYCLOAK_REALM}`,
+            subject: unlinkUser,
+          }),
+        ]);
+        await personalPage.goto('/en/settings/user');
+        await personalPage.getByRole('link', { name: 'Social login', exact: true }).click();
+        await expect(
+          personalPage.getByRole('heading', { name: 'Organization single sign-on', exact: true }),
+        ).toBeVisible();
+        const unlinkButton = personalPage.getByRole('button', {
+          name: 'Unlink single sign-on',
+          exact: true,
+        });
+        await expect(unlinkButton).toBeVisible();
+        await unlinkButton.click();
+        await personalPage
+          .getByRole('dialog')
+          .getByRole('button', { name: 'Unlink single sign-on', exact: true })
+          .click();
+        await expect(personalPage).toHaveURL(/\/login(?:\?|$)/);
+        expect(
+          (
+            await request.get('/api/users/current', {
+              headers: { authorization: `Bearer ${linkedToken}` },
+            })
+          ).status(),
+        ).toBe(401);
+
+        const recoveredToken = await signInWithPassword(personalPage, unlinkEmail);
+        const remaining = await request.get('/api/users/current/auth/oidc/identities', {
+          headers: { authorization: `Bearer ${recoveredToken}` },
+        });
+        expect(await remaining.json()).toStrictEqual([]);
+        expect(
+          (
+            await request.get(`/api/organizations/${organization.id}/members`, {
+              headers: { authorization: `Bearer ${recoveredToken}` },
+            })
+          ).status(),
+        ).toBe(403);
+        await personalPage.goto(`/en/login?organization=${organization.id}`);
+        await personalPage
+          .getByRole('button', { name: 'Link organization single sign-on', exact: true })
+          .click();
+        const relinkedToken = await submitKeycloakPassword(personalPage, organization.id);
+        const after = await request.get('/api/users/current', {
+          headers: { authorization: `Bearer ${relinkedToken}` },
+        });
+        expect((await after.json()).sub).toBe(account.sub);
+        const relinkedIdentity = await request.get('/api/users/current/auth/oidc/identities', {
+          headers: { authorization: `Bearer ${relinkedToken}` },
+        });
+        expect(await relinkedIdentity.json()).toEqual([
+          expect.objectContaining({
+            issuer: `${KEYCLOAK_BASE_URL}/realms/${KEYCLOAK_REALM}`,
+            subject: unlinkUser,
+          }),
+        ]);
       } finally {
-        await Promise.allSettled([firstContext.close(), returningContext.close()]);
+        await Promise.allSettled([
+          firstContext.close(),
+          returningContext.close(),
+          personalContext.close(),
+        ]);
       }
     } finally {
       try {
@@ -178,6 +295,7 @@ test.describe('Studio organization Keycloak OIDC', () => {
           ...(ownerAccessToken ? { headers: { authorization: `Bearer ${ownerAccessToken}` } } : {}),
         });
         expect(cleanup.status()).toBe(200);
+        await deleteStudioUser(unlinkEmail);
         await requestKc(`/admin/realms/${KEYCLOAK_REALM}`, {
           expectedStatuses: [204],
           method: 'DELETE',

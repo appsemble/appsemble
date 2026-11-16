@@ -1,1 +1,1 @@
-Add organization-managed Studio single sign-on and group-based access
+Add organization sign-on, identity management and group-based access

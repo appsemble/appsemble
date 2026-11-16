@@ -165,6 +165,8 @@ import { pathItems as usersCurrentApps } from './users/current/apps.js';
 import { pathItems as usersCurrentAuthOAuth2AppsAppIdConsentAgree } from './users/current/auth/oauth2/apps/appId/consent/agree.js';
 import { pathItems as usersCurrentAuthOAuth2AppsAppIdConsentVerify } from './users/current/auth/oauth2/apps/appId/consent/verify.js';
 import { pathItems as usersCurrentAuthOauth2Authorizations } from './users/current/auth/oauth2/authorizations.js';
+import { pathItems as usersCurrentAuthOidcIdentities } from './users/current/auth/oidc/identities.js';
+import { pathItems as usersCurrentAuthOidcIdentity } from './users/current/auth/oidc/identities/identityId.js';
 import { pathItems as usersCurrentAuthOAuth2ClientCredentialsClientId } from './users/current/auth/oauth2/clientCredentials/clientId.js';
 import { pathItems as usersCurrentAuthOAuth2ClientCredentials } from './users/current/auth/oauth2/clientCredentials.js';
 import { pathItems as usersCurrentEmails } from './users/current/emails.js';
@@ -368,6 +370,8 @@ export const paths = {
   '/api/users/current/auth/oauth2/apps/{appId}/consent/verify':
     usersCurrentAuthOAuth2AppsAppIdConsentVerify,
   '/api/users/current/auth/oauth2/authorizations': usersCurrentAuthOauth2Authorizations,
+  '/api/users/current/auth/oidc/identities': usersCurrentAuthOidcIdentities,
+  '/api/users/current/auth/oidc/identities/{identityId}': usersCurrentAuthOidcIdentity,
   '/api/users/current/auth/oauth2/client-credentials/{clientId}':
     usersCurrentAuthOAuth2ClientCredentialsClientId,
   '/api/users/current/auth/oauth2/client-credentials': usersCurrentAuthOAuth2ClientCredentials,

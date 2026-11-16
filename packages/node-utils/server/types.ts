@@ -77,6 +77,7 @@ declare module 'koas-parameters' {
     controllerName: string;
     controllerVersion: string;
     clientId: string;
+    identityId: string;
     language: string;
     organizationMemberId: string;
     groupMemberId: string;

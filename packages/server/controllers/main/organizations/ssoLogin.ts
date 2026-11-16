@@ -39,6 +39,7 @@ import { getOrganizationOidcConfiguration } from '../../../utils/organizationOid
 import {
   applyOrganizationSsoConfiguration,
   getOrganizationMemberRoles,
+  lockOrganizationSsoIdentity,
   resolveOrganizationSsoRoles,
   synchronizeOrganizationSsoMembership,
   validateOrganizationSsoConfiguration,
@@ -315,20 +316,6 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
   const identity = await OrganizationSsoIdentity.findOne({
     where: { issuer: sso.issuer, subject: claims.sub },
   });
-  assertKoaCondition(
-    !flow.linkUserId || !identity || identity.UserId === flow.linkUserId,
-    ctx,
-    403,
-    'This SSO identity is linked to another Appsemble account',
-  );
-  const memberUserId = flow.linkUserId ?? identity?.UserId;
-  const member = memberUserId
-    ? await OrganizationMember.findOne({
-        where: { OrganizationId: organizationId, UserId: memberUserId },
-      })
-    : null;
-  const guestAllowed =
-    member?.guest && sso.policy !== 'required' && sso.allowedLoginMethods.includes('oidc');
   if (candidate) {
     assertKoaCondition(
       resolveOrganizationSsoRoles(groups, sso.roleMappings).includes(
@@ -339,27 +326,33 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
       'The proposed provider must grant your account the Owner role',
     );
   }
-  if (!resolveOrganizationSsoRoles(groups, sso.roleMappings).length && !guestAllowed) {
-    if (memberUserId) {
-      await synchronizeOrganizationSsoMembership({ organizationId, userId: memberUserId, groups });
-    }
-    if (identity) {
-      await OrganizationSsoSession.destroy({
-        where: { OrganizationId: organizationId, OrganizationSsoIdentityId: identity.id },
-      });
-    }
-    throwKoaError(ctx, 403, 'No organization roles match this identity');
-  }
-
   try {
-    ctx.body = await getDB().transaction(async (transaction) => {
+    const loginResponse = await getDB().transaction(async (transaction) => {
+      await lockOrganizationSsoIdentity({ issuer: sso.issuer, subject: claims.sub }, transaction);
+      let linkedIdentity = await OrganizationSsoIdentity.findOne({
+        where: { issuer: sso.issuer, subject: claims.sub },
+        transaction,
+      });
+      assertKoaCondition(
+        !identity || linkedIdentity?.id === identity.id,
+        ctx,
+        409,
+        'The organization SSO identity changed during sign-in. Sign in again.',
+      );
+      assertKoaCondition(
+        !flow.linkUserId || !linkedIdentity || linkedIdentity.UserId === flow.linkUserId,
+        ctx,
+        403,
+        'This SSO identity is linked to another Appsemble account',
+      );
+      const memberUserId = flow.linkUserId ?? linkedIdentity?.UserId;
       await Organization.findByPk(organizationId, { transaction, lock: transaction.LOCK.UPDATE });
+      const saved = await OrganizationSso.findByPk(organizationId, {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
       let activeSso = sso;
       if (candidate) {
-        const saved = await OrganizationSso.findByPk(organizationId, {
-          transaction,
-          lock: transaction.LOCK.UPDATE,
-        });
         assertKoaCondition(
           (saved?.updated.toISOString() ?? null) === candidate.expectedUpdated,
           ctx,
@@ -372,8 +365,42 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
           'studio',
           transaction,
         );
+      } else {
+        assertKoaCondition(
+          saved != null && saved.configurationUpdated.getTime() === flow.configurationUpdated,
+          ctx,
+          401,
+          'The organization SSO configuration has changed',
+        );
+        activeSso = saved;
       }
-      let linkedIdentity = identity;
+      const member = memberUserId
+        ? await OrganizationMember.findOne({
+            where: { OrganizationId: organizationId, UserId: memberUserId },
+            transaction,
+          })
+        : null;
+      const guestAllowed =
+        member?.guest &&
+        activeSso.policy !== 'required' &&
+        activeSso.allowedLoginMethods.includes('oidc');
+      if (!resolveOrganizationSsoRoles(groups, activeSso.roleMappings).length && !guestAllowed) {
+        if (memberUserId) {
+          await synchronizeOrganizationSsoMembership({
+            organizationId,
+            userId: memberUserId,
+            groups,
+            transaction,
+          });
+        }
+        if (linkedIdentity) {
+          await OrganizationSsoSession.destroy({
+            where: { OrganizationId: organizationId, OrganizationSsoIdentityId: linkedIdentity.id },
+            transaction,
+          });
+        }
+        return null;
+      }
       let user = memberUserId ? await User.findByPk(memberUserId, { transaction }) : null;
       if (!user) {
         assertKoaCondition(!memberUserId, ctx, 401, 'The linked Appsemble account is unavailable');
@@ -460,6 +487,13 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
       );
       return response;
     });
+    assertKoaCondition(
+      loginResponse != null,
+      ctx,
+      403,
+      'No organization roles match this identity',
+    );
+    ctx.body = loginResponse;
     ctx.set('Cache-Control', 'no-store');
     ctx.set('Pragma', 'no-cache');
     if (candidate) {
