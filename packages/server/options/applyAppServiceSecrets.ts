@@ -2,6 +2,7 @@ import https from 'node:https';
 
 import {
   type ApplyAppServiceSecretsParams,
+  assertKoaCondition,
   basicAuth,
   getSSRFProtectedAgents,
   logger,
@@ -23,6 +24,7 @@ import {
 import { argv } from '../utils/argv.js';
 import { checkAppPermissions } from '../utils/authorization.js';
 import { decrypt, encrypt } from '../utils/crypto.js';
+import { isSecretIncomplete } from '../utils/secrets.js';
 
 const tokenErrorNotificationInterval = 24 * 60 * 60 * 1e3;
 
@@ -168,6 +170,13 @@ export async function applyAppServiceSecrets({
       continue;
     }
 
+    assertKoaCondition(
+      !isSecretIncomplete(serviceSecret.secret),
+      context,
+      409,
+      `Service secret "${serviceSecret.name || serviceSecret.urlPatterns}" is incomplete`,
+    );
+
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     const decryptedSecret = decrypt(serviceSecret.secret, argv.aesSecret);
@@ -218,6 +227,12 @@ export async function applyAppServiceSecrets({
           );
           let httpsAgent;
           if (clientCertSecret) {
+            assertKoaCondition(
+              !isSecretIncomplete(clientCertSecret.secret),
+              context,
+              409,
+              `Service secret "${clientCertSecret.name || clientCertSecret.urlPatterns}" is incomplete`,
+            );
             logger.silly(`Using client-certificate secret ${clientCertSecret.id}`);
 
             httpsAgent = new https.Agent({

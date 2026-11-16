@@ -1010,6 +1010,7 @@
   "studio.XAw0Lo": "Update an existing {resourceName} resource",
   "studio.XD8sl2": "Sentry environment",
   "studio.XTIljc": "App is already in collection",
+  "studio.XULd/v": "{count, plural, one {This secret needs a value before the app can use it:} other {These secrets need a value before the app can use them:}}",
   "studio.XVpEX+": "Cookie authentication",
   "studio.XYovs/": "Ratings",
   "studio.XZyOLa": "Are you sure you want to delete this role and all of its references in the app?",

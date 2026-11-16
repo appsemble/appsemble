@@ -83,6 +83,7 @@ describe('getAppOAuth2Secrets', () => {
           "created": "1970-01-01T00:00:00.000Z",
           "icon": "example",
           "id": 1,
+          "incomplete": false,
           "name": "Example",
           "remapper": null,
           "roleMappings": null,
@@ -94,6 +95,29 @@ describe('getAppOAuth2Secrets', () => {
       ]
     `);
     expect(response.data[0].id).toBe(secret.id);
+  });
+
+  it('should mark OAuth2 secrets without a client secret as incomplete', async () => {
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    const login = {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      icon: 'example',
+      scope: 'openid',
+      tokenUrl: 'https://example.com/oauth/token',
+    };
+    await AppOAuth2Secret.bulkCreate([
+      { ...login, clientSecret: 'example_client_secret', name: 'Complete' },
+      { ...login, clientSecret: '', name: 'Incomplete' },
+    ]);
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/secrets/oauth2`);
+
+    expect(response.data).toMatchObject([
+      { incomplete: false, name: 'Complete' },
+      { incomplete: true, name: 'Incomplete' },
+    ]);
   });
 
   it('should throw 404 if no app is found', async () => {

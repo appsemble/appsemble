@@ -12,6 +12,7 @@ can come in the form of app variables or app secrets.
   - [Saml secrets](#saml-secrets)
   - [SSL secrets](#ssl-secrets)
   - [SCIM secrets](#scim-secrets)
+  - [Incomplete secrets](#incomplete-secrets)
 - [Defining config in code](#defining-config-in-code)
 - [Defining config in the studio](#defining-config-in-the-studio)
 
@@ -36,6 +37,23 @@ object.from:
 ### [SSL secrets](../guides/tls.md)
 
 ### [SCIM secrets](../guides/scim.md)
+
+### Incomplete secrets
+
+A service secret, an OAuth2 secret or the SCIM configuration can exist without its credential (the
+service secret value, the OAuth2 client secret or the SCIM token). Such a secret is incomplete, and
+the app can't use it until it has a value:
+
+- A request action that needs an incomplete service secret, including the client certificate that an
+  OAuth client credentials secret uses, fails with `409 Conflict`.
+- The app hides the login button of an incomplete OAuth2 secret, and a login with it fails with
+  `409 Conflict`.
+- SCIM requests fail with `401 Unauthorized`.
+
+Studio lists the incomplete secrets at the top of the app pages, the SCIM token only while SCIM is
+enabled. Set a value on the secrets page to complete a secret. The API returns the same list from
+`GET /api/apps/{appId}/warnings`, and marks incomplete service and OAuth2 secrets with
+`incomplete: true`.
 
 ## Defining config in code
 

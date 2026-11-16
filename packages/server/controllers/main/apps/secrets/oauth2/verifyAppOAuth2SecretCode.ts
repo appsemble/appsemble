@@ -19,6 +19,7 @@ import {
   resolveLoginRoleMappings,
   syncLoginRoleMappings,
 } from '../../../../../utils/loginRoleMappings.js';
+import { isSecretIncomplete } from '../../../../../utils/secrets.js';
 
 export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   const {
@@ -66,6 +67,12 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   assertKoaCondition(appOAuth2Secrets.length > 0, ctx, 404, 'OAuth2 secret not found');
 
   const [secret] = appOAuth2Secrets;
+  assertKoaCondition(
+    !isSecretIncomplete(secret.clientSecret),
+    ctx,
+    409,
+    'OAuth2 secret is incomplete',
+  );
   const {
     access_token: accessToken,
     id_token: idToken,

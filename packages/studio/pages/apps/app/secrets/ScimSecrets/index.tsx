@@ -21,7 +21,7 @@ interface ScimSecret {
 }
 
 export function ScimSecrets(): ReactNode {
-  const { app } = useApp();
+  const { app, refreshWarnings } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();
 
@@ -33,6 +33,7 @@ export function ScimSecrets(): ReactNode {
     try {
       const { data } = await axios.patch(url, { enabled });
       result.setData(data);
+      refreshWarnings();
     } catch {
       push(formatMessage(messages.submitError));
     }
@@ -48,6 +49,7 @@ export function ScimSecrets(): ReactNode {
         const token = randomString();
         const { data } = await axios.patch(url, { token });
         result.setData(data);
+        refreshWarnings();
       } catch {
         push(formatMessage(messages.submitError));
       }
