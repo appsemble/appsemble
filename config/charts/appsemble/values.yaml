@@ -173,8 +173,8 @@ pgbouncer:
   # Above 1, the replicas spread across nodes and a PodDisruptionBudget keeps one available.
   replicaCount: 1
   image:
-    repository: edoburu/pgbouncer
-    tag: v1.26.1-p0
+    repository: ghcr.io/cloudnative-pg/pgbouncer
+    tag: 1.26.1-202611121015-trixie
     pullPolicy: IfNotPresent
   service:
     port: 6432
