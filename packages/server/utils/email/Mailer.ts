@@ -236,7 +236,6 @@ export class Mailer {
           secure: smtpSecure,
           auth,
           getSocket,
-          ...(logger.isVerboseEnabled() ? { debug: true, logger: true } : {}),
         } as SMTPTransportOptions,
         { from: smtpFrom },
       );
@@ -542,8 +541,8 @@ export class Mailer {
     }
     loggingMessage.push(`Subject: ${subject}`);
     // The body can hold verification and password reset links and personal data. It is logged
-    // only without SMTP, where the log is how a developer reads the email, or when verbose.
-    if (!transport || logger.isVerboseEnabled()) {
+    // only without SMTP, where the log is how a developer reads the email.
+    if (!transport) {
       loggingMessage.push('', text);
     }
     logger.info(loggingMessage.join('\n'));
@@ -604,7 +603,6 @@ export class Mailer {
       } else {
         logger.warn('IMAP hasn’t been configured. Not moving email to sent folder.');
       }
-      logger.verbose(String(message));
     }
   }
 

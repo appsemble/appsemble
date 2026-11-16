@@ -1,4 +1,7 @@
+// eslint-disable-next-line n/prefer-global/console -- Vitest's global console lacks the Console class.
+import { Console } from 'node:console';
 import { type AddressInfo, createServer as createTcpServer, type Socket } from 'node:net';
+import { Writable } from 'node:stream';
 
 import { logger } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
@@ -1146,10 +1149,23 @@ _Test App_
 
     afterEach(() => {
       logger.level = level;
+      vi.unstubAllGlobals();
     });
 
-    async function sendAndReadInfoLog(): Promise<string> {
-      vi.spyOn(logger, 'info');
+    async function sendAndReadLog(): Promise<string> {
+      let log = '';
+      // Winston and nodemailer both log through the global console.
+      vi.stubGlobal(
+        'console',
+        new Console(
+          new Writable({
+            write(chunk, encoding, callback) {
+              log += chunk;
+              callback();
+            },
+          }),
+        ),
+      );
       await mailer.sendEmail({
         to: 'test@example.com',
         subject: 'Reset your password',
@@ -1157,31 +1173,26 @@ _Test App_
         html: '<p>Reset your password</p>',
         attachments: [],
       });
-      return vi
-        .mocked(logger.info)
-        .mock.calls.map(([message]) => String(message))
-        .join('\n');
+      return log;
     }
 
-    it('should leave the body out of the info log when SMTP is configured', async () => {
+    it('should leave the body out of the logs at the verbosity of the Helm chart', async () => {
+      // The Helm chart starts the server with -vv, which logs at the most verbose level.
+      logger.level = 'silly';
       setArgv({ ...baseArgv, imapCopyToSentFolder: true });
-      mailer.transport = { sendMail: vi.fn() } as Partial<Transporter> as Transporter;
+      const smtp = await receiveEmail();
+      mailer = new Mailer({ ...argv, smtpHost: '127.0.0.1', smtpPort: smtp.port });
 
-      const log = await sendAndReadInfoLog();
+      const log = await sendAndReadLog();
 
       expect(log).toContain('Subject: Reset your password');
-      expect(log).not.toContain('token=abcdefg');
-    });
-
-    it('should log the body when verbose logging is enabled', async () => {
-      logger.level = 'verbose';
-      mailer.transport = { sendMail: vi.fn() } as Partial<Transporter> as Transporter;
-
-      expect(await sendAndReadInfoLog()).toContain('token=abcdefg');
+      expect(log).not.toContain('abcdefg');
     });
 
     it('should log the body when SMTP is not configured', async () => {
-      expect(await sendAndReadInfoLog()).toContain('token=abcdefg');
+      logger.level = 'info';
+
+      expect(await sendAndReadLog()).toContain('token=abcdefg');
     });
   });
 });
