@@ -319,6 +319,39 @@ default.
 Allow only the specific hosts an app needs. Allowing a whole private range such as `10.0.0.0/8`
 opens every service in that range to every app developer on the installation.
 
+## Private certificate authorities
+
+The server trusts the certificate authorities bundled with Node.js. When services such as object
+storage, an SMTP server or an OpenID Connect provider present certificates of a private certificate
+authority, name a ConfigMap which holds its PEM certificates in `trustedCaBundle.configMap`. The
+server and every Job and CronJob that runs the Appsemble image mount the key `trustedCaBundle.key`
+and trust its certificates in addition to the bundled ones.
+
+```sh
+kubectl create configmap trusted-ca-bundle --from-file ca-bundle.crt=my-ca.crt
+```
+
+```yaml
+trustedCaBundle:
+  configMap: trusted-ca-bundle
+```
+
+On OpenShift, the cluster writes its trusted CA bundle, which includes the certificate authorities
+of the cluster proxy configuration, to the key `ca-bundle.crt` of a ConfigMap with this label:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trusted-ca-bundle
+  labels:
+    config.openshift.io/inject-trusted-cabundle: 'true'
+```
+
+Node.js reads one extra file of certificates, so the bundle takes the place of the
+[Mailpit](#mailpit) certificate. Add that certificate to the bundle when apps send email through the
+bundled Mailpit.
+
 ## Health checks
 
 The server serves three operational endpoints on every hostname, following the
@@ -398,7 +431,8 @@ kubectl create secret tls mailpit-tls --cert mailpit.crt --key mailpit.key
 ```
 
 Name the TLS secret in `mailpit.mailpit.smtp.tls.secretName`. The chart does not render without it
-while Mailpit is enabled. The Appsemble server trusts the certificate in that secret.
+while Mailpit is enabled. The Appsemble server trusts the certificate in that secret, unless it
+trusts a [private certificate authority](#private-certificate-authorities) instead.
 
 ## Object storage
 
@@ -656,6 +690,8 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `securityEmail`                             | `security@appsemble.com`       | The default security contact email for reporting security vulnerabilities.                                                                |
 | `rejectBreachedPasswords`                   | `false`                        | If `true`, reject new passwords that appear in the Have I Been Pwned Pwned Passwords data set.                                            |
 | `ssrfAllowIpAddressList`                    | `[]`                           | Private IPs or CIDRs apps may connect to. See [Connections to private addresses](#connections-to-private-addresses).                      |
+| `trustedCaBundle.configMap`                 | `''`                           | A ConfigMap with PEM certificates to trust. See [Private certificate authorities](#private-certificate-authorities).                      |
+| `trustedCaBundle.key`                       | `ca-bundle.crt`                | The key in `trustedCaBundle.configMap` which holds the certificates.                                                                      |
 | `disableRegistration`                       | `false`                        | If `true`, disable registration with email and password. Without a Studio login provider (`oauthSecret`) nobody new can get an account.   |
 | `postgresSSL`                               | `true`                         | If `true`, establish the database connection over TLS. When PgBouncer is enabled, both DB hops use TLS.                                   |
 | `quotas.appEmail.enabled`                   | `false`                        | If `true`, enable app email quotas.                                                                                                       |

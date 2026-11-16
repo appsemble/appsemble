@@ -285,7 +285,10 @@ spec:
             - name: SLOW_QUERY_THRESHOLD
               value: {{ .Values.slowQueryThreshold | quote }}
             {{- end }}
-            {{- if .Values.mailpit.mailpit.smtp.tls.secretName }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 12 }}
+            # NODE_EXTRA_CA_CERTS names one file, so the trusted CA bundle replaces the Mailpit
+            # certificate.
+            {{- if and .Values.mailpit.mailpit.smtp.tls.secretName (not .Values.trustedCaBundle.configMap) }}
             - name: NODE_EXTRA_CA_CERTS
               value: /tmp/mailpit.crt
             {{- end }}
@@ -297,6 +300,7 @@ spec:
               mountPath: /tmp/mailpit.crt
               subPath: tls.crt
           {{- end }}
+{{ include "appsemble.trustedCaBundle.volumeMount" . | indent 12 }}
       volumes:
         - name: tmp-volume
           emptyDir: {}
@@ -305,6 +309,7 @@ spec:
           secret:
             secretName: {{ .Values.mailpit.mailpit.smtp.tls.secretName }}
       {{- end }}
+{{ include "appsemble.trustedCaBundle.volume" . | indent 8 }}
       {{- with .Values.hostAliases }}
       hostAliases:
         {{- toYaml . | nindent 8 }}

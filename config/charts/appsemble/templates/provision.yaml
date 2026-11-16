@@ -84,4 +84,7 @@ spec:
               value: {{ . | quote }}
             {{- end }}
             {{- end }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 12 }}
+{{ include "appsemble.trustedCaBundle.volumeMounts" . | indent 10 }}
+{{ include "appsemble.trustedCaBundle.volumes" . | indent 6 }}
 {{ end }}

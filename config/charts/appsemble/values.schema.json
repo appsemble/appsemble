@@ -787,6 +787,21 @@
       },
       "default": []
     },
+    "trustedCaBundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "PEM certificates the server and its Jobs and CronJobs trust in addition to the certificate authorities bundled with Node.js.",
+      "properties": {
+        "configMap": {
+          "type": "string",
+          "description": "The ConfigMap which holds the certificates."
+        },
+        "key": {
+          "type": "string",
+          "description": "The key in the ConfigMap which holds the certificates."
+        }
+      }
+    },
     "disableRegistration": {
       "type": "boolean",
       "description": "If `true`, disable user registration with email and password. Without a Studio login provider (`oauthSecret`) nobody new can get an account.",

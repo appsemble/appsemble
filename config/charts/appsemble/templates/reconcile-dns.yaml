@@ -52,4 +52,7 @@ spec:
               value: {{ . | quote }}
             {{- end }}
 {{ include "appsemble.dns" . | indent 12 }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 12 }}
+{{ include "appsemble.trustedCaBundle.volumeMounts" . | indent 10 }}
+{{ include "appsemble.trustedCaBundle.volumes" . | indent 6 }}
 {{ end }}

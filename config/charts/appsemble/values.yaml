@@ -217,6 +217,10 @@ rejectBreachedPasswords: false
 
 ssrfAllowIpAddressList: []
 
+trustedCaBundle:
+  configMap: ''
+  key: ca-bundle.crt
+
 disableRegistration: false
 
 quotas:
