@@ -1,7 +1,7 @@
 services:
   # A persistent database for local development.
   postgres-dev:
-    image: postgres:15
+    image: postgres:18.7
     restart: always
     environment:
       POSTGRES_DB: appsemble
@@ -24,7 +24,7 @@ services:
 
   # A database using tmpfs for faster test runs.
   postgres-test:
-    image: postgres:14
+    image: postgres:18.7
     restart: always
     environment:
       POSTGRES_DB: appsemble
@@ -33,7 +33,7 @@ services:
     ports:
       - '54321:5432'
     tmpfs:
-      - /var/lib/postgresql/data
+      - /var/lib/postgresql
 
   pgadmin:
     image: dpage/pgadmin4

@@ -44,7 +44,7 @@ services:
       - '8000:9999'
 
   postgresql:
-    image: postgres:15
+    image: postgres:18
     networks:
       - appsemble
     restart: always
@@ -53,7 +53,7 @@ services:
       POSTGRES_USER: *database-user
       POSTGRES_PASSWORD: *database-password
     volumes:
-      - $HOME/.local/share/appsemble-postgresql:/var/lib/postgresql/data
+      - $HOME/.local/share/appsemble-postgresql:/var/lib/postgresql
     ports:
       - '5432:5432'
 

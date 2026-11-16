@@ -6,7 +6,7 @@ networks:
 services:
   postgres:
     container_name: postgres
-    image: postgres:15
+    image: postgres:18.7
     networks: [pipeline]
     environment:
       POSTGRES_DB: appsemble

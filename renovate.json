@@ -44,6 +44,13 @@
       ],
       "depNameTemplate": "@playwright/test",
       "datasourceTemplate": "npm"
+    },
+    {
+      "description": "Track the postgres image of the 'build seeded db image' job's inline Dockerfile, which the gitlabci manager does not read",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.gitlab-ci\\.yml$/"],
+      "matchStrings": ["FROM (?<depName>postgres):(?<currentValue>\\S+)"],
+      "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
@@ -61,6 +68,15 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["mcr.microsoft.com/playwright"],
       "enabled": false
+    },
+    {
+      "description": "Look up the Debian packages pinned in the Dockerfile in the PGDG repository of its trixie base image; the deb datasource has no release timestamps for minimumReleaseAge to wait on",
+      "matchFileNames": ["Dockerfile"],
+      "matchDatasources": ["deb"],
+      "registryUrls": [
+        "https://apt.postgresql.org/pub/repos/apt?suite=trixie-pgdg&components=main&binaryArch=amd64"
+      ],
+      "minimumReleaseAge": null
     },
     {
       "description": "eslint-plugin-jsx-a11y has no released version supporting ESLint 10 yet; cap eslint below v10 until https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/issues/1075 (tracked by PR https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/pull/1081) ships a compatible release",
