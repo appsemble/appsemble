@@ -438,9 +438,12 @@ export function Page(): ReactNode {
 
     if (pageId && pageId !== translatedPageId && !isNotFound) {
       // The canonical slug and other aliases redirect to the slug of the current language, while
-      // preserving query params and the fragment.
+      // preserving query params and the fragment. A redirect navigates only when it mounts, so the
+      // key mounts a new one when another redirect of this page, such as the login redirect to a
+      // custom login page, leads here.
       return (
         <Redirect
+          key={translatedPageId}
           replace
           to={`${replacePageSegment(translatedPageId)}${window.location.search}${window.location.hash}`}
         />

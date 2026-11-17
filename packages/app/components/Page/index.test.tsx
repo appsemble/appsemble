@@ -502,6 +502,25 @@ describe('page not found', () => {
     ).not.toBeNull();
   });
 
+  it('should redirect a guest to the path of the custom login page for a page that requires a login', async () => {
+    mockApp({
+      name: 'Test App',
+      defaultPage: 'Home',
+      layout: { navigation: 'top' },
+      security,
+      pages: [
+        { name: 'Home', blocks: [block] },
+        { name: 'About', blocks: [block] },
+        { name: 'Login', roles: ['$guest'], blocks: [block] },
+      ],
+    } as AppDefinition);
+    renderAt('/en/about');
+
+    expect(
+      await screen.findByText(`/en/login?${new URLSearchParams({ redirect: '/en/about' })}`),
+    ).not.toBeNull();
+  });
+
   it('should redirect a member to the default page for an existing page they may not view when the app defines a not found page', async () => {
     mockApp({
       name: 'Test App',
