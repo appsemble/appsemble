@@ -15,8 +15,8 @@ export function OrganizationsRoutes(): ReactNode {
     <MetaSwitch description={messages.description} title={messages.title}>
       <Route element={<IndexPage />} path="/" />
       <Route element={<OrganizationRoutes />} path="/:organizationId" />
-      <Route element={<ProtectedRoute />} path="/:organizationId/*">
-        <Route element={<OrganizationRoutes />} path="*" />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<OrganizationRoutes />} path="/:organizationId/*" />
       </Route>
       <Route element={<Navigate to="/organizations" />} path="*" />
     </MetaSwitch>

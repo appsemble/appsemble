@@ -1,5 +1,5 @@
 import { PredefinedOrganizationRole } from '@appsemble/types';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import axios, { AxiosError } from 'axios';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
@@ -123,6 +123,7 @@ function TargetRoutes(): ReactNode {
       <Route element={<OrganizationsRoutes />} path="/organizations/*" />
       <Route element={<AppsRoutes />} path="/apps/*" />
       <Route element={<LoginDestination />} path="/login" />
+      <Route element={<p>Collection destination</p>} path="/collections/:collectionId" />
     </Routes>
   );
 }
@@ -167,4 +168,39 @@ it('keeps an anonymous private organization profile unavailable', async () => {
     await screen.findByText('Something went wrong trying to fetch this organization.'),
   ).toBeDefined();
   expect(screen.queryByRole('textbox', { name: 'Email' })).toBeNull();
+});
+
+it('opens an organization collection at its global collection URL', async () => {
+  localStorage.access_token = `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`;
+  localStorage.refresh_token = 'refresh';
+  const member = { ...organization, roles: [PredefinedOrganizationRole.Owner] };
+  const responses: Record<string, unknown> = {
+    '/api/users/current': { sub: 'owner', email: 'owner@example.com' },
+    '/api/users/current/organizations': [member],
+    '/api/organizations/example': organization,
+    '/api/organizations/example/subscription': {},
+    '/api/organizations/example/app-collections': [
+      {
+        id: 42,
+        name: 'Example collection',
+        OrganizationId: organization.id,
+        headerImage: '/header.png',
+        $expert: { name: 'Example expert' },
+      },
+    ],
+  };
+  axios.defaults.adapter = (config) =>
+    Promise.resolve({
+      data: responses[config.url],
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config,
+    });
+  renderTarget('/en/organizations/example/collections');
+  const collection = await screen.findByRole('link', { name: /Example collection/ });
+
+  expect(collection).toHaveProperty('href', 'http://localhost/en/collections/42');
+  fireEvent.click(collection);
+  expect(await screen.findByText('Collection destination')).toBeDefined();
 });

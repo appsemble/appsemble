@@ -195,6 +195,34 @@ describe('organization single sign-on domain discovery', () => {
     });
   });
 
+  it.each([undefined, 'staff'])(
+    'keeps shared-domain discovery available after deleting the organization context %s',
+    async (organizationId) => {
+      await Organization.create({ id: 'active', name: 'Active organization' });
+      await applyOrganizationSsoConfiguration('active', configuration, 'studio');
+      await OrganizationSsoDomain.bulkCreate(
+        ['staff', 'active'].map((OrganizationId) => ({
+          OrganizationId,
+          domain: 'example.com',
+          managedBy: 'studio',
+          verifiedAt: new Date(),
+        })),
+      );
+      expect((await request.delete('/api/organizations/staff')).status).toBe(200);
+      unauthorize();
+      const response = await request.post('/api/auth/email/discover', {
+        email: 'new@example.com',
+        organizationId,
+      });
+      expect({ status: response.status, data: response.data }).toStrictEqual({
+        status: 200,
+        data: {
+          organizations: [{ id: 'active', name: 'Active organization', ssoName: 'Staff SSO' }],
+        },
+      });
+    },
+  );
+
   it('prefers an explicit organization context even for an unclaimed guest domain', async () => {
     unauthorize();
     const response = await request.post('/api/auth/email/discover', {

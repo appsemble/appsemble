@@ -14,14 +14,22 @@ export async function discoverOrganizationSso(ctx: Context): Promise<void> {
     throwKoaError(ctx, 400, (error as Error).message);
   }
   const contextual = organizationId
-    ? await OrganizationSso.findByPk(organizationId, { include: [Organization] })
+    ? await OrganizationSso.findByPk(organizationId, {
+        include: [{ model: Organization, required: true }],
+      })
     : null;
   const providers = contextual
     ? [contextual]
     : (
         await OrganizationSsoDomain.findAll({
           where: { domain, verifiedAt: { [Op.ne]: null } },
-          include: [{ model: OrganizationSso, required: true, include: [Organization] }],
+          include: [
+            {
+              model: OrganizationSso,
+              required: true,
+              include: [{ model: Organization, required: true }],
+            },
+          ],
           order: [['OrganizationId', 'ASC']],
         })
       ).map((claim) => claim.OrganizationSso!);
