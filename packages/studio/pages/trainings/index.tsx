@@ -1,5 +1,4 @@
 import { MetaSwitch } from '@appsemble/react-components';
-import { type Training, type TrainingChapter } from '@appsemble/types';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { Route } from 'react-router-dom';
 
@@ -9,6 +8,7 @@ import { TrainingPage } from './training/index.js';
 import { getChapterBlockedState, getChapterCompletionState } from './utils/index.js';
 import { TrainingTree } from '../../components/TrainingTree/index.js';
 import { useUser } from '../../components/UserProvider/index.js';
+import { type Training, type TrainingChapter } from '../../types.js';
 
 function updateChapterBlockedStates(
   chapters: TrainingChapter[],

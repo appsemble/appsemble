@@ -1,7 +1,7 @@
-import { type Training } from '@appsemble/types';
 import { describe, expect, it } from 'vitest';
 
 import { getChapterCompletionState } from './getChapterCompletionState.js';
+import { type Training } from '../../../types.js';
 
 describe('getChapterCompletionState', () => {
   it('should return "completed" if all trainings are completed', () => {

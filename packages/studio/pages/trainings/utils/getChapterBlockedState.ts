@@ -1,4 +1,6 @@
-import { type TrainingChapter, type TrainingStatus } from '@appsemble/types';
+import { type TrainingStatus } from '@appsemble/types';
+
+import { type TrainingChapter } from '../../../types.js';
 
 /**
  * Calculates whether the chapter should be blocked. It does this by checking whether the blocking
