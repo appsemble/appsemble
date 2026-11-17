@@ -126,6 +126,7 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
             name="appMemberId"
             onChange={changeDemoAppMember}
             required
+            value={demoAppMember.sub}
           >
             {demoAppMembers.map((appMember) => (
               <Option key={appMember.sub} value={appMember.sub}>
