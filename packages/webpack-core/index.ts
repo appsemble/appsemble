@@ -114,6 +114,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
         exclude: [
           '**/*.test.{ts,tsx}.snap',
           '**/*.test.{ts,tsx}',
+          '**/test-utils.{ts,tsx}',
           '**/*.d.ts',
           '**/*.md',
           '**/types.ts',

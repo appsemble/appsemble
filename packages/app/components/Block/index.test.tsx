@@ -23,7 +23,7 @@ import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 import { PageDialog } from '../PageDialog/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
-import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
+import { IconTestWrapper } from '../../utils/test-utils.js';
 
 let blockRoot: HTMLElement | undefined;
 let blockVersion = 0;

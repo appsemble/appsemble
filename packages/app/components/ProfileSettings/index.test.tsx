@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProfileSettings } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
-import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
+import { IconTestWrapper } from '../../utils/test-utils.js';
 
 const appMemberInfo = {
   sub: 'randomly-generated',

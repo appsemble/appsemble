@@ -9,7 +9,7 @@ import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
-import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
+import { IconTestWrapper } from '../../utils/test-utils.js';
 
 const appDefinition = {
   name: 'Test App',

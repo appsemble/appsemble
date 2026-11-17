@@ -6,7 +6,7 @@ import { describe, expect, it, onTestFinished, vi } from 'vitest';
 import { MessagesProvider, type Msg, useMessages } from './index.js';
 import { ModalCard } from '../ModalCard/index.js';
 import { trackShadowModalDialogs } from '../ModalCard/useModalDialog.js';
-import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
+import { IconTestWrapper } from '../../utils/test-utils.js';
 
 vi.mock('react-intl', async () => {
   const reactIntl = (await vi.importActual('react-intl')) as typeof import('react-intl');

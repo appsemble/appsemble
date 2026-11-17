@@ -15,7 +15,7 @@ import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
-import { IconTestWrapper } from '../../utils/IconTestWrapper.js';
+import { IconTestWrapper } from '../../utils/test-utils.js';
 
 vi.mock('../../utils/settings.js', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../utils/settings.js')>()),
