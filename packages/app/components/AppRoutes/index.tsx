@@ -52,13 +52,15 @@ function RouteRedirect({ segment }: RouteRedirectProps): ReactNode {
  * Match a built-in route at the given segment after the language.
  *
  * Built-in routes are capitalized and match case sensitively, so they don't match the lowercase path
- * of a page with the same name.
+ * of a page with the same name. The router matches the path as the browser encodes it, and a
+ * translated segment is literal text.
  *
  * @param segment The segment of the built-in route.
  * @returns The pattern of the route, which captures the language as `lang`.
  */
 function builtinPath(segment: string): RegExp {
-  return new RegExp(`^/(?<lang>[^/]+)/${segment}/?$`);
+  const pattern = encodeURI(segment).replaceAll(/[$()*+.?[\\\]^{|}]/g, '\\$&');
+  return new RegExp(`^/(?<lang>[^/]+)/${pattern}/?$`);
 }
 
 interface TranslatedRouteProps {

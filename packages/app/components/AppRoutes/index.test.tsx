@@ -2,7 +2,7 @@ import { type AppDefinition } from '@appsemble/lang-sdk';
 import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { type ReactNode } from 'react';
-import { Route } from 'wouter-preact';
+import { Route, Router } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppRoutes } from './index.js';
@@ -11,6 +11,7 @@ import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import { IntlProvider } from '../IntlProvider/index.js';
 import { useLocationString } from '../../utils/useLocationString.js';
+import { useRawLocation } from '../../utils/useRawLocation.js';
 
 vi.mock('../AppDebug/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -104,10 +105,12 @@ function renderRoutes(
   window.history.replaceState(null, '', path);
   render(
     <IntlProvider locale="en" messages={{}}>
-      <Route path="/:lang/*?">
-        <LocationProbe />
-        <AppRoutes />
-      </Route>
+      <Router hook={useRawLocation}>
+        <Route path="/:lang/*?">
+          <LocationProbe />
+          <AppRoutes />
+        </Route>
+      </Router>
     </IntlProvider>,
   );
 }
@@ -154,6 +157,13 @@ describe('AppRoutes', () => {
     renderRoutes('/nl/InLoggen', { appMessages: { 'routes.Login': 'InLoggen' } });
     await waitFor(() => expect(screen.getByText('Login route')).not.toBeNull());
     expect(screen.getByText('/nl/InLoggen')).not.toBeNull();
+  });
+
+  it('should render a translated built-in route whose segment has special characters', async () => {
+    renderRoutes('/fr/Caf%C3%A9%20(menu)', {
+      appMessages: { 'routes.Settings': 'Café (menu)' },
+    });
+    await waitFor(() => expect(screen.getByText('Settings route')).not.toBeNull());
   });
 
   it('should render a page whose path is a built-in route in lowercase', async () => {
