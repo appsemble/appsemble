@@ -1,6 +1,6 @@
 import { getRouteSegment } from '@appsemble/lang-sdk';
 import { type ReactNode } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { Redirect, useParams } from 'wouter-preact';
 
 import { GroupInvitePrompt } from './GroupInvitePrompt/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
@@ -15,11 +15,8 @@ export function GroupInvite(): ReactNode {
 
   if (!isLoggedIn) {
     return (
-      <Navigate
-        to={{
-          pathname: `/${lang}/${getRouteSegment('Login', getAppMessage)}`,
-          search: String(new URLSearchParams({ redirect })),
-        }}
+      <Redirect
+        to={`/${lang}/${getRouteSegment('Login', getAppMessage)}?${new URLSearchParams({ redirect })}`}
       />
     );
   }

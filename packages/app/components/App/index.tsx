@@ -1,6 +1,6 @@
 import { FormComponentOptionalLabelContext } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Switch } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { AppDefinitionProvider } from '../AppDefinitionProvider/index.js';
@@ -71,13 +71,12 @@ export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactNode {
   );
 
   return (
-    <BrowserRouter>
+    <>
       <PageTracker />
-      <Routes>
-        {/* Simple way to get optional parameters back */}
-        <Route element={appContent} path="/*" />
-        <Route element={appContent} path="/:lang/*" />
-      </Routes>
-    </BrowserRouter>
+      <Switch>
+        <Route path="/:lang/*?">{appContent}</Route>
+        <Route>{appContent}</Route>
+      </Switch>
+    </>
   );
 }

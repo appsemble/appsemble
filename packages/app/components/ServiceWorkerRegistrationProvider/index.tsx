@@ -12,7 +12,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { FormattedMessage } from '../IntlProvider/index.js';

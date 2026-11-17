@@ -1,6 +1,6 @@
 import { getPagePathSegment, remap, type RemapperContext } from '@appsemble/lang-sdk';
 import { type ReactNode, useMemo } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -59,7 +59,7 @@ export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): Rea
   const { page } = usePage();
   const { getAppMessage, getMessage } = useAppMessages();
   const { lang: locale } = useParams();
-  const { pathname } = useLocation();
+  const [pathname] = useLocation();
   const logoInNavbar = (definition.layout?.logo?.position || 'hidden') === 'navbar';
   const BREAKPOINTS = useGridBreakpoints(definition.layout?.breakpoints);
   const isDesktop = useIsDesktop(definition.layout?.breakpoints);

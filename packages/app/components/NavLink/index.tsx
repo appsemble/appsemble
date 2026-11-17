@@ -1,34 +1,42 @@
-import classNames from 'classnames';
-import { type VNode } from 'preact';
-import {
-  NavLink as NavigationLink,
-  type NavLinkProps as RouterNavLinkProps,
-} from 'react-router-dom';
+import { type ComponentChildren, type JSX, type VNode } from 'preact';
+import { Link, useLocation } from 'wouter-preact';
 
-interface NavLinkProps extends Omit<RouterNavLinkProps, 'className'> {
+interface NavLinkProps extends Omit<
+  JSX.HTMLAttributes<HTMLAnchorElement>,
+  'children' | 'className' | 'ref'
+> {
+  readonly children?: ComponentChildren | ((isActive: boolean) => ComponentChildren);
+
   /**
-   * The CSS class to apply to the link.
+   * The CSS class to apply to the link, or a function that returns it.
    */
-  readonly className?: string;
+  readonly className?: string | ((isActive: boolean) => string);
 
   /**
    * If specified, the link is only considered active if it’s an exact match.
    */
   readonly end?: boolean;
+
+  readonly to: string;
 }
 
 /**
- * A Bulma styles navigation link.
+ * A navigation link that is active while the current path is its target or below it.
  */
-export function NavLink({ className, end, to, ...props }: NavLinkProps): VNode {
+export function NavLink({ children, className, end, to, ...props }: NavLinkProps): VNode {
+  const [location] = useLocation();
+  const path = location.toLowerCase();
+  const target = to.toLowerCase();
+  const isActive = path === target || (!end && path.startsWith(`${target}/`));
+
   return (
-    <NavigationLink
-      className={({ isActive }: { isActive: boolean }) =>
-        classNames(className, 'is-radiusless', isActive && 'is-active')
-      }
-      end={end}
-      to={to}
+    <Link
       {...props}
-    />
+      aria-current={isActive ? 'page' : undefined}
+      className={typeof className === 'function' ? className(isActive) : className}
+      to={to}
+    >
+      {typeof children === 'function' ? children(isActive) : children}
+    </Link>
   );
 }

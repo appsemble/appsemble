@@ -16,7 +16,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'wouter-preact';
 
 import { Loader } from '../Loader/index.js';
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
@@ -125,9 +125,8 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
   const [isLoading, setIsLoading] = useState(Boolean(definition.security));
   const [state, setState] = useState(initialState);
 
-  const { pathname } = useLocation();
+  const [pathname, navigate] = useLocation();
   const isOAuth2Callback = /(^|\/)Callback$/.test(pathname);
-  const navigate = useNavigate();
   const { lang } = useParams<{ lang: string }>();
   const { getAppMessage } = useAppMessages();
 
@@ -315,12 +314,11 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNo
         // registering or an app member action, has to move there to be completed.
         const loginSegment = getRouteSegment('Login', getAppMessage);
         if (pathname.split('/').at(-1) !== loginSegment) {
-          navigate({
-            pathname: `/${lang}/${loginSegment}`,
-            search: params.redirect
-              ? String(new URLSearchParams({ redirect: params.redirect }))
-              : '',
-          });
+          navigate(
+            `/${lang}/${loginSegment}${
+              params.redirect ? `?${new URLSearchParams({ redirect: params.redirect })}` : ''
+            }`,
+          );
         }
         return null;
       }

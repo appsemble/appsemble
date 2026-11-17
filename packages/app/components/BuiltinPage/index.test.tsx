@@ -1,7 +1,6 @@
 import { type AppDefinition, type BuiltinPagesLayoutDefinition } from '@appsemble/lang-sdk';
 import { render, screen, within } from '@testing-library/react';
 import { type ReactNode } from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { BuiltinPage } from './index.js';
@@ -68,14 +67,13 @@ function mockApp(layout: AppDefinition['layout'] = {}, emailVerified = true): vo
 }
 
 function renderPage(children: ReactNode): void {
+  window.history.replaceState(null, '', '/en/Verify');
   render(
     <IntlProvider locale="en" messages={{ 'test.title': 'Verify your account' }}>
-      <MemoryRouter initialEntries={['/en/Verify']}>
-        <MenuProvider>
-          <VerifyBanner />
-          {children}
-        </MenuProvider>
-      </MemoryRouter>
+      <MenuProvider>
+        <VerifyBanner />
+        {children}
+      </MenuProvider>
     </IntlProvider>,
     { wrapper: IconTestWrapper },
   );

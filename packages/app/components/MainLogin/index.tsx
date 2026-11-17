@@ -1,7 +1,7 @@
 import { getRouteSegment } from '@appsemble/lang-sdk';
 import { Button, Message, useToggle } from '@appsemble/preact-components';
 import { type ReactNode, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -46,7 +46,7 @@ export function MainLogin(): ReactNode {
       : logins,
   };
 
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
 
   const onPasswordLogin = useCallback(
     async (credentials: LoginFormValues): Promise<void> => {

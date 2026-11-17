@@ -14,14 +14,4 @@ export default {
     // The CommonJS entries of React libraries load React through Node, bypassing the aliases.
     mainFields: ['module', 'main'],
   },
-  test: {
-    ...config.test,
-    server: {
-      deps: {
-        // Externalized dependencies skip the aliases, so the libraries that import React are
-        // inlined.
-        inline: [/node_modules\/(react-router|react-router-dom)\//],
-      },
-    },
-  },
 };

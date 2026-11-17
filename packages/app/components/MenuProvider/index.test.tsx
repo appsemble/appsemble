@@ -1,7 +1,7 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { render, screen } from '@testing-library/react';
 import { type ReactNode, useEffect } from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MenuProvider, usePage } from './index.js';
@@ -80,13 +80,12 @@ function renderMenu(
     getVariable: vi.fn(),
   } as never);
 
+  window.history.replaceState(null, '', '/en/Home');
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/Home']}>
-        <Routes>
-          <Route element={<MenuProvider>{child}</MenuProvider>} path="/:lang/*" />
-        </Routes>
-      </MemoryRouter>
+      <Route path="/:lang/*?">
+        <MenuProvider>{child}</MenuProvider>
+      </Route>
     </IntlProvider>,
   );
 }

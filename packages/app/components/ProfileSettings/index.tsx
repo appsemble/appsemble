@@ -14,7 +14,7 @@ import {
 import { emailPattern, getLanguageDisplayName } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { PicturePreview } from './PicturePreview/index.js';
@@ -38,7 +38,7 @@ export function ProfileSettings(): ReactNode {
   const { definition } = useAppDefinition();
   const push = useMessages();
   const [pictureCamera, setPictureCamera] = useState<Blob | null>(null);
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   const { lang } = useParams<{ lang: string }>();
   const enabledSettings = definition.layout?.enabledSettings;
 
@@ -93,9 +93,9 @@ export function ProfileSettings(): ReactNode {
   const onChangePassword = useCallback(
     async (values: { newPassword: string; currentPassword: string }) => {
       await axios.patch(`${apiUrl}/api/apps/${appId}/auth/email/password`, values);
-      navigate(0);
+      window.location.reload();
     },
-    [navigate],
+    [],
   );
 
   const onChangeEmail = useCallback(
@@ -132,7 +132,6 @@ export function ProfileSettings(): ReactNode {
           name: appMemberInfo?.name || '',
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           picture: null,
-          // @ts-expect-error 2322 string | undefined is not assignable to type (strictNullChecks)
           locale: preferredLanguage,
         }}
         onSubmit={onSaveProfile}

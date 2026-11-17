@@ -1,8 +1,8 @@
 import { getPagePathSegment, getRouteSegment } from '@appsemble/lang-sdk';
 import { Button, Message } from '@appsemble/preact-components';
 import { clearOAuth2State, loadOAuth2State, type OAuth2State } from '@appsemble/web-utils';
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { type ReactNode, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { Link, Redirect, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -53,6 +53,7 @@ export function OpenIDCallback(): ReactNode {
   const { getAppMessage } = useAppMessages();
 
   const { definition } = useAppDefinition();
+  const { lang } = useParams<{ lang: string }>();
   const loginSegment = getRouteSegment('Login', getAppMessage);
 
   const [error, setError] = useState(false);
@@ -75,7 +76,9 @@ export function OpenIDCallback(): ReactNode {
     }
   }, [authorizationCodeLogin, code, isOk, redirect, shouldLink]);
 
-  useEffect(() => {
+  // The redirects below navigate as soon as they mount, which unmounts this component before its
+  // passive effects run.
+  useLayoutEffect(() => {
     // A pending TOTP challenge navigates away from this component just like a completed login
     // does, so the stored OAuth2 state is equally spent.
     if (isLoggedIn || totpPending) {
@@ -84,23 +87,23 @@ export function OpenIDCallback(): ReactNode {
   }, [isLoggedIn, totpPending]);
 
   if (shouldLink) {
-    return <Navigate to={`/${loginSegment}`} />;
+    return <Redirect to={`/${loginSegment}`} />;
   }
 
   // The authorization code was valid, but a second factor still has to be verified, which happens
   // on the login page.
   if (totpPending) {
-    return <Navigate to={`/${loginSegment}`} />;
+    return <Redirect to={`/${loginSegment}`} />;
   }
 
   if (isLoggedIn) {
     const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
     return (
-      <Navigate
+      <Redirect
         to={
           showDemoLogin
             ? `/${loginSegment}`
-            : redirect || `../${getPagePathSegment({ name: defaultPageName }, getAppMessage)}`
+            : redirect || `/${lang}/${getPagePathSegment({ name: defaultPageName }, getAppMessage)}`
         }
       />
     );
@@ -122,10 +125,7 @@ export function OpenIDCallback(): ReactNode {
             <FormattedMessage {...messages.error} />
           )}
         </Message>
-        <Button
-          component={Link}
-          to={{ pathname: `/${loginSegment}`, search: String(new URLSearchParams({ redirect })) }}
-        >
+        <Button component={Link} to={`/${loginSegment}?${new URLSearchParams({ redirect })}`}>
           <FormattedMessage {...messages.retry} />
         </Button>
       </BuiltinPage>

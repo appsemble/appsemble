@@ -1,5 +1,5 @@
 import { useMemo } from 'preact/hooks';
-import { useLocation } from 'react-router-dom';
+import { useLocationProperty } from 'wouter-preact/use-browser-location';
 
 /**
  * Get the query parameters of the current location.
@@ -7,6 +7,6 @@ import { useLocation } from 'react-router-dom';
  * @returns The query parameters of the current location.
  */
 export function useQuery(): URLSearchParams {
-  const { search } = useLocation();
+  const search = useLocationProperty(() => window.location.search);
   return useMemo(() => new URLSearchParams(search), [search]);
 }

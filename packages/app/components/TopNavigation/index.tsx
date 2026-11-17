@@ -8,7 +8,7 @@ import {
 } from '@appsemble/lang-sdk';
 import { Button, Icon, NavbarBurger, useToggle } from '@appsemble/preact-components';
 import { type ReactNode, useMemo, useState } from 'react';
-import { Link, NavLink, useParams } from 'react-router-dom';
+import { Link, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
@@ -21,6 +21,7 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { messages } from '../BottomNavigation/messages.js';
 import { DemoLogin } from '../DemoLogin/index.js';
+import { NavLink } from '../NavLink/index.js';
 import { useIsDesktop } from '../PageGridProvider/index.js';
 import { ProfileMenuItems, useProfileMenu } from '../ProfileMenu/index.js';
 import { usePWAInstall } from '../../utils/usePWAInstall.js';

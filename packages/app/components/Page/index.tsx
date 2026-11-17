@@ -26,19 +26,13 @@ import {
   useRef,
   useState,
 } from 'react';
-import {
-  Link,
-  matchPath,
-  Navigate,
-  type Params,
-  Route,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
+import { parse } from 'regexparam';
+import { Link, Redirect, Route, useLocation, useParams } from 'wouter-preact';
+import { useLocationProperty } from 'wouter-preact/use-browser-location';
 import { useMessages } from '../MessagesProvider/index.js';
 import { MetaSwitch } from '../Meta/index.js';
 import { useLocationString } from '../../utils/useLocationString.js';
+import { useRouteParams } from '../../utils/useRouteParams.js';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -82,15 +76,15 @@ export function Page(): ReactNode {
   } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
-  const { hash, pathname, search } = useLocation();
-  const routeParams = useParams();
+  const [, navigate] = useLocation();
+  const pathname = useLocationProperty(() => window.location.pathname);
+  const routeParams = useRouteParams();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const { hasBottomNavigation, setPage } = usePage();
   const pushNotifications = useServiceWorkerRegistration();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const showMessage = useMessages();
-  const navigate = useNavigate();
 
   const [data, setData] = useState<unknown>({});
   const [loadedPage, setLoadedPage] = useState<PageDefinition | null>();
@@ -146,8 +140,6 @@ export function Page(): ReactNode {
     ee.current = new EventEmitter();
   }
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
   const normalizedPageId = normalize(pageId);
   const foundPage = findPageById(appDefinition.pages, normalizedPageId, getAppMessage);
   const { '*': wildcard = '', ...pageRouteParams } = routeParams;
@@ -158,10 +150,9 @@ export function Page(): ReactNode {
     notFoundPage != null &&
     (!foundPage ||
       (foundPage.type !== 'tabs' &&
-        !matchPath(
+        !parse(
           `/${(foundPage.parameters ?? []).map((param) => `:${param}`).join('/')}`,
-          `/${wildcard}`,
-        )));
+        ).pattern.test(`/${wildcard}`)));
   const pageDefinition = isNotFound
     ? typeof notFoundPage === 'string'
       ? findPageByName(appDefinition.pages, notFoundPage)
@@ -192,7 +183,10 @@ export function Page(): ReactNode {
       ? { ...pageRouteParams, '*': wildcard.split('/').slice(1).join('/') }
       : routeParams,
   );
-  const params = useMemo(() => JSON.parse(paramsKey) as Readonly<Params>, [paramsKey]);
+  const params = useMemo(
+    () => JSON.parse(paramsKey) as Readonly<Record<string, string | undefined>>,
+    [paramsKey],
+  );
 
   // Aborted when the user navigates to another page, so in-flight action chains of the previous
   // page stop instead of causing side effects on the newly shown page.
@@ -222,7 +216,6 @@ export function Page(): ReactNode {
         history,
         group: appMemberSelectedGroup,
         root: input,
-        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         locale: lang,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         stepRef,
@@ -447,7 +440,10 @@ export function Page(): ReactNode {
       // The canonical slug and other aliases redirect to the slug of the current language, while
       // preserving query params and the fragment.
       return (
-        <Navigate replace to={{ hash, pathname: replacePageSegment(translatedPageId), search }} />
+        <Redirect
+          replace
+          to={`${replacePageSegment(translatedPageId)}${window.location.search}${window.location.hash}`}
+        />
       );
     }
 
@@ -490,66 +486,62 @@ export function Page(): ReactNode {
           // The switch is used to enforce an exact path.
           <MetaSwitch title={pageName}>
             <Route
-              element={
-                pageDefinition.type === 'flow' || pageDefinition.type === 'loop' ? (
-                  <FlowPage
-                    appDefinition={appDefinition}
-                    appStorage={appStorage.current}
-                    data={data}
-                    dataReady={dataReady}
-                    ee={ee.current}
-                    key={prefix}
-                    pageDefinition={pageDefinition}
-                    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-                    prefix={prefix}
-                    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-                    prefixIndex={prefixIndex}
-                    remap={remapWithContext}
-                    setData={setData}
-                    showDialog={showDialog}
-                    showShareDialog={showShareDialog}
-                    stepRef={stepRef}
-                  />
-                ) : pageDefinition.type === 'container' ? (
-                  pageDefinition.pages.some(checkPagePermissionsCallback) && pageId ? (
-                    <Navigate
-                      to={{
-                        pathname: replacePageSegment(
-                          getPagePathSegment(
-                            pageDefinition.pages.find(checkPagePermissionsCallback)!,
-                            getAppMessage,
-                          ),
-                        ),
-                        search,
-                      }}
-                    />
-                  ) : (
-                    <Content padding>{permissionError()}</Content>
-                  )
-                ) : (
-                  <BlockList
-                    appStorage={appStorage.current}
-                    blocks={pageDefinition.blocks}
-                    data={data}
-                    dataReady={dataReady}
-                    ee={ee.current}
-                    key={prefix}
-                    pageDefinition={pageDefinition}
-                    pageLayout={pageDefinition.layout}
-                    prefix={`${prefix}.blocks`}
-                    prefixIndex={`${prefixIndex}.blocks`}
-                    remap={remapWithContext}
-                    showDialog={showDialog}
-                    showShareDialog={showShareDialog}
-                  />
-                )
-              }
               path={
                 isNotFound
-                  ? '*'
-                  : (pageDefinition.parameters || []).map((param) => `/:${param}`).join('')
+                  ? '/:lang/:pageId/*?'
+                  : `/:lang/:pageId${(pageDefinition.parameters || []).map((param) => `/:${param}`).join('')}`
               }
-            />
+            >
+              {pageDefinition.type === 'flow' || pageDefinition.type === 'loop' ? (
+                <FlowPage
+                  appDefinition={appDefinition}
+                  appStorage={appStorage.current}
+                  data={data}
+                  dataReady={dataReady}
+                  ee={ee.current}
+                  key={prefix}
+                  pageDefinition={pageDefinition}
+                  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+                  prefix={prefix}
+                  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+                  prefixIndex={prefixIndex}
+                  remap={remapWithContext}
+                  setData={setData}
+                  showDialog={showDialog}
+                  showShareDialog={showShareDialog}
+                  stepRef={stepRef}
+                />
+              ) : pageDefinition.type === 'container' ? (
+                pageDefinition.pages.some(checkPagePermissionsCallback) && pageId ? (
+                  <Redirect
+                    to={`${replacePageSegment(
+                      getPagePathSegment(
+                        pageDefinition.pages.find(checkPagePermissionsCallback)!,
+                        getAppMessage,
+                      ),
+                    )}${window.location.search}`}
+                  />
+                ) : (
+                  <Content padding>{permissionError()}</Content>
+                )
+              ) : (
+                <BlockList
+                  appStorage={appStorage.current}
+                  blocks={pageDefinition.blocks}
+                  data={data}
+                  dataReady={dataReady}
+                  ee={ee.current}
+                  key={prefix}
+                  pageDefinition={pageDefinition}
+                  pageLayout={pageDefinition.layout}
+                  prefix={`${prefix}.blocks`}
+                  prefixIndex={`${prefixIndex}.blocks`}
+                  remap={remapWithContext}
+                  showDialog={showDialog}
+                  showShareDialog={showShareDialog}
+                />
+              )}
+            </Route>
           </MetaSwitch>
         )}
         <PageDialog
@@ -575,7 +567,7 @@ export function Page(): ReactNode {
   // login page.
   if (pageDefinition && !isLoggedIn) {
     const loginSegment = getRouteSegment('Login', getAppMessage);
-    return <Navigate to={`${url}/${loginSegment}?${new URLSearchParams({ redirect })}`} />;
+    return <Redirect to={`${url}/${loginSegment}?${new URLSearchParams({ redirect })}`} />;
   }
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
@@ -584,7 +576,7 @@ export function Page(): ReactNode {
   const defaultPage = appDefinition.pages.find((p) => p.name === defaultPageName);
 
   if (defaultPage && checkPagePermissionsCallback(defaultPage)) {
-    return <Navigate replace to={`${url}/${getPagePathSegment(defaultPage, getAppMessage)}`} />;
+    return <Redirect replace to={`${url}/${getPagePathSegment(defaultPage, getAppMessage)}`} />;
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
@@ -593,7 +585,7 @@ export function Page(): ReactNode {
       pd.name !== appDefinition.notFoundPage && checkPagePermissionsCallback(pd) && !pd.parameters,
   );
   if (redirectPage) {
-    return <Navigate replace to={`${url}/${getPagePathSegment(redirectPage, getAppMessage)}`} />;
+    return <Redirect replace to={`${url}/${getPagePathSegment(redirectPage, getAppMessage)}`} />;
   }
 
   // If the user isn’t allowed to view any pages, show an error message.

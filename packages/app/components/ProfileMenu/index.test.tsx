@@ -1,6 +1,5 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ProfileMenuItems } from './index.js';
@@ -37,9 +36,7 @@ function renderProfileMenuItems(
   } as never);
   render(
     <IntlProvider locale="en">
-      <MemoryRouter>
-        <ProfileMenuItems onDemoLogin={vi.fn()} />
-      </MemoryRouter>
+      <ProfileMenuItems onDemoLogin={vi.fn()} />
     </IntlProvider>,
     { wrapper: IconTestWrapper },
   );

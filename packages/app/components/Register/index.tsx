@@ -1,7 +1,7 @@
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { RegisterForm, type RegistrationFormValues } from '../RegisterForm/index.js';
@@ -24,7 +24,6 @@ export function Register(): ReactNode {
       const formData = new FormData();
       formData.append('email', values.email);
       formData.append('password', values.password);
-      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       formData.append('locale', lang);
       formData.append('timezone', timezone);
 

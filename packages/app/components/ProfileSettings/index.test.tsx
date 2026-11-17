@@ -27,12 +27,6 @@ const appDefinition: AppDefinition = {
   pages: [],
 };
 
-const navigate = vi.fn();
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useNavigate: () => navigate,
-}));
-
 beforeEach(() => {
   vi.clearAllMocks();
 });

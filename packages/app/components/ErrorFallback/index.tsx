@@ -1,6 +1,6 @@
 import { Button, Content, Message } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { FormattedMessage } from '../IntlProvider/index.js';

@@ -1,6 +1,6 @@
 import { Icon, NavbarDropdown, useToggle } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';

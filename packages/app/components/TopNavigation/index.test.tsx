@@ -1,6 +1,6 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TopNavigation } from './index.js';
@@ -75,14 +75,13 @@ function renderNav(definition = appDefinition, isLoggedIn = true): void {
     update: vi.fn(),
   } as never);
 
+  window.history.replaceState(null, '', '/en/Home');
   render(
     <IntlProvider locale="en" messages={{}}>
       <AppIconProvider>
-        <MemoryRouter initialEntries={['/en/Home']}>
-          <Routes>
-            <Route element={<TopNavigation />} path="/:lang/*" />
-          </Routes>
-        </MemoryRouter>
+        <Route path="/:lang/*?">
+          <TopNavigation />
+        </Route>
       </AppIconProvider>
     </IntlProvider>,
   );

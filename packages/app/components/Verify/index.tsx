@@ -1,7 +1,7 @@
 import { Message } from '@appsemble/preact-components';
 import axios from 'axios';
 import { type ReactNode, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';

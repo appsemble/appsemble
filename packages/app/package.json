@@ -66,9 +66,10 @@
     "preact": "^10.0.0",
     "pwa-install-handler": "^2.0.0",
     "react": "^18.0.0",
-    "react-router-dom": "^6.0.0",
     "react-transition-group": "^4.0.0",
-    "type-fest": "^4.0.0"
+    "regexparam": "^3.0.0",
+    "type-fest": "^4.0.0",
+    "wouter-preact": "^3.0.0"
   },
   "devDependencies": {
     "@types/jsdom": "21.1.7",

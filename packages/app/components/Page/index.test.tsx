@@ -5,7 +5,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { type ReactNode } from 'react';
-import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { Link, Route, Switch } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { Page } from './index.js';
@@ -21,6 +21,7 @@ import { MenuProvider } from '../MenuProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
 import { IconTestWrapper } from '../../utils/test-utils.js';
+import { useLocationString } from '../../utils/useLocationString.js';
 
 vi.mock('../TitleBar/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention -- This mocks a component export.
@@ -33,8 +34,7 @@ vi.mock('../TitleBar/index.js', () => ({
 const block = { type: 'test', version: '0.0.0' };
 
 function LocationProbe(): ReactNode {
-  const { hash, pathname, search } = useLocation();
-  return <p>{`${pathname}${search}${hash}`}</p>;
+  return <p>{useLocationString()}</p>;
 }
 
 function BuiltinPage(): ReactNode {
@@ -62,16 +62,15 @@ function mockApp(definition: AppDefinition): void {
 }
 
 function renderApp(path = '/en/home'): () => void {
+  window.history.replaceState(null, '', path);
   const app = (): ReactNode => (
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={[path]}>
-        <MenuProvider>
-          <VerifyBanner />
-          <Routes>
-            <Route element={<Page />} path="/:lang/:pageId/*" />
-          </Routes>
-        </MenuProvider>
-      </MemoryRouter>
+      <MenuProvider>
+        <VerifyBanner />
+        <Route path="/:lang/:pageId/*?">
+          <Page />
+        </Route>
+      </MenuProvider>
     </IntlProvider>
   );
   const { rerender } = render(app(), { wrapper: IconTestWrapper });
@@ -138,16 +137,15 @@ it('should redirect a canonical page path to the translated path', async () => {
     }),
     getMessage: () => ({ format: () => '' }),
   } as never);
+  window.history.replaceState(null, '', '/en/home?foo=bar#section');
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/home?foo=bar#section']}>
-        <MenuProvider>
-          <LocationProbe />
-          <Routes>
-            <Route element={<Page />} path="/:lang/:pageId/*" />
-          </Routes>
-        </MenuProvider>
-      </MemoryRouter>
+      <MenuProvider>
+        <LocationProbe />
+        <Route path="/:lang/:pageId/*?">
+          <Page />
+        </Route>
+      </MenuProvider>
     </IntlProvider>,
     { wrapper: IconTestWrapper },
   );
@@ -176,16 +174,15 @@ it('should redirect a container page to the translated path of its first sub pag
     }),
     getMessage: () => ({ format: () => '' }),
   } as never);
+  window.history.replaceState(null, '', '/en/reports?foo=bar');
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/reports?foo=bar']}>
-        <MenuProvider>
-          <LocationProbe />
-          <Routes>
-            <Route element={<Page />} path="/:lang/:pageId/*" />
-          </Routes>
-        </MenuProvider>
-      </MemoryRouter>
+      <MenuProvider>
+        <LocationProbe />
+        <Route path="/:lang/:pageId/*?">
+          <Page />
+        </Route>
+      </MenuProvider>
     </IntlProvider>,
     { wrapper: IconTestWrapper },
   );
@@ -194,17 +191,20 @@ it('should redirect a container page to the translated path of its first sub pag
 });
 
 it('should leave its navigation behind when a built-in page replaces it', async () => {
+  window.history.replaceState(null, '', '/en/home');
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/home']}>
-        <MenuProvider>
-          <Link to="/en/Settings">settings</Link>
-          <Routes>
-            <Route element={<BuiltinPage />} path="/:lang/Settings" />
-            <Route element={<Page />} path="/:lang/:pageId/*" />
-          </Routes>
-        </MenuProvider>
-      </MemoryRouter>
+      <MenuProvider>
+        <Link to="/en/Settings">settings</Link>
+        <Switch>
+          <Route path="/:lang/Settings">
+            <BuiltinPage />
+          </Route>
+          <Route path="/:lang/:pageId/*?">
+            <Page />
+          </Route>
+        </Switch>
+      </MenuProvider>
     </IntlProvider>,
     { wrapper: IconTestWrapper },
   );
@@ -280,18 +280,17 @@ describe('page not found', () => {
   };
 
   function renderAt(path: string): void {
+    window.history.replaceState(null, '', path);
     render(
       <IntlProvider locale="en" messages={{}}>
-        <MemoryRouter initialEntries={[path]}>
-          <MetaProvider description="" title="Test App">
-            <MenuProvider>
-              <LocationProbe />
-              <Routes>
-                <Route element={<Page />} path="/:lang/:pageId/*" />
-              </Routes>
-            </MenuProvider>
-          </MetaProvider>
-        </MemoryRouter>
+        <MetaProvider description="" title="Test App">
+          <MenuProvider>
+            <LocationProbe />
+            <Route path="/:lang/:pageId/*?">
+              <Page />
+            </Route>
+          </MenuProvider>
+        </MetaProvider>
       </IntlProvider>,
       { wrapper: IconTestWrapper },
     );
@@ -405,16 +404,15 @@ describe('page not found', () => {
         { name: 'Lost', blocks: [block] },
       ],
     } as AppDefinition);
+    window.history.replaceState(null, '', '/en/item/1');
     render(
       <IntlProvider locale="en" messages={{}}>
-        <MemoryRouter initialEntries={['/en/item/1']}>
-          <MenuProvider>
-            <Link to="/en/item/1/extra">extra</Link>
-            <Routes>
-              <Route element={<Page />} path="/:lang/:pageId/*" />
-            </Routes>
-          </MenuProvider>
-        </MemoryRouter>
+        <MenuProvider>
+          <Link to="/en/item/1/extra">extra</Link>
+          <Route path="/:lang/:pageId/*?">
+            <Page />
+          </Route>
+        </MenuProvider>
       </IntlProvider>,
       { wrapper: IconTestWrapper },
     );

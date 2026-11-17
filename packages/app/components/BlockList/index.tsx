@@ -14,10 +14,12 @@ import {
 } from '@appsemble/lang-sdk';
 import { type ProjectImplementations } from '@appsemble/types';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState, Fragment } from 'react';
-import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Redirect, useLocation } from 'wouter-preact';
+import { useHistoryState } from 'wouter-preact/use-browser-location';
 import { Loader } from '../Loader/index.js';
 import { useMessages } from '../MessagesProvider/index.js';
 import { useLocationString } from '../../utils/useLocationString.js';
+import { useRouteParams } from '../../utils/useRouteParams.js';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { type ActionCreators } from '../../utils/actions/index.js';
@@ -83,9 +85,9 @@ export function BlockList({
   signal,
   subPageName,
 }: BlockListProps): ReactNode {
-  const params = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const params = useRouteParams();
+  const historyState = useHistoryState();
+  const [, navigate] = useLocation();
   const push = useMessages();
   const { definition: appDefinition, revision } = useAppDefinition();
   const {
@@ -216,7 +218,7 @@ export function BlockList({
           // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
           appDefinition.controller.events,
         ),
-        data: location.state,
+        data: historyState,
         utils: {
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           remap,
@@ -235,7 +237,7 @@ export function BlockList({
     appDefinition,
     ee,
     getAppMessage,
-    location.state,
+    historyState,
     logout,
     pageReady,
     params,
@@ -270,13 +272,13 @@ export function BlockList({
   if (!blockList.length) {
     if (!isLoggedIn) {
       return (
-        <Navigate
+        <Redirect
           to={`/${params.lang}/${getRouteSegment('Login', getAppMessage)}?${new URLSearchParams({ redirect })}`}
         />
       );
     }
 
-    return <Navigate to="/" />;
+    return <Redirect to="/" />;
   }
   const Wrapper = gridClassName ? 'div' : Fragment;
   const wrapperProps = gridClassName ? { className: gridClassName } : {};

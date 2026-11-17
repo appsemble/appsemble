@@ -4,7 +4,6 @@ import { type AppDefinition, type FlowPageDefinition } from '@appsemble/lang-sdk
 import { noop } from '@appsemble/utils';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FlowPage } from './index.js';
@@ -57,29 +56,28 @@ const pageDefinition: FlowPageDefinition = {
 };
 
 function renderFlowPage(): void {
+  window.history.replaceState(null, '', '/en/survey');
   render(
     <IntlProvider locale="en">
-      <MemoryRouter initialEntries={['/en/survey']}>
-        <input aria-label="Note" />
-        <main tabIndex={-1}>
-          <FlowPage
-            appDefinition={{ name: 'Test App', pages: [pageDefinition] } as AppDefinition}
-            appStorage={{} as AppStorage}
-            data={{}}
-            dataReady
-            // eslint-disable-next-line unicorn/prefer-event-target
-            ee={new EventEmitter()}
-            pageDefinition={pageDefinition}
-            prefix="pages.survey"
-            prefixIndex="pages.0"
-            remap={noop}
-            setData={noop}
-            showDialog={() => noop}
-            showShareDialog={() => Promise.resolve()}
-            stepRef={{ current: undefined }}
-          />
-        </main>
-      </MemoryRouter>
+      <input aria-label="Note" />
+      <main tabIndex={-1}>
+        <FlowPage
+          appDefinition={{ name: 'Test App', pages: [pageDefinition] } as AppDefinition}
+          appStorage={{} as AppStorage}
+          data={{}}
+          dataReady
+          // eslint-disable-next-line unicorn/prefer-event-target
+          ee={new EventEmitter()}
+          pageDefinition={pageDefinition}
+          prefix="pages.survey"
+          prefixIndex="pages.0"
+          remap={noop}
+          setData={noop}
+          showDialog={() => noop}
+          showShareDialog={() => Promise.resolve()}
+          stepRef={{ current: undefined }}
+        />
+      </main>
     </IntlProvider>,
   );
 }

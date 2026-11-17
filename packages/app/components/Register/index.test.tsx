@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { AxiosError, AxiosHeaders, type AxiosResponse } from 'axios';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Register } from './index.js';
@@ -56,13 +56,12 @@ function createError(status: number, data: unknown): AxiosError {
 }
 
 async function submit(): Promise<void> {
+  window.history.replaceState(null, '', '/en/Register');
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/Register']}>
-        <Routes>
-          <Route element={<Register />} path="/:lang/Register" />
-        </Routes>
-      </MemoryRouter>
+      <Route path="/:lang/Register">
+        <Register />
+      </Route>
     </IntlProvider>,
   );
 

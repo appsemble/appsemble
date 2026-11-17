@@ -17,7 +17,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { FormattedMessage } from '../IntlProvider/index.js';
@@ -106,7 +106,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const { getAppMessage } = useAppMessages();
   const [currentPage, setCurrentPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
-  const { pathname } = useLocation();
+  const [pathname] = useLocation();
   const setPage = useCallback<MenuProviderContext['setPage']>((p) => {
     setBlockMenus([]);
     setCurrentPage(p);

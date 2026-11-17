@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MainLogin } from './index.js';
@@ -90,13 +90,12 @@ beforeEach(() => {
 
 describe('MainLogin', () => {
   it('should redirect after successful password login', async () => {
+    window.history.replaceState(null, '', '/en/Login?redirect=%2Fen%2Ftraining-details%2F168');
     render(
       <IntlProvider locale="en" messages={{}}>
-        <MemoryRouter initialEntries={['/en/Login?redirect=%2Fen%2Ftraining-details%2F168']}>
-          <Routes>
-            <Route element={<MainLogin />} path="/:lang/Login" />
-          </Routes>
-        </MemoryRouter>
+        <Route path="/:lang/Login">
+          <MainLogin />
+        </Route>
       </IntlProvider>,
     );
 

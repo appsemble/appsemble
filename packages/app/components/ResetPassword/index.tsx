@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { FormattedMessage } from '../IntlProvider/index.js';

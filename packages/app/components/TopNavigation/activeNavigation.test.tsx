@@ -5,7 +5,7 @@ import {
   type PageDefinition,
 } from '@appsemble/lang-sdk';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { Link, MemoryRouter, Route, Routes, useMatch } from 'react-router-dom';
+import { Link, Route, useRoute } from 'wouter-preact';
 import { describe, expect, it, vi } from 'vitest';
 
 import { TopNavigation } from './index.js';
@@ -70,7 +70,7 @@ function renderNavigation(
   } as never);
   // The page component reports the page it renders. These tests render the navigation alone.
   vi.spyOn(menuProvider, 'usePage').mockImplementation(() => {
-    const pageId = useMatch('/:lang/:pageId/*')?.params.pageId;
+    const pageId = useRoute('/:lang/:pageId/*?')[1]?.pageId;
     const { getAppMessage } = appMessagesProvider.useAppMessages();
     return {
       ...usePage(),
@@ -83,28 +83,20 @@ function renderNavigation(
   } as never);
   const visiblePages = getNavPages(definition, roles, undefined!);
 
+  window.history.replaceState(null, '', path);
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={[path]}>
-        <Routes>
-          <Route
-            element={
-              <>
-                {navigation === 'top' ? (
-                  <TopNavigation />
-                ) : navigation === 'side' ? (
-                  <SideNavigation blockMenus={[]} pages={visiblePages} />
-                ) : (
-                  <BottomNavigation />
-                )}
-                <Link to="/en/lot-details/42">Open lot</Link>
-                <Link to="/en/orphan">Open orphan</Link>
-              </>
-            }
-            path="/:lang/*"
-          />
-        </Routes>
-      </MemoryRouter>
+      <Route path="/:lang/*?">
+        {navigation === 'top' ? (
+          <TopNavigation />
+        ) : navigation === 'side' ? (
+          <SideNavigation blockMenus={[]} pages={visiblePages} />
+        ) : (
+          <BottomNavigation />
+        )}
+        <Link to="/en/lot-details/42">Open lot</Link>
+        <Link to="/en/orphan">Open orphan</Link>
+      </Route>
     </IntlProvider>,
     { wrapper: IconTestWrapper },
   );

@@ -8,7 +8,7 @@ import {
 import { Button, Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type ReactNode, useMemo } from 'react';
-import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'wouter-preact';
 
 import './index.css';
 import styles from './index.module.css';
@@ -22,6 +22,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { usePage } from '../MenuProvider/index.js';
+import { NavLink } from '../NavLink/index.js';
 import { usePWAInstall } from '../../utils/usePWAInstall.js';
 
 interface BottomNavigationProps {
@@ -39,7 +40,7 @@ interface BottomNavigationProps {
 export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
-  const { pathname } = useLocation();
+  const [pathname] = useLocation();
   const { appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn, logout } =
     useAppMember();
   const { getAppMessage, getMessage } = useAppMessages();
@@ -123,7 +124,7 @@ export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
           {definition.layout?.settings === 'navigation' && (
             <li className="bottom-nav-item">
               <NavLink
-                className={({ isActive }) =>
+                className={(isActive) =>
                   `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
                     isActive && 'is-active'
                   }`
@@ -141,7 +142,7 @@ export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
           {definition.layout?.feedback === 'navigation' && sentryDsn ? (
             <li className="bottom-nav-item">
               <NavLink
-                className={({ isActive }) =>
+                className={(isActive) =>
                   `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
                     isActive && 'is-active'
                   }`
@@ -187,7 +188,7 @@ export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
             ) : (
               <li className="bottom-nav-item">
                 <NavLink
-                  className={({ isActive }) =>
+                  className={(isActive) =>
                     `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
                       isActive && 'is-active'
                     }`

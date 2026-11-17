@@ -7,7 +7,7 @@ import {
 } from '@appsemble/lang-sdk';
 import { Button, MenuButton, MenuSection } from '@appsemble/preact-components';
 import { Fragment, type ReactNode, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';

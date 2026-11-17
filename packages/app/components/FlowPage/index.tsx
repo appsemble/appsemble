@@ -18,7 +18,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation } from 'wouter-preact';
 import { Loader } from '../Loader/index.js';
 import { useMessages } from '../MessagesProvider/index.js';
 import { useMeta } from '../Meta/index.js';
@@ -27,6 +27,7 @@ import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
 import { appId } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
+import { useRouteParams } from '../../utils/useRouteParams.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
@@ -67,8 +68,8 @@ export function FlowPage({
   showShareDialog,
   stepRef,
 }: FlowPageProps): ReactNode {
-  const navigate = useNavigate();
-  const params = useParams();
+  const [, navigate] = useLocation();
+  const params = useRouteParams();
   const [currentStep, setCurrentStep] = useState(0);
   const abortController = useRef<AbortController>();
   if (!abortController.current) {

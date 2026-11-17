@@ -6,7 +6,6 @@ import { type BlockManifest } from '@appsemble/types';
 import { noop } from '@appsemble/utils';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import { type ReactNode, useEffect, useState } from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MessagesProvider } from '../MessagesProvider/index.js';
 import { ModalCard } from '../ModalCard/index.js';
@@ -147,23 +146,21 @@ describe('block viewport mode', () => {
     });
     render(
       <IntlProvider locale="en">
-        <MemoryRouter>
-          <Block
-            appStorage={{} as AppStorage}
-            block={block}
-            // eslint-disable-next-line unicorn/prefer-event-target
-            ee={new EventEmitter()}
-            flowActions={{}}
-            pageDefinition={pageDefinition}
-            pageReady={Promise.resolve()}
-            prefix="pages.home.blocks.0"
-            prefixIndex="pages.0.blocks.0"
-            ready={noop}
-            remap={noop}
-            showDialog={() => noop}
-            showShareDialog={() => Promise.resolve()}
-          />
-        </MemoryRouter>
+        <Block
+          appStorage={{} as AppStorage}
+          block={block}
+          // eslint-disable-next-line unicorn/prefer-event-target
+          ee={new EventEmitter()}
+          flowActions={{}}
+          pageDefinition={pageDefinition}
+          pageReady={Promise.resolve()}
+          prefix="pages.home.blocks.0"
+          prefixIndex="pages.0.blocks.0"
+          ready={noop}
+          remap={noop}
+          showDialog={() => noop}
+          showShareDialog={() => Promise.resolve()}
+        />
       </IntlProvider>,
       { wrapper: IconTestWrapper },
     );
@@ -196,25 +193,23 @@ describe('float layout', () => {
     });
     render(
       <IntlProvider locale="en">
-        <MemoryRouter>
-          <ModalCard isActive>
-            <Block
-              appStorage={{} as AppStorage}
-              block={block}
-              // eslint-disable-next-line unicorn/prefer-event-target
-              ee={new EventEmitter()}
-              flowActions={{}}
-              pageDefinition={pageDefinition}
-              pageReady={Promise.resolve()}
-              prefix="pages.home.blocks.0.actions.onClick.blocks.0"
-              prefixIndex="pages.0.blocks.0.actions.onClick.blocks.0"
-              ready={noop}
-              remap={noop}
-              showDialog={() => noop}
-              showShareDialog={() => Promise.resolve()}
-            />
-          </ModalCard>
-        </MemoryRouter>
+        <ModalCard isActive>
+          <Block
+            appStorage={{} as AppStorage}
+            block={block}
+            // eslint-disable-next-line unicorn/prefer-event-target
+            ee={new EventEmitter()}
+            flowActions={{}}
+            pageDefinition={pageDefinition}
+            pageReady={Promise.resolve()}
+            prefix="pages.home.blocks.0.actions.onClick.blocks.0"
+            prefixIndex="pages.0.blocks.0.actions.onClick.blocks.0"
+            ready={noop}
+            remap={noop}
+            showDialog={() => noop}
+            showShareDialog={() => Promise.resolve()}
+          />
+        </ModalCard>
       </IntlProvider>,
       { wrapper: IconTestWrapper },
     );
@@ -262,23 +257,21 @@ describe('modal dialogs', () => {
     render(
       <IntlProvider locale="en">
         <MessagesProvider>
-          <MemoryRouter>
-            <Block
-              appStorage={{} as AppStorage}
-              block={block}
-              // eslint-disable-next-line unicorn/prefer-event-target
-              ee={new EventEmitter()}
-              flowActions={{}}
-              pageDefinition={pageDefinition}
-              pageReady={Promise.resolve()}
-              prefix="pages.home.blocks.0"
-              prefixIndex="pages.0.blocks.0"
-              ready={noop}
-              remap={noop}
-              showDialog={() => noop}
-              showShareDialog={() => Promise.resolve()}
-            />
-          </MemoryRouter>
+          <Block
+            appStorage={{} as AppStorage}
+            block={block}
+            // eslint-disable-next-line unicorn/prefer-event-target
+            ee={new EventEmitter()}
+            flowActions={{}}
+            pageDefinition={pageDefinition}
+            pageReady={Promise.resolve()}
+            prefix="pages.home.blocks.0"
+            prefixIndex="pages.0.blocks.0"
+            ready={noop}
+            remap={noop}
+            showDialog={() => noop}
+            showShareDialog={() => Promise.resolve()}
+          />
         </MessagesProvider>
       </IntlProvider>,
       { wrapper: IconTestWrapper },
@@ -353,9 +346,7 @@ describe('dialog blocks', () => {
     }
     render(
       <IntlProvider locale="en">
-        <MemoryRouter>
-          <DialogHost />
-        </MemoryRouter>
+        <DialogHost />
       </IntlProvider>,
     );
 
@@ -385,23 +376,21 @@ describe('block loading state', () => {
     });
     render(
       <IntlProvider locale="en">
-        <MemoryRouter>
-          <Block
-            appStorage={{} as AppStorage}
-            block={block}
-            // eslint-disable-next-line unicorn/prefer-event-target
-            ee={new EventEmitter()}
-            flowActions={{}}
-            pageDefinition={pageDefinition}
-            pageReady={Promise.resolve()}
-            prefix="pages.home.blocks.0"
-            prefixIndex="pages.0.blocks.0"
-            ready={noop}
-            remap={noop}
-            showDialog={() => noop}
-            showShareDialog={() => Promise.resolve()}
-          />
-        </MemoryRouter>
+        <Block
+          appStorage={{} as AppStorage}
+          block={block}
+          // eslint-disable-next-line unicorn/prefer-event-target
+          ee={new EventEmitter()}
+          flowActions={{}}
+          pageDefinition={pageDefinition}
+          pageReady={Promise.resolve()}
+          prefix="pages.home.blocks.0"
+          prefixIndex="pages.0.blocks.0"
+          ready={noop}
+          remap={noop}
+          showDialog={() => noop}
+          showShareDialog={() => Promise.resolve()}
+        />
       </IntlProvider>,
       { wrapper: IconTestWrapper },
     );

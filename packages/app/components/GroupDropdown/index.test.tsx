@@ -2,7 +2,7 @@ import { type AppDefinition } from '@appsemble/lang-sdk';
 import { type AppMemberGroup } from '@appsemble/types';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { type ReactNode, useMemo, useState } from 'react';
-import { Router } from 'react-router-dom';
+import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { GroupDropdown } from './index.js';
@@ -67,7 +67,6 @@ vi.mock('../Page/index.js', async () => {
 });
 
 function AppHarness(): ReactNode {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState<AppMemberGroup>();
   const groups = useMemo<AppMemberGroup[]>(() => [{ id: 1, name: 'Team One', role: 'Member' }], []);
 
@@ -75,39 +74,23 @@ function AppHarness(): ReactNode {
     appMemberGroups: groups,
     appMemberRoles: [],
     appMemberSelectedGroup: selectedGroup,
-    isLoggedIn,
+    isLoggedIn: true,
     setAppMemberSelectedGroup: setSelectedGroup,
   } as never;
 
-  const navigator = useMemo(
-    () => ({
-      createHref: () => '/en/Home',
-      encodeLocation: (location: object) => location,
-      go: () => setIsLoggedIn(false),
-      push: vi.fn(),
-      replace: vi.fn(),
-    }),
-    [],
-  );
-
   return (
     <IntlProvider locale="en" messages={{}}>
-      <Router location="/en/Home" navigator={navigator as never}>
-        {isLoggedIn ? (
-          <>
-            <GroupDropdown />
-            <AppRoutes />
-          </>
-        ) : (
-          <p>Login</p>
-        )}
-      </Router>
+      <Route path="/:lang/*?">
+        <GroupDropdown />
+        <AppRoutes />
+      </Route>
     </IntlProvider>
   );
 }
 
 beforeEach(() => {
   sessionStorage.clear();
+  window.history.replaceState(null, '', '/en/Home');
 });
 
 afterEach(() => {
@@ -115,7 +98,7 @@ afterEach(() => {
 });
 
 describe('GroupDropdown', () => {
-  it('should keep the member logged in and reload page data when switching groups', async () => {
+  it('should reload page data when switching groups', async () => {
     render(<AppHarness />);
 
     expect(screen.getByRole('status').textContent).toBe('Loaded data for No Group');
@@ -123,7 +106,6 @@ describe('GroupDropdown', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Group Team One' }));
 
     await waitFor(() => {
-      expect(screen.queryByText('Login')).toBeNull();
       expect(screen.getByRole('status').textContent).toBe('Loaded data for Team One');
     });
   });

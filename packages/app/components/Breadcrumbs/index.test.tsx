@@ -1,7 +1,7 @@
 import { type AppDefinition, type PageDefinition, remap, type Remapper } from '@appsemble/lang-sdk';
 import { IconProvider } from '@appsemble/preact-components';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Breadcrumbs } from './index.js';
@@ -53,6 +53,7 @@ function renderBreadcrumbs(
   const remapWithContext = (mappers: Remapper, input: unknown): unknown =>
     remap(mappers, input, { pageData: data, pageName: page.name } as never);
 
+  window.history.replaceState(null, '', path);
   render(
     <IntlProvider locale="en" messages={{}}>
       <IconProvider
@@ -60,22 +61,15 @@ function renderBreadcrumbs(
         appId={42}
         registry={{ logo: { asset: 'company-logo' } }}
       >
-        <MemoryRouter initialEntries={[path]}>
-          <Routes>
-            <Route
-              element={
-                <Breadcrumbs
-                  data={data}
-                  inGrid={inGrid}
-                  pageDefinition={page}
-                  remap={remapWithContext}
-                  subPageName={subPageName}
-                />
-              }
-              path="/:lang/:pageId/*"
-            />
-          </Routes>
-        </MemoryRouter>
+        <Route path="/:lang/:pageId/*?">
+          <Breadcrumbs
+            data={data}
+            inGrid={inGrid}
+            pageDefinition={page}
+            remap={remapWithContext}
+            subPageName={subPageName}
+          />
+        </Route>
       </IconProvider>
     </IntlProvider>,
   );

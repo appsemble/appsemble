@@ -14,7 +14,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'wouter-preact';
 
 import { IntlProvider } from '../IntlProvider/index.js';
 import { Loader } from '../Loader/index.js';
@@ -59,7 +59,7 @@ const formatters = {
 
 export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactNode {
   const { definition } = useAppDefinition();
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   const redirect = useLocationString();
   const { lang } = useParams<{ lang: string }>();
 
@@ -74,8 +74,6 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
     if (lang === defaultLanguage || languages.includes(lang)) {
       return;
     }
@@ -97,14 +95,11 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
     if (lang !== defaultLanguage && !languages.includes(lang)) {
       document.documentElement.lang = defaultLocale;
       return;
     }
 
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     document.documentElement.lang = lang;
     // A response for a language the user has already navigated away from is discarded, so the
     // routes never run against the messages of another language.
@@ -191,11 +186,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   return (
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     <Context.Provider value={value}>
-      <IntlProvider
-        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-        locale={lang}
-        messages={intlMessages}
-      >
+      <IntlProvider locale={lang} messages={intlMessages}>
         {children}
       </IntlProvider>
     </Context.Provider>

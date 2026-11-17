@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, Redirect, useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { EditPasswordForm, type EditPasswordValues } from '../EditPasswordForm/index.js';
@@ -26,7 +26,7 @@ export function EditPassword(): ReactNode {
   );
 
   if (!token) {
-    return <Navigate to={`/${lang}`} />;
+    return <Redirect to={`/${lang}`} />;
   }
 
   return (
