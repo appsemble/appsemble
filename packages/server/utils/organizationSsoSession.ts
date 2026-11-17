@@ -128,6 +128,7 @@ async function renewSession(
     }
     const where = { id: session.id, refreshToken };
     let renewal: { refreshToken?: Buffer; accessTokenExpires: Date; groups: string[] } | undefined;
+    let rotatedRefreshToken: Buffer | undefined;
     try {
       const config = await getOrganizationOidcConfiguration(sso);
       const tokens = await refreshTokenGrant(config, decrypt(refreshToken, argv.aesSecret));
@@ -137,6 +138,9 @@ async function renewSession(
       const claims = tokens.claims();
       const { subject } = session.OrganizationSsoIdentity!;
       if (!claims || claims.sub === subject) {
+        rotatedRefreshToken = tokens.refresh_token
+          ? encrypt(tokens.refresh_token, argv.aesSecret)
+          : undefined;
         const info = config.serverMetadata().userinfo_endpoint
           ? { ...claims, ...(await fetchUserInfo(config, tokens.access_token, subject)) }
           : claims;
@@ -145,9 +149,7 @@ async function renewSession(
         }
         const rawGroups = info[sso.groupClaim];
         renewal = {
-          ...(tokens.refresh_token
-            ? { refreshToken: encrypt(tokens.refresh_token, argv.aesSecret) }
-            : {}),
+          ...(rotatedRefreshToken ? { refreshToken: rotatedRefreshToken } : {}),
           accessTokenExpires: new Date(Date.now() + Math.min(tokens.expires_in, 3600) * 1000),
           groups: Array.isArray(rawGroups)
             ? rawGroups.filter((group): group is string => typeof group === 'string')
@@ -164,6 +166,9 @@ async function renewSession(
             error.code ?? '',
           ))
       )) {
+        if (rotatedRefreshToken) {
+          await OrganizationSsoSession.update({ refreshToken: rotatedRefreshToken }, { where });
+        }
         return null;
       }
     }

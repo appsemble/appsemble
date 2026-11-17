@@ -1,11 +1,15 @@
 import { type OrganizationSsoConfiguration, PredefinedOrganizationRole } from '@appsemble/types';
+import { type AxiosResponse } from 'axios';
 import { request, setTestApp } from 'axios-test-instance';
+import { QueryTypes } from 'sequelize';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,
   AppCollection,
   BlockVersion,
+  EmailAuthorization,
+  getDB,
   Organization,
   OrganizationInvite,
   OrganizationMember,
@@ -208,6 +212,46 @@ describe('organization single sign-on', () => {
     const response = await request.put('/api/organizations/staff/sso', configuration);
     expect(response.status).toBe(409);
   });
+
+  it.each(['put', 'delete'] as const)(
+    'preserves deployment authority when a Studio %s overlaps its application',
+    async (method) => {
+      await applyOrganizationSsoConfiguration('staff', configuration, 'studio');
+      let pending: Promise<AxiosResponse>;
+      await getDB().transaction(async (transaction) => {
+        await applyOrganizationSsoConfiguration(
+          'staff',
+          { ...configuration, name: 'Deployment Staff' },
+          'deployment',
+          transaction,
+        );
+        const [{ pid }] = await getDB().query<{ pid: number }>('SELECT pg_backend_pid() AS pid', {
+          transaction,
+          type: QueryTypes.SELECT,
+        });
+        pending =
+          method === 'put'
+            ? request.put('/api/organizations/staff/sso', {
+                ...configuration,
+                name: 'Studio Staff',
+              })
+            : request.delete('/api/organizations/staff/sso');
+        await vi.waitUntil(async () => {
+          const [{ blocked }] = await getDB().query<{ blocked: boolean }>(
+            'SELECT EXISTS (SELECT FROM pg_stat_activity WHERE :pid = ANY(pg_blocking_pids(pid))) AS blocked',
+            { replacements: { pid }, type: QueryTypes.SELECT },
+          );
+          return blocked;
+        });
+      });
+      const response = await pending!;
+      const saved = await request.get('/api/organizations/staff/sso');
+      expect({ status: response.status, provider: saved.data }).toMatchObject({
+        status: 409,
+        provider: { name: 'Deployment Staff', managedBy: 'deployment' },
+      });
+    },
+  );
 
   it('preserves active sessions when applying unchanged deployment configuration', async () => {
     await signInWithSso();
@@ -612,6 +656,22 @@ describe('organization single sign-on', () => {
         { primaryEmail: 'manual@example.com', roles: ['Member'] },
         { primaryEmail: 'test@example.com', roles: ['Owner'] },
       ],
+    });
+  });
+
+  it('keeps the provider when its removing Owner has no independent account recovery', async () => {
+    await signInWithSso(['/owners'], {
+      ...configuration,
+      roleMappings: [{ group: '/owners', role: PredefinedOrganizationRole.Owner }],
+    });
+    await OrganizationSso.update({ managedBy: 'studio' }, { where: { OrganizationId: 'staff' } });
+    await user.update({ password: null, primaryEmail: null });
+    await EmailAuthorization.destroy({ where: { UserId: user.id } });
+    const response = await request.delete('/api/organizations/staff/sso');
+    const members = await request.get('/api/organizations/staff/members');
+    expect({ removal: response.status, access: members.status }).toStrictEqual({
+      removal: 409,
+      access: 200,
     });
   });
 

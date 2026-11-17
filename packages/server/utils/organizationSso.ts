@@ -110,8 +110,18 @@ export async function applyOrganizationSsoConfiguration(
   managedBy: OrganizationSsoSettings['managedBy'],
   transaction?: Transaction,
 ): Promise<OrganizationSso> {
+  if (!transaction) {
+    return getDB().transaction((saveTransaction) =>
+      applyOrganizationSsoConfiguration(organizationId, configuration, managedBy, saveTransaction),
+    );
+  }
   const normalized = validateOrganizationSsoConfiguration(configuration, managedBy);
-  if (!(await Organization.findByPk(organizationId, { transaction }))) {
+  if (
+    !(await Organization.findByPk(organizationId, {
+      transaction,
+      lock: transaction.LOCK.UPDATE,
+    }))
+  ) {
     throw new Error('Organization not found.');
   }
   const current = await OrganizationSso.findByPk(organizationId, { transaction });
@@ -186,7 +196,7 @@ export async function applyOrganizationSsoConfiguration(
     }
     return sso;
   };
-  return transaction ? save(transaction) : getDB().transaction(save);
+  return save(transaction);
 }
 
 /**

@@ -757,6 +757,17 @@ describe('organization OIDC sign-in', () => {
     ]);
   });
 
+  it('renews access after UserInfo recovers following refresh token rotation', async () => {
+    await signIn();
+    await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
+    mock.onGet(`${issuer}/userinfo`).reply(503);
+    expect((await request.get('/api/users/current/organizations')).data).toStrictEqual([]);
+    mockProvider();
+    expect((await request.get('/api/users/current/organizations')).data).toMatchObject([
+      { id: 'staff' },
+    ]);
+  });
+
   it('keeps database connections available while provider renewals wait', async () => {
     const { maxSize } = (getDB().connectionManager as unknown as { pool: { maxSize: number } })
       .pool;
