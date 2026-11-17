@@ -1,6 +1,6 @@
 import { FormComponentOptionalLabelContext } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
-import { Route, Switch } from 'wouter-preact';
+import { Route, Router, Switch } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { AppDefinitionProvider } from '../AppDefinitionProvider/index.js';
@@ -21,6 +21,7 @@ import { PageTracker } from '../PageTracker/index.js';
 import { PermissionRequest } from '../PermissionRequest/index.js';
 import { ServiceWorkerRegistrationProvider } from '../ServiceWorkerRegistrationProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
+import { useRawLocation } from '../../utils/useRawLocation.js';
 
 const optionalLabel = (
   <>
@@ -71,12 +72,12 @@ export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactNode {
   );
 
   return (
-    <>
+    <Router hook={useRawLocation}>
       <PageTracker />
       <Switch>
         <Route path="/:lang/*?">{appContent}</Route>
         <Route>{appContent}</Route>
       </Switch>
-    </>
+    </Router>
   );
 }
