@@ -435,6 +435,12 @@ export interface Argv {
    */
   googleClientSecret: string;
 
+  /**
+   * The comma separated OpenID Connect issuers which Studio-managed organization single sign-on may
+   * use.
+   */
+  organizationSsoIssuers?: string;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Miscellaneous                                                                                //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -793,6 +799,7 @@ const defaults: Argv = {
   googleClientId: undefined,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)
   googleClientSecret: undefined,
+  organizationSsoIssuers: undefined,
   disableRegistration: false,
   rejectBreachedPasswords: false,
   // @ts-expect-error 2322 undefined is not assignable to type (strictNullChecks)

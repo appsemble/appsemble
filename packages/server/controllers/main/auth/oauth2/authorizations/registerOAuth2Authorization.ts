@@ -1,5 +1,6 @@
 import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
+import { type OrganizationLoginMethod } from '@appsemble/types';
 
 import { OAuthAuthorization, transactional, User } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
@@ -101,7 +102,9 @@ export async function registerOAuth2Authorization(ctx: Context): Promise<void> {
     // If the combination of authorization url and sub exists, update the entry and allow the user
     // to login to Appsemble.
     await authorization.update({ accessToken, refreshToken }, { where: { authorizationUrl, sub } });
-    ctx.body = createJWTResponse(authorization.UserId);
+    ctx.body = createJWTResponse(authorization.UserId, {
+      loginMethod: preset.name.toLowerCase() as OrganizationLoginMethod,
+    });
   } else {
     // Otherwise, register an authorization object and ask the user if this is the account they want
     // to use.

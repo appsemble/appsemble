@@ -9,7 +9,15 @@ import {
 import { describe, expect, it, vi } from 'vitest';
 
 import { cleanupResourcesAndAssets } from './cleanupResourcesAndAssets.js';
-import { App, getAppDB, Organization } from '../models/index.js';
+import {
+  App,
+  getAppDB,
+  OAuth2ClientCredentials,
+  Organization,
+  OrganizationSsoIdentity,
+  OrganizationSsoSession,
+  User,
+} from '../models/index.js';
 
 vi.mock('@appsemble/node-utils', async (importOriginal) => {
   const actual = (await importOriginal()) as any;
@@ -75,6 +83,52 @@ describe('cleanupResourcesAndAssets', () => {
     expect(appDB.Asset.destroy).toHaveBeenCalledTimes(2);
     expect(appDB.Resource.destroy).toHaveBeenCalledTimes(2);
     expect(appDB.sequelize.close).toHaveBeenCalledTimes(2);
+  });
+
+  it('deletes expired organization SSO sessions unless unexpired personal credentials use them', async () => {
+    await Organization.create({ id: 'staff' });
+    const user = await User.create({ timezone: 'Europe/Amsterdam' });
+    const identity = await OrganizationSsoIdentity.create({
+      issuer: 'https://identity.example.com',
+      subject: 'staff',
+      UserId: user.id,
+    });
+    const past = new Date(Date.now() - 60_000);
+    const createSession = (expires: Date): Promise<OrganizationSsoSession> =>
+      OrganizationSsoSession.create({
+        OrganizationId: 'staff',
+        OrganizationSsoIdentityId: identity.id,
+        refreshTokenHash: 'hash',
+        accessTokenExpires: expires,
+        expires,
+        configurationUpdated: past,
+      });
+    await createSession(past);
+    const active = await createSession(new Date(Date.now() + 60_000));
+    const usedByCredentials = await createSession(past);
+    const usedByExpiredCredentials = await createSession(past);
+    for (const [id, session, expires] of [
+      ['personal', usedByCredentials, null],
+      ['expired', usedByExpiredCredentials, past],
+    ] as const) {
+      await OAuth2ClientCredentials.create({
+        id,
+        description: 'Personal CLI',
+        secret: 'secret',
+        scopes: 'apps:write',
+        expires,
+        UserId: user.id,
+        loginMethod: 'oidc',
+        OrganizationSsoSessionId: session.id,
+      });
+    }
+
+    await cleanupResourcesAndAssets();
+
+    const remaining = await OrganizationSsoSession.findAll({ attributes: ['id'] });
+    expect(remaining.map(({ id }) => id).sort()).toStrictEqual(
+      [active.id, usedByCredentials.id].sort(),
+    );
   });
 
   it('reseeds the seed assets of a demo app as ephemeral copies', async () => {

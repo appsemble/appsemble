@@ -11,6 +11,7 @@ import * as cleanupDemoAppMembers from './commands/cleanupDemoAppMembers.js';
 import * as cleanupExpiredDomains from './commands/cleanupExpiredDomains.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
 import * as cleanupSoftDeletedRecords from './commands/cleanupSoftDeletedRecords.js';
+import * as configureOrganizationSso from './commands/configureOrganizationSso.js';
 import * as fuzzMigrations from './commands/fuzzMigrations.js';
 import * as health from './commands/health.js';
 import * as migrate from './commands/migrate.js';
@@ -108,6 +109,7 @@ const parser = yargs()
   })
   .middleware([setArgv as (...args: Parameters<typeof setArgv>) => void, configureLogger])
   .command(cleanup as CommandModule)
+  .command(configureOrganizationSso as unknown as CommandModule)
   .command(reconcile as CommandModule)
   .command(cleanupResourcesAndAssets as CommandModule)
   .command(cleanupDemoAppMembers as CommandModule)

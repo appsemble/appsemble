@@ -7,6 +7,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Organization, OrganizationMember, User } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
+import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
@@ -71,6 +72,38 @@ describe('removeOrganizationMember', () => {
     expect(status).toBe(204);
   });
 
+  it('retains the last Owner when other ordinary members remain', async () => {
+    const colleague = await User.create({ timezone: 'Europe/Amsterdam' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: colleague.id,
+      role: 'Member',
+    });
+    authorizeStudio();
+    const response = await request.delete(`/api/organizations/testorganization/members/${user.id}`);
+    expect(response).toMatchObject({
+      status: 409,
+      data: { message: 'An organization must retain at least one Owner.' },
+    });
+  });
+
+  it('retains an Owner when both Owners leave concurrently', async () => {
+    const colleague = await User.create({ timezone: 'Europe/Amsterdam' });
+    const ordinaryMember = await User.create({ timezone: 'Europe/Amsterdam' });
+    await OrganizationMember.bulkCreate([
+      { OrganizationId: organization.id, UserId: colleague.id, role: 'Owner' },
+      { OrganizationId: organization.id, UserId: ordinaryMember.id, role: 'Member' },
+    ]);
+    const responses = await Promise.all(
+      [user, colleague].map((owner) =>
+        request.delete(`/api/organizations/testorganization/members/${owner.id}`, {
+          headers: { authorization: `Bearer ${createJWTResponse(owner.id).access_token}` },
+        }),
+      ),
+    );
+    expect(responses.map(({ status }) => status).sort()).toStrictEqual([204, 409]);
+  });
+
   it('should not remove the only remaining member in an organization', async () => {
     authorizeStudio();
     const response = await request.delete(`/api/organizations/testorganization/members/${user.id}`);
@@ -79,7 +112,7 @@ describe('removeOrganizationMember', () => {
       status: 406,
       data: {
         message:
-          'Not allowed to remove yourself from an organization if you’re the only member left.',
+          "Not allowed to remove yourself from an organization if you're the only member left.",
       },
     });
   });

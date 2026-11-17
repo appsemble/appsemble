@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
 import { assertKoaCondition } from '@appsemble/node-utils';
-import { OrganizationPermission } from '@appsemble/types';
+import { OrganizationPermission, predefinedOrganizationRolePermissions } from '@appsemble/types';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
@@ -25,7 +25,17 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
   await checkUserOrganizationPermissions({
     context: ctx,
     organizationId,
-    requiredPermissions: [OrganizationPermission.CreateOrganizationInvites],
+    requiredPermissions: [
+      ...new Set([
+        OrganizationPermission.CreateOrganizationInvites,
+        ...(body as OrganizationInvite[]).flatMap(
+          ({ role }) => predefinedOrganizationRolePermissions[role],
+        ),
+        ...((body as OrganizationInvite[]).some(({ guest }) => guest)
+          ? [OrganizationPermission.UpdateOrganizationMemberRoles]
+          : []),
+      ]),
+    ],
   });
 
   const organization = await Organization.findByPk(organizationId, { attributes: ['id'] });
@@ -62,6 +72,7 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
     .map((invite) => ({
       email: invite.email.toLowerCase(),
       role: invite.role,
+      guest: invite.guest ?? false,
     }))
     .filter((invite) => !memberEmails.has(invite.email));
 
@@ -101,8 +112,15 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
             key,
             OrganizationId: organizationId,
             role: invite.role,
+            guest: invite.guest,
           }
-        : { email: invite.email, role: invite.role, key, OrganizationId: organizationId };
+        : {
+            email: invite.email,
+            role: invite.role,
+            guest: invite.guest,
+            key,
+            OrganizationId: organizationId,
+          };
     }),
   );
 
@@ -129,5 +147,5 @@ export async function createOrganizationInvites(ctx: Context): Promise<void> {
       });
     }),
   );
-  ctx.body = result.map(({ email, role }) => ({ email, role }));
+  ctx.body = result.map(({ email, guest, role }) => ({ email, role, guest }));
 }

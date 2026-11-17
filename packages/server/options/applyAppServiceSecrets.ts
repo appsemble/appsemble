@@ -107,7 +107,13 @@ async function recordTokenError(
   // Callers load the app with the attributes they need, which need not include the organization.
   const { OrganizationId } = (await AppModel.findByPk(app.id, { attributes: ['OrganizationId'] }))!;
   const owners = await OrganizationMember.findAll({
-    where: { role: PredefinedOrganizationRole.Owner, OrganizationId },
+    where: {
+      OrganizationId,
+      [Op.or]: [
+        { role: PredefinedOrganizationRole.Owner },
+        { ssoRoles: { [Op.contains]: [PredefinedOrganizationRole.Owner] } },
+      ],
+    },
     include: [{ model: User, required: true, attributes: ['primaryEmail', 'name', 'locale'] }],
     attributes: [],
   });

@@ -43,9 +43,9 @@ export function TopLevelRoutes(): ReactNode {
       <Route element={<OrganizationInvitePage />} path="/organization-invite" />
       <Route element={<VerifyPage />} path="/verify" />
       <Route element={<CallbackPage />} path="/callback" />
+      <Route element={<LoginPage />} path="/login" />
       <Route element={<AnonymousRoute />}>
         {enableRegistration ? <Route element={<RegisterPage />} path="/register" /> : null}
-        <Route element={<LoginPage />} path="/login" />
         <Route element={<EditPasswordPage />} path="/edit-password" />
       </Route>
       <Route element={<ResetPasswordPage />} path="/reset-password" />

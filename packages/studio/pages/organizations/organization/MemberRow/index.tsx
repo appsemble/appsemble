@@ -4,7 +4,7 @@ import {
   useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
-import { type PredefinedOrganizationRole, predefinedOrganizationRoles } from '@appsemble/types';
+import { PredefinedOrganizationRole, predefinedOrganizationRoles } from '@appsemble/types';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -123,26 +123,42 @@ export function MemberRow({
             <FormattedMessage {...messages.you} />
           </span>
         )}
+        {member.guest ? (
+          <span className="ml-2 tag">
+            <FormattedMessage {...messages.guest} />
+          </span>
+        ) : null}
       </td>
       <td align="right">
-        <AsyncSelect
-          className="mr-2"
-          disabled={!mayUpdateRoles || (member.role === 'Owner' && ownerCount < 2) || id === sub}
-          id={`role-${id}`}
-          name="role"
-          onChange={onChangeRole}
-          value={member.role}
-        >
-          {predefinedOrganizationRoles.map((r: PredefinedOrganizationRole) => (
-            <option key={r} value={r}>
-              {formatMessage(messages[r])}
-            </option>
-          ))}
-        </AsyncSelect>
+        {member.role == null ? (
+          <span className="mr-2">
+            <FormattedMessage {...messages.managedRoles} />{' '}
+            {member.ssoRoles.map((role) => formatMessage(messages[role])).join(', ')}
+          </span>
+        ) : (
+          <AsyncSelect
+            className="mr-2"
+            disabled={
+              !mayUpdateRoles ||
+              (member.roles.includes(PredefinedOrganizationRole.Owner) && ownerCount < 2) ||
+              id === sub
+            }
+            id={`role-${id}`}
+            name="role"
+            onChange={onChangeRole}
+            value={member.role}
+          >
+            {predefinedOrganizationRoles.map((r: PredefinedOrganizationRole) => (
+              <option key={r} value={r}>
+                {formatMessage(messages[r])}
+              </option>
+            ))}
+          </AsyncSelect>
+        )}
         {id === sub ? (
           <AsyncButton
             color="danger"
-            disabled={member.role === 'Owner' && ownerCount < 2}
+            disabled={member.roles.includes(PredefinedOrganizationRole.Owner) && ownerCount < 2}
             icon="sign-out-alt"
             onClick={leaveOrganization}
           >

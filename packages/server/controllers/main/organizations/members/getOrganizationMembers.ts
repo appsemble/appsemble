@@ -4,6 +4,7 @@ import { type Context } from 'koa';
 
 import { Organization, User } from '../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
+import { getOrganizationMemberRoles } from '../../../../utils/organizationSso.js';
 
 export async function getOrganizationMembers(ctx: Context): Promise<void> {
   const {
@@ -31,5 +32,8 @@ export async function getOrganizationMembers(ctx: Context): Promise<void> {
     name: user.name,
     primaryEmail: user.primaryEmail,
     role: user.OrganizationMember!.role,
+    roles: getOrganizationMemberRoles(user.OrganizationMember!),
+    ssoRoles: user.OrganizationMember!.ssoRoles,
+    guest: user.OrganizationMember!.guest,
   }));
 }

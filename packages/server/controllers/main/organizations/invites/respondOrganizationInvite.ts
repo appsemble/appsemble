@@ -25,6 +25,7 @@ export async function respondOrganizationInvite(ctx: Context): Promise<void> {
       OrganizationId: invite.OrganizationId,
       UserId: userId,
       role: invite.role,
+      guest: invite.guest,
     });
   }
 

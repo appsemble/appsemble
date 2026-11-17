@@ -81,5 +81,5 @@ export async function registerUserWithEmail(ctx: Context): Promise<void> {
       logger.error(error);
     });
 
-  ctx.body = createJWTResponse(user.id);
+  ctx.body = createJWTResponse(user.id, { loginMethod: 'password' });
 }

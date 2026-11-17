@@ -1,25 +1,19 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { AppCollection, OrganizationMember } from '../../../models/index.js';
+import { AppCollection } from '../../../models/index.js';
+import { getOrganizationMemberAccess } from '../../../utils/organizationSso.js';
 
 export async function getAppCollection(ctx: Context): Promise<void> {
   const {
     pathParams: { appCollectionId },
-    user,
   } = ctx;
 
   const collection = await AppCollection.findByPk(appCollectionId);
 
   assertKoaCondition(collection != null, ctx, 404, 'App collection not found');
 
-  const organizationMember = await OrganizationMember.findOne({
-    where: {
-      UserId: user?.id ?? null,
-      OrganizationId: collection.OrganizationId,
-    },
-    attributes: ['OrganizationId'],
-  });
+  const organizationMember = await getOrganizationMemberAccess(ctx, collection.OrganizationId);
 
   assertKoaCondition(
     !(collection.visibility === 'private' && !organizationMember),

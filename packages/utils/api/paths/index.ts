@@ -141,6 +141,10 @@ import { pathItems as organizationsOrganizationIdInvites } from './organizations
 import { pathItems as organizationsOrganizationIdMembersMemberIdRole } from './organizations/organizationId/members/memberId/role.js';
 import { pathItems as organizationsOrganizationIdMembersMemberId } from './organizations/organizationId/members/memberId.js';
 import { pathItems as organizationsOrganizationIdMembers } from './organizations/organizationId/members.js';
+import { pathItems as organizationsOrganizationIdSso } from './organizations/organizationId/sso.js';
+import { pathItems as organizationsOrganizationIdSsoLogin } from './organizations/organizationId/sso/login.js';
+import { pathItems as organizationsOrganizationIdSsoCallback } from './organizations/organizationId/sso/callback.js';
+import { pathItems as authLogout } from './auth/logout.js';
 import { pathItems as organizationsOrganizationIdOrganizationSubscriptionPrice } from './organizations/organizationId/organizationSubscriptionPrice.js';
 import { pathItems as organizationsOrganizationIdOrganizationSubscription } from './organizations/organizationId/subscription.js';
 import { pathItems as organizationsOrganizationId } from './organizations/organizationId.js';
@@ -161,6 +165,8 @@ import { pathItems as usersCurrentApps } from './users/current/apps.js';
 import { pathItems as usersCurrentAuthOAuth2AppsAppIdConsentAgree } from './users/current/auth/oauth2/apps/appId/consent/agree.js';
 import { pathItems as usersCurrentAuthOAuth2AppsAppIdConsentVerify } from './users/current/auth/oauth2/apps/appId/consent/verify.js';
 import { pathItems as usersCurrentAuthOauth2Authorizations } from './users/current/auth/oauth2/authorizations.js';
+import { pathItems as usersCurrentAuthOidcIdentities } from './users/current/auth/oidc/identities.js';
+import { pathItems as usersCurrentAuthOidcIdentity } from './users/current/auth/oidc/identities/identityId.js';
 import { pathItems as usersCurrentAuthOAuth2ClientCredentialsClientId } from './users/current/auth/oauth2/clientCredentials/clientId.js';
 import { pathItems as usersCurrentAuthOAuth2ClientCredentials } from './users/current/auth/oauth2/clientCredentials.js';
 import { pathItems as usersCurrentEmails } from './users/current/emails.js';
@@ -298,6 +304,7 @@ export const paths = {
   '/api/auth/oauth2/authorizations/connect': authOAuth2AuthorizationsConnect,
   '/api/auth/oauth2/authorizations/register': authOAuth2AuthorizationsRegister,
   '/api/auth/refresh-token': authRefreshToken,
+  '/api/auth/logout': authLogout,
   '/api/blocks/@{organizationId}/{blockId}': blocksOrganizationIdBlockId,
   '/api/blocks/@{organizationId}/{blockId}/versions': blocksOrganizationIdBlockIdVersions,
   '/api/blocks/@{organizationId}/{blockId}/versions/list': blocksOrganizationIdBlockIdVersionsList,
@@ -330,6 +337,9 @@ export const paths = {
   '/api/organizations/{organizationId}/members/{organizationMemberId}':
     organizationsOrganizationIdMembersMemberId,
   '/api/organizations/{organizationId}/members': organizationsOrganizationIdMembers,
+  '/api/organizations/{organizationId}/sso/login': organizationsOrganizationIdSsoLogin,
+  '/api/organizations/{organizationId}/sso/callback': organizationsOrganizationIdSsoCallback,
+  '/api/organizations/{organizationId}/sso': organizationsOrganizationIdSso,
   '/api/organizations/{organizationId}/subscription':
     organizationsOrganizationIdOrganizationSubscription,
   '/api/organizations/{organizationId}/subscription/price':
@@ -360,6 +370,8 @@ export const paths = {
   '/api/users/current/auth/oauth2/apps/{appId}/consent/verify':
     usersCurrentAuthOAuth2AppsAppIdConsentVerify,
   '/api/users/current/auth/oauth2/authorizations': usersCurrentAuthOauth2Authorizations,
+  '/api/users/current/auth/oidc/identities': usersCurrentAuthOidcIdentities,
+  '/api/users/current/auth/oidc/identities/{identityId}': usersCurrentAuthOidcIdentity,
   '/api/users/current/auth/oauth2/client-credentials/{clientId}':
     usersCurrentAuthOAuth2ClientCredentialsClientId,
   '/api/users/current/auth/oauth2/client-credentials': usersCurrentAuthOAuth2ClientCredentials,

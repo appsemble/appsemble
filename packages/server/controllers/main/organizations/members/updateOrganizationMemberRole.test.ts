@@ -7,6 +7,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Organization, OrganizationMember, User } from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
+import { createJWTResponse } from '../../../../utils/createJWTResponse.js';
 import { authorizeStudio, createTestUser } from '../../../../utils/test/authorization.js';
 
 let organization: Organization;
@@ -65,5 +66,29 @@ describe('updateOrganizationMemberRole', () => {
         role: PredefinedOrganizationRole.Maintainer,
       },
     });
+  });
+
+  it('retains an Owner when both Owners reduce each other roles concurrently', async () => {
+    const colleague = await User.create({ timezone: 'Europe/Amsterdam' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: colleague.id,
+      role: 'Owner',
+    });
+    await Promise.all(
+      [
+        { actor: user, target: colleague },
+        { actor: colleague, target: user },
+      ].map(({ actor, target }) =>
+        request.put(
+          `/api/organizations/testorganization/members/${target.id}/role`,
+          { role: 'Member' },
+          { headers: { authorization: `Bearer ${createJWTResponse(actor.id).access_token}` } },
+        ),
+      ),
+    );
+    expect(
+      await OrganizationMember.count({ where: { OrganizationId: organization.id, role: 'Owner' } }),
+    ).toBe(1);
   });
 });

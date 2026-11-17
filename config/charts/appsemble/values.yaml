@@ -109,6 +109,10 @@ sentry: null
 
 oauthSecret: null
 
+organizationSso: {}
+
+organizationSsoIssuers: []
+
 secretSecret: appsemble
 
 stripeApiSecretKey: stripe-api-secret-key

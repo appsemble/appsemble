@@ -15,15 +15,21 @@ import {
 } from '@appsemble/types';
 import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
-import { Op } from 'sequelize';
+import { Op, type Transaction } from 'sequelize';
 
 import { getAppPasswordToken } from './app.js';
+import {
+  getOrganizationMemberAccess,
+  getOrganizationMemberRoles,
+  removesLastOrganizationOwner,
+} from './organizationSso.js';
 import {
   App,
   type AppMember,
   getAppDB,
   Organization,
-  OrganizationMember,
+  type OrganizationMember,
+  OrganizationSso,
 } from '../models/index.js';
 
 interface CheckAppPermissionsParams {
@@ -105,26 +111,6 @@ async function getUserAppRoles(
   return getAppMemberScopedRoles(appMember, appId, groupId);
 }
 
-async function getUserOrganizationRole(
-  userId: string,
-  organizationId: string,
-): Promise<PredefinedOrganizationRole> {
-  const organizationMember = await OrganizationMember.findOne({
-    attributes: ['role'],
-    where: {
-      UserId: userId,
-      OrganizationId: organizationId,
-    },
-  });
-
-  if (!organizationMember) {
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-    return null;
-  }
-
-  return organizationMember.role;
-}
-
 export async function checkUnauthenticatedAppPermissions({
   appId,
   context,
@@ -182,14 +168,16 @@ export async function checkAppMemberAppPermissions({
 }
 
 function checkOrganizationRoleAppPermissions(
-  organizationRole: PredefinedOrganizationRole,
+  organizationRoles: PredefinedOrganizationRole[],
   requiredPermissions: CustomAppPermission[],
 ): boolean {
-  if (!organizationRole) {
+  if (!organizationRoles.length) {
     return false;
   }
 
-  const organizationRolePermissions = predefinedOrganizationRolePermissions[organizationRole];
+  const organizationRolePermissions = new Set(
+    organizationRoles.flatMap((role) => predefinedOrganizationRolePermissions[role]),
+  );
 
   return requiredPermissions.every((p) => {
     let mappedPermission = appOrganizationPermissionMapping[p as AppPermission];
@@ -202,10 +190,12 @@ function checkOrganizationRoleAppPermissions(
           appOrganizationPermissionMapping[
             (p as CustomAppResourcePermission).replace(/:[^:]*:/, ':all:') as AppPermission
           ];
+      } else if (customAppPermission.startsWith('$webhook:')) {
+        mappedPermission = OrganizationPermission.InvokeAppWebhooks;
       }
     }
 
-    return organizationRolePermissions.includes(mappedPermission);
+    return organizationRolePermissions.has(mappedPermission);
   });
 }
 
@@ -230,12 +220,15 @@ export async function checkUserAppPermissions({
 
   const userAppRoles = await getUserAppRoles(authSubject.id, appId, groupId);
 
-  const userOrganizationRole = await getUserOrganizationRole(authSubject.id, app.OrganizationId);
+  const organizationMember = await getOrganizationMemberAccess(context, app.OrganizationId);
+  const userOrganizationRoles = organizationMember
+    ? getOrganizationMemberRoles(organizationMember)
+    : [];
 
   assertKoaCondition(
     userAppRoles.every((roles) =>
       checkAppRoleAppPermissions(security, roles, requiredPermissions),
-    ) || checkOrganizationRoleAppPermissions(userOrganizationRole, requiredPermissions),
+    ) || checkOrganizationRoleAppPermissions(userOrganizationRoles, requiredPermissions),
     context,
     403,
     'User does not have sufficient app permissions.',
@@ -255,13 +248,7 @@ export async function checkUserOrganizationPermissions({
 
   assertKoaCondition(organization != null, context, 404, 'Organization not found.');
 
-  const organizationMember = await OrganizationMember.findOne({
-    attributes: ['role'],
-    where: {
-      UserId: authSubject!.id,
-      OrganizationId: organizationId,
-    },
-  });
+  const organizationMember = await getOrganizationMemberAccess(context, organizationId);
 
   assertKoaCondition(
     organizationMember != null,
@@ -270,13 +257,29 @@ export async function checkUserOrganizationPermissions({
     'User is not a member of this organization.',
   );
 
-  const userOrganizationRole = await getUserOrganizationRole(authSubject!.id, organizationId);
-
   assertKoaCondition(
-    checkOrganizationRoleOrganizationPermissions(userOrganizationRole, requiredPermissions),
+    checkOrganizationRoleOrganizationPermissions(
+      getOrganizationMemberRoles(organizationMember),
+      requiredPermissions,
+    ),
     context,
     403,
     'User does not have sufficient organization permissions.',
+  );
+}
+
+export async function checkOrganizationOwnerRemoval(
+  context: Context,
+  member: Pick<OrganizationMember, 'OrganizationId' | 'UserId' | 'role' | 'guest' | 'ssoRoles'>,
+  next: Pick<OrganizationMember, 'role' | 'guest' | 'ssoRoles'> | null,
+  transaction: Transaction,
+): Promise<void> {
+  const sso = await OrganizationSso.findByPk(member.OrganizationId, { transaction });
+  assertKoaCondition(
+    !(await removesLastOrganizationOwner(sso, member, next, transaction)),
+    context,
+    409,
+    'An organization must retain at least one Owner.',
   );
 }
 

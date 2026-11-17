@@ -19,6 +19,7 @@ const OrganizationAppContentsExplorerPermissions = [
   OrganizationPermission.QueryAppAssets,
   OrganizationPermission.QueryAppResources,
   OrganizationPermission.GetAppResources,
+  OrganizationPermission.GetAppResourceHistory,
 ];
 
 const OrganizationAppContentsManagerPermissions = [
@@ -83,6 +84,7 @@ const OrganizationAppManagerPermissions = [
   OrganizationPermission.DeleteAppVariables,
   OrganizationPermission.PushAppNotifications,
   OrganizationPermission.QueryAppSnapshots,
+  OrganizationPermission.InvokeAppWebhooks,
 ];
 
 const OrganizationAppCollectionManagerPermissions = [

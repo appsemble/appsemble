@@ -41,6 +41,7 @@ describe('getAppResourceVersions', () => {
       vapidPrivateKey: '',
       definition: {
         name: 'Test App',
+        security: { default: { role: 'Member', policy: 'invite' }, roles: {} },
         resources: {
           noHistory: {},
           yesHistory: {

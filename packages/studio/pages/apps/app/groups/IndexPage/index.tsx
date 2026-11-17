@@ -55,7 +55,7 @@ export function IndexPage(): ReactNode {
   const organization = organizations.find((o) => o.id === app.OrganizationId);
   const mayCreateGroup =
     organization &&
-    checkOrganizationRoleOrganizationPermissions(organization.role, [
+    checkOrganizationRoleOrganizationPermissions(organization.roles, [
       OrganizationPermission.CreateGroups,
     ]);
 

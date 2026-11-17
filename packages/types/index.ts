@@ -34,6 +34,7 @@ export * from './training.js';
 export * from './quota.js';
 export * from './permissions.js';
 export * from './roles.js';
+export * from './organizationSso.js';
 export * from './subscriptionPlans.js';
 
 // XXX: consider not re-exporting from here
@@ -683,6 +684,8 @@ export interface OrganizationInvite {
    * The role the user should get when accepting the invite.
    */
   role: PredefinedOrganizationRole;
+
+  guest?: boolean;
 }
 
 /**

@@ -4,7 +4,11 @@ import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { col, fn, literal } from 'sequelize';
 
-import { App, AppRating, Organization, OrganizationMember } from '../../../../models/index.js';
+import { App, AppRating, Organization } from '../../../../models/index.js';
+import {
+  getOrganizationMemberAccess,
+  getOrganizationMemberRoles,
+} from '../../../../utils/organizationSso.js';
 import {
   applyAppMessages,
   compareApps,
@@ -15,7 +19,6 @@ import {
 export async function getOrganizationApps(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId },
-    user: authSubject,
   } = ctx;
 
   const {
@@ -27,19 +30,10 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
   const organization = await Organization.findByPk(organizationId);
 
   assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
-  let organizationMember;
-
-  if (authSubject) {
-    organizationMember = await OrganizationMember.findOne({
-      where: {
-        UserId: authSubject!.id,
-        OrganizationId: organizationId,
-      },
-    });
-  }
+  const organizationMember = await getOrganizationMemberAccess(ctx, organizationId);
   const canQueryApps =
     organizationMember &&
-    checkOrganizationRoleOrganizationPermissions(organizationMember.role, [
+    checkOrganizationRoleOrganizationPermissions(getOrganizationMemberRoles(organizationMember), [
       OrganizationPermission.QueryApps,
     ]);
 

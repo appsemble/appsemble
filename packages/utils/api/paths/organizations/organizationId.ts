@@ -4,7 +4,8 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   parameters: [{ $ref: '#/components/parameters/organizationId' }],
   get: {
     tags: ['main', 'organization'],
-    description: 'Get a single organization.',
+    description:
+      'Get an organization profile. Private organizations require membership; billing details require subscription management permission.',
     operationId: 'getOrganization',
     responses: {
       200: {

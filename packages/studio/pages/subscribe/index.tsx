@@ -49,7 +49,7 @@ export function SubscribePage(): ReactNode {
   const manageableOrganizations = useMemo(
     () =>
       organizations.filter((organization) =>
-        checkOrganizationRoleOrganizationPermissions(organization.role, [
+        checkOrganizationRoleOrganizationPermissions(organization.roles, [
           OrganizationPermission.ManageOrganizationSubscriptions,
         ]),
       ),

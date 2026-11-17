@@ -144,31 +144,31 @@ export function GroupPage(): ReactNode {
 
   const mayEditGroup =
     organization &&
-    checkOrganizationRoleOrganizationPermissions(organization.role, [
+    checkOrganizationRoleOrganizationPermissions(organization.roles, [
       OrganizationPermission.UpdateGroups,
     ]);
 
   const mayInvite =
     organization &&
-    checkOrganizationRoleOrganizationPermissions(organization.role, [
+    checkOrganizationRoleOrganizationPermissions(organization.roles, [
       OrganizationPermission.CreateGroupInvites,
     ]);
 
   const mayDeleteInvites =
     organization &&
-    checkOrganizationRoleOrganizationPermissions(organization.role, [
+    checkOrganizationRoleOrganizationPermissions(organization.roles, [
       OrganizationPermission.DeleteGroupInvites,
     ]);
 
   const mayUpdateRole =
     organization &&
-    checkOrganizationRoleOrganizationPermissions(organization.role, [
+    checkOrganizationRoleOrganizationPermissions(organization.roles, [
       OrganizationPermission.UpdateGroupMemberRoles,
     ]);
 
   const mayRemove =
     organization &&
-    checkOrganizationRoleOrganizationPermissions(organization.role, [
+    checkOrganizationRoleOrganizationPermissions(organization.roles, [
       OrganizationPermission.RemoveGroupMembers,
     ]);
 

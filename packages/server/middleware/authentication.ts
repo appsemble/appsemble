@@ -2,6 +2,7 @@ import { type AuthSubject, type SecurityOptions } from '@appsemble/node-utils';
 import { type App as AppType } from '@appsemble/types';
 import { compare } from 'bcrypt';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
+import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import {
@@ -10,10 +11,13 @@ import {
   EmailAuthorization,
   getAppDB,
   OAuth2ClientCredentials,
+  OrganizationSsoIdentity,
+  OrganizationSsoSession,
   User,
 } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { decrypt } from '../utils/crypto.js';
+import { validateOrganizationSsoCredential } from '../utils/organizationSsoSession.js';
 
 async function authenticateAppAccessToken(
   accessToken: string,
@@ -59,7 +63,7 @@ export function authentication(): SecurityOptions {
 
   return {
     // @ts-expect-error Messed up
-    async basic(email: string, password: string) {
+    async basic(email: string, password: string, ctx: Context) {
       const emailAuthorization = await EmailAuthorization.findOne({
         include: [
           {
@@ -79,6 +83,8 @@ export function authentication(): SecurityOptions {
       const isValidPassword = await compare(password, user.password);
 
       if (isValidPassword) {
+        ctx.state.loginMethod = 'password';
+        ctx.state.authTime = Math.floor(Date.now() / 1000);
         return user;
       }
 
@@ -95,13 +101,13 @@ export function authentication(): SecurityOptions {
     },
 
     // @ts-expect-error Messed up
-    async cli(accessToken: string) {
+    async cli(accessToken: string, ctx: Context) {
       const payload = jwt.verify(accessToken, secret) as JwtPayload;
       if (payload.token_use !== 'access') {
         return;
       }
       const { aud, scope, sub } = payload;
-      const credentials = await OAuth2ClientCredentials.count({
+      const credentials = await OAuth2ClientCredentials.findOne({
         where: {
           id: aud,
           expires: { [Op.or]: [null, { [Op.gt]: new Date() }] },
@@ -120,6 +126,14 @@ export function authentication(): SecurityOptions {
       if (!user) {
         return;
       }
+
+      if (!(await validateOrganizationSsoCredential(ctx, credentials))) {
+        return;
+      }
+
+      ctx.state.loginMethod = credentials.loginMethod;
+      ctx.state.organizationSsoSessionId = credentials.OrganizationSsoSessionId;
+      ctx.state.clientCredentials = true;
 
       const result: [AuthSubject, { scope: string }] = [user, { scope }];
       return result;
@@ -148,11 +162,27 @@ export function authentication(): SecurityOptions {
     },
 
     // @ts-expect-error Messed up
-    studio(accessToken: string) {
+    async studio(accessToken: string, ctx: Context) {
       try {
         const payload = jwt.verify(accessToken, secret, { audience: host }) as JwtPayload;
         if (payload.token_use !== 'access') {
           return null;
+        }
+        ctx.state.loginMethod = payload.loginMethod;
+        ctx.state.organizationSsoSessionId = payload.organizationSsoSessionId;
+        ctx.state.authTime = payload.authTime;
+        if (payload.organizationSsoSessionId) {
+          const session = await OrganizationSsoSession.findOne({
+            where: {
+              id: payload.organizationSsoSessionId,
+              expires: { [Op.gt]: new Date() },
+              interactiveRevoked: false,
+            },
+            include: [{ model: OrganizationSsoIdentity, where: { UserId: payload.sub } }],
+          });
+          if (!session) {
+            return null;
+          }
         }
         return User.findByPk(payload.sub, {
           attributes: ['id'],
@@ -163,8 +193,8 @@ export function authentication(): SecurityOptions {
     },
 
     // @ts-expect-error Messed up
-    async webhook(webhookToken: string, { path }: { path: string }) {
-      const match = path.match(/^\/api\/apps\/(\d+)\/webhooks\/(.+)$/);
+    async webhook(webhookToken: string, ctx: Context) {
+      const match = ctx.path.match(/^\/api\/apps\/(\d+)\/webhooks\/(.+)$/);
       if (!match) {
         return;
       }
@@ -184,6 +214,7 @@ export function authentication(): SecurityOptions {
       );
 
       if (webhookSecret) {
+        ctx.state.webhookAuthenticated = true;
         return {} as AppMember;
       }
     },

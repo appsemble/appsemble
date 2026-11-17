@@ -96,6 +96,51 @@ helm repo update
 helm install my-appsemble appsemble/appsemble --set 'ingress.host=my-appsemble.example.com'
 ```
 
+### Organization single sign-on
+
+Organization Owners manage Studio single sign-on in their organization's settings, using an issuer
+listed in `organizationSsoIssuers`. Operators can manage the same configuration, with any issuer,
+through `organizationSso`:
+
+```yaml
+organizationSso:
+  example:
+    issuer: https://identity.example.com/realms/staff
+    clientId: appsemble-studio
+    clientSecretRef:
+      name: studio-sso
+      key: client-secret
+    name: Staff sign-in
+    scope: openid email profile
+    groupClaim: groups
+    policy: required-with-guests
+    allowedLoginMethods: [oidc, google, gitlab]
+    roleMappings:
+      - group: /appsemble/owners
+        role: Owner
+      - group: /appsemble/maintainers
+        role: Maintainer
+```
+
+The organization must exist. The provider's redirect URI is `https://<studio-host>/callback`. The
+chart reads the client secret from the referenced Kubernetes Secret and applies the configuration
+after migrations. Declared settings are read-only in Studio. Removing an organization from
+`organizationSso` deletes its group-managed memberships and ends its sessions through the provider;
+manual and guest memberships remain. Studio-managed SSO settings are unaffected.
+
+Studio organization SSO requires Valkey for connection verification and serialized provider
+renewals.
+
+Deployment-managed SSO uses installation-operator authority. Operators verify the provider
+connection and Owner mapping in a test environment and recover access through GitOps.
+
+`optional` permits the configured ordinary login methods, `required` requires the organization's SSO
+provider, and `required-with-guests` permits explicitly invited external guests to use the
+configured ordinary methods. `allowedLoginMethods` takes `password`, `github`, `gitlab`, `google`
+and `oidc`, the organization's own provider, and defaults to all of them. Group values match
+exactly, and permissions from multiple mapped roles combine across the organization. Staff without a
+matching group have no organization access.
+
 ### Upgrading
 
 ```sh
@@ -368,7 +413,7 @@ readiness. `/api/health` is a deprecated alias of `/health/ready`.
 
 ## Valkey
 
-The chart deploys one Valkey pod by default. Valkey holds only the app-serving cache (with a default
+The chart deploys one Valkey pod by default. Valkey holds the app-serving cache (with a default
 `appServingCacheTtl` of 300 seconds) and the sliding-window counters for e-mail registration and app
 password rate limits. It holds no sessions or queues. If Valkey restarts, the cache and counters
 reset; the server keeps serving requests and reconnects when Valkey returns. Cache operations fail
@@ -643,6 +688,8 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `hostAliases`                               | `[]`                           | Extra hosts file entries for the pods that send email, such as an SMTP relay reached under its certificate name.                          |
 | `smtpSecret`                                | `smtp`                         | The secret to use for configuring SMTP. The secret should contain the following values: `host`, `port`, `secure`, `user`, `pass`, `from`. |
 | `oauthSecret`                               | `nil`                          | The secret which holds client ids and client secrets for OAuth2 providers.                                                                |
+| `organizationSso`                           | `{}`                           | Deployment-managed organization SSO settings and Kubernetes client-secret references.                                                     |
+| `organizationSsoIssuers`                    | `[]`                           | OpenID Connect issuers which organization Owners may configure for single sign-on in Studio.                                              |
 | `sentry.allowedDomains`                     | `[]`                           | A list of domains on which Sentry integration will be enabled. Wildcards are supported.                                                   |
 | `sentry.secret`                             | `nil`                          | The secret from which to read the [Sentry] DSN.                                                                                           |
 | `sentry.environment`                        | `nil`                          | The environment to send with Sentry error reports.                                                                                        |

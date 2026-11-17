@@ -20,8 +20,8 @@ export async function deleteCurrentUserOAuth2Authorization(ctx: Context): Promis
     include: [OAuthAuthorization],
   }))!;
 
-  // Return false if any login method is left
-  // 201 is needed so that a body can be attatched
+  // Organization-controlled SSO cannot provide independent account recovery.
+  // 201 is needed so that a body can be attached
 
   ctx.message = 'The account was unlinked successfully.';
   ctx.status = 204;

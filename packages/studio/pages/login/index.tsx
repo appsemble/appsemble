@@ -11,7 +11,9 @@ import { type TokenResponse } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Navigate } from 'react-router-dom';
 
+import { OrganizationLogin } from './OrganizationLogin/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useUser } from '../../components/UserProvider/index.js';
@@ -19,7 +21,7 @@ import { enableRegistration, logins } from '../../utils/settings.js';
 
 export function LoginPage(): ReactNode {
   useMeta(messages.title, messages.description);
-  const { login } = useUser();
+  const { login, userInfo } = useUser();
   const qs = useQuery();
   const busy = useToggle();
 
@@ -31,13 +33,28 @@ export function LoginPage(): ReactNode {
           headers: { authorization: `Basic ${btoa(`${email}:${password}`)}` },
         });
         login(data);
-      } catch (error: unknown) {
+      } finally {
         busy.disable();
-        throw error;
       }
     },
     [busy, login],
   );
+
+  const organizationId = qs.get('organization');
+  if (organizationId) {
+    return (
+      <Content>
+        <OrganizationLogin
+          busy={busy}
+          onPasswordLogin={onPasswordLogin}
+          organizationId={organizationId}
+        />
+      </Content>
+    );
+  }
+  if (userInfo) {
+    return <Navigate to={qs.get('redirect') || '/apps'} />;
+  }
 
   return (
     <Content>

@@ -46,7 +46,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactNode {
 
   const createOrganizations =
     organizations?.filter((org) =>
-      checkOrganizationRoleOrganizationPermissions(org.role, [OrganizationPermission.CreateApps]),
+      checkOrganizationRoleOrganizationPermissions(org.roles, [OrganizationPermission.CreateApps]),
     ) ?? [];
   const organizationId = createOrganizations[0]?.id;
 

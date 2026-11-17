@@ -19,7 +19,7 @@ export function AppScreenshot({ url }: AppScreenshotProps): ReactNode {
   const modal = useToggle();
   const { organizations } = useUser();
 
-  const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
+  const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.roles;
   const mayDeleteScreenshots =
     userRole &&
     checkOrganizationRoleOrganizationPermissions(userRole, [

@@ -31,7 +31,7 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
   });
 
   assertKoaCondition(
-    await checkAppSecurityPolicy(app, authSubject!.id),
+    await checkAppSecurityPolicy(app, authSubject!.id, ctx),
     ctx,
     401,
     'User is not allowed to login due to the app’s security policy',

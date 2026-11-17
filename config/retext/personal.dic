@@ -107,6 +107,7 @@ OAuth2
 OData
 OpenAPI
 OpenID
+PKCE
 OpenStreetMap
 PEM
 Preact
@@ -270,3 +271,5 @@ ngruychev
 prevalidation
 disjointness
 subschema
+hashtext
+xact

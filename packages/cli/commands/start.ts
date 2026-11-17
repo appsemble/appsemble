@@ -90,6 +90,9 @@ export function builder(yargs: Argv): Argv<any> {
       desc: 'The secret key to be used for GitLab OAuth2.',
       implies: 'gitlab-client-id',
     })
+    .option('organization-sso-issuers', {
+      desc: 'Comma separated OpenID Connect issuers which organization owners may configure for single sign-on in Studio.',
+    })
     .option('secret', {
       desc: 'Secret key used to sign JWTs and cookies',
       required: true,
