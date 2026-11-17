@@ -45,17 +45,16 @@ export function DropdownField({
   } = useBlock();
   const { icon } = field.dropdown;
   const alignment = field.dropdown.alignment || 'right';
-  const name =
-    (remap(field.dropdown.label, item, { index, repeatedIndex }) as string) ||
-    (remap(field.label, {}) as string) ||
-    formatMessage('moreOptions');
+  const dropdownLabel = remap(field.dropdown.label, item, { index, repeatedIndex }) as string;
 
   return (
     <Dropdown
-      ariaLabel={icon ? name : undefined}
+      ariaLabel={
+        dropdownLabel || (remap(field.label, {}) as string) || formatMessage('moreOptions')
+      }
       className={classNames({ 'is-right': alignment === 'right' })}
       icon={icon}
-      label={icon ? null : name}
+      label={icon ? null : dropdownLabel}
     >
       {field.dropdown.options.map((option, i) => {
         const label = remap(option.label, item, { index, repeatedIndex });
