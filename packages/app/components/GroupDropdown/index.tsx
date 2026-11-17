@@ -1,10 +1,10 @@
 import { NavbarDropdown } from '@appsemble/preact-components';
 import { type AppMemberGroup } from '@appsemble/types';
 import { type ReactNode } from 'react';
-import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
 import { NavbarItem } from '../NavbarItem/index.js';
 import { appId } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';

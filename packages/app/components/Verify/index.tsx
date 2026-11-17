@@ -1,11 +1,11 @@
 import { Message } from '@appsemble/preact-components';
 import axios from 'axios';
 import { type ReactNode, useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
 import { useQuery } from '../../utils/useQuery.js';

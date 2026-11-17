@@ -12,10 +12,10 @@ import {
   useRef,
   useState,
 } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { ModalCard } from '../ModalCard/index.js';
 import { type Permission, type ServiceWorkerRegistrationContextType } from '../../types.js';
 import { getAppAssets } from '../../utils/appAssets.js';

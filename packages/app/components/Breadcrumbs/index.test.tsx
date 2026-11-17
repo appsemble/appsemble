@@ -1,7 +1,6 @@
 import { type AppDefinition, type PageDefinition, remap, type Remapper } from '@appsemble/lang-sdk';
 import { IconProvider } from '@appsemble/preact-components';
 import { render, screen } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -9,6 +8,7 @@ import { Breadcrumbs } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 function createAppDefinition(pages: PageDefinition[]): AppDefinition {
   return {

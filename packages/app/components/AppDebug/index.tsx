@@ -1,7 +1,6 @@
 import { getRouteSegment } from '@appsemble/lang-sdk';
 import { Button } from '@appsemble/preact-components';
 import { type ReactNode, useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
@@ -9,6 +8,7 @@ import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 
 interface ServiceWorkerStatus {
   available: boolean;

@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import { type ReactNode } from 'react';
-import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
 
 interface DotProgressBarProps {
   readonly amount: number;

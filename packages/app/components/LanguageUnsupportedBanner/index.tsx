@@ -1,9 +1,9 @@
 import { Button, Message } from '@appsemble/preact-components';
 import { type ReactNode, useCallback, useMemo, useRef } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { supportedLanguages } from '../../utils/settings.js';
 
 export function LanguageUnsupportedBanner(): ReactNode {

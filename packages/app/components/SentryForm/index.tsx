@@ -12,9 +12,9 @@ import {
 } from '@appsemble/preact-components';
 import { type ComponentChildren } from 'preact';
 import { useCallback, useMemo, useState } from 'preact/hooks';
-import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 
 interface SentryFormProps {
   /**

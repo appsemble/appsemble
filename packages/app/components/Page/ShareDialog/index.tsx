@@ -1,9 +1,9 @@
 import { Button } from '@appsemble/preact-components';
 import { type Dispatch, type ReactNode, type SetStateAction, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage } from '../../IntlProvider/index.js';
 import { ModalCard } from '../../ModalCard/index.js';
 import { type ShowShareDialogParams } from '../../../types.js';
 

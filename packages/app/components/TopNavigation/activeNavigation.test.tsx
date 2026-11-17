@@ -5,11 +5,11 @@ import {
   type PageDefinition,
 } from '@appsemble/lang-sdk';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
 import { Link, MemoryRouter, Route, Routes, useMatch } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { TopNavigation } from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { getNavPages } from '../../utils/layout.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';

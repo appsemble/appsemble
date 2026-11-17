@@ -11,11 +11,11 @@ import {
   useMemo,
   useState,
 } from 'preact/hooks';
-import { useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
 
 interface SideMenuContext {
   disable: () => void;

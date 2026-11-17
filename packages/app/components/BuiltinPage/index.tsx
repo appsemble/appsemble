@@ -8,11 +8,12 @@ import {
   resendBannerGridArea,
 } from '@appsemble/lang-sdk';
 import { Content } from '@appsemble/preact-components';
+import { type MessageDescriptor } from '@formatjs/intl';
 import classNames from 'classnames';
 import { type ReactNode, useMemo } from 'react';
-import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { Loader } from '../Loader/index.js';
 import { useMeta } from '../Meta/index.js';
 import { Title } from '../Title/index.js';

@@ -3,7 +3,6 @@ import { noop } from '@appsemble/utils';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import axios from 'axios';
 import { type ReactNode } from 'react';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -17,6 +16,7 @@ import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 import { EditPassword } from '../EditPassword/index.js';
 import { GroupInvite } from '../GroupInvite/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { Login } from '../Login/index.js';
 import { MenuProvider } from '../MenuProvider/index.js';
 import { OpenIDCallback } from '../OpenIDCallback/index.js';

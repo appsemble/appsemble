@@ -3,10 +3,10 @@ import classNames from 'classnames';
 import { useSimpleForm } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
-import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 
 interface PartialResult {
   score?: ZxcvbnResult['score'] | -1;

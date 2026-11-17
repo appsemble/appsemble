@@ -2,9 +2,9 @@ import { FormComponent, useSimpleForm } from '@appsemble/preact-components';
 import { type ComponentChildren } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'preact/hooks';
-import { useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
 import { useMessages } from '../MessagesProvider/index.js';
 
 interface WebcamImageUploadProps {

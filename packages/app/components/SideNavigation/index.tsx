@@ -7,12 +7,12 @@ import {
 } from '@appsemble/lang-sdk';
 import { Button, MenuButton, MenuSection } from '@appsemble/preact-components';
 import { Fragment, type ReactNode, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { CollapsibleMenuSection } from '../CollapsibleMenuSection/index.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { MenuItem } from '../MenuItem/index.js';
 import { shouldShowPage } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';

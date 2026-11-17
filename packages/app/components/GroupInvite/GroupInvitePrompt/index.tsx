@@ -2,10 +2,10 @@ import { AsyncButton, Message } from '@appsemble/preact-components';
 import { type GroupInvite as GroupInviteType } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../../IntlProvider/index.js';
 import { apiUrl, appId } from '../../../utils/settings.js';
 import { useAppMember } from '../../AppMemberProvider/index.js';
 import { BuiltinPage, BuiltinPageLoader } from '../../BuiltinPage/index.js';

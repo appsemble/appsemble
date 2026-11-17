@@ -4,10 +4,10 @@ import { resourceSubscribableAction, type SubscriptionResponse } from '@appsembl
 import { has } from '@appsemble/utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage, useIntl } from '../../IntlProvider/index.js';
 import { Loader } from '../../Loader/index.js';
 import { useMessages } from '../../MessagesProvider/index.js';
 import { getNotificationStrategy } from '../../../utils/notifications.js';

@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { Link, Navigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { EditPasswordForm, type EditPasswordValues } from '../EditPasswordForm/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
 import { useQuery } from '../../utils/useQuery.js';

@@ -4,11 +4,11 @@ import { type AppDefinition, type FlowPageDefinition } from '@appsemble/lang-sdk
 import { noop } from '@appsemble/utils';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FlowPage } from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { type FlowActions } from '../../types.js';
 import { type AppStorage } from '../../utils/storage.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';

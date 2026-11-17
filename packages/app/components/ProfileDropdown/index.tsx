@@ -1,10 +1,10 @@
 import { Icon, NavbarDropdown, useToggle } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { showDemoLogin } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';

@@ -26,7 +26,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { FormattedMessage } from 'react-intl';
 import {
   Link,
   matchPath,
@@ -44,6 +43,7 @@ import { useLocationString } from '../../utils/useLocationString.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { ShareDialog, type ShareDialogState } from './ShareDialog/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { type ShowDialogParams, type ShowShareDialog } from '../../types.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';

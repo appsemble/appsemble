@@ -4,11 +4,11 @@ import { remap } from '@appsemble/lang-sdk';
 import { noop } from '@appsemble/utils';
 import { cleanup, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { PageDialog } from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { type ShowDialogParams } from '../../types.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';

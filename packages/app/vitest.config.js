@@ -20,7 +20,7 @@ export default {
       deps: {
         // Externalized dependencies skip the aliases, so the libraries that import React are
         // inlined.
-        inline: [/node_modules\/(react-intl|react-router|react-router-dom)\//],
+        inline: [/node_modules\/(react-router|react-router-dom)\//],
       },
     },
   },

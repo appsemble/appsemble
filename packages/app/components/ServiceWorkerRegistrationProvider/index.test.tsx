@@ -2,10 +2,10 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
 import { type ReactNode } from 'react';
-import { IntlProvider } from 'react-intl';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as ServiceWorkerRegistrationProviderModule from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 const { ServiceWorkerRegistrationProvider, useServiceWorkerRegistration } =
   ServiceWorkerRegistrationProviderModule;

@@ -1,7 +1,6 @@
 import { type AppDefinition, type BuiltinPagesLayoutDefinition } from '@appsemble/lang-sdk';
 import { render, screen, within } from '@testing-library/react';
 import { type ReactNode } from 'react';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -10,6 +9,7 @@ import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { MenuProvider } from '../MenuProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
 import { IconTestWrapper } from '../../utils/test-utils.js';

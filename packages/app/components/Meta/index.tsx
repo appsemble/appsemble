@@ -1,8 +1,10 @@
 import { noop } from '@appsemble/utils';
+import { type MessageDescriptor } from '@formatjs/intl';
 import { type ComponentChildren, createContext, type VNode } from 'preact';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Routes, useLocation } from 'react-router-dom';
+
+import { useIntl } from '../IntlProvider/index.js';
 
 type Text = MessageDescriptor | string;
 

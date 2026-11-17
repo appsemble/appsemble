@@ -9,11 +9,11 @@ import {
 import { emailPattern } from '@appsemble/utils';
 import { type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
-import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { PasswordField } from '../PasswordField/index.js';
 
 export interface LoginFormValues {

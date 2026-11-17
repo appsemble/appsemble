@@ -1,9 +1,9 @@
 import { Button, Content, Message } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { SentryForm } from '../SentryForm/index.js';
 import { sentryDsn } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';

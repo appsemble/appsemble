@@ -1,6 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { AxiosError, AxiosHeaders, type AxiosResponse } from 'axios';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -8,6 +7,7 @@ import { Register } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { type RegistrationFormValues } from '../RegisterForm/index.js';
 
 const { axiosPost } = vi.hoisted(() => ({ axiosPost: vi.fn() }));

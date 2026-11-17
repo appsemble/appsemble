@@ -1,5 +1,4 @@
 import { type ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
 
 import { AppSubscriptions } from './AppSubscriptions/index.js';
 import { LanguagePreference } from './LanguagePreference/index.js';
@@ -7,6 +6,7 @@ import { messages } from './messages.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { ProfileSettings } from '../ProfileSettings/index.js';
 
 /**

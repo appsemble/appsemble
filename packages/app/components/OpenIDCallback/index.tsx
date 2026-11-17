@@ -2,11 +2,11 @@ import { getPagePathSegment, getRouteSegment } from '@appsemble/lang-sdk';
 import { Button, Message } from '@appsemble/preact-components';
 import { clearOAuth2State, loadOAuth2State, type OAuth2State } from '@appsemble/web-utils';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { Link, Navigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { useMeta } from '../Meta/index.js';
 import { startAccountLinking } from '../../utils/accountLinking.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';

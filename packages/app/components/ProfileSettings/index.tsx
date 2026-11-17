@@ -14,12 +14,12 @@ import {
 import { emailPattern, getLanguageDisplayName } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { PicturePreview } from './PicturePreview/index.js';
 import { BreachedPasswordSimpleFormError } from '../BreachedPasswordSimpleFormError/index.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { useMessages } from '../MessagesProvider/index.js';
 import { PasswordField } from '../PasswordField/index.js';
 import { Title } from '../Title/index.js';

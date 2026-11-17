@@ -7,9 +7,9 @@ import {
   SimpleSubmit,
 } from '@appsemble/preact-components';
 import { type ReactNode, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { Title } from '../Title/index.js';
 
 interface TotpLoginProps {

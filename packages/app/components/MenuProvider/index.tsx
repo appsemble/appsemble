@@ -17,10 +17,10 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { SideMenuProvider } from '../SideMenu/index.js';
 import { getNavPages, shouldShowMenu } from '../../utils/layout.js';
 import { apiUrl, appId } from '../../utils/settings.js';

@@ -4,7 +4,6 @@ import { remap, type AppDefinition, type BlockDefinition } from '@appsemble/lang
 import { type EventParams } from '@appsemble/sdk';
 import { noop } from '@appsemble/utils';
 import { cleanup, render, screen } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, expect, it, vi } from 'vitest';
 import { MessagesProvider } from '../MessagesProvider/index.js';
@@ -14,6 +13,7 @@ import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
 import { IconTestWrapper } from '../../utils/test-utils.js';
 

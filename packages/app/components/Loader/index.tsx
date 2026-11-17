@@ -1,9 +1,9 @@
 import { Loader as BaseLoader } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
 import { useContext } from 'preact/hooks';
-import { IntlContext } from 'react-intl';
 
 import { messages } from './messages.js';
+import { IntlContext } from '../IntlProvider/index.js';
 
 interface LoaderProps {
   readonly className?: string;

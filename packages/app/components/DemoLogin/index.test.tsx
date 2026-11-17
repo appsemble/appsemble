@@ -1,7 +1,6 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { type AppMemberInfo } from '@appsemble/types';
 import { render, screen } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { DemoLogin } from './index.js';
@@ -9,6 +8,7 @@ import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { IconTestWrapper } from '../../utils/test-utils.js';
 
 const definition = {

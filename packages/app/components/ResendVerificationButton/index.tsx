@@ -1,9 +1,9 @@
 import { Button } from '@appsemble/preact-components';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { useMessages } from '../MessagesProvider/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';

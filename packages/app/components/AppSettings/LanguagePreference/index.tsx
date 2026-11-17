@@ -1,10 +1,10 @@
 import { Option, SelectField } from '@appsemble/preact-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
 import { type ReactNode, useCallback, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { FormattedMessage, useIntl } from '../../IntlProvider/index.js';
 import { languages, supportedLanguages } from '../../../utils/settings.js';
 
 export function LanguagePreference(): ReactNode {

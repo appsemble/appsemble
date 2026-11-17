@@ -1,9 +1,9 @@
 import { useObjectURL, useSimpleForm } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
-import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useIntl } from '../../IntlProvider/index.js';
 
 interface PicturePreviewProps {
   /**

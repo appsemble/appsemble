@@ -5,9 +5,9 @@ import {
   type PageDefinition,
 } from '@appsemble/lang-sdk';
 import { type ReactNode, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { NavbarItem } from '../NavbarItem/index.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { getNotificationStrategy } from '../../utils/notifications.js';

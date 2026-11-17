@@ -1,6 +1,5 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { render, screen, within } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -9,6 +8,7 @@ import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import { AppIconProvider } from '../AppIconProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
 
 vi.mock('../../utils/authorization.js', async (importActual) => ({

@@ -8,11 +8,11 @@ import {
   type VNode,
 } from 'preact';
 import { useCallback, useId, useRef } from 'preact/hooks';
-import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { ModalDialogContext, useModalDialog } from './useModalDialog.js';
+import { useIntl } from '../IntlProvider/index.js';
 
 type ModalCardComponent = ComponentType<any> | keyof JSX.IntrinsicElements;
 

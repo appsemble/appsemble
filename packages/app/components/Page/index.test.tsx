@@ -5,11 +5,11 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { type ReactNode } from 'react';
-import { IntlProvider } from 'react-intl';
 import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { Page } from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { MetaProvider } from '../Meta/index.js';
 import * as bootstrapper from '../../utils/bootstrapper.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';

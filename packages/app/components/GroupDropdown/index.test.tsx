@@ -2,12 +2,12 @@ import { type AppDefinition } from '@appsemble/lang-sdk';
 import { type AppMemberGroup } from '@appsemble/types';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { type ReactNode, useMemo, useState } from 'react';
-import { IntlProvider } from 'react-intl';
 import { Router } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { GroupDropdown } from './index.js';
 import { AppRoutes } from '../AppRoutes/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 interface TestAppMemberState {
   appMemberGroups: AppMemberGroup[];

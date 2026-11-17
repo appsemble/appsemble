@@ -14,9 +14,9 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { IntlProvider } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { IntlProvider } from '../IntlProvider/index.js';
 import { Loader } from '../Loader/index.js';
 import { apiUrl, appId, languages } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -174,6 +174,8 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     [getMessage, getAppMessage, getBlockMessage, lang, messagesLanguage],
   );
 
+  const intlMessages = useMemo(() => ({ ...messages?.core, ...messages?.app }), [messages]);
+
   if (messagesLoading) {
     return <Loader />;
   }
@@ -190,11 +192,9 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     <Context.Provider value={value}>
       <IntlProvider
-        defaultLocale={defaultLocale}
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         locale={lang}
-        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-        messages={{ ...messages.core, ...messages.app }}
+        messages={intlMessages}
       >
         {children}
       </IntlProvider>

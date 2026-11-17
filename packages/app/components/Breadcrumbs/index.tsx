@@ -8,11 +8,11 @@ import {
 } from '@appsemble/lang-sdk';
 import { Icon } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
-import { useIntl } from 'react-intl';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';

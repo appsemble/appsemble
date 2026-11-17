@@ -10,11 +10,11 @@ import { type AppInvite as AppInviteType, type AppMemberInfo } from '@appsemble/
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { BreachedPasswordSimpleFormError } from '../BreachedPasswordSimpleFormError/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { PasswordField } from '../PasswordField/index.js';
 import { PasswordStrengthIndicator } from '../PasswordStrengthIndicator/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';

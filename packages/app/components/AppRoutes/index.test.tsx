@@ -2,7 +2,6 @@ import { type AppDefinition } from '@appsemble/lang-sdk';
 import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { type ReactNode } from 'react';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -10,6 +9,7 @@ import { AppRoutes } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 vi.mock('../AppDebug/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention

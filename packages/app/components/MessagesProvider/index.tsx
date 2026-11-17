@@ -3,11 +3,11 @@ import { Message } from '@appsemble/preact-components';
 import { type ComponentChildren, createContext, Fragment, type VNode } from 'preact';
 import { createPortal } from 'preact/compat';
 import { useCallback, useContext, useLayoutEffect, useRef, useState } from 'preact/hooks';
-import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
 import { type ModalDialog, useModalDialogs } from '../ModalCard/useModalDialog.js';
 
 export interface Msg extends BaseMessage {

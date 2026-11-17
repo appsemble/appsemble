@@ -1,11 +1,11 @@
 import { getRouteSegment } from '@appsemble/lang-sdk';
 import { Button, Message, useToggle } from '@appsemble/preact-components';
 import { type ReactNode, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { type LoginFormValues, LoginForm as PasswordLogin } from '../LoginForm/index.js';
 import { useMessages } from '../MessagesProvider/index.js';
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';

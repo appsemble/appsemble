@@ -1,11 +1,11 @@
 import { getPagePathSegment } from '@appsemble/lang-sdk';
 import { Message } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { Navigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import {
   apiUrl,
   appId,

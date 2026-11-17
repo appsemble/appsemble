@@ -8,10 +8,10 @@ import {
 import { emailPattern } from '@appsemble/utils';
 import axios from 'axios';
 import { type VNode } from 'preact';
-import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import { BreachedPasswordSimpleFormError } from '../BreachedPasswordSimpleFormError/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { PasswordField } from '../PasswordField/index.js';
 import { PasswordStrengthIndicator } from '../PasswordStrengthIndicator/index.js';
 

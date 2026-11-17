@@ -8,12 +8,12 @@ import {
 import { Button, Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type ReactNode, useMemo } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
 
 import './index.css';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { getNavPages, shouldShowMenu } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useActiveNavigation } from '../../utils/useActiveNavigation.js';

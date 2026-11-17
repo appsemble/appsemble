@@ -1,6 +1,5 @@
 import { FormComponentOptionalLabelContext } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { messages } from './messages.js';
@@ -14,6 +13,7 @@ import { DemoAppMembersProvider } from '../DemoAppMembersProvider/index.js';
 import { ErrorFallback } from '../ErrorFallback/index.js';
 import { ErrorHandler } from '../ErrorHandler/index.js';
 import { InstallationTracker } from '../InstallationTracker/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { LanguageUnsupportedBanner } from '../LanguageUnsupportedBanner/index.js';
 import { MenuProvider } from '../MenuProvider/index.js';
 import { MessagesProvider } from '../MessagesProvider/index.js';

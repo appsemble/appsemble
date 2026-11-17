@@ -1,7 +1,6 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { render, screen } from '@testing-library/react';
 import { type ReactNode, useEffect } from 'react';
-import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -10,6 +9,7 @@ import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 vi.mock('../SideMenu/index.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../SideMenu/index.js')>();

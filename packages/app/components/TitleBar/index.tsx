@@ -1,10 +1,10 @@
 import { getPagePathSegment, remap, type RemapperContext } from '@appsemble/lang-sdk';
 import { type ReactNode, useMemo } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { Portal } from '../Portal/index.js';
 import { SideMenuButton } from '../SideMenu/index.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';

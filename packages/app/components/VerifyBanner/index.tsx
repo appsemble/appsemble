@@ -1,11 +1,11 @@
 import { resendBannerGridArea } from '@appsemble/lang-sdk';
 import { Message } from '@appsemble/preact-components';
 import { type ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { usePlacedGridArea } from '../MenuProvider/index.js';
 import { ResendVerificationButton } from '../ResendVerificationButton/index.js';
 

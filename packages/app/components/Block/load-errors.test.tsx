@@ -5,12 +5,12 @@ import { type BootstrapParams } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
 import { noop } from '@appsemble/utils';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
 import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ErrorHandler } from '../ErrorHandler/index.js';
 
 import { Block } from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { ErrorFallback } from '../ErrorFallback/index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
