@@ -1,9 +1,10 @@
 import { useBlock } from '@appsemble/preact';
 import { CheckboxField } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { type ComponentChild, Fragment, type JSX, type VNode } from 'preact';
+import { type ComponentChild, createElement, Fragment, type JSX, type VNode } from 'preact';
 import * as jsxRuntime from 'preact/compat/jsx-runtime';
 import { useMemo } from 'preact/hooks';
+import { type JSX as Jsx } from 'preact/jsx-runtime';
 import rehypeReact from 'rehype-react';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
@@ -14,6 +15,16 @@ import { unified } from 'unified';
 import { type BooleanField, type InputProps } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { isRequired } from '../../utils/requirements.js';
+
+declare global {
+  // Rehype-react types its result with the global JSX namespace.
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    type ElementClass = Jsx.ElementClass;
+    type Element = Jsx.Element;
+    type IntrinsicElements = Jsx.IntrinsicElements;
+  }
+}
 
 type BooleanInputProps = InputProps<boolean, BooleanField>;
 
@@ -28,14 +39,20 @@ function Anchor({ children, href, ...props }: JSX.IntrinsicElements['a']): VNode
   );
 }
 
+/**
+ * A paragraph without its wrapping element.
+ */
+function Unwrapped({ children }: JSX.IntrinsicElements['p']): VNode {
+  return createElement(Fragment, null, children);
+}
+
 // Paragraphs are unwrapped, so the label stays on one line next to the checkbox.
 const markdownProcessor = unified()
   .use(remarkParse)
   .use(remarkGfm)
   .use(remarkRehype)
   .use(rehypeSanitize)
-  // @ts-expect-error works anyways
-  .use(rehypeReact, { ...jsxRuntime, components: { a: Anchor, p: Fragment } });
+  .use(rehypeReact, { ...jsxRuntime, components: { a: Anchor, p: Unwrapped } });
 
 /**
  * An input element for a boolean value.

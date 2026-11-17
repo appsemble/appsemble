@@ -1,4 +1,6 @@
-import { type Training, type TrainingStatus } from '@appsemble/types';
+import { type TrainingStatus } from '@appsemble/types';
+
+import { type Training } from '../../../types.js';
 
 /**
  * Calculates what the chapter's completion state is.
