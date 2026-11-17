@@ -33,6 +33,7 @@ export function PageDialog({ dialog, remap, ...props }: PageDialogProps): ReactN
           prefix={`${dialog.prefix}.blocks`}
           prefixIndex={`${dialog.prefixIndex}.blocks`}
           remap={remap}
+          signal={dialog.signal}
           {...props}
         />
       ) : null}

@@ -53,6 +53,11 @@ interface BlockListProps {
   readonly pageLayout?: PageLayoutDefinition;
 
   /**
+   * The signal that stops the action chains of the blocks, instead of their own unmount.
+   */
+  readonly signal?: AbortSignal;
+
+  /**
    * The name of the addressable sub page these blocks belong to, used as the last breadcrumb.
    */
   readonly subPageName?: string;
@@ -73,6 +78,7 @@ export function BlockList({
   remap,
   showDialog,
   showShareDialog,
+  signal,
   subPageName,
 }: BlockListProps): ReactNode {
   const params = useParams();
@@ -309,6 +315,7 @@ export function BlockList({
             remap={remap}
             showDialog={showDialog}
             showShareDialog={showShareDialog}
+            signal={signal}
           />
         ) : null,
       )}

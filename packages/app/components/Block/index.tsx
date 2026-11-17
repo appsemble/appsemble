@@ -69,6 +69,14 @@ interface BlockProps {
   readonly pageReady: Promise<void>;
   readonly prefix: string;
   readonly prefixIndex: string;
+
+  /**
+   * The signal that stops the action chains of the block, instead of its own unmount.
+   *
+   * The blocks in a dialog take the signal of the actions that open it, so closing the dialog
+   * doesn't stop the chain that closes it.
+   */
+  readonly signal?: AbortSignal;
 }
 
 const MOBILE_BREAKPOINT = 768;
@@ -94,6 +102,7 @@ export function Block({
   remap,
   showDialog,
   showShareDialog,
+  signal,
 }: BlockProps): ReactNode {
   const navigate = useNavigate();
   const params = useParams();
@@ -183,7 +192,7 @@ export function Block({
       getAppMessage,
       getAppVariable: getVariable,
       appStorage,
-      signal: abortController.current?.signal,
+      signal: signal ?? abortController.current?.signal,
       // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       actions: manifest.actions,
       appDefinition,
@@ -337,6 +346,7 @@ export function Block({
     setBlockMenu,
     showDialog,
     showShareDialog,
+    signal,
     getAppMessage,
     refetchDemoAppMembers,
     getVariable,

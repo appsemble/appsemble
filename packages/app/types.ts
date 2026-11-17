@@ -115,6 +115,11 @@ export interface ShowDialogParams {
   fullscreen: boolean;
   prefix: string;
   prefixIndex: string;
+
+  /**
+   * The signal of the actions that open the dialog, which own the action chains of its blocks.
+   */
+  signal?: AbortSignal;
   title?: Remapper;
 }
 
