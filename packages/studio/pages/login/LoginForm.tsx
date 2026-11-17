@@ -60,12 +60,14 @@ export function LoginForm({
     : logins;
 
   useEffect(() => {
-    choiceHeading.current?.focus();
-  }, [organizations]);
-
-  useEffect(() => {
-    document.getElementById(`${optionsId}-${step === 'password' ? 'password' : 'email'}`)?.focus();
-  }, [optionsId, step]);
+    if (organizations.length) {
+      choiceHeading.current?.focus();
+    } else {
+      document
+        .getElementById(`${optionsId}-${step === 'password' ? 'password' : 'email'}`)
+        ?.focus();
+    }
+  }, [optionsId, organizations, step]);
 
   const submit = async (values: LoginFormValues): Promise<void> => {
     if (passwordStep) {

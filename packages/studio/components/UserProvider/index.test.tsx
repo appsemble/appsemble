@@ -1,9 +1,9 @@
 import { type TokenResponse } from '@appsemble/types';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import axios, { AxiosError, type AxiosResponse } from 'axios';
-import { type ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { IntlProvider } from 'react-intl';
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { UserProvider, useUser } from './index.js';
 
@@ -45,6 +45,17 @@ function Profile(): ReactNode {
       </button>
       <output>{userInfo ? `Organizations: ${organizations.length}` : 'Signed out'}</output>
     </>
+  );
+}
+
+function Draft(): ReactNode {
+  const [value, setValue] = useState('');
+  return (
+    <input
+      aria-label="Unsent message"
+      onChange={(event) => setValue(event.currentTarget.value)}
+      value={value}
+    />
   );
 }
 
@@ -114,6 +125,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   axios.defaults.adapter = transport;
   Object.defineProperty(navigator, 'locks', { configurable: true, value: initialLocks });
   localStorage.clear();
@@ -213,9 +225,30 @@ it('should not expose the logged in user before their organizations have loaded'
   await started;
   await act(() => pending['/api/users/current']());
 
-  expect(screen.getByRole('status').textContent).toBe('Signed out');
+  expect(screen.queryByText(/Organizations:/)).toBeNull();
 
   await act(() => pending['/api/users/current/organizations']());
 
   expect(screen.getByRole('status').textContent).toBe('Organizations: 1');
+});
+
+it('preserves an unsent form value during a background token refresh', async () => {
+  vi.useFakeTimers();
+  render(
+    <IntlProvider locale="en" messages={{}}>
+      <UserProvider>
+        <Draft />
+      </UserProvider>
+    </IntlProvider>,
+  );
+  await act(() => vi.advanceTimersByTimeAsync(0));
+  fireEvent.change(screen.getByRole('textbox', { name: 'Unsent message' }), {
+    target: { value: 'Keep this draft' },
+  });
+  await act(() => vi.advanceTimersByTimeAsync(3_540_000));
+
+  expect(screen.getByRole('textbox', { name: 'Unsent message' })).toHaveProperty(
+    'value',
+    'Keep this draft',
+  );
 });

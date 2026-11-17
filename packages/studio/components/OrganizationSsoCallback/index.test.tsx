@@ -1,11 +1,12 @@
-import { render, screen } from '@testing-library/react';
-import axios, { AxiosError } from 'axios';
+import { act, render, screen } from '@testing-library/react';
+import axios, { AxiosError, type AxiosAdapter } from 'axios';
 import { type ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, expect, it } from 'vitest';
 
 import { OrganizationSsoCallback } from './index.js';
+import { ProtectedRoute } from '../ProtectedRoute/index.js';
 import { UserProvider, useUser } from '../UserProvider/index.js';
 
 const transport = axios.defaults.adapter;
@@ -56,7 +57,13 @@ afterEach(() => {
 
 function Account(): ReactNode {
   const { userInfo } = useUser();
-  return <p>Signed in as {userInfo?.email}</p>;
+  const location = useLocation();
+  return (
+    <>
+      <p>Signed in as {userInfo?.email}</p>
+      <p>{`${location.pathname}${location.search}${location.hash}`}</p>
+    </>
+  );
 }
 
 function renderCallback(): void {
@@ -80,6 +87,10 @@ function renderCallback(): void {
               path="/callback"
             />
             <Route element={<Account />} path="/organizations/example" />
+            <Route element={<ProtectedRoute />} path="/:lang/private">
+              <Route element={<Account />} index />
+            </Route>
+            <Route element={<p>Sign-in required</p>} path="/:lang/login" />
           </Routes>
         </UserProvider>
       </MemoryRouter>
@@ -91,6 +102,35 @@ it('should establish a Studio session and return to the organization after sign-
   renderCallback();
 
   expect(await screen.findByText('Signed in as staff@example.com')).toBeDefined();
+});
+
+it('waits for the new account access before entering the preserved private destination', async () => {
+  redirect = '/en/private?view=details#section';
+  const pending: Record<string, () => void> = {};
+  const adapter = axios.defaults.adapter as AxiosAdapter;
+  let requestsStarted!: () => void;
+  const started = new Promise<void>((resolve) => {
+    requestsStarted = resolve;
+  });
+  axios.defaults.adapter = (config) => {
+    if (!config.url.startsWith('/api/users/current')) {
+      return adapter(config);
+    }
+    return new Promise((resolve) => {
+      pending[config.url] = () => resolve(adapter(config));
+      if (Object.keys(pending).length === 2) {
+        requestsStarted();
+      }
+    });
+  };
+  renderCallback();
+  await started;
+  await act(() => pending['/api/users/current']());
+  expect(screen.queryByText('Signed in as staff@example.com')).toBeNull();
+  await act(() => pending['/api/users/current/organizations']());
+
+  expect(await screen.findByText('Signed in as staff@example.com')).toBeDefined();
+  expect(screen.getByText('/en/private?view=details#section')).toBeDefined();
 });
 
 it('should direct an existing account owner to sign in before linking organization single sign-on', async () => {

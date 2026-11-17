@@ -82,12 +82,20 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     setUserInfo(data);
   }, []);
 
-  const login = useCallback((response: TokenResponse) => {
+  const storeTokens = useCallback((response: TokenResponse) => {
     localStorage.access_token = response.access_token;
     localStorage.refresh_token = response.refresh_token;
     accessTokenRef.current = response.access_token;
     setTokenResponse(response);
   }, []);
+
+  const login = useCallback(
+    (response: TokenResponse) => {
+      setInitialized(false);
+      storeTokens(response);
+    },
+    [storeTokens],
+  );
 
   // The user info and organizations are published together, because pages behind a
   // `ProtectedRoute` render as soon as the user info is set and may depend on the organizations.
@@ -204,7 +212,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
             refresh_token: refreshToken,
           });
           if (localStorage.refresh_token === refreshToken) {
-            login(data);
+            storeTokens(data);
           }
         } catch {
           if (localStorage.refresh_token === refreshToken) {
@@ -232,7 +240,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [fetchUser, login, logout, tokenResponse]);
+  }, [fetchUser, logout, storeTokens, tokenResponse]);
 
   if (!initialized) {
     return <Loader />;

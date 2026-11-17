@@ -25,6 +25,7 @@ import { type FormEvent, type ReactNode, useCallback, useEffect, useState } from
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
 import { messages } from './messages.js';
 import { messages as roleMessages } from '../MemberRow/messages.js';
 
@@ -446,11 +447,11 @@ export function SingleSignOnPage(): ReactNode {
                       <>
                         <p>
                           <FormattedMessage {...messages.recordName} />:{' '}
-                          <code>{claim.recordName}</code>
+                          <code className={styles.record}>{claim.recordName}</code>
                         </p>
                         <p>
                           <FormattedMessage {...messages.recordValue} />:{' '}
-                          <code>{claim.recordValue}</code>
+                          <code className={styles.record}>{claim.recordValue}</code>
                         </p>
                         <Button
                           className="mt-3 mr-3"

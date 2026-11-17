@@ -80,10 +80,9 @@ export const test = base.extend<StudioFixtures>({
         expect(accessToken).toStrictEqual(expect.any(String));
       });
 
-      await page.goto('/en/login');
+      await page.goto('/en/login?personal=1');
 
       await page.getByRole('textbox', { name: 'Email', exact: true }).fill(email);
-      await page.getByRole('button', { name: 'Continue', exact: true }).click();
       await page.getByLabel('Password', { exact: true }).fill(password);
       await page.getByRole('button', { name: 'Login', exact: true }).click();
       await page.waitForResponse('**/api/auth/email/login');

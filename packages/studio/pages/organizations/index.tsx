@@ -5,6 +5,7 @@ import { Navigate, Route } from 'react-router-dom';
 import { IndexPage } from './IndexPage/index.js';
 import { messages } from './messages.js';
 import { OrganizationRoutes } from './organization/index.js';
+import { ProtectedRoute } from '../../components/ProtectedRoute/index.js';
 
 /**
  * Render routes related to apps.
@@ -13,7 +14,10 @@ export function OrganizationsRoutes(): ReactNode {
   return (
     <MetaSwitch description={messages.description} title={messages.title}>
       <Route element={<IndexPage />} path="/" />
-      <Route element={<OrganizationRoutes />} path="/:organizationId/*" />
+      <Route element={<OrganizationRoutes />} path="/:organizationId" />
+      <Route element={<ProtectedRoute />} path="/:organizationId/*">
+        <Route element={<OrganizationRoutes />} path="*" />
+      </Route>
       <Route element={<Navigate to="/organizations" />} path="*" />
     </MetaSwitch>
   );

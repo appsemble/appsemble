@@ -70,7 +70,7 @@ export function AppRoutes(): ReactNode {
     lang,
     path,
   } = useParams<{ id: string; lang: string; path?: string; '*': string }>();
-  const { organizations } = useUser();
+  const { organizations, userInfo } = useUser();
 
   const {
     data: app,
@@ -321,6 +321,9 @@ export function AppRoutes(): ReactNode {
   );
 
   if (error) {
+    if (!userInfo && (error.response?.status === 401 || error.response?.status === 404)) {
+      return <ProtectedRoute />;
+    }
     return (
       <Message color="danger">
         {error.response?.status === 404 ? (

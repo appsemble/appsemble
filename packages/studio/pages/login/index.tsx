@@ -25,7 +25,8 @@ export function LoginPage(): ReactNode {
   const qs = useQuery();
   const busy = useToggle();
   const [discoveredOrganization, setDiscoveredOrganization] = useState<string>();
-  const organizationId = discoveredOrganization || qs.get('organization');
+  const organizationId =
+    discoveredOrganization || (qs.get('personal') === '1' ? null : qs.get('organization'));
   const redirect = qs.get('redirect') || '/apps';
 
   const onPasswordLogin = useCallback(

@@ -185,6 +185,14 @@ it('asks the user to choose between shared-domain matches', async () => {
   });
 });
 
+it('returns keyboard focus to email when leaving the organization chooser', async () => {
+  renderLogin();
+  await continueWithEmail('person@shared.example');
+  await screen.findByRole('heading', { name: 'Choose your organization' });
+  fireEvent.click(screen.getByRole('button', { name: 'Change email' }));
+  expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Email' }));
+});
+
 it('uses organization context for an email from a different domain', async () => {
   renderLogin(
     `/login?${new URLSearchParams({ organization: 'example', redirect: '/destination' })}`,
@@ -198,15 +206,22 @@ it('uses organization context for an email from a different domain', async () =>
   });
 });
 
-it('allows personal password login to bypass discovery for an existing SSO account', async () => {
-  renderLogin(`/login?${new URLSearchParams({ personal: '1', redirect: '/destination' })}`);
-  fireEvent.change(await screen.findByRole('textbox', { name: 'Email' }), {
-    target: { value: 'staff@staff.example' },
-  });
-  fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password' } });
-  fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-  expect(await screen.findByText('Returned to destination')).toBeDefined();
-});
+it.each(['', 'example'])(
+  'allows explicit personal password sign-in with organization context "%s"',
+  async (organizationId) => {
+    const search = new URLSearchParams({ personal: '1', redirect: '/destination' });
+    if (organizationId) {
+      search.set('organization', organizationId);
+    }
+    renderLogin(`/login?${search}`);
+    fireEvent.change(await screen.findByRole('textbox', { name: 'Email' }), {
+      target: { value: 'staff@staff.example' },
+    });
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(await screen.findByText('Returned to destination')).toBeDefined();
+  },
+);
 
 it('shows only permitted alternative providers for invited guests', async () => {
   policy = 'required-with-guests';

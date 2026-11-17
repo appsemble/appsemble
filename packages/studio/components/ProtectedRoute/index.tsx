@@ -21,7 +21,7 @@ export function ProtectedRoute({
   const redirect = useLocationString();
   const { userInfo } = useUser();
   const qs = useQuery();
-  const params = useParams<{ organizationId: string }>();
+  const params = useParams<{ lang: string; organizationId: string }>();
 
   if (!userInfo) {
     const search = new URLSearchParams(qs);
@@ -30,7 +30,7 @@ export function ProtectedRoute({
     if (targetOrganization) {
       search.set('organization', targetOrganization);
     }
-    return <Navigate to={{ pathname: '/login', search: `?${search}` }} />;
+    return <Navigate to={{ pathname: `/${params.lang}/login`, search: `?${search}` }} />;
   }
 
   if (

@@ -24,7 +24,7 @@ const password = 'studio-e2e-password';
 async function signInWithPassword(page: Page, email: string): Promise<string> {
   await page.goto('/en/login?personal=1');
   await page.getByRole('textbox', { name: 'Email', exact: true }).fill(email);
-  await page.getByLabel('Password').fill(password);
+  await page.getByLabel('Password', { exact: true }).fill(password);
   const response = page.waitForResponse('**/api/auth/email/login');
   await page.getByRole('button', { name: 'Login', exact: true }).click();
   const login = await response;
@@ -165,9 +165,7 @@ test.describe('Studio organization Keycloak OIDC', () => {
       });
       try {
         await firstStaffPage.goto(`/en/login?organization=${organization.id}`);
-        await expect(
-          firstStaffPage.getByLabel('Password', { exact: true }),
-        ).toBeHidden();
+        await expect(firstStaffPage.getByLabel('Password', { exact: true })).toBeHidden();
         await firstStaffPage.getByRole('textbox', { name: 'Email', exact: true }).fill(staffEmail);
         await firstStaffPage.getByRole('button', { name: 'Continue', exact: true }).click();
         await signInAtKeycloak(firstStaffPage, staffEmail, organization.id);
