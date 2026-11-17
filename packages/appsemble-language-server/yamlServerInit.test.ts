@@ -17,7 +17,7 @@ import {
   type Position,
   StreamMessageReader,
   StreamMessageWriter,
-} from 'vscode-languageserver/node.js';
+} from 'vscode-languageserver/node';
 import { workspaceContext } from 'yaml-language-server/lib/esm/languageservice/services/schemaRequestHandler.js';
 
 import { connectionOptions } from './languageserver/connectionOptions.js';

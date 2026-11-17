@@ -8,7 +8,7 @@
 
 import { readFile } from 'node:fs/promises';
 
-import { createConnection, ProposedFeatures } from 'vscode-languageserver/node.js';
+import { createConnection, ProposedFeatures } from 'vscode-languageserver/node';
 import { workspaceContext } from 'yaml-language-server/lib/esm/languageservice/services/schemaRequestHandler.js';
 import { convertErrorToTelemetryMsg } from 'yaml-language-server/lib/esm/languageservice/utils/objects.js';
 
