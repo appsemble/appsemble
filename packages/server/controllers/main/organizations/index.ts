@@ -14,6 +14,12 @@ export { patchOrganization } from './patchOrganization.js';
 export { getOrganizationSubscriptionPrice } from './getOrganizationSubscriptionPrice.js';
 export { deleteOrganizationSso, getOrganizationSso, putOrganizationSso } from './sso.js';
 export {
+  createOrganizationSsoDomain,
+  deleteOrganizationSsoDomain,
+  getOrganizationSsoDomains,
+  verifyOrganizationSsoDomain,
+} from './ssoDomains.js';
+export {
   completeOrganizationSsoLogin,
   getOrganizationSsoLogin,
   startOrganizationSsoLogin,

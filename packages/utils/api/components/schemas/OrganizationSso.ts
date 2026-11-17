@@ -51,3 +51,17 @@ export const OrganizationSsoSettings: OpenAPIV3.NonArraySchemaObject = {
     hasClientSecret: { type: 'boolean' },
   },
 };
+
+export const OrganizationSsoDomain: OpenAPIV3.NonArraySchemaObject = {
+  type: 'object',
+  description: 'An email domain used to discover an organization single sign-on provider.',
+  additionalProperties: false,
+  required: ['domain', 'verified', 'managedBy', 'recordName', 'recordValue'],
+  properties: {
+    domain: { type: 'string' },
+    verified: { type: 'boolean' },
+    managedBy: { enum: ['studio', 'deployment'] },
+    recordName: { type: 'string' },
+    recordValue: { type: 'string' },
+  },
+};

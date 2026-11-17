@@ -11,10 +11,12 @@ import {
   initDB,
   OrganizationMember,
   OrganizationSso,
+  OrganizationSsoDomain,
   OrganizationSsoSession,
 } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { applyOrganizationSsoConfiguration } from '../utils/organizationSso.js';
+import { normalizeOrganizationSsoDomain } from '../utils/organizationSsoDomain.js';
 
 export const command = 'configure-organization-sso';
 export const description = 'Apply deployment-managed organization single sign-on configuration';
@@ -36,19 +38,26 @@ export function builder(yargs: Argv): Argv {
 export async function handler({ config }: { config: string }): Promise<void> {
   const definitions = parse(await readFile(config, 'utf8')) as Record<
     string,
-    Omit<OrganizationSsoConfiguration, 'clientSecret'> & { clientSecretFile: string }
+    Omit<OrganizationSsoConfiguration, 'clientSecret'> & {
+      clientSecretFile: string;
+      domains?: string[];
+    }
   >;
   if (!definitions || typeof definitions !== 'object' || Array.isArray(definitions)) {
     throw new Error('The single sign-on configuration must be a mapping of organization IDs.');
   }
   const configurations = await Promise.all(
     Object.entries(definitions).map(async ([organizationId, definition]) => {
-      const { clientSecretFile, ...configuration } = definition;
+      const { clientSecretFile, domains = [], ...configuration } = definition;
+      if (!Array.isArray(domains)) {
+        throw new TypeError(`The discovery domains for ${organizationId} must be an array.`);
+      }
+      const discoveryDomains = [...new Set(domains.map(normalizeOrganizationSsoDomain))];
       const clientSecret = (await readFile(clientSecretFile, 'utf8')).trim();
       if (!clientSecret) {
         throw new Error(`The single sign-on client secret for ${organizationId} is empty.`);
       }
-      return [organizationId, { ...configuration, clientSecret }] as const;
+      return [organizationId, { ...configuration, clientSecret }, discoveryDomains] as const;
     }),
   );
   const db = initDB({
@@ -62,13 +71,32 @@ export async function handler({ config }: { config: string }): Promise<void> {
   });
   try {
     const removedOrganizations = await db.transaction(async (transaction) => {
-      for (const [organizationId, configuration] of configurations) {
+      for (const [organizationId, configuration, domains] of configurations) {
         await applyOrganizationSsoConfiguration(
           organizationId,
           configuration,
           'deployment',
           transaction,
         );
+        await OrganizationSsoDomain.destroy({
+          where: {
+            OrganizationId: organizationId,
+            domain: { [Op.notIn]: domains },
+          },
+          transaction,
+        });
+        for (const domain of domains) {
+          await OrganizationSsoDomain.upsert(
+            {
+              OrganizationId: organizationId,
+              domain,
+              managedBy: 'deployment',
+              token: null,
+              verifiedAt: new Date(),
+            },
+            { transaction },
+          );
+        }
       }
       const removed = await OrganizationSso.findAll({
         where: {

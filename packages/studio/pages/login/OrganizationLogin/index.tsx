@@ -1,34 +1,38 @@
 import {
   Button,
-  Login,
   type LoginFormValues,
   Loader,
   Message,
-  SSOLoginButton,
   type Toggle,
   Title,
   useData,
   useQuery,
 } from '@appsemble/react-components';
-import { type OrganizationLoginMethod, type OrganizationSsoSettings } from '@appsemble/types';
+import { type OrganizationSsoSettings } from '@appsemble/types';
 import { storageKey } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ReactNode, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { LoginForm } from '../LoginForm.js';
+import { messages as loginMessages } from '../messages.js';
 import { useUser } from '../../../components/UserProvider/index.js';
-import { isLocalRedirect } from '../../../utils/isLocalRedirect.js';
-import { enableRegistration, logins } from '../../../utils/settings.js';
 
 interface OrganizationLoginProps {
+  readonly autoStart?: boolean;
+  readonly onBack?: () => void;
+  readonly onOrganizationSelected: (organizationId: string) => void;
   readonly organizationId: string;
   readonly onPasswordLogin: (values: LoginFormValues) => Promise<void>;
   readonly busy: Toggle;
 }
 
 export function OrganizationLogin({
+  autoStart,
+  onBack,
+  onOrganizationSelected,
   organizationId,
   onPasswordLogin,
   busy,
@@ -39,6 +43,7 @@ export function OrganizationLogin({
   const { data, error, loading } =
     useData<Pick<OrganizationSsoSettings, 'name' | 'policy' | 'allowedLoginMethods'>>(url);
   const [startError, setStartError] = useState(false);
+  const started = useRef(false);
   const redirect = qs.get('redirect') || `/organizations/${encodeURIComponent(organizationId)}`;
 
   const start = useCallback(async () => {
@@ -62,13 +67,32 @@ export function OrganizationLogin({
     }
   }, [busy, organizationId, redirect, url, userInfo]);
 
+  useEffect(() => {
+    if (autoStart && data && !userInfo && !started.current) {
+      started.current = true;
+      start();
+    }
+  }, [autoStart, data, redirect, start, userInfo]);
+
   if (loading) {
     return <Loader />;
   }
-  if (error || !isLocalRedirect(redirect)) {
+  if (error?.response?.status === 404) {
+    return userInfo ? (
+      <Navigate to={redirect} />
+    ) : (
+      <LoginForm
+        busy={busy}
+        onOrganizationSelected={onOrganizationSelected}
+        onPasswordLogin={onPasswordLogin}
+        organizationId={organizationId}
+      />
+    );
+  }
+  if (error) {
     return (
       <Message color="danger">
-        <FormattedMessage {...(error ? messages.unavailable : messages.invalidRedirect)} />
+        <FormattedMessage {...messages.unavailable} />
       </Message>
     );
   }
@@ -83,13 +107,20 @@ export function OrganizationLogin({
           <FormattedMessage {...messages.error} />
         </Message>
       ) : null}
-      <Button color="primary" disabled={busy.enabled} onClick={start}>
-        {userInfo ? (
-          <FormattedMessage {...messages.link} />
-        ) : (
-          <FormattedMessage {...messages.loginWith} values={{ name: data.name }} />
-        )}
-      </Button>
+      {userInfo || autoStart ? (
+        <Button color="primary" disabled={busy.enabled} onClick={start}>
+          {userInfo ? (
+            <FormattedMessage {...messages.link} />
+          ) : (
+            <FormattedMessage {...messages.loginWith} values={{ name: data.name }} />
+          )}
+        </Button>
+      ) : null}
+      {onBack ? (
+        <Button className="ml-3" disabled={busy.enabled} onClick={onBack}>
+          <FormattedMessage {...loginMessages.changeEmail} />
+        </Button>
+      ) : null}
       {allowOtherMethods && data.policy === 'required-with-guests' ? (
         <p className="my-4">
           <FormattedMessage {...messages.guestHelp} />
@@ -99,41 +130,29 @@ export function OrganizationLogin({
         <Button className="ml-3" component={Link} to={redirect}>
           <FormattedMessage {...messages.continue} />
         </Button>
-      ) : allowOtherMethods ? (
-        <>
-          {data.allowedLoginMethods.includes('password') ? (
-            <Login
-              enableRegistration={enableRegistration}
-              onPasswordLogin={onPasswordLogin}
-              registerLink="../register"
-              resetPasswordLink="../reset-password"
-            />
-          ) : null}
-          <div className="mt-4">
-            {logins
-              .filter((provider) =>
-                data.allowedLoginMethods.includes(
-                  provider.name.toLowerCase() as OrganizationLoginMethod,
-                ),
-              )
-              .map((provider) => (
-                <SSOLoginButton
-                  authorizationUrl={provider.authorizationUrl}
-                  className="mr-2"
-                  clientId={provider.clientId}
-                  disabled={busy.enabled}
-                  icon={provider.icon}
-                  key={provider.authorizationUrl}
-                  onClick={busy.enable}
-                  redirect={redirect}
-                  redirectUrl="/callback"
-                  scope={provider.scope}
-                >
-                  <FormattedMessage {...messages.loginWith} values={{ name: provider.name }} />
-                </SSOLoginButton>
-              ))}
-          </div>
-        </>
+      ) : autoStart ? null : (
+        <LoginForm
+          allowedLoginMethods={allowOtherMethods ? data.allowedLoginMethods : []}
+          busy={busy}
+          onOrganizationSelected={start}
+          onPasswordLogin={onPasswordLogin}
+          organizationId={organizationId}
+        />
+      )}
+      {!userInfo && !allowOtherMethods ? (
+        <details className="mt-4">
+          <summary>
+            <FormattedMessage {...loginMessages.otherOptions} />
+          </summary>
+          <Link
+            to={`/login?${new URLSearchParams({
+              personal: '1',
+              redirect: `/login?${new URLSearchParams({ organization: organizationId, redirect })}`,
+            })}`}
+          >
+            <FormattedMessage {...loginMessages.existingAccount} />
+          </Link>
+        </details>
       ) : null}
     </>
   );

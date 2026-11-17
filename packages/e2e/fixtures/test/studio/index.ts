@@ -82,9 +82,10 @@ export const test = base.extend<StudioFixtures>({
 
       await page.goto('/en/login');
 
-      await page.getByTestId('email').fill(email);
-      await page.getByTestId('password').fill(password);
-      await page.getByTestId('login').click();
+      await page.getByRole('textbox', { name: 'Email', exact: true }).fill(email);
+      await page.getByRole('button', { name: 'Continue', exact: true }).click();
+      await page.getByLabel('Password', { exact: true }).fill(password);
+      await page.getByRole('button', { name: 'Login', exact: true }).click();
       await page.waitForResponse('**/api/auth/email/login');
 
       await expect(page.getByText('Login failed')).toBeHidden();

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { down, up } from './0.41.2.js';
+import { down as downDomains } from './0.41.3.js';
 import { getDB, Organization, OrganizationMember, User } from '../../models/index.js';
 
 describe('migration 0.41.2', () => {
@@ -8,6 +9,7 @@ describe('migration 0.41.2', () => {
     const db = getDB();
     const transaction = await db.transaction();
     try {
+      await downDomains(transaction, db);
       await Organization.create({ id: 'staff' }, { transaction });
       const user = await User.create({ timezone: 'Europe/Amsterdam' }, { transaction });
       await OrganizationMember.create(
@@ -58,6 +60,7 @@ describe('migration 0.41.2', () => {
     const db = getDB();
     const transaction = await db.transaction();
     try {
+      await downDomains(transaction, db);
       await down(transaction, db);
       const [columns] = await db.query(
         `SELECT is_nullable FROM information_schema.columns

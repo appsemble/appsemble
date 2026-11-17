@@ -101,7 +101,7 @@ it('should direct an existing account owner to sign in before linking organizati
     await screen.findByRole('link', { name: 'Sign in to your existing account' }),
   ).toHaveProperty(
     'href',
-    'http://localhost/login?redirect=%2Flogin%3Forganization%3Dexample%26redirect%3D%252Forganizations%252Fexample',
+    'http://localhost/login?personal=1&redirect=%2Flogin%3Forganization%3Dexample%26redirect%3D%252Forganizations%252Fexample',
   );
 });
 

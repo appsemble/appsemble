@@ -1,6 +1,9 @@
+import { type TokenResponse } from '@appsemble/types';
+import { DOMParser } from '@xmldom/xmldom';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 import type Koa from 'koa';
+import { createTransport } from 'nodemailer';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { EmailAuthorization, ResetPasswordToken, User } from '../../../../models/index.js';
@@ -56,4 +59,67 @@ describe('requestUserPasswordReset', () => {
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
+
+  it('preserves the local sign-in continuation in the rendered reset email', async () => {
+    const registration = await request.post<TokenResponse>('/api/auth/email/register', {
+      email: 'test@example.com',
+      password: 'password',
+      timezone: 'Europe/Amsterdam',
+    });
+    await request.put(
+      '/api/users/current',
+      { locale: 'nl' },
+      {
+        headers: { authorization: `Bearer ${registration.data.access_token}` },
+      },
+    );
+    const outbox: string[] = [];
+    const { transport } = server.context.mailer;
+    server.context.mailer.transport = createTransport({
+      name: 'test',
+      version: '1.0.0',
+      send(message, callback) {
+        outbox.push(String(message.data.html));
+        callback(null, {
+          envelope: message.message!.getEnvelope(),
+          messageId: message.message!.messageId(),
+        });
+      },
+    });
+    const redirect = '/nl/login?redirect=%2Fnl%2Fapps%2F42&organization=staff&personal=1#details';
+    try {
+      const response = await request.post('/api/auth/email/request-password-reset', {
+        email: 'test@example.com',
+        redirect,
+      });
+      const token = await ResetPasswordToken.findOne();
+      const document = new DOMParser().parseFromString(outbox[0], 'text/html');
+      const link = new URL(document.getElementsByTagName('a')[0].getAttribute('href')!);
+      expect({
+        status: response.status,
+        path: link.pathname,
+        parameters: Object.fromEntries(link.searchParams),
+      }).toStrictEqual({
+        status: 204,
+        path: '/nl/edit-password',
+        parameters: { token: token!.token, redirect },
+      });
+    } finally {
+      server.context.mailer.transport = transport;
+    }
+  });
+
+  it.each(['https://outside.example/', '//outside.example/', '/\\outside.example/', '//['])(
+    'rejects the external or malformed continuation %s',
+    async (redirect) => {
+      const response = await request.post('/api/auth/email/request-password-reset', {
+        email: 'test@example.com',
+        redirect,
+      });
+      expect(response).toMatchObject({
+        status: 400,
+        data: { message: 'The sign-in destination is invalid' },
+      });
+    },
+  );
 });

@@ -17,6 +17,10 @@ export const pathItems: OpenAPIV3.PathItemObject = {
                 type: 'string',
                 format: 'email',
               },
+              redirect: {
+                type: 'string',
+                description: 'A local Studio URL to continue to after resetting the password.',
+              },
             },
           },
         },

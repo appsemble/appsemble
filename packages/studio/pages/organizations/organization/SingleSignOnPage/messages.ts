@@ -1,6 +1,55 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
+  domains: {
+    id: 'studio.LcPSSo',
+    defaultMessage: 'Email domains for sign-in discovery',
+  },
+  domainHelp: {
+    id: 'studio.cnQKYL',
+    defaultMessage:
+      'Add each email domain and alias separately. Domains added here require the displayed DNS TXT record before they route users to your single sign-on provider.',
+  },
+  domain: {
+    id: 'studio.Wrwi+e',
+    defaultMessage: 'Email domain',
+  },
+  addDomain: {
+    id: 'studio.EkcNZU',
+    defaultMessage: 'Add domain',
+  },
+  verifyDomain: {
+    id: 'studio.EUpfHu',
+    defaultMessage: 'Verify {domain}',
+  },
+  removeDomain: {
+    id: 'studio.7tU4Fa',
+    defaultMessage: 'Remove {domain}',
+  },
+  domainVerified: {
+    id: 'studio.Z8971h',
+    defaultMessage: 'Verified',
+  },
+  domainPending: {
+    id: 'studio.7hEPQZ',
+    defaultMessage: 'Pending DNS verification',
+  },
+  domainManaged: {
+    id: 'studio.PKMe8/',
+    defaultMessage: 'Trusted by deployment configuration',
+  },
+  recordName: {
+    id: 'studio./JoN7T',
+    defaultMessage: 'TXT record name',
+  },
+  recordValue: {
+    id: 'studio.IK2ktL',
+    defaultMessage: 'TXT record value',
+  },
+  domainError: {
+    id: 'studio.kOhY6v',
+    defaultMessage: 'Unable to update email domains.',
+  },
   verify: {
     id: 'studio.r+ZN4X',
     defaultMessage: 'Verify connection and save',

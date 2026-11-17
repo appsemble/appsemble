@@ -1,5 +1,6 @@
 import {
   type OrganizationSsoConfiguration,
+  type OrganizationSsoDomain,
   type OrganizationSsoSettings,
   PredefinedOrganizationRole,
 } from '@appsemble/types';
@@ -26,11 +27,35 @@ const settings: OrganizationSsoSettings = {
 const transport = axios.defaults.adapter;
 let configuration: OrganizationSsoSettings | null;
 let stored: OrganizationSsoConfiguration | null;
+let domains: OrganizationSsoDomain[];
 
 beforeEach(() => {
   configuration = { ...settings };
   stored = { ...settings, clientSecret: 'existing-secret' };
+  domains = [];
   axios.defaults.adapter = (config) => {
+    if (config.url.includes('/sso/domains')) {
+      let data: OrganizationSsoDomain | OrganizationSsoDomain[] = domains;
+      if (config.method === 'post') {
+        if (config.url.endsWith('/verify')) {
+          domains = domains.map((claim) => ({ ...claim, verified: true }));
+          [data] = domains;
+        } else {
+          const { domain } = JSON.parse(config.data) as { domain: string };
+          data = {
+            domain,
+            verified: false,
+            managedBy: 'studio',
+            recordName: `_appsemble-sso.${domain}`,
+            recordValue: 'appsemble-sso=ownership-proof',
+          };
+          domains = [...domains, data];
+        }
+      } else if (config.method === 'delete') {
+        domains = [];
+      }
+      return Promise.resolve({ data, status: 200, statusText: 'OK', headers: {}, config });
+    }
     if (config.method === 'post' && config.url.endsWith('/sso/login')) {
       return Promise.reject(
         new AxiosError('Provider verification failed', 'ERR_BAD_REQUEST', config, undefined, {
@@ -155,4 +180,41 @@ it('should verify a first connection before creating its configuration', async (
   await screen.findByText('Provider verification failed');
 
   expect(stored).toBeNull();
+});
+
+it('should let an owner add, verify and remove an email alias for discovery', async () => {
+  renderSettings();
+  fireEvent.change(await screen.findByRole('textbox', { name: 'Email domain' }), {
+    target: { value: 'staff.example.com' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Add domain' }));
+  await screen.findByText('Pending DNS verification');
+  expect(screen.getByText('_appsemble-sso.staff.example.com')).toBeDefined();
+  expect(screen.getByText('appsemble-sso=ownership-proof')).toBeDefined();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Verify staff.example.com' }));
+  await screen.findByText('Verified');
+  expect(screen.queryByText('Pending DNS verification')).toBeNull();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Remove staff.example.com' }));
+  await waitFor(() => expect(screen.queryByText('staff.example.com')).toBeNull());
+});
+
+it('should show trusted deployment domains without DNS verification controls', async () => {
+  configuration.managedBy = 'deployment';
+  domains = [
+    {
+      domain: 'staff.example.com',
+      verified: true,
+      managedBy: 'deployment',
+      recordName: '',
+      recordValue: '',
+    },
+  ];
+  renderSettings();
+
+  await screen.findByText('Trusted by deployment configuration');
+  expect(screen.queryByRole('button', { name: 'Verify staff.example.com' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Remove staff.example.com' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Add domain' })).toBeNull();
 });

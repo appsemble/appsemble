@@ -400,6 +400,15 @@
             "type": "string",
             "minLength": 1
           },
+          "domains": {
+            "description": "Trusted exact email domains and aliases for Studio sign-in discovery. Deployment operators assert ownership; domains added in Studio require DNS verification.",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
           "policy": {
             "enum": ["optional", "required", "required-with-guests"]
           },

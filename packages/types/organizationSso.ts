@@ -28,3 +28,11 @@ export interface OrganizationSsoSettings extends Omit<
   managedBy: 'studio' | 'deployment';
   hasClientSecret: boolean;
 }
+
+export interface OrganizationSsoDomain {
+  domain: string;
+  verified: boolean;
+  managedBy: 'studio' | 'deployment';
+  recordName: string;
+  recordValue: string;
+}

@@ -7,20 +7,26 @@ import {
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { isLocalRedirect } from '../../utils/isLocalRedirect.js';
 
 export function EditPasswordPage(): ReactNode {
   useMeta(messages.title);
 
   const qs = useQuery();
+  const navigate = useNavigate();
   const token = qs.get('token');
+  const redirect = qs.get('redirect');
   const onSubmit = useCallback(
     async ({ password }: EditPasswordValues) => {
       await axios.post('/api/auth/email/reset-password', { token, password });
+      if (isLocalRedirect(redirect)) {
+        navigate(redirect, { replace: true });
+      }
     },
-    [token],
+    [navigate, redirect, token],
   );
 
   if (!token) {

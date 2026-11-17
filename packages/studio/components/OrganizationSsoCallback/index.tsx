@@ -75,7 +75,7 @@ export function OrganizationSsoCallback({ session }: OrganizationSsoCallbackProp
       {error === 'conflict' ? (
         <Button
           component={Link}
-          to={`/login?${new URLSearchParams({ redirect: returnToOrganization })}`}
+          to={`/login?${new URLSearchParams({ personal: '1', redirect: returnToOrganization })}`}
         >
           <FormattedMessage {...messages.signIn} />
         </Button>

@@ -108,6 +108,7 @@ import { pathItems as appsAppId } from './apps/appId.js';
 import { pathItems as apps } from './apps.js';
 import { pathItems as appTemplates } from './appTemplates.js';
 import { pathItems as authEmailLogin } from './auth/email/login.js';
+import { pathItems as authEmailDiscover } from './auth/email/discover.js';
 import { pathItems as authEmailPatchPassword } from './auth/email/patchPassword.js';
 import { pathItems as authEmailRegister } from './auth/email/register.js';
 import { pathItems as authEmailRequestPasswordReset } from './auth/email/requestResetPassword.js';
@@ -142,6 +143,9 @@ import { pathItems as organizationsOrganizationIdMembersMemberIdRole } from './o
 import { pathItems as organizationsOrganizationIdMembersMemberId } from './organizations/organizationId/members/memberId.js';
 import { pathItems as organizationsOrganizationIdMembers } from './organizations/organizationId/members.js';
 import { pathItems as organizationsOrganizationIdSso } from './organizations/organizationId/sso.js';
+import { pathItems as organizationsOrganizationIdSsoDomains } from './organizations/organizationId/sso/domains.js';
+import { pathItems as organizationsOrganizationIdSsoDomainsDomain } from './organizations/organizationId/sso/domains/domain.js';
+import { pathItems as organizationsOrganizationIdSsoDomainsDomainVerify } from './organizations/organizationId/sso/domains/domain/verify.js';
 import { pathItems as organizationsOrganizationIdSsoLogin } from './organizations/organizationId/sso/login.js';
 import { pathItems as organizationsOrganizationIdSsoCallback } from './organizations/organizationId/sso/callback.js';
 import { pathItems as authLogout } from './auth/logout.js';
@@ -295,6 +299,7 @@ export const paths = {
   '/api/apps': apps,
   '/api/app-templates': appTemplates,
   '/api/auth/email/login': authEmailLogin,
+  '/api/auth/email/discover': authEmailDiscover,
   '/api/auth/email/register': authEmailRegister,
   '/api/auth/email/reset-password': authEmailResetPassword,
   '/api/auth/email/patch-password': authEmailPatchPassword,
@@ -340,6 +345,11 @@ export const paths = {
   '/api/organizations/{organizationId}/sso/login': organizationsOrganizationIdSsoLogin,
   '/api/organizations/{organizationId}/sso/callback': organizationsOrganizationIdSsoCallback,
   '/api/organizations/{organizationId}/sso': organizationsOrganizationIdSso,
+  '/api/organizations/{organizationId}/sso/domains': organizationsOrganizationIdSsoDomains,
+  '/api/organizations/{organizationId}/sso/domains/{domain}':
+    organizationsOrganizationIdSsoDomainsDomain,
+  '/api/organizations/{organizationId}/sso/domains/{domain}/verify':
+    organizationsOrganizationIdSsoDomainsDomainVerify,
   '/api/organizations/{organizationId}/subscription':
     organizationsOrganizationIdOrganizationSubscription,
   '/api/organizations/{organizationId}/subscription/price':
