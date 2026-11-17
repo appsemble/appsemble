@@ -49,7 +49,10 @@
     },
     "katex": "0.19.1",
     "third-party-web": "0.30.0",
-    "vscode-languageserver-types": "3.17.5"
+    "vscode-languageserver-types": "3.17.5",
+    "yaml-language-server": {
+      "vscode-languageserver": "^11.0.0"
+    }
   },
   "devDependencies": {
     "@appsemble/eslint-config": "0.40.17",
@@ -64,7 +67,7 @@
     "intl-messageformat": "10.7.18",
     "jsdom": "22.1.0",
     "lint-staged": "17.6.0",
-    "postcss": "8.5.32",
+    "postcss": "8.5.33",
     "postcss-preset-env": "10.6.1",
     "prettier": "3.9.10",
     "prettier-plugin-packagejson": "2.5.22",
@@ -138,7 +141,8 @@
     "smtp-from": "localdev@appsemble.com"
   },
   "dependenciesComments": {
-    "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tags of the `mermaid svgs`, `e2e node`, `e2e keycloak`, and `lighthouse` jobs in .gitlab-ci.yml; Renovate bumps them all together (see renovate.json)."
+    "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tags of the `mermaid svgs`, `e2e node`, `e2e keycloak`, and `lighthouse` jobs in .gitlab-ci.yml; Renovate bumps them all together (see renovate.json).",
+    "yaml-language-server": "Declares `vscode-languageserver: ^9.0.0` (`^10.1.2` as of 2.0.0), which installs a second copy beside the version `@appsemble/appsemble-language-server` depends on; the `Connection` and `TextDocuments` the language server hands to the language service then have two distinct declarations and tsc rejects every call. The override in `overrides` resolves one copy; drop it once yaml-language-server declares a range that includes the version in packages/appsemble-language-server/package.json."
   },
   "dependencies": {
     "@playwright/test": "1.64.1",

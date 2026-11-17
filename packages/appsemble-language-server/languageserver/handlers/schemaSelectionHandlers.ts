@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *-------------------------------------------------------------------------------------------- */
 
-import { type Connection } from 'vscode-languageserver/node.js';
+import { type Connection } from 'vscode-languageserver/node';
 import { type JSONSchema } from 'yaml-language-server/lib/esm/languageservice/jsonSchema.js';
 import { yamlDocumentsCache } from 'yaml-language-server/lib/esm/languageservice/parser/yaml-documents.js';
 import { type YAMLSchemaService } from 'yaml-language-server/lib/esm/languageservice/services/yamlSchemaService.js';

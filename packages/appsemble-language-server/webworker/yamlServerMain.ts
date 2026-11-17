@@ -8,7 +8,7 @@ import {
   BrowserMessageReader,
   BrowserMessageWriter,
   createConnection,
-} from 'vscode-languageserver/browser.js';
+} from 'vscode-languageserver/browser';
 import { workspaceContext } from 'yaml-language-server/lib/esm/languageservice/services/schemaRequestHandler.js';
 
 import { connectionOptions } from '../languageserver/connectionOptions.js';

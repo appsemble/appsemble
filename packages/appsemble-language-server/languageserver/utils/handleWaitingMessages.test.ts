@@ -15,7 +15,9 @@ describe('handleWaitingMessages', () => {
     const waiting = handleWaitingMessages().then(() => events.push('done'));
 
     for (let message = 0; message < 10; message += 1) {
-      countingMessageStrategy.handleMessage({ jsonrpc: '2.0' }, () => events.push('dispatched'));
+      countingMessageStrategy.handleMessage({ jsonrpc: '2.0' }, () => {
+        events.push('dispatched');
+      });
       await nextTurn(0);
     }
     await waiting;
