@@ -74,6 +74,7 @@ describe('ProfileDropdown', () => {
       'Test User',
     );
     expect(screen.getByRole('button', { name: 'Camera' })).toBeDefined();
+    expect(screen.getByRole('option', { name: 'Dutch (Nederlands)' })).toBeDefined();
   });
 
   it('should render phoneNumber field', () => {

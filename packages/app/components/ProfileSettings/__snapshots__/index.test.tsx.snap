@@ -198,6 +198,16 @@ HTMLCollection [
           <option
             class="is-hidden"
           />
+          <option
+            value="0"
+          >
+            English (Supported)
+          </option>
+          <option
+            value="1"
+          >
+            Dutch (Nederlands)
+          </option>
         </select>
       </div>
     </div>
@@ -448,6 +458,16 @@ HTMLCollection [
           <option
             class="is-hidden"
           />
+          <option
+            value="0"
+          >
+            English (Supported)
+          </option>
+          <option
+            value="1"
+          >
+            Dutch (Nederlands)
+          </option>
         </select>
       </div>
     </div>

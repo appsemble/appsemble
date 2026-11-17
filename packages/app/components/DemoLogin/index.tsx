@@ -1,6 +1,6 @@
 import { type AppRole, getAppRoles } from '@appsemble/lang-sdk';
 import {
-  type MinimalHTMLElement,
+  Option,
   SelectField,
   SimpleForm,
   SimpleFormError,
@@ -10,7 +10,7 @@ import {
   useToggle,
 } from '@appsemble/preact-components';
 import { type AppMemberInfo } from '@appsemble/types';
-import { type ChangeEvent, type ReactNode, useCallback, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
@@ -68,15 +68,14 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
 
   const selectedAppRoleDescription = getRoleDescription(selectedAppRole);
 
-  const changeDemoAppMember = (event: ChangeEvent<EventTarget & MinimalHTMLElement>): void => {
+  const changeDemoAppMember = (event: unknown, sub: string): void => {
     setSelectedDemoAppMember(
-      demoAppMembers.find((appMember) => appMember.sub === event.currentTarget.value) ??
-        demoAppMembers[0],
+      demoAppMembers.find((appMember) => appMember.sub === sub) ?? demoAppMembers[0],
     );
   };
 
-  const changeAppRole = (event: ChangeEvent<EventTarget & MinimalHTMLElement>): void => {
-    setSelectedAppRole(event.currentTarget.value);
+  const changeAppRole = (event: unknown, appRole: string): void => {
+    setSelectedAppRole(appRole);
   };
 
   const setLogin = (): void => {
@@ -129,9 +128,9 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
             required
           >
             {demoAppMembers.map((appMember) => (
-              <option key={appMember.sub} value={appMember.sub}>
+              <Option key={appMember.sub} value={appMember.sub}>
                 {appMember.name}
-              </option>
+              </Option>
             ))}
           </SimpleFormField>
           <SimpleSubmit allowPristine dataTestId="login" disabled={busy.enabled} onClick={setLogin}>
@@ -156,12 +155,14 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
             required
           >
             {appRoles.map((appRole) => (
-              <option key={appRole} value={appRole}>
-                {getAppMessage({
-                  id: `app.roles.${appRole}`,
-                  defaultMessage: appRole,
-                }).format()}
-              </option>
+              <Option key={appRole} value={appRole}>
+                {
+                  getAppMessage({
+                    id: `app.roles.${appRole}`,
+                    defaultMessage: appRole,
+                  }).format() as string
+                }
+              </Option>
             ))}
           </SimpleFormField>
           <SimpleSubmit

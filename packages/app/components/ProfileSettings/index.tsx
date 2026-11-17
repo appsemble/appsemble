@@ -3,6 +3,7 @@ import {
   FileUpload,
   FormButtons,
   Icon,
+  Option,
   SelectField,
   SimpleForm,
   SimpleFormError,
@@ -191,11 +192,11 @@ export function ProfileSettings(): ReactNode {
             name="locale"
           >
             {languages.map((language) => (
-              <option key={language} value={language}>
+              <Option key={language} value={language}>
                 {supportedLanguages.includes(language)
                   ? `${getLanguageDisplayName(language)} (${formatMessage(messages.supported)})`
                   : getLanguageDisplayName(language)}
-              </option>
+              </Option>
             ))}
           </SimpleFormField>
         ) : null}

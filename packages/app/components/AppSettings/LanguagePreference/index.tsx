@@ -1,6 +1,6 @@
-import { SelectField } from '@appsemble/preact-components';
+import { Option, SelectField } from '@appsemble/preact-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
-import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -18,8 +18,7 @@ export function LanguagePreference(): ReactNode {
   const { formatMessage } = useIntl();
 
   const onLanguageChange = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      const language = event.currentTarget.value;
+    (event: unknown, language: string) => {
       // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       navigate(url.replace(preferredLanguage, language), { replace: true });
       setPreferredLanguage(language);
@@ -37,11 +36,11 @@ export function LanguagePreference(): ReactNode {
       value={preferredLanguage}
     >
       {languages.map((language) => (
-        <option key={language} value={language}>
+        <Option key={language} value={language}>
           {supportedLanguages.includes(language)
             ? `${getLanguageDisplayName(language)} (${formatMessage(messages.supported)})`
             : getLanguageDisplayName(language)}
-        </option>
+        </Option>
       ))}
     </SelectField>
   );
