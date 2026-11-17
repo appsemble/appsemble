@@ -1,6 +1,6 @@
 import { getPagePathSegment } from '@appsemble/lang-sdk';
 import { Message } from '@appsemble/preact-components';
-import { type ReactNode } from 'react';
+import { type VNode } from 'preact';
 import { Redirect, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
@@ -25,7 +25,7 @@ import { useQuery } from '../../utils/useQuery.js';
 
 type LoginState = 'demo' | 'form' | 'permission-error' | 'totp-setup' | 'totp';
 
-export function Login(): ReactNode {
+export function Login(): VNode {
   const { definition } = useAppDefinition();
   const { totpPending } = useAppMember();
   const { getAppMessage } = useAppMessages();

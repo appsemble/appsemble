@@ -1,5 +1,5 @@
 import { Icon, NavbarDropdown, useToggle } from '@appsemble/preact-components';
-import { type ReactNode } from 'react';
+import { type VNode } from 'preact';
 import { Link } from 'wouter-preact';
 
 import styles from './index.module.css';
@@ -10,7 +10,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
 import { ProfileMenuItems, useProfileMenu } from '../ProfileMenu/index.js';
 
-export function ProfileDropdown(): ReactNode {
+export function ProfileDropdown(): VNode | null {
   const { formatMessage } = useIntl();
   const { appMemberInfo } = useAppMember();
   const profileMenu = useProfileMenu();

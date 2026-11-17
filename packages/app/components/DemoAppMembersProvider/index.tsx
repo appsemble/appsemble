@@ -1,14 +1,7 @@
 import { type AppMemberInfo } from '@appsemble/types';
 import axios from 'axios';
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { type ComponentChildren, createContext, type VNode } from 'preact';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/hooks';
 
 import { apiUrl, appId, showDemoLogin } from '../../utils/settings.js';
 
@@ -18,13 +11,13 @@ interface DemoAppMembersContext {
 }
 
 interface DemoAppMembersProviderProps {
-  readonly children: ReactNode;
+  readonly children: ComponentChildren;
 }
 
 // @ts-expect-error 2345 argument of type is not assignable to parameter of type (strictNullChecks)
 const Context = createContext<DemoAppMembersContext>(null);
 
-export function DemoAppMembersProvider({ children }: DemoAppMembersProviderProps): ReactNode {
+export function DemoAppMembersProvider({ children }: DemoAppMembersProviderProps): VNode {
   const [demoAppMembers, setDemoAppMembers] = useState<AppMemberInfo[]>([]);
 
   const refetchDemoAppMembers = useCallback(async () => {

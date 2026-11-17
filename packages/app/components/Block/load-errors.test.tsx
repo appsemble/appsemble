@@ -4,7 +4,7 @@ import { type AppDefinition, type BlockDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
 import { noop } from '@appsemble/utils';
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
 import { Link, Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ErrorHandler } from '../ErrorHandler/index.js';

@@ -1,6 +1,7 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { type ReactNode, useEffect } from 'react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/preact';
+import { type VNode } from 'preact';
+import { useEffect } from 'preact/hooks';
 import { Link, Route, Switch } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -29,7 +30,7 @@ function resolveLanguage(language: string, name: string): Promise<void> {
   });
 }
 
-function Probe(): ReactNode {
+function Probe(): VNode {
   const { getAppMessage, messagesReady } = useAppMessages();
 
   useEffect(() => {
@@ -44,7 +45,7 @@ function Probe(): ReactNode {
   );
 }
 
-function LocationProbe(): ReactNode {
+function LocationProbe(): VNode {
   return <p>{useLocationString()}</p>;
 }
 

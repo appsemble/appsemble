@@ -4,7 +4,8 @@ import {
   getRouteSegment,
   type PageDefinition,
 } from '@appsemble/lang-sdk';
-import { type ReactNode, useCallback } from 'react';
+import { type VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 import { useLocation, useParams } from 'wouter-preact';
 
 import { FormattedMessage } from '../IntlProvider/index.js';
@@ -83,7 +84,7 @@ interface ProfileMenuItemsProps {
 /**
  * The items of the profile menu of a logged in app member, rendered as Bulma navbar items.
  */
-export function ProfileMenuItems({ onDemoLogin, onNavigate }: ProfileMenuItemsProps): ReactNode {
+export function ProfileMenuItems({ onDemoLogin, onNavigate }: ProfileMenuItemsProps): VNode {
   const { definition } = useAppDefinition();
   const { getAppMessage } = useAppMessages();
   const { appMemberRoles, appMemberSelectedGroup, logout } = useAppMember();

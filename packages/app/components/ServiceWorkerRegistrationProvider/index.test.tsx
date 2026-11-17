@@ -1,7 +1,7 @@
 // CSpell:ignore cooldown
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/preact';
 import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
-import { type ReactNode } from 'react';
+import { type VNode } from 'preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as ServiceWorkerRegistrationProviderModule from './index.js';
@@ -50,7 +50,7 @@ let latestContext: ReturnType<typeof useServiceWorkerRegistration> | undefined;
 let requestInterceptor: ((config: { url: string }) => Promise<{ url: string }>) | undefined;
 let serviceWorkerListeners: Record<string, (event: any) => void> = {};
 
-function Consumer(): ReactNode {
+function Consumer(): VNode | null {
   latestContext = useServiceWorkerRegistration();
   return null;
 }

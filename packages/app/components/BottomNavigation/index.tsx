@@ -7,7 +7,8 @@ import {
 } from '@appsemble/lang-sdk';
 import { Button, Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { type ReactNode, useMemo } from 'react';
+import { type ComponentChildren, type VNode } from 'preact';
+import { useMemo } from 'preact/hooks';
 import { Link, useLocation, useParams } from 'wouter-preact';
 
 import './index.css';
@@ -37,7 +38,7 @@ interface BottomNavigationProps {
 /**
  * The app navigation that is displayed at the bottom of the app.
  */
-export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
+export function BottomNavigation({ inGrid }: BottomNavigationProps): VNode | null {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
   const [pathname] = useLocation();
@@ -62,150 +63,148 @@ export function BottomNavigation({ inGrid }: BottomNavigationProps): ReactNode {
     [definition, appMemberRoles, appMemberSelectedGroup, pathname, getAppMessage],
   );
 
-  if (inGrid && !hasBottomNavigation) {
+  if (!showMenu || (inGrid && !hasBottomNavigation)) {
     return null;
   }
 
   return (
-    showMenu && (
-      <nav className={classNames('bottom-nav mb-0', { [styles.inGrid]: inGrid })}>
-        <ul className={`${styles.list} is-flex`}>
-          {pages.map((page) => {
-            const name = getPageDisplayName(page, getAppMessage);
-            const remapperContext = {
-              appId,
-              appUrl: window.location.origin,
-              url: window.location.href,
-              group: appMemberSelectedGroup,
-              getMessage,
-              getVariable,
-              appMemberInfo,
-              context: { name },
-              locale: lang!,
-            } satisfies RemapperContext;
-            const navName = page.navTitle
-              ? (remap(page.navTitle, null, remapperContext) as ReactNode)
-              : name;
+    <nav className={classNames('bottom-nav mb-0', { [styles.inGrid]: inGrid })}>
+      <ul className={`${styles.list} is-flex`}>
+        {pages.map((page) => {
+          const name = getPageDisplayName(page, getAppMessage);
+          const remapperContext = {
+            appId,
+            appUrl: window.location.origin,
+            url: window.location.href,
+            group: appMemberSelectedGroup,
+            getMessage,
+            getVariable,
+            appMemberInfo,
+            context: { name },
+            locale: lang!,
+          } satisfies RemapperContext;
+          const navName = page.navTitle
+            ? (remap(page.navTitle, null, remapperContext) as ComponentChildren)
+            : name;
 
-            // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-            // (strictNullChecks)
-            const count = remap(page.badgeCount, null, remapperContext) as number;
-            const current = getCurrent(page);
+          // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+          // (strictNullChecks)
+          const count = remap(page.badgeCount, null, remapperContext) as number;
+          const current = getCurrent(page);
 
-            return (
-              <li className="bottom-nav-item" key={page.name}>
-                <Link
-                  aria-current={current}
-                  className={`bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${current ? 'is-active' : ''}`}
-                  title={navName as string}
-                  to={`${url}/${getPagePathSegment(page, getAppMessage)}`}
-                >
-                  {page.icon ? (
-                    <div>
-                      <Icon className="mb-1" icon={page.icon} iconSize="3x" size="large" />
-                      {page.badgeCount ? (
-                        <span className="tag is-rounded ml-1 is-success is-pulled-right">
-                          {count}
-                        </span>
-                      ) : null}
-                    </div>
-                  ) : null}
+          return (
+            <li className="bottom-nav-item" key={page.name}>
+              <Link
+                aria-current={current}
+                className={`bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${current ? 'is-active' : ''}`}
+                title={navName as string}
+                to={`${url}/${getPagePathSegment(page, getAppMessage)}`}
+              >
+                {page.icon ? (
                   <div>
-                    <span>{navName}</span>
-                    {page.badgeCount && !page.icon ? (
-                      <span className="tag is-rounded ml-1 is-success">{count}</span>
+                    <Icon className="mb-1" icon={page.icon} iconSize="3x" size="large" />
+                    {page.badgeCount ? (
+                      <span className="tag is-rounded ml-1 is-success is-pulled-right">
+                        {count}
+                      </span>
                     ) : null}
                   </div>
-                </Link>
-              </li>
-            );
-          })}
+                ) : null}
+                <div>
+                  <span>{navName}</span>
+                  {page.badgeCount && !page.icon ? (
+                    <span className="tag is-rounded ml-1 is-success">{count}</span>
+                  ) : null}
+                </div>
+              </Link>
+            </li>
+          );
+        })}
 
-          {definition.layout?.settings === 'navigation' && (
-            <li className="bottom-nav-item">
-              <NavLink
-                className={(isActive) =>
-                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
-                    isActive && 'is-active'
-                  }`
-                }
-                title={formatMessage(messages.settings)}
-                to={`${url}/${getRouteSegment('Settings', getAppMessage)}`}
-              >
-                <Icon className="mb-1" icon="wrench" iconSize="3x" size="large" />
-                <span>
-                  <FormattedMessage {...messages.settings} />
-                </span>
-              </NavLink>
-            </li>
-          )}
-          {definition.layout?.feedback === 'navigation' && sentryDsn ? (
-            <li className="bottom-nav-item">
-              <NavLink
-                className={(isActive) =>
-                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
-                    isActive && 'is-active'
-                  }`
-                }
-                title={formatMessage(messages.feedback)}
-                to={`${url}/${getRouteSegment('Feedback', getAppMessage)}`}
-              >
-                <Icon className="mb-1" icon="comment" iconSize="3x" size="large" />
-                <span>
-                  <FormattedMessage {...messages.feedback} />
-                </span>
-              </NavLink>
-            </li>
-          ) : null}
-          {definition.layout?.install === 'navigation' && install ? (
+        {definition.layout?.settings === 'navigation' && (
+          <li className="bottom-nav-item">
+            <NavLink
+              className={(isActive) =>
+                `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
+                  isActive && 'is-active'
+                }`
+              }
+              title={formatMessage(messages.settings)}
+              to={`${url}/${getRouteSegment('Settings', getAppMessage)}`}
+            >
+              <Icon className="mb-1" icon="wrench" iconSize="3x" size="large" />
+              <span>
+                <FormattedMessage {...messages.settings} />
+              </span>
+            </NavLink>
+          </li>
+        )}
+        {definition.layout?.feedback === 'navigation' && sentryDsn ? (
+          <li className="bottom-nav-item">
+            <NavLink
+              className={(isActive) =>
+                `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
+                  isActive && 'is-active'
+                }`
+              }
+              title={formatMessage(messages.feedback)}
+              to={`${url}/${getRouteSegment('Feedback', getAppMessage)}`}
+            >
+              <Icon className="mb-1" icon="comment" iconSize="3x" size="large" />
+              <span>
+                <FormattedMessage {...messages.feedback} />
+              </span>
+            </NavLink>
+          </li>
+        ) : null}
+        {definition.layout?.install === 'navigation' && install ? (
+          <li className="bottom-nav-item">
+            <Button
+              className="bottom-nav-item-button is-flex-direction-column is-flex px-4 py-4 has-text-centered"
+              icon="download"
+              iconSize="large"
+              iconSizeModifier="3x"
+              onClick={install}
+              title={formatMessage(messages.install)}
+            >
+              <FormattedMessage {...messages.install} />
+            </Button>
+          </li>
+        ) : null}
+        {definition.security && definition.layout?.login === 'navigation' ? (
+          isLoggedIn ? (
             <li className="bottom-nav-item">
               <Button
                 className="bottom-nav-item-button is-flex-direction-column is-flex px-4 py-4 has-text-centered"
-                icon="download"
+                icon="sign-out-alt"
                 iconSize="large"
                 iconSizeModifier="3x"
-                onClick={install}
-                title={formatMessage(messages.install)}
+                onClick={logout}
+                title={formatMessage(messages.logout)}
               >
-                <FormattedMessage {...messages.install} />
+                <FormattedMessage {...messages.logout} />
               </Button>
             </li>
-          ) : null}
-          {definition.security && definition.layout?.login === 'navigation' ? (
-            isLoggedIn ? (
-              <li className="bottom-nav-item">
-                <Button
-                  className="bottom-nav-item-button is-flex-direction-column is-flex px-4 py-4 has-text-centered"
-                  icon="sign-out-alt"
-                  iconSize="large"
-                  iconSizeModifier="3x"
-                  onClick={logout}
-                  title={formatMessage(messages.logout)}
-                >
-                  <FormattedMessage {...messages.logout} />
-                </Button>
-              </li>
-            ) : (
-              <li className="bottom-nav-item">
-                <NavLink
-                  className={(isActive) =>
-                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
-                      isActive && 'is-active'
-                    }`
-                  }
-                  title={formatMessage(messages.login)}
-                  to={`${url}/${getRouteSegment('Login', getAppMessage)}`}
-                >
-                  <Icon className="mb-1" icon="sign-in-alt" iconSize="3x" size="large" />
-                  <span>
-                    <FormattedMessage {...messages.login} />
-                  </span>
-                </NavLink>
-              </li>
-            )
-          ) : null}
-        </ul>
-      </nav>
-    )
+          ) : (
+            <li className="bottom-nav-item">
+              <NavLink
+                className={(isActive) =>
+                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
+                    isActive && 'is-active'
+                  }`
+                }
+                title={formatMessage(messages.login)}
+                to={`${url}/${getRouteSegment('Login', getAppMessage)}`}
+              >
+                <Icon className="mb-1" icon="sign-in-alt" iconSize="3x" size="large" />
+                <span>
+                  <FormattedMessage {...messages.login} />
+                </span>
+              </NavLink>
+            </li>
+          )
+        ) : null}
+      </ul>
+    </nav>
   );
 }

@@ -1,6 +1,7 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render, screen } from '@testing-library/react';
-import { type ReactNode, useEffect } from 'react';
+import { render, screen } from '@testing-library/preact';
+import { type ComponentChildren, type VNode } from 'preact';
+import { useEffect } from 'preact/hooks';
 import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -21,8 +22,8 @@ vi.mock('../SideMenu/index.js', async (importOriginal) => {
       base,
       children,
     }: {
-      readonly base: ReactNode;
-      readonly children: ReactNode;
+      readonly base: ComponentChildren;
+      readonly children: ComponentChildren;
     }) => (
       <>
         <aside>{base}</aside>
@@ -42,7 +43,7 @@ const appDefinition = {
   ],
 } as unknown as AppDefinition;
 
-function SetPage({ navigation }: { readonly navigation?: string }): ReactNode {
+function SetPage({ navigation }: { readonly navigation?: string }): VNode {
   const { setPage } = usePage();
   useEffect(() => {
     setPage({ name: 'Edit Profile', navigation, blocks: [] } as never);
@@ -55,7 +56,7 @@ function SetPage({ navigation }: { readonly navigation?: string }): ReactNode {
 
 function renderMenu(
   definition = appDefinition,
-  child: ReactNode = <main>Page content</main>,
+  child: ComponentChildren = <main>Page content</main>,
 ): void {
   vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
     definition,

@@ -1,9 +1,9 @@
 import { type BaseMessage } from '@appsemble/lang-sdk';
 import { Message } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { type ComponentChildren, createContext, Fragment, type VNode } from 'preact';
 import { createPortal } from 'preact/compat';
 import { useCallback, useContext, useLayoutEffect, useRef, useState } from 'preact/hooks';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -33,7 +33,14 @@ interface UniqueMessage extends Msg {
   id: number;
 
   dismiss?: () => void;
+
+  /**
+   * Whether the message transitions out.
+   */
+  exiting?: boolean;
 }
+
+const transitionDuration = 300;
 
 /**
  * The messages that finished transitioning in.
@@ -128,16 +135,21 @@ export function MessagesProvider({ children }: MessagesProviderProps): VNode {
         typeof message === 'string' ? { id, body: message } : { id, ...message };
 
       const dismiss = (): void => {
-        const index = msgs.current.indexOf(uniqueMessage);
-        if (index !== -1) {
-          msgs.current.splice(index, 1);
-          forceUpdate();
+        if (uniqueMessage.exiting) {
+          return;
         }
+        uniqueMessage.exiting = true;
+        forceUpdate();
+        setTimeout(() => {
+          msgs.current = msgs.current.filter((msg) => msg !== uniqueMessage);
+          forceUpdate();
+        }, transitionDuration);
       };
       uniqueMessage.dismiss = dismiss;
       msgs.current.push(uniqueMessage);
       // Since messages are in a ref, pushing a message won’t trigger a rerender.
       forceUpdate();
+      setTimeout(() => shownMessages.add(uniqueMessage), transitionDuration);
       const { dismissable, timeout = dismissable ? undefined : 5e3 } = uniqueMessage;
 
       if (timeout) {
@@ -147,50 +159,48 @@ export function MessagesProvider({ children }: MessagesProviderProps): VNode {
     [forceUpdate],
   );
 
+  const activeDialog = modalDialogs.at(-1);
+  const lastActiveDialog = useRef(activeDialog);
+  if (lastActiveDialog.current !== activeDialog) {
+    lastActiveDialog.current = activeDialog;
+    // A message that transitions out isn't rendered in another live region, so it isn't announced
+    // again.
+    msgs.current = msgs.current.filter((message) => !message.exiting);
+  }
+
   const renderRegion = (active: boolean, slot?: string): VNode => (
     <LiveRegion active={active} modalDialogs={modalDialogs} slot={slot}>
-      <TransitionGroup>
-        {(active ? msgs.current : []).map((message) => {
-          // A message is rendered in another live region when a modal dialog opens or closes. A
-          // message that finished transitioning in isn't transitioned in or announced assertively
-          // again.
-          const shown = shownMessages.has(message);
-          return (
-            <CSSTransition
-              classNames={{
-                enter: styles.messageEnter,
-                enterActive: styles.messageEnterActive,
-                exit: styles.messageExit,
-                exitActive: styles.messageExitActive,
-              }}
-              enter={!shown}
-              key={message.id}
-              onEntered={() => shownMessages.add(message)}
-              timeout={300}
+      {(active ? msgs.current : []).map((message) => {
+        // A message is rendered in another live region when a modal dialog opens or closes. A
+        // message that finished transitioning in or transitions out isn't transitioned in or
+        // announced assertively.
+        const entering = !shownMessages.has(message) && !message.exiting;
+        return (
+          <Message
+            className={classNames(styles.content, styles[message.layout || 'bottom'], {
+              [styles.messageEnter]: entering,
+              [styles.messageExit]: message.exiting,
+            })}
+            color={message.color || 'danger'}
+            key={message.id}
+          >
+            <span
+              className={styles.body}
+              role={(message.color || 'danger') === 'danger' && entering ? 'alert' : undefined}
             >
-              <Message
-                className={`${styles.content} ${styles[message.layout || 'bottom']}`}
-                color={message.color || 'danger'}
-              >
-                <span
-                  className={styles.body}
-                  role={(message.color || 'danger') === 'danger' && !shown ? 'alert' : undefined}
-                >
-                  {message.body}
-                </span>
-                {message.dismissable ? (
-                  <button
-                    aria-label={formatMessage(messages.dismiss)}
-                    className={`delete ${styles.deleteButton}`}
-                    onClick={message.dismiss}
-                    type="button"
-                  />
-                ) : null}
-              </Message>
-            </CSSTransition>
-          );
-        })}
-      </TransitionGroup>
+              {message.body}
+            </span>
+            {message.dismissable ? (
+              <button
+                aria-label={formatMessage(messages.dismiss)}
+                className={`delete ${styles.deleteButton}`}
+                onClick={message.dismiss}
+                type="button"
+              />
+            ) : null}
+          </Message>
+        );
+      })}
     </LiveRegion>
   );
 

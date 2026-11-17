@@ -1,7 +1,8 @@
 import { AsyncButton, Message } from '@appsemble/preact-components';
 import { type GroupInvite as GroupInviteType } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactNode, useCallback, useState } from 'react';
+import { type VNode } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
 import { useLocation } from 'wouter-preact';
 
 import { messages } from './messages.js';
@@ -12,7 +13,7 @@ import { BuiltinPage, BuiltinPageLoader } from '../../BuiltinPage/index.js';
 import { useData } from '../../../utils/useData.js';
 import { useQuery } from '../../../utils/useQuery.js';
 
-export function GroupInvitePrompt(): ReactNode {
+export function GroupInvitePrompt(): VNode {
   const query = useQuery();
   const [, navigate] = useLocation();
 

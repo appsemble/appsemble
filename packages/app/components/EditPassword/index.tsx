@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { type ReactNode, useCallback, useState } from 'react';
+import { type VNode } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
 import { Link, Redirect, useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
@@ -9,7 +10,7 @@ import { apiUrl, appId } from '../../utils/settings.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
 import { useQuery } from '../../utils/useQuery.js';
 
-export function EditPassword(): ReactNode {
+export function EditPassword(): VNode {
   const [success, setSuccess] = useState(false);
   const qs = useQuery();
   const token = qs.get('token');

@@ -6,7 +6,8 @@ import {
   SimpleFormField,
   SimpleSubmit,
 } from '@appsemble/preact-components';
-import { type ReactNode, useCallback } from 'react';
+import { type VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 
 import { messages } from './messages.js';
 import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
@@ -17,7 +18,7 @@ interface TotpLoginProps {
   readonly onCancel: () => void;
 }
 
-export function TotpLogin({ onCancel, onVerify }: TotpLoginProps): ReactNode {
+export function TotpLogin({ onCancel, onVerify }: TotpLoginProps): VNode {
   const { formatMessage } = useIntl();
 
   const handleSubmit = useCallback(

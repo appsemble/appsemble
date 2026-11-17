@@ -9,15 +9,9 @@ import {
 } from '@appsemble/lang-sdk';
 import { applyRefs } from '@appsemble/preact-components';
 import { type BootstrapParams } from '@appsemble/sdk';
-import {
-  type MutableRefObject,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { type VNode } from 'preact';
+import { type MutableRefObject } from 'preact/compat';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { useLocation } from 'wouter-preact';
 import { Loader } from '../Loader/index.js';
 import { useMessages } from '../MessagesProvider/index.js';
@@ -67,7 +61,7 @@ export function FlowPage({
   showDialog,
   showShareDialog,
   stepRef,
-}: FlowPageProps): ReactNode {
+}: FlowPageProps): VNode {
   const [, navigate] = useLocation();
   const params = useRouteParams();
   const [currentStep, setCurrentStep] = useState(0);

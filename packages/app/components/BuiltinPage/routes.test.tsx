@@ -1,8 +1,8 @@
 import { type AppDefinition, type BuiltinPagesLayoutDefinition } from '@appsemble/lang-sdk';
 import { noop } from '@appsemble/utils';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
 import axios from 'axios';
-import { type ReactNode } from 'react';
+import { type ComponentChildren } from 'preact';
 import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -147,7 +147,7 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-function renderRoute(element: ReactNode, path = '/en/Page'): void {
+function renderRoute(element: ComponentChildren, path = '/en/Page'): void {
   window.history.replaceState(null, '', path);
   render(
     <IntlProvider locale="en" messages={{}}>

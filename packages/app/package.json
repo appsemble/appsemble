@@ -48,8 +48,6 @@
     "@types/css-modules": "^1.0.0",
     "@types/events": "^3.0.0",
     "@types/gtag.js": "^0.0.20",
-    "@types/react": "^18.0.0",
-    "@types/react-transition-group": "^4.0.0",
     "@types/webpack-env": "^1.0.0",
     "@zxcvbn-ts/core": "^3.0.0",
     "async-mutex": "^0.5.0",
@@ -65,8 +63,6 @@
     "openapi-types": "^12.0.0",
     "preact": "^10.0.0",
     "pwa-install-handler": "^2.0.0",
-    "react": "^18.0.0",
-    "react-transition-group": "^4.0.0",
     "regexparam": "^3.0.0",
     "type-fest": "^4.0.0",
     "wouter-preact": "^3.0.0"
@@ -77,10 +73,7 @@
     "happy-dom": "21.0.4",
     "jsdom": "22.1.0",
     "vitest": "4.1.12",
-    "react-is": "18.3.1",
-    "@types/react-is": "18.3.1",
     "@testing-library/preact": "3.2.6",
-    "@testing-library/react": "16.3.3",
     "@testing-library/user-event": "14.6.10"
   }
 }

@@ -4,7 +4,7 @@ import {
   normalize,
   type PageDefinition,
 } from '@appsemble/lang-sdk';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/preact';
 import { Link, Route, useRoute } from 'wouter-preact';
 import { describe, expect, it, vi } from 'vitest';
 

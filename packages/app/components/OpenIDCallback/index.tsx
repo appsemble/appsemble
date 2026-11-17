@@ -1,7 +1,8 @@
 import { getPagePathSegment, getRouteSegment } from '@appsemble/lang-sdk';
 import { Button, Message } from '@appsemble/preact-components';
 import { clearOAuth2State, loadOAuth2State, type OAuth2State } from '@appsemble/web-utils';
-import { type ReactNode, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { type VNode } from 'preact';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'preact/hooks';
 import { Link, Redirect, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
@@ -20,7 +21,7 @@ import { useQuery } from '../../utils/useQuery.js';
 /**
  * Handle the OAuth2 callback.
  */
-export function OpenIDCallback(): ReactNode {
+export function OpenIDCallback(): VNode {
   useMeta(messages.login);
 
   const query = useQuery();

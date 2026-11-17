@@ -1,5 +1,6 @@
 import { Button } from '@appsemble/preact-components';
-import { type Dispatch, type ReactNode, type SetStateAction, useCallback } from 'react';
+import { type VNode } from 'preact';
+import { type Dispatch, type StateUpdater, useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -9,7 +10,7 @@ import { type ShowShareDialogParams } from '../../../types.js';
 
 export interface ShareDialogParams {
   readonly shareDialogParams: ShareDialogState;
-  readonly setShareDialogParams: Dispatch<SetStateAction<ShareDialogState>>;
+  readonly setShareDialogParams: Dispatch<StateUpdater<ShareDialogState>>;
 }
 
 export interface ShareDialogState {
@@ -29,10 +30,7 @@ function createUrl(origin: string, params: Record<string, string>): string {
   return String(url);
 }
 
-export function ShareDialog({
-  setShareDialogParams,
-  shareDialogParams,
-}: ShareDialogParams): ReactNode {
+export function ShareDialog({ setShareDialogParams, shareDialogParams }: ShareDialogParams): VNode {
   const rejectShareDialog = useCallback(() => {
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)

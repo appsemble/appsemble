@@ -1,5 +1,5 @@
 import { getRouteSegment } from '@appsemble/lang-sdk';
-import { type ReactNode } from 'react';
+import { type VNode } from 'preact';
 import { Redirect, useParams } from 'wouter-preact';
 
 import { GroupInvitePrompt } from './GroupInvitePrompt/index.js';
@@ -7,7 +7,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useLocationString } from '../../utils/useLocationString.js';
 
-export function GroupInvite(): ReactNode {
+export function GroupInvite(): VNode {
   const { isLoggedIn } = useAppMember();
   const { getAppMessage } = useAppMessages();
   const redirect = useLocationString();

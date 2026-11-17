@@ -13,7 +13,8 @@ import {
   resendBannerGridArea,
 } from '@appsemble/lang-sdk';
 import { type ProjectImplementations } from '@appsemble/types';
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState, Fragment } from 'react';
+import { Fragment, type VNode } from 'preact';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Redirect, useLocation } from 'wouter-preact';
 import { useHistoryState } from 'wouter-preact/use-browser-location';
 import { Loader } from '../Loader/index.js';
@@ -84,7 +85,7 @@ export function BlockList({
   showShareDialog,
   signal,
   subPageName,
-}: BlockListProps): ReactNode {
+}: BlockListProps): VNode {
   const params = useRouteParams();
   const historyState = useHistoryState();
   const [, navigate] = useLocation();

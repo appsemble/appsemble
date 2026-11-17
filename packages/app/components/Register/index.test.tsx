@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/preact';
 import { AxiosError, AxiosHeaders, type AxiosResponse } from 'axios';
 import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

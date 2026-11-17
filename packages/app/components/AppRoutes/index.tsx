@@ -5,7 +5,8 @@ import {
   translatableRoutes,
   type TranslatableRoute,
 } from '@appsemble/lang-sdk';
-import { type ReactNode, useEffect, useRef } from 'react';
+import { type ComponentChildren, type VNode } from 'preact';
+import { useEffect, useRef } from 'preact/hooks';
 import { Redirect, Route, Switch, useParams, useRoute } from 'wouter-preact';
 
 import { Loader } from '../Loader/index.js';
@@ -40,7 +41,7 @@ interface RouteRedirectProps {
  *
  * Email links built by the server use the English path, so they keep working in every language.
  */
-function RouteRedirect({ segment }: RouteRedirectProps): ReactNode {
+function RouteRedirect({ segment }: RouteRedirectProps): VNode {
   const { lang } = useParams<{ lang: string }>();
 
   return (
@@ -64,7 +65,7 @@ function builtinPath(segment: string): RegExp {
 }
 
 interface TranslatedRouteProps {
-  readonly element: ReactNode;
+  readonly element: ComponentChildren;
   readonly getAppMessage: MessageGetter;
   readonly name: TranslatableRoute;
 }
@@ -78,7 +79,7 @@ interface TranslatedRouteProps {
  * @param props The element to mount, the message getter, and the English name of the route.
  * @returns The routes to render inside `Switch`.
  */
-function translatedRoute({ element, getAppMessage, name }: TranslatedRouteProps): ReactNode[] {
+function translatedRoute({ element, getAppMessage, name }: TranslatedRouteProps): VNode[] {
   const segment = getRouteSegment(name, getAppMessage);
   const routes = [
     <Route key={segment} path={builtinPath(segment)}>
@@ -100,7 +101,7 @@ function translatedRoute({ element, getAppMessage, name }: TranslatedRouteProps)
  *
  * This maps the page to a route and displays a page depending on URL.
  */
-export function AppRoutes(): ReactNode {
+export function AppRoutes(): VNode | null {
   const { getAppMessage, messagesReady } = useAppMessages();
   const { definition } = useAppDefinition();
   const { appMemberRoles, appMemberSelectedGroup, isLoggedIn } = useAppMember();
@@ -144,7 +145,7 @@ export function AppRoutes(): ReactNode {
   const hasCustomLogin = definition.pages.some((page) => page.name === 'Login');
   const hasCustomRegister = definition.pages.some((page) => page.name === 'Register');
 
-  const elements: Partial<Record<TranslatableRoute, ReactNode>> = {
+  const elements: Partial<Record<TranslatableRoute, ComponentChildren>> = {
     Settings: <AppSettings />,
     'Group-Invite': <GroupInvite />,
     'App-Invite': <AppInvite />,

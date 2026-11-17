@@ -11,8 +11,9 @@ import { type BlockUtils } from '@appsemble/sdk';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import { createIconElement, fa, getIconAsset, resolveIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
+import { type VNode } from 'preact';
 import { createPortal } from 'preact/compat';
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { useLocation } from 'wouter-preact';
 import { useHistoryState } from 'wouter-preact/use-browser-location';
 import { useMessages } from '../MessagesProvider/index.js';
@@ -103,7 +104,7 @@ export function Block({
   showDialog,
   showShareDialog,
   signal,
-}: BlockProps): ReactNode {
+}: BlockProps): VNode | null {
   const [, navigate] = useLocation();
   const params = useRouteParams();
   const query = useQuery();

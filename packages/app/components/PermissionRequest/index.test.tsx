@@ -1,5 +1,5 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render } from '@testing-library/react';
+import { render } from '@testing-library/preact';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PermissionRequest } from './index.js';

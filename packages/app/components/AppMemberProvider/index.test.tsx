@@ -1,11 +1,11 @@
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/preact';
 import {
   AxiosError,
   AxiosHeaders,
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios';
-import { type ReactNode } from 'react';
+import { type VNode } from 'preact';
 import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -68,7 +68,7 @@ let requestInterceptor:
 
 let accessToken: string;
 
-function Consumer(): ReactNode {
+function Consumer(): VNode | null {
   appMember = useAppMember();
   return null;
 }

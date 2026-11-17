@@ -1,6 +1,6 @@
 import { type AppDefinition, type PageDefinition, remap, type Remapper } from '@appsemble/lang-sdk';
 import { IconProvider } from '@appsemble/preact-components';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/preact';
 import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events';
 
 import { type AppDefinition, type FlowPageDefinition } from '@appsemble/lang-sdk';
 import { noop } from '@appsemble/utils';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/preact';
 import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

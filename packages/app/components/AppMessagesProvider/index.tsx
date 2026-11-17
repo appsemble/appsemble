@@ -5,15 +5,8 @@ import { detectLocale, has, objectCache } from '@appsemble/utils';
 import { memoize } from '@formatjs/fast-memoize';
 import axios from 'axios';
 import { type Formatters, IntlMessageFormat } from 'intl-messageformat';
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { type ComponentChildren, createContext, type VNode } from 'preact';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/hooks';
 import { useLocation, useParams } from 'wouter-preact';
 
 import { IntlProvider } from '../IntlProvider/index.js';
@@ -23,7 +16,7 @@ import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useLocationString } from '../../utils/useLocationString.js';
 
 interface IntlMessagesProviderProps {
-  readonly children: ReactNode;
+  readonly children: ComponentChildren;
 }
 
 interface AppMessageContext {
@@ -57,7 +50,7 @@ const formatters = {
   ),
 } as Formatters;
 
-export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactNode {
+export function AppMessagesProvider({ children }: IntlMessagesProviderProps): VNode {
   const { definition } = useAppDefinition();
   const [, navigate] = useLocation();
   const redirect = useLocationString();

@@ -1,5 +1,5 @@
 import { SSOLoginButton, useToggle } from '@appsemble/preact-components';
-import { type ReactNode } from 'react';
+import { type VNode } from 'preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -19,7 +19,7 @@ export function OpenIDLogin({
   disabled,
   logins,
   showAppsembleOAuth2Login,
-}: OpenIDLoginProps): ReactNode {
+}: OpenIDLoginProps): VNode {
   const qs = useQuery();
   const busy = useToggle();
 
