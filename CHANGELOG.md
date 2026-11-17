@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.41.0](https://gitlab.com/appsemble/appsemble/-/releases/0.41.0)] - 2026-11-17
+
+### Added
+
+- Server: Add organization sign-on, identity management and group-based access.
+- Studio: Add organization single sign-on and linked identity management.
+
+### Removed
+
+- Types: Remove the `Training` and `TrainingChapter` types.
+
+### Fixed
+
+- Types: Grant resource history and webhook invocation to the matching organization roles.
+
 ## \[[0.40.17](https://gitlab.com/appsemble/appsemble/-/releases/0.40.17)] - 2026-11-16
 
 ### Added

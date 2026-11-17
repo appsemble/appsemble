@@ -55,7 +55,7 @@
     }
   },
   "devDependencies": {
-    "@appsemble/eslint-config": "0.40.17",
+    "@appsemble/eslint-config": "0.41.0",
     "@vitest/coverage-v8": "4.1.12",
     "@vitest/ui": "4.1.12",
     "cspell": "10.4.1",

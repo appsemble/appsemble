@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.40.17
-appVersion: 0.40.17
+version: 0.41.0
+appVersion: 0.41.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,20 +33,15 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Server: Trust a private certificate authority with the
-        trustedCaBundle Helm value."
-    - kind: changed
-      description: "Server: Run PgBouncer from the CloudNativePG image, which resolves
-        hosts without DNS failures."
+      description: "Server: Add organization sign-on, identity management and
+        group-based access."
+    - kind: added
+      description: "Studio: Add organization single sign-on and linked identity management."
+    - kind: removed
+      description: "Types: Remove the Training and TrainingChapter types."
     - kind: fixed
-      description: "Server: Do not fail sending an email when copying it to the IMAP
-        sent folder fails."
-    - kind: fixed
-      description: "Server: Respect false in IMAP_COPY_TO_SENT_FOLDER, IMAP_SECURE and
-        SMTP_SECURE."
-    - kind: security
-      description: "Server: Leave email bodies and SMTP traffic out of verbose logs
-        when SMTP is configured."
+      description: "Types: Grant resource history and webhook invocation to the
+        matching organization roles."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
