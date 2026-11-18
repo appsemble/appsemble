@@ -71,8 +71,7 @@ export async function getMessagesUtil(
   const messages: AppsembleMessages = {
     core: Object.fromEntries(
       Object.entries(coreMessages).filter(
-        ([key]) =>
-          key.startsWith('app') || key.startsWith('react-components') || key.startsWith('server'),
+        ([key]) => key.startsWith('app') || key.startsWith('server'),
       ),
     ),
     blocks: {},
