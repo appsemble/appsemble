@@ -12,7 +12,7 @@ vi.hoisted(() => {
   window.settings = { enableRegistration: true, logins: [], sentryDsn: '', sentryEnvironment: '' };
 });
 vi.mock('../../../../components/UserProvider/index.js', () => ({
-  useUser: () => ({ organizations: [{ id: 'org', role: 'Owner' }], userInfo: {} }),
+  useUser: () => ({ organizations: [{ id: 'org', roles: ['Owner'] }], userInfo: {} }),
 }));
 
 const transport = axios.defaults.adapter;
