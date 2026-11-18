@@ -286,6 +286,9 @@ describe('request action SSRF protection', () => {
       await request.get('/api/apps/1/actions/pages.0.blocks.0.actions.listedHttps?data={}');
 
       expect(connections).toBe(1);
+      // The target speaks plain HTTP, so a TLS client reaches it without sending a request it
+      // can parse.
+      expect(targetRequests).toBe(0);
     });
 
     it.each(['other.example', 'api.internal.example'])(
