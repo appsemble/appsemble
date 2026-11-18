@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Appsemble VS Code Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "preLaunchTask": "prepare extension host",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"]
+    }
+  ]
+}
