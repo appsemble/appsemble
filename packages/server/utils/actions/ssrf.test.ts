@@ -242,6 +242,91 @@ describe('request action SSRF protection', () => {
       expect(targetRequests).toBe(0);
     });
 
+    it('should allow a listed host name that resolves to a private IP', async () => {
+      const port = await listen(target, '127.0.0.1');
+      resolveToLoopback('internal.example');
+      vi.stubEnv('SSRF_ALLOW_IP_ADDRESS_LIST', '10.0.0.0/8,Internal.Example');
+      await createAppWithAction('listedHostname', `http://internal.example:${port}/`);
+
+      const response = await request.get(
+        '/api/apps/1/actions/pages.0.blocks.0.actions.listedHostname?data={}',
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.data).toBe('internal');
+    });
+
+    it.each(['127.0.0.1', '127.0.0.0/8'])(
+      'should allow a host name that resolves to an address in listed entry %s',
+      async (entry) => {
+        const port = await listen(target, '127.0.0.1');
+        resolveToLoopback('internal.example');
+        vi.stubEnv('SSRF_ALLOW_IP_ADDRESS_LIST', entry);
+        await createAppWithAction('listedAddress', `http://internal.example:${port}/`);
+
+        const response = await request.get(
+          '/api/apps/1/actions/pages.0.blocks.0.actions.listedAddress?data={}',
+        );
+
+        expect(response.status).toBe(200);
+        expect(targetRequests).toBe(1);
+      },
+    );
+
+    it('should connect to a listed host name over HTTPS', async () => {
+      let connections = 0;
+      target.on('connection', () => {
+        connections += 1;
+      });
+      const port = await listen(target, '127.0.0.1');
+      resolveToLoopback('internal.example');
+      vi.stubEnv('SSRF_ALLOW_IP_ADDRESS_LIST', 'internal.example');
+      await createAppWithAction('listedHttps', `https://internal.example:${port}/`);
+
+      await request.get('/api/apps/1/actions/pages.0.blocks.0.actions.listedHttps?data={}');
+
+      expect(connections).toBe(1);
+    });
+
+    it.each(['other.example', 'api.internal.example'])(
+      'should block unlisted host name %s that resolves to a private IP',
+      async (hostname) => {
+        const port = await listen(target, '127.0.0.1');
+        resolveToLoopback(hostname);
+        vi.stubEnv('SSRF_ALLOW_IP_ADDRESS_LIST', 'internal.example');
+        await createAppWithAction('unlistedHostname', `http://${hostname}:${port}/`);
+
+        const response = await request.get(
+          '/api/apps/1/actions/pages.0.blocks.0.actions.unlistedHostname?data={}',
+        );
+
+        expect(response.status).toBe(403);
+        expect(targetRequests).toBe(0);
+      },
+    );
+
+    it('should block a redirect from a listed host name to a private IP', async () => {
+      const port = await listen(target, '127.0.0.1');
+      const redirect = createHttpServer((req, res) => {
+        res.writeHead(302, { location: `http://127.0.0.1:${port}/` });
+        res.end();
+      });
+      onTestFinished(() => {
+        redirect.close();
+      });
+      const redirectPort = await listen(redirect, '127.0.0.1');
+      resolveToLoopback('internal.example');
+      vi.stubEnv('SSRF_ALLOW_IP_ADDRESS_LIST', 'internal.example');
+      await createAppWithAction('listedRedirect', `http://internal.example:${redirectPort}/`);
+
+      const response = await request.get(
+        '/api/apps/1/actions/pages.0.blocks.0.actions.listedRedirect?data={}',
+      );
+
+      expect(response.status).toBe(403);
+      expect(targetRequests).toBe(0);
+    });
+
     it('should block a private IP behind companion container credentials', async () => {
       const port = await listen(target, '127.0.0.1');
       await createAppWithAction(

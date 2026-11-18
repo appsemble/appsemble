@@ -347,19 +347,21 @@ or a cloud metadata endpoint.
 
 An installation needs an exception when its apps call services on the internal network, for example
 an internal API or an OAuth2 or OpenID Connect provider such as Keycloak that runs in the cluster.
-List the addresses those hosts resolve to in `ssrfAllowIpAddressList`:
+List those hosts in `ssrfAllowIpAddressList`:
 
 ```yaml
 ssrfAllowIpAddressList:
-  - 10.43.12.7 # The internal Keycloak service
+  - keycloak.example.internal # The internal Keycloak service
   - 192.168.10.25 # An internal API that apps call
 ```
 
-Each entry is a single IP address or a CIDR range. Host names are not accepted, because the check
-applies to the address a host name resolves to. The chart joins the entries with commas into the
-`SSRF_ALLOW_IP_ADDRESS_LIST` environment variable of the server deployment and of the `run-cronjobs`
-cron job, which runs app cron jobs. The variable is not set when the list is empty, which is the
-default.
+Each entry is a single IP address, a CIDR range or a host name. A host name matches the host of the
+URL exactly, ignoring case, so `keycloak.example.internal` does not allow `api.example.internal`.
+The server connects to a listed host name whatever private address it resolves to. Each redirect is
+checked against its own host, so a listed host cannot redirect a request to a private address that
+is not listed. The chart joins the entries with commas into the `SSRF_ALLOW_IP_ADDRESS_LIST`
+environment variable of the server deployment and of the `run-cronjobs` cron job, which runs app
+cron jobs. The variable is not set when the list is empty, which is the default.
 
 Allow only the specific hosts an app needs. Allowing a whole private range such as `10.0.0.0/8`
 opens every service in that range to every app developer on the installation.
@@ -736,7 +738,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `remote`                                    | `null`                         | A remote Appsemble server to connect to in order to synchronize blocks.                                                                   |
 | `securityEmail`                             | `security@appsemble.com`       | The default security contact email for reporting security vulnerabilities.                                                                |
 | `rejectBreachedPasswords`                   | `false`                        | If `true`, reject new passwords that appear in the Have I Been Pwned Pwned Passwords data set.                                            |
-| `ssrfAllowIpAddressList`                    | `[]`                           | Private IPs or CIDRs apps may connect to. See [Connections to private addresses](#connections-to-private-addresses).                      |
+| `ssrfAllowIpAddressList`                    | `[]`                           | Private IPs, CIDRs or host names apps may connect to. See [Connections to private addresses](#connections-to-private-addresses).          |
 | `trustedCaBundle.configMap`                 | `''`                           | A ConfigMap with PEM certificates to trust. See [Private certificate authorities](#private-certificate-authorities).                      |
 | `trustedCaBundle.key`                       | `ca-bundle.crt`                | The key in `trustedCaBundle.configMap` which holds the certificates.                                                                      |
 | `disableRegistration`                       | `false`                        | If `true`, disable registration with email and password. Without a Studio login provider (`oauthSecret`) nobody new can get an account.   |
