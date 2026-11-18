@@ -176,7 +176,9 @@ export interface Button extends BaseField {
 export interface Dropdown extends BaseField {
   dropdown: {
     /**
-     * The text to show in the dropdown button.
+     * The accessible name of the dropdown button.
+     *
+     * It is shown as the button text only when the dropdown has no icon.
      */
     label?: Remapper;
 
