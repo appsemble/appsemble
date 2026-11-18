@@ -1,8 +1,10 @@
 import { noop } from '@appsemble/utils';
+import { type MessageDescriptor } from '@formatjs/intl';
 import { type ComponentChildren, createContext, type VNode } from 'preact';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { type MessageDescriptor, useIntl } from 'react-intl';
-import { Routes, useLocation } from 'react-router-dom';
+import { Switch, useLocation } from 'wouter-preact';
+
+import { useIntl } from '../IntlProvider/index.js';
 
 type Text = MessageDescriptor | string;
 
@@ -120,7 +122,7 @@ export function useMeta(title: Text, description?: Text): void {
   const [depth, setMeta] = useContext(MetaContext);
   const { formatMessage } = useIntl();
 
-  const { pathname } = useLocation();
+  const [pathname] = useLocation();
   // Don't count empty string-, language- and first page segments
   const segmentCount = pathname.split('/').length - 3;
   // Slice locale e.g. `/en/`, to resolve link without a trailing `/`.
@@ -171,7 +173,7 @@ export function MetaSwitch({ children, description, title }: MetaSwitchProps): V
 
   return (
     <MetaContext.Provider value={useMemo(() => [depth + 1, setMeta], [depth, setMeta])}>
-      <Routes>{children}</Routes>
+      <Switch>{children}</Switch>
     </MetaContext.Provider>
   );
 }

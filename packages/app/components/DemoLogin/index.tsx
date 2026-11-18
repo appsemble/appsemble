@@ -10,8 +10,8 @@ import {
   useToggle,
 } from '@appsemble/preact-components';
 import { type AppMemberInfo } from '@appsemble/types';
-import { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { type VNode } from 'preact';
+import { useCallback, useMemo, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -19,13 +19,14 @@ import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { ModalCard } from '../ModalCard/index.js';
 
 interface DemoLoginProps {
   readonly modal?: Toggle;
 }
 
-export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
+export function DemoLogin({ modal }: DemoLoginProps): VNode {
   const { demoLogin } = useAppMember();
   const { definition: appDefinition } = useAppDefinition();
   const { getAppMessage } = useAppMessages();

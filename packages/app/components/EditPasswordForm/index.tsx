@@ -7,10 +7,10 @@ import {
 } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
 import { useCallback, useState } from 'preact/hooks';
-import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import { BreachedPasswordSimpleFormError } from '../BreachedPasswordSimpleFormError/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { PasswordField } from '../PasswordField/index.js';
 import { PasswordStrengthIndicator } from '../PasswordStrengthIndicator/index.js';
 

@@ -1,8 +1,8 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render, screen } from '@testing-library/react';
-import { type ReactNode, useEffect } from 'react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { render, screen } from '@testing-library/preact';
+import { type ComponentChildren, type VNode } from 'preact';
+import { useEffect } from 'preact/hooks';
+import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MenuProvider, usePage } from './index.js';
@@ -10,6 +10,7 @@ import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 vi.mock('../SideMenu/index.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../SideMenu/index.js')>();
@@ -21,8 +22,8 @@ vi.mock('../SideMenu/index.js', async (importOriginal) => {
       base,
       children,
     }: {
-      readonly base: ReactNode;
-      readonly children: ReactNode;
+      readonly base: ComponentChildren;
+      readonly children: ComponentChildren;
     }) => (
       <>
         <aside>{base}</aside>
@@ -42,7 +43,7 @@ const appDefinition = {
   ],
 } as unknown as AppDefinition;
 
-function SetPage({ navigation }: { readonly navigation?: string }): ReactNode {
+function SetPage({ navigation }: { readonly navigation?: string }): VNode {
   const { setPage } = usePage();
   useEffect(() => {
     setPage({ name: 'Edit Profile', navigation, blocks: [] } as never);
@@ -55,7 +56,7 @@ function SetPage({ navigation }: { readonly navigation?: string }): ReactNode {
 
 function renderMenu(
   definition = appDefinition,
-  child: ReactNode = <main>Page content</main>,
+  child: ComponentChildren = <main>Page content</main>,
 ): void {
   vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
     definition,
@@ -80,13 +81,12 @@ function renderMenu(
     getVariable: vi.fn(),
   } as never);
 
+  window.history.replaceState(null, '', '/en/Home');
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/Home']}>
-        <Routes>
-          <Route element={<MenuProvider>{child}</MenuProvider>} path="/:lang/*" />
-        </Routes>
-      </MemoryRouter>
+      <Route path="/:lang/*?">
+        <MenuProvider>{child}</MenuProvider>
+      </Route>
     </IntlProvider>,
   );
 }

@@ -1,11 +1,11 @@
 import { IconProvider } from '@appsemble/preact-components';
-import { type ReactNode } from 'react';
+import { type ComponentChildren, type VNode } from 'preact';
 
 import { apiUrl, appId, iconAssetIds, passwordToken } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 interface AppIconProviderProps {
-  readonly children: ReactNode;
+  readonly children: ComponentChildren;
 }
 
 /**
@@ -13,7 +13,7 @@ interface AppIconProviderProps {
  *
  * The registry follows the current app definition, so editor previews pick up edited mappings.
  */
-export function AppIconProvider({ children }: AppIconProviderProps): ReactNode {
+export function AppIconProvider({ children }: AppIconProviderProps): VNode {
   const { definition } = useAppDefinition();
 
   return (

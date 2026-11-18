@@ -19,8 +19,8 @@ import {
   type ResourceSubscribableAction,
   type UserInfo,
 } from '@appsemble/types';
-import { type Dispatch } from 'react';
-import { type NavigateFunction, type Params } from 'react-router-dom';
+import { type Dispatch } from 'preact/hooks';
+import { type navigate } from 'wouter-preact/use-browser-location';
 import { type JsonValue } from 'type-fest';
 
 import { type ActionCreators } from './utils/actions/index.js';
@@ -147,9 +147,9 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   definition: D;
   extraCreators?: ActionCreators;
   flowActions?: FlowActions;
-  navigate?: NavigateFunction;
+  navigate?: typeof navigate;
   pageReady: Promise<void>;
-  params: Readonly<Params<string>>;
+  params: Readonly<Record<string, string | undefined>>;
   showShareDialog?: ShowShareDialog;
   showDialog?: ShowDialogAction;
   prefix: string;

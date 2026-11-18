@@ -1,15 +1,15 @@
 import { NavbarDropdown } from '@appsemble/preact-components';
 import { type AppMemberGroup } from '@appsemble/types';
-import { type ReactNode } from 'react';
-import { useIntl } from 'react-intl';
+import { type VNode } from 'preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
 import { NavbarItem } from '../NavbarItem/index.js';
 import { appId } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 
-export function GroupDropdown(): ReactNode {
+export function GroupDropdown(): VNode {
   const { formatMessage } = useIntl();
   const { appMemberGroups, appMemberSelectedGroup, setAppMemberSelectedGroup } = useAppMember();
 

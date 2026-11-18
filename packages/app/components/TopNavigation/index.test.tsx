@@ -1,7 +1,6 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { fireEvent, render, screen, within } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { fireEvent, render, screen, within } from '@testing-library/preact';
+import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TopNavigation } from './index.js';
@@ -10,6 +9,7 @@ import { AppIconProvider } from '../AppIconProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
 
 const appDefinition = {
@@ -75,14 +75,13 @@ function renderNav(definition = appDefinition, isLoggedIn = true): void {
     update: vi.fn(),
   } as never);
 
+  window.history.replaceState(null, '', '/en/Home');
   render(
     <IntlProvider locale="en" messages={{}}>
       <AppIconProvider>
-        <MemoryRouter initialEntries={['/en/Home']}>
-          <Routes>
-            <Route element={<TopNavigation />} path="/:lang/*" />
-          </Routes>
-        </MemoryRouter>
+        <Route path="/:lang/*?">
+          <TopNavigation />
+        </Route>
       </AppIconProvider>
     </IntlProvider>,
   );

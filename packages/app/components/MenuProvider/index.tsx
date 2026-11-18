@@ -7,20 +7,19 @@ import {
 } from '@appsemble/lang-sdk';
 import { type MenuItem } from '@appsemble/sdk';
 import { noop } from '@appsemble/utils';
+import { type ComponentChildren, createContext, type VNode } from 'preact';
 import {
-  createContext,
   type Dispatch,
-  type ReactNode,
-  type SetStateAction,
+  type StateUpdater,
   useCallback,
   useContext,
   useMemo,
   useState,
-} from 'react';
-import { FormattedMessage } from 'react-intl';
-import { useLocation } from 'react-router-dom';
+} from 'preact/hooks';
+import { useLocation } from 'wouter-preact';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { SideMenuProvider } from '../SideMenu/index.js';
 import { getNavPages, shouldShowMenu } from '../../utils/layout.js';
 import { apiUrl, appId } from '../../utils/settings.js';
@@ -37,7 +36,7 @@ export interface BlockMenuItem {
 }
 
 interface MenuProviderProps {
-  readonly children: ReactNode;
+  readonly children: ComponentChildren;
 }
 
 interface MenuProviderContext {
@@ -47,7 +46,7 @@ interface MenuProviderContext {
    * A definition page sets it while it is rendered, so it is undefined on built-in pages.
    */
   page?: PageDefinition;
-  setPage: Dispatch<SetStateAction<PageDefinition | undefined>>;
+  setPage: Dispatch<StateUpdater<PageDefinition | undefined>>;
   setBlockMenu: (menu: BlockMenuItem) => void;
 
   /**
@@ -100,13 +99,13 @@ export function usePlacedGridArea(area: string): boolean {
   return placesGridArea(definition, page, area);
 }
 
-export function MenuProvider({ children }: MenuProviderProps): ReactNode {
+export function MenuProvider({ children }: MenuProviderProps): VNode {
   const { definition: appDefinition } = useAppDefinition();
   const { appMemberRoles, appMemberSelectedGroup } = useAppMember();
   const { getAppMessage } = useAppMessages();
   const [currentPage, setCurrentPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
-  const { pathname } = useLocation();
+  const [pathname] = useLocation();
   const setPage = useCallback<MenuProviderContext['setPage']>((p) => {
     setBlockMenus([]);
     setCurrentPage(p);
@@ -149,7 +148,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactNode {
     [currentPage, hasBottomNavigation, setPage],
   );
 
-  let navigationElement: ReactNode;
+  let navigationElement: ComponentChildren;
 
   if (showMenu) {
     switch (effectiveNavigation) {

@@ -11,9 +11,11 @@ import { type BlockUtils } from '@appsemble/sdk';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import { createIconElement, fa, getIconAsset, resolveIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
+import { type VNode } from 'preact';
 import { createPortal } from 'preact/compat';
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useLocation } from 'wouter-preact';
+import { useHistoryState } from 'wouter-preact/use-browser-location';
 import { useMessages } from '../MessagesProvider/index.js';
 import { trackShadowModalDialogs, useIsInModalDialog } from '../ModalCard/useModalDialog.js';
 import { Title } from '../Title/index.js';
@@ -27,6 +29,8 @@ import { injectCSS } from '../../utils/injectCSS.js';
 import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
 import { apiUrl, appId, appUpdated, iconAssetIds, passwordToken } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
+import { useQuery } from '../../utils/useQuery.js';
+import { useRouteParams } from '../../utils/useRouteParams.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -100,16 +104,17 @@ export function Block({
   showDialog,
   showShareDialog,
   signal,
-}: BlockProps): ReactNode {
-  const navigate = useNavigate();
-  const params = useParams();
-  const location = useLocation();
+}: BlockProps): VNode | null {
+  const [, navigate] = useLocation();
+  const params = useRouteParams();
+  const query = useQuery();
+  const historyState = useHistoryState();
   const pageParameters = useMemo(
     () => ({
       ...params,
-      query: Object.fromEntries(new URLSearchParams(location.search)),
+      query: Object.fromEntries(query),
     }),
-    [location.search, params],
+    [query, params],
   );
   const push = useMessages();
   const { blockManifests, definition: appDefinition } = useAppDefinition();
@@ -301,7 +306,7 @@ export function Block({
       await callBootstrap(manifest, {
         actions,
         parameters: block.parameters || {},
-        data: data || location.state,
+        data: data || historyState,
         events,
         pageParameters,
         theme,
@@ -324,9 +329,9 @@ export function Block({
     extraCreators,
     flowActions,
     getBlockMessage,
+    historyState,
     navigate,
     initialized,
-    location,
     manifest,
     pageDefinition,
     pageReady,

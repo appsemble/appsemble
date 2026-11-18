@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/preact';
-import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
 import { Loader } from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 it('should announce that it is loading', () => {
   render(

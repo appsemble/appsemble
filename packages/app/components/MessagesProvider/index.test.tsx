@@ -1,24 +1,21 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
-import { type VNode } from 'preact';
+import { type ComponentChildren, type VNode } from 'preact';
 import { useState } from 'preact/hooks';
-import { describe, expect, it, onTestFinished, vi } from 'vitest';
+import { describe, expect, it, onTestFinished } from 'vitest';
 
 import { MessagesProvider, type Msg, useMessages } from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { ModalCard } from '../ModalCard/index.js';
 import { trackShadowModalDialogs } from '../ModalCard/useModalDialog.js';
 import { IconTestWrapper } from '../../utils/test-utils.js';
 
-vi.mock('react-intl', async () => {
-  const reactIntl = (await vi.importActual('react-intl')) as typeof import('react-intl');
-  const intl = reactIntl.createIntl({
-    locale: 'en',
-  });
-
-  return {
-    ...reactIntl,
-    useIntl: () => intl,
-  };
-});
+function wrapper({ children }: { readonly children: ComponentChildren }): VNode {
+  return (
+    <IntlProvider locale="en" messages={{}}>
+      <IconTestWrapper>{children}</IconTestWrapper>
+    </IntlProvider>
+  );
+}
 
 /**
  * Check whether an element is rendered inside a container, following slots into shadow roots.
@@ -54,7 +51,7 @@ function showMessage(message: Msg | string): Element | null {
     <MessagesProvider>
       <ShowMessageButton message={message} />
     </MessagesProvider>,
-    { wrapper: IconTestWrapper },
+    { wrapper },
   );
   // A polite live region only announces content added after it is rendered.
   const politeRegion = container.querySelector('[aria-live="polite"]');
@@ -76,6 +73,12 @@ it('should announce other messages politely', () => {
   const politeRegion = showMessage({ body: 'Saved', color: 'success' });
   expect(screen.queryByRole('alert')).toBeNull();
   expect(politeRegion?.textContent).toBe('Saved');
+});
+
+it('should remove a dismissed message', async () => {
+  showMessage({ body: 'Saved', color: 'success', dismissable: true });
+  fireEvent.click(screen.getByRole('button', { name: 'Dismiss message' }));
+  await waitFor(() => expect(screen.queryByText('Saved')).toBeNull());
 });
 
 describe('modal dialogs', () => {
@@ -116,7 +119,7 @@ describe('modal dialogs', () => {
   }
 
   it('should show messages inside the open dialog', () => {
-    render(<Page />, { wrapper: IconTestWrapper });
+    render(<Page />, { wrapper });
     const dialog = screen.getByRole('dialog');
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Show' }));
@@ -125,7 +128,7 @@ describe('modal dialogs', () => {
   });
 
   it('should announce messages in the open dialog', () => {
-    render(<Page />, { wrapper: IconTestWrapper });
+    render(<Page />, { wrapper });
     const dialog = screen.getByRole('dialog');
     // A polite live region only announces content added after it is rendered.
     const politeRegion = dialog.querySelector('[aria-live="polite"]');
@@ -140,7 +143,7 @@ describe('modal dialogs', () => {
       <MessagesProvider>
         <DeletePage />
       </MessagesProvider>,
-      { wrapper: IconTestWrapper },
+      { wrapper },
     );
     const dialog = screen.getByRole('dialog');
     const pageRegion = [...container.querySelectorAll('[aria-live="polite"]')].find(
@@ -157,7 +160,7 @@ describe('modal dialogs', () => {
       <MessagesProvider>
         <DeletePage />
       </MessagesProvider>,
-      { wrapper: IconTestWrapper },
+      { wrapper },
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
@@ -173,7 +176,7 @@ describe('modal dialogs', () => {
           <ShowMessageButton message="Saving failed" />
         </ModalCard>
       </MessagesProvider>,
-      { wrapper: IconTestWrapper },
+      { wrapper },
     );
     const dialog = screen.getByRole('dialog') as HTMLDialogElement;
     // A polite live region only announces content added after it is rendered.
@@ -189,7 +192,7 @@ describe('modal dialogs', () => {
   });
 
   it('should show messages on the page after the dialog is closed', async () => {
-    render(<Page />, { wrapper: IconTestWrapper });
+    render(<Page />, { wrapper });
     fireEvent.click(screen.getByRole('button', { name: 'Close' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
 
@@ -203,7 +206,7 @@ describe('modal dialogs', () => {
     mediaQuery.textContent = '.is-hidden-desktop { display: none !important; }';
     document.head.append(mediaQuery);
     onTestFinished(() => mediaQuery.remove());
-    render(<Page hiddenDialog />, { wrapper: IconTestWrapper });
+    render(<Page hiddenDialog />, { wrapper });
     const dialog = screen.getByRole('dialog', { hidden: true });
 
     fireEvent.click(within(dialog).getByRole('button', { hidden: true, name: 'Show' }));
@@ -234,7 +237,7 @@ describe('modal dialogs', () => {
       <MessagesProvider>
         <DialogPage />
       </MessagesProvider>,
-      { wrapper: IconTestWrapper },
+      { wrapper },
     );
     fireEvent.click(screen.getByRole('button', { name: 'Show' }));
     // Wait for the message to fade in.
@@ -254,7 +257,7 @@ describe('modal dialogs', () => {
   });
 
   it('should announce a message assertively if the dialog closes while it fades in', async () => {
-    render(<Page />, { wrapper: IconTestWrapper });
+    render(<Page />, { wrapper });
     const dialog = screen.getByRole('dialog');
     fireEvent.click(within(dialog).getByRole('button', { name: 'Show' }));
 
@@ -273,7 +276,7 @@ describe('modal dialogs', () => {
     onTestFinished(() => {
       Object.assign(HTMLElement.prototype, { hidePopover, showPopover });
     });
-    render(<Page />, { wrapper: IconTestWrapper });
+    render(<Page />, { wrapper });
 
     fireEvent.click(screen.getByRole('button', { name: 'Close' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
@@ -293,7 +296,7 @@ describe('modal dialogs in a shadow root', () => {
       <MessagesProvider>
         <ShowMessageButton message="Saving failed" />
       </MessagesProvider>,
-      { wrapper: IconTestWrapper },
+      { wrapper },
     );
     const host = document.createElement('div');
     container.append(host);

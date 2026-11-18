@@ -9,16 +9,9 @@ import {
   type TabsPageDefinition,
 } from '@appsemble/lang-sdk';
 import { Tab, Tabs } from '@appsemble/preact-components';
-import {
-  type ComponentPropsWithoutRef,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { type ComponentProps, type VNode } from 'preact';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { Redirect, Route, useLocation, useParams } from 'wouter-preact';
 
 import { TabContent } from './TabContent/index.js';
 import { MetaSwitch } from '../Meta/index.js';
@@ -32,7 +25,7 @@ import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { type BlockList } from '../BlockList/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
 
-interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
+interface TabsPageProps extends Omit<ComponentProps<typeof BlockList>, 'blocks'> {
   readonly pageDefinition: TabsPageDefinition;
 }
 
@@ -46,7 +39,7 @@ export function TabsPage({
   showDialog,
   showShareDialog,
   ...blockListProps
-}: TabsPageProps): ReactNode {
+}: TabsPageProps): VNode | null {
   const { definition: appDefinition, pageManifests } = useAppDefinition();
   const {
     '*': wildcard,
@@ -56,8 +49,7 @@ export function TabsPage({
 
   const { getAppMessage, getMessage } = useAppMessages();
   const [data, setData] = useState<unknown>({});
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
+  const [pathname, navigate] = useLocation();
   const { appMemberInfo, appMemberRoles, appMemberSelectedGroup } = useAppMember();
   const [tabsWithPermissions, setTabsWithPermissions] = useState<SubPageDefinition[]>([]);
   const [defaultTab, setDefaultTab] = useState<{ id: string; name: string } | null>(null);
@@ -254,47 +246,45 @@ export function TabsPage({
 
             return (
               <Route
-                element={
-                  checkSubPagePermissions({ blocks, name, roles }) ? (
-                    <TabContent
-                      key={`${prefix}.tabs.${normalize(defaultMessage)}`}
-                      {...blockListProps}
-                      appStorage={appStorage}
-                      blocks={blocks}
-                      data={pageDefinition.definition ? data : blockListProps.data}
-                      ee={ee}
-                      name={translatedName}
-                      pageDefinition={pageDefinition}
-                      pageLayout={layout}
-                      prefix={`${prefix}.tabs.${index}.blocks`}
-                      prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
-                      remap={remap}
-                      showDialog={showDialog}
-                      showShareDialog={showShareDialog}
-                    />
-                  ) : null
-                }
                 key={defaultMessage}
-                path={`/${normalize(translatedName)}${(pageDefinition.parameters || []).map((param) => `/:${param}`).join('')}`}
-              />
+                path={`/:lang/:pageId/${normalize(translatedName)}${(pageDefinition.parameters || []).map((param) => `/:${param}`).join('')}`}
+              >
+                {checkSubPagePermissions({ blocks, name, roles }) ? (
+                  <TabContent
+                    key={`${prefix}.tabs.${normalize(defaultMessage)}`}
+                    {...blockListProps}
+                    appStorage={appStorage}
+                    blocks={blocks}
+                    data={pageDefinition.definition ? data : blockListProps.data}
+                    ee={ee}
+                    name={translatedName}
+                    pageDefinition={pageDefinition}
+                    pageLayout={layout}
+                    prefix={`${prefix}.tabs.${index}.blocks`}
+                    prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
+                    remap={remap}
+                    showDialog={showDialog}
+                    showShareDialog={showShareDialog}
+                  />
+                ) : null}
+              </Route>
             );
           })}
 
-          <Route
-            element={
-              <Navigate
-                to={`/${lang}/${pageId}/${normalize(
-                  getAppMessage({
-                    id: `${prefix}.tabs.${defaultTab?.id}`,
-                    defaultMessage: defaultTab?.name,
-                  }).format() as string,
-                )}`}
-              />
-            }
-            path="/*"
-          />
+          <Route path="/:lang/:pageId/*?">
+            <Redirect
+              to={`/${lang}/${pageId}/${normalize(
+                getAppMessage({
+                  id: `${prefix}.tabs.${defaultTab?.id}`,
+                  defaultMessage: defaultTab?.name,
+                }).format() as string,
+              )}`}
+            />
+          </Route>
         </MetaSwitch>
       </>
     );
   }
+
+  return null;
 }

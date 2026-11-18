@@ -6,13 +6,14 @@ import {
   remap,
 } from '@appsemble/lang-sdk';
 import { Button, MenuButton, MenuSection } from '@appsemble/preact-components';
-import { Fragment, type ReactNode, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
+import { Fragment, type VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
+import { useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { CollapsibleMenuSection } from '../CollapsibleMenuSection/index.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { MenuItem } from '../MenuItem/index.js';
 import { shouldShowPage } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
@@ -32,7 +33,7 @@ interface SideNavigationProps {
 /**
  * The app navigation that is displayed in the side menu.
  */
-export function SideNavigation({ blockMenus, pages }: SideNavigationProps): ReactNode {
+export function SideNavigation({ blockMenus, pages }: SideNavigationProps): VNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
 
@@ -81,7 +82,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
   );
 
   const renderMenu = useCallback(
-    (internalPages: PageDefinition[]): ReactNode =>
+    (internalPages: PageDefinition[]): VNode[] =>
       internalPages
         .filter((page) => shouldShowPageCallback(page))
         .map((page) => {

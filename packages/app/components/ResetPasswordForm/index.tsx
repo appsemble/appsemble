@@ -9,9 +9,9 @@ import {
 import { emailPattern } from '@appsemble/utils';
 import { type VNode } from 'preact';
 import { useCallback, useState } from 'preact/hooks';
-import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 
 export interface ResetPasswordValues {
   email: string;

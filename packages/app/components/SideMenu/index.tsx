@@ -11,11 +11,11 @@ import {
   useMemo,
   useState,
 } from 'preact/hooks';
-import { useIntl } from 'react-intl';
-import { useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
+import { useLocationString } from '../../utils/useLocationString.js';
 
 interface SideMenuContext {
   disable: () => void;
@@ -62,7 +62,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
   const [menu, setMenu] = useState<ComponentChildren>(null);
   const [isClosableOnDesktop, setIsClosableOnDesktop] = useState(false);
 
-  const location = useLocation();
+  const location = useLocationString();
   useEffect(() => {
     if (window?.innerWidth < 1024) {
       disable();

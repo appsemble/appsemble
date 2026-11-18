@@ -1,14 +1,15 @@
 import { Option, SelectField } from '@appsemble/preact-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
-import { type ReactNode, useCallback, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useNavigate, useParams } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
+import { useLocation, useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
+import { FormattedMessage, useIntl } from '../../IntlProvider/index.js';
 import { languages, supportedLanguages } from '../../../utils/settings.js';
 
-export function LanguagePreference(): ReactNode {
-  const navigate = useNavigate();
+export function LanguagePreference(): VNode {
+  const [, navigate] = useLocation();
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}/Settings`;
 
@@ -19,7 +20,6 @@ export function LanguagePreference(): ReactNode {
 
   const onLanguageChange = useCallback(
     (event: unknown, language: string) => {
-      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       navigate(url.replace(preferredLanguage, language), { replace: true });
       setPreferredLanguage(language);
       localStorage.setItem('preferredLanguage', language);

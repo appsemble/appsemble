@@ -1,13 +1,13 @@
-import { type ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { type VNode } from 'preact';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { SentryForm } from '../SentryForm/index.js';
 import { sentryDsn } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
 
-export function SentryFeedback(): ReactNode {
+export function SentryFeedback(): VNode {
   const { appMemberInfo } = useAppMember();
 
   return (

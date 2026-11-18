@@ -1,9 +1,9 @@
 import { IconButton, InputField, useCombinedRefs } from '@appsemble/preact-components';
 import { type ComponentPropsWithoutRef, forwardRef } from 'preact/compat';
 import { useCallback, useRef, useState } from 'preact/hooks';
-import { useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
 
 type PasswordFieldProps = Omit<
   ComponentPropsWithoutRef<typeof InputField>,

@@ -4,13 +4,13 @@ import { type AppDefinition, type BlockDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
 import { noop } from '@appsemble/utils';
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
-import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
+import { Link, Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ErrorHandler } from '../ErrorHandler/index.js';
 
 import { Block } from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { ErrorFallback } from '../ErrorFallback/index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
@@ -121,35 +121,31 @@ describe('block load failure', () => {
           { name: block.type, version: block.version, files: ['load-recovery.js'] },
         ] as BlockManifest[],
       });
+      window.history.replaceState(null, '', '/page');
       render(
         <IntlProvider locale="en">
-          <MemoryRouter initialEntries={['/page']}>
-            <ErrorHandler fallback={ErrorFallback}>
-              <Routes>
-                <Route element={<Link to="/page">Open page</Link>} path="/" />
-                <Route
-                  element={
-                    <Block
-                      appStorage={{} as AppStorage}
-                      block={block}
-                      // eslint-disable-next-line unicorn/prefer-event-target
-                      ee={new EventEmitter()}
-                      flowActions={{}}
-                      pageDefinition={pageDefinition}
-                      pageReady={Promise.resolve()}
-                      prefix="pages.home.blocks.0"
-                      prefixIndex="pages.0.blocks.0"
-                      ready={noop}
-                      remap={noop}
-                      showDialog={() => noop}
-                      showShareDialog={() => Promise.resolve()}
-                    />
-                  }
-                  path="/page"
-                />
-              </Routes>
-            </ErrorHandler>
-          </MemoryRouter>
+          <ErrorHandler fallback={ErrorFallback}>
+            <Route path="/">
+              <Link to="/page">Open page</Link>
+            </Route>
+            <Route path="/page">
+              <Block
+                appStorage={{} as AppStorage}
+                block={block}
+                // eslint-disable-next-line unicorn/prefer-event-target
+                ee={new EventEmitter()}
+                flowActions={{}}
+                pageDefinition={pageDefinition}
+                pageReady={Promise.resolve()}
+                prefix="pages.home.blocks.0"
+                prefixIndex="pages.0.blocks.0"
+                ready={noop}
+                remap={noop}
+                showDialog={() => noop}
+                showShareDialog={() => Promise.resolve()}
+              />
+            </Route>
+          </ErrorHandler>
         </IntlProvider>,
         { wrapper: IconTestWrapper },
       );

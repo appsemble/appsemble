@@ -2,10 +2,10 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/preact';
 import { userEvent } from '@testing-library/user-event';
 import { type ComponentChildren, type VNode } from 'preact';
 import { useState } from 'preact/hooks';
-import { IntlProvider } from 'react-intl';
 import { describe, expect, it, vi } from 'vitest';
 
 import { ModalCard } from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 function wrapper({ children }: { readonly children: ComponentChildren }): VNode {
   return <IntlProvider locale="en">{children}</IntlProvider>;

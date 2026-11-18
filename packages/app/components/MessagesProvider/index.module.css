@@ -8,20 +8,17 @@
   padding: 0;
 }
 
-.messageEnter {
-  opacity: 0;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
 }
 
-.messageEnterActive {
-  opacity: 1;
-  transition: opacity 300ms ease-in;
+.messageEnter {
+  animation: fade-in 300ms ease-in;
 }
 
 .messageExit {
-  opacity: 1;
-}
-
-.messageExitActive {
   opacity: 0;
   transition: opacity 300ms ease-in;
 }

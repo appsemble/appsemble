@@ -1,9 +1,9 @@
 import { SimpleFormError } from '@appsemble/preact-components';
 import axios from 'axios';
 import { type ComponentType, type VNode } from 'preact';
-import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 
 interface BreachedPasswordSimpleFormErrorProps {
   readonly children: ComponentType<{ error: Error }>;

@@ -1,11 +1,11 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render, screen } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
+import { render, screen } from '@testing-library/preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ProfileSettings } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { IconTestWrapper } from '../../utils/test-utils.js';
 
 const appMemberInfo = {
@@ -26,12 +26,6 @@ const appDefinition: AppDefinition = {
   defaultPage: 'Test Page',
   pages: [],
 };
-
-const navigate = vi.fn();
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useNavigate: () => navigate,
-}));
 
 beforeEach(() => {
   vi.clearAllMocks();

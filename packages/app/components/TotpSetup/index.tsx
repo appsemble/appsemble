@@ -8,11 +8,12 @@ import {
   SimpleSubmit,
 } from '@appsemble/preact-components';
 import axios from 'axios';
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { type VNode } from 'preact';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { messages } from './messages.js';
 import { FormOutput } from '../FormOutput/index.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { useMessages } from '../MessagesProvider/index.js';
 import { QRCode } from '../QRCode/index.js';
 import { Title } from '../Title/index.js';
@@ -56,7 +57,7 @@ export function TotpSetup({
   onCancel,
   onComplete,
   totpToken,
-}: TotpSetupProps): ReactNode {
+}: TotpSetupProps): VNode {
   const { formatMessage } = useIntl();
   const { appMemberInfo, setAppMemberInfo } = useAppMember();
   const push = useMessages();

@@ -1,8 +1,7 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { type ComponentProps } from 'react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
+import { type ComponentProps } from 'preact';
+import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppBar } from './index.js';
@@ -11,6 +10,7 @@ import { AppIconProvider } from '../AppIconProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import * as menuProvider from '../MenuProvider/index.js';
 import { SideMenuProvider } from '../SideMenu/index.js';
 
@@ -64,16 +64,15 @@ afterEach(() => {
 });
 
 function renderAppBar(props: ComponentProps<typeof AppBar> = {}): void {
+  window.history.replaceState(null, '', '/en/Home');
   render(
     <IntlProvider locale="en" messages={{}}>
       <AppIconProvider>
-        <MemoryRouter initialEntries={['/en/Home']}>
-          <SideMenuProvider base={null} bottom={null}>
-            <Routes>
-              <Route element={<AppBar {...props} />} path="/:lang/*" />
-            </Routes>
-          </SideMenuProvider>
-        </MemoryRouter>
+        <SideMenuProvider base={null} bottom={null}>
+          <Route path="/:lang/*?">
+            <AppBar {...props} />
+          </Route>
+        </SideMenuProvider>
       </AppIconProvider>
     </IntlProvider>,
   );
@@ -185,13 +184,12 @@ describe('AppBar top navigation', () => {
       blockManifests: [],
     } as never);
 
+    window.history.replaceState(null, '', '/en/edit-profile');
     render(
       <IntlProvider locale="en" messages={{}}>
-        <MemoryRouter initialEntries={['/en/edit-profile']}>
-          <Routes>
-            <Route element={<AppBar />} path="/:lang/*" />
-          </Routes>
-        </MemoryRouter>
+        <Route path="/:lang/*?">
+          <AppBar />
+        </Route>
       </IntlProvider>,
     );
 
