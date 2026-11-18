@@ -70,7 +70,7 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   assertKoaCondition(
     !isSecretIncomplete(secret.clientSecret),
     ctx,
-    409,
+    503,
     'OAuth2 secret is incomplete',
   );
   const {

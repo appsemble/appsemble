@@ -1282,9 +1282,9 @@ describe('applyAppServiceSecrets', () => {
     const response = await request.get('/api/apps/1/actions/pages.0.blocks.0.actions.get?data={}');
 
     expect(response.data).toStrictEqual({
-      error: 'Conflict',
+      error: 'Service Unavailable',
       message: 'Service secret "Orders API" is incomplete',
-      statusCode: 409,
+      statusCode: 503,
     });
   });
 
@@ -1317,9 +1317,9 @@ describe('applyAppServiceSecrets', () => {
     const response = await request.get('/api/apps/1/actions/pages.0.blocks.0.actions.get?data={}');
 
     expect(response.data).toStrictEqual({
-      error: 'Conflict',
+      error: 'Service Unavailable',
       message: 'Service secret "Token endpoint certificate" is incomplete',
-      statusCode: 409,
+      statusCode: 503,
     });
   });
 

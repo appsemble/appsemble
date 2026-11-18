@@ -191,9 +191,9 @@ describe('verifyAppOAuth2SecretCode', () => {
     );
 
     expect(response.data).toStrictEqual({
-      error: 'Conflict',
+      error: 'Service Unavailable',
       message: 'OAuth2 secret is incomplete',
-      statusCode: 409,
+      statusCode: 503,
     });
   });
 
