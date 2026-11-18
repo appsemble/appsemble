@@ -85,6 +85,16 @@ and matters for block hot-reload.
 - Prettier `singleQuote`, `trailingComma: all`, `proseWrap: always` (wrap markdown at 80). Remark:
   heading levels can't skip; no undefined/unused refs.
 
+## HTTP error status codes
+
+Pick the code by who can fix the problem (`throwKoaError` / `assertKoaCondition`):
+
+- 409 only when the request clashes with existing data (a duplicate, a stale version) and resending
+  a changed request resolves it.
+- 503, with the reason in the message, when server or app setup the client cannot fix is missing or
+  incomplete (a secret without a value, an unconfigured provider).
+- 403 when the caller may not perform the action (e.g. a setting managed elsewhere).
+
 ## Changelog
 
 Per block/package `changed/{added,changed,fixed,deprecated,removed,security}/` — add an imperative
