@@ -45,9 +45,9 @@ service secret value, the OAuth2 client secret or the SCIM token). Such a secret
 the app can't use it until it has a value:
 
 - A request action that needs an incomplete service secret, including the client certificate that an
-  OAuth client credentials secret uses, fails with `409 Conflict`.
+  OAuth client credentials secret uses, fails with `503 Service Unavailable`.
 - The app hides the login button of an incomplete OAuth2 secret, and a login with it fails with
-  `409 Conflict`.
+  `503 Service Unavailable`.
 - SCIM requests fail with `401 Unauthorized`.
 
 Studio lists the incomplete secrets at the top of the app pages, the SCIM token only while SCIM is

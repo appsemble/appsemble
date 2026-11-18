@@ -173,7 +173,7 @@ export async function applyAppServiceSecrets({
     assertKoaCondition(
       !isSecretIncomplete(serviceSecret.secret),
       context,
-      409,
+      503,
       `Service secret "${serviceSecret.name || serviceSecret.urlPatterns}" is incomplete`,
     );
 
@@ -230,7 +230,7 @@ export async function applyAppServiceSecrets({
             assertKoaCondition(
               !isSecretIncomplete(clientCertSecret.secret),
               context,
-              409,
+              503,
               `Service secret "${clientCertSecret.name || clientCertSecret.urlPatterns}" is incomplete`,
             );
             logger.silly(`Using client-certificate secret ${clientCertSecret.id}`);
