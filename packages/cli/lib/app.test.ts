@@ -2597,6 +2597,87 @@ describe('app', () => {
       });
     });
 
+    it('should only replace the variables and secrets that have a config file', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+      const { AppOAuth2Secret, AppSamlSecret, AppServiceSecret, AppVariable } = await getAppDB(
+        app.id,
+      );
+      await AppVariable.create({ name: 'old-variable', value: 'old' });
+      await AppServiceSecret.create({
+        name: 'old-service',
+        urlPatterns: 'http://localhost',
+        authenticationMethod: 'query-parameter',
+        identifier: 'key',
+        secret: 'old',
+      });
+      await AppSamlSecret.create({
+        name: 'old-saml',
+        icon: '',
+        entityId: 'http://localhost',
+        ssoUrl: 'http://localhost',
+        idpCertificate: 'certificate',
+        spCertificate: 'certificate',
+        spPrivateKey: 'key',
+        spPublicKey: 'key',
+      });
+      await AppOAuth2Secret.create({
+        name: 'old-oauth2',
+        icon: '',
+        authorizationUrl: 'http://localhost',
+        tokenUrl: 'http://localhost',
+        clientId: 'id',
+        clientSecret: 'secret',
+        scope: 'openid',
+      });
+      const path = await mkdtemp(join(tmpdir(), 'app-config-'));
+      try {
+        await cp(resolveFixture('apps/test'), path, { recursive: true });
+        // The config directory has no variables.json and no oauth2.json
+        await rm(join(path, 'config'), { recursive: true });
+        await mkdir(join(path, 'config', 'secrets'), { recursive: true });
+        await writeFile(
+          join(path, 'config', 'secrets', 'service.json'),
+          JSON.stringify([
+            {
+              name: 'new-service',
+              urlPatterns: 'http://localhost',
+              authenticationMethod: 'query-parameter',
+              identifier: 'key',
+              secret: 'new',
+            },
+          ]),
+        );
+        await writeFile(join(path, 'config', 'secrets', 'saml.json'), '[]');
+
+        await updateApp({
+          id: app.id,
+          path,
+          remote: testApp.defaults.baseURL!,
+          clientCredentials,
+          // Required defaults
+          visibility: 'unlisted',
+          iconBackground: '#ffffff',
+          force: false,
+        });
+      } finally {
+        await rm(path, { recursive: true, force: true });
+        vi.useFakeTimers();
+      }
+
+      expect({
+        variables: (await AppVariable.findAll()).map(({ name }) => name),
+        service: (await AppServiceSecret.findAll()).map(({ name }) => name),
+        saml: (await AppSamlSecret.findAll()).map(({ name }) => name),
+        oauth2: (await AppOAuth2Secret.findAll()).map(({ name }) => name),
+      }).toStrictEqual({
+        variables: ['old-variable'],
+        service: ['new-service'],
+        saml: [],
+        oauth2: ['old-oauth2'],
+      });
+    });
+
     it('should update an app with `app.locked` set to `fullLock` if force is specified', async () => {
       await app.update({ locked: 'fullLock' });
       const clientCredentials = await authorizeCLI('apps:write', testApp);
