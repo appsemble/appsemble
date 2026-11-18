@@ -34,7 +34,7 @@ interface AppProps {
 }
 
 /**
- * The main entry point of the React app.
+ * The main entry point of the app.
  *
  * This configures all providers and sets up the global app structure.
  */

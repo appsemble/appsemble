@@ -217,9 +217,7 @@ describe('getAppLanguages', () => {
             messageIds: {},
             core: {
               ...Object.fromEntries(
-                Object.entries(messages).filter(
-                  ([key]) => key.startsWith('app') || key.startsWith('react-components'),
-                ),
+                Object.entries(messages).filter(([key]) => key.startsWith('app')),
               ),
             },
             app: {
@@ -245,9 +243,7 @@ describe('getAppLanguages', () => {
             messageIds: {},
             core: {
               ...Object.fromEntries(
-                Object.entries(messagesNl).filter(
-                  ([key]) => key.startsWith('app') || key.startsWith('react-components'),
-                ),
+                Object.entries(messagesNl).filter(([key]) => key.startsWith('app')),
               ),
             },
             app: {
