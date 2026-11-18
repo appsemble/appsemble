@@ -114,6 +114,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
         exclude: [
           '**/*.test.{ts,tsx}.snap',
           '**/*.test.{ts,tsx}',
+          '**/test-utils.{ts,tsx}',
           '**/*.d.ts',
           '**/*.md',
           '**/types.ts',
@@ -263,10 +264,6 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
  */
 export function createAppConfig(argv: CliConfigOptions): Configuration {
   const config = shared('app', argv);
-  config.resolve!.alias = {
-    react: 'preact/compat',
-    'react-dom': 'preact/compat',
-  };
   config.plugins?.push(
     new HtmlWebpackPlugin({
       template: fileURLToPath(new URL('app/error.html', packagesDir)),

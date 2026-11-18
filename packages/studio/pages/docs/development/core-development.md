@@ -15,6 +15,7 @@ to the [contributing guidelines](/docs/contributing)
     - [Data layer](#data-layer)
     - [Common Development Task](#common-development-task)
   - [react-components](#react-components)
+  - [preact-components](#preact-components)
 - [Debugging](#debugging)
 - [Common errors](#common-errors)
 
@@ -175,6 +176,9 @@ export const messages = defineMessages({
 For information on how to add messages yourself, please refer to the
 [CONTRIBUTING.md](/docs/contributing#message-validation)
 
+The app imports `FormattedMessage` and `useIntl` from its own `IntlProvider` component, and
+`defineMessages` from `@formatjs/intl`.
+
 ### Server
 
 #### Data layer
@@ -253,6 +257,12 @@ everywhere in the Studio.
 It's good practice to try and make your components as isolated as possible so they can be reused on
 other parts of the project, and so that it's easy to test their individual functionality. In
 Appsemble we place these reusable components under the `react-components` package.
+
+### preact-components
+
+[preact-components](https://gitlab.com/appsemble/appsemble/-/tree/main/packages/preact-components)
+is an internal package for Appsemble which contains Preact components. These components are used in
+the app and in blocks.
 
 ## Debugging
 

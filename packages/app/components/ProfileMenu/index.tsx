@@ -4,20 +4,21 @@ import {
   getRouteSegment,
   type PageDefinition,
 } from '@appsemble/lang-sdk';
-import { NavbarItem } from '@appsemble/react-components';
-import { type ReactNode, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
+import { useLocation, useParams } from 'wouter-preact';
 
+import { FormattedMessage } from '../IntlProvider/index.js';
+import { NavbarItem } from '../NavbarItem/index.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { getNotificationStrategy } from '../../utils/notifications.js';
 import { demoMode, displayAppMemberName, sentryDsn, showDemoLogin } from '../../utils/settings.js';
-import { usePWAInstall } from '../../utils/usePWAInstall.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { messages } from '../ProfileDropdown/messages.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
+import { usePWAInstall } from '../../utils/usePWAInstall.js';
 
 interface ProfileMenu {
   readonly isLoggedIn: boolean;
@@ -43,7 +44,7 @@ export function useProfileMenu(): ProfileMenu | undefined {
   const { getAppMessage } = useAppMessages();
   const { appMemberInfo, isLoggedIn } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
-  const { pathname } = useLocation();
+  const [pathname] = useLocation();
 
   const showLogin = definition.security && Object.hasOwn(definition.security, 'roles');
   const { layout } = definition;
@@ -83,14 +84,14 @@ interface ProfileMenuItemsProps {
 /**
  * The items of the profile menu of a logged in app member, rendered as Bulma navbar items.
  */
-export function ProfileMenuItems({ onDemoLogin, onNavigate }: ProfileMenuItemsProps): ReactNode {
+export function ProfileMenuItems({ onDemoLogin, onNavigate }: ProfileMenuItemsProps): VNode {
   const { definition } = useAppDefinition();
-  const navigate = useNavigate();
   const { getAppMessage } = useAppMessages();
   const { appMemberRoles, appMemberSelectedGroup, logout } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const { subscription, update } = useServiceWorkerRegistration();
   const install = usePWAInstall();
+  const [, navigate] = useLocation();
 
   const onClickPageName = useCallback(
     (page: PageDefinition) => navigate(`/${lang}/${getPagePathSegment(page, getAppMessage)}`),

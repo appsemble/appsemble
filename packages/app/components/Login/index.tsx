@@ -1,11 +1,11 @@
 import { getPagePathSegment } from '@appsemble/lang-sdk';
-import { Message, useQuery } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Navigate } from 'react-router-dom';
+import { Message } from '@appsemble/preact-components';
+import { type VNode } from 'preact';
+import { Redirect, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import {
   apiUrl,
   appId,
@@ -21,20 +21,25 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
 import { MainLogin } from '../MainLogin/index.js';
+import { useQuery } from '../../utils/useQuery.js';
 
 type LoginState = 'demo' | 'form' | 'permission-error' | 'totp-setup' | 'totp';
 
-export function Login(): ReactNode {
+export function Login(): VNode {
   const { definition } = useAppDefinition();
   const { totpPending } = useAppMember();
   const { getAppMessage } = useAppMessages();
+  const { lang } = useParams<{ lang: string }>();
   const qs = useQuery();
   const redirect = qs.get('redirect');
 
   if (!definition.security) {
     return (
-      <Navigate
-        to={redirect || `../${getPagePathSegment({ name: definition.defaultPage }, getAppMessage)}`}
+      <Redirect
+        to={
+          redirect ||
+          `/${lang}/${getPagePathSegment({ name: definition.defaultPage }, getAppMessage)}`
+        }
       />
     );
   }

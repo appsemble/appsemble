@@ -1,12 +1,12 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { render, screen, waitFor } from '@testing-library/preact';
+import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { OpenIDCallback } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 const { clearOAuth2State, loadOAuth2State } = vi.hoisted(() => ({
   clearOAuth2State: vi.fn(),
@@ -42,22 +42,18 @@ function mockAppMember(overrides: Record<string, unknown> = {}): void {
 }
 
 function renderCallback(): void {
+  window.history.replaceState(null, '', '/en/Callback?code=abc&state=state-1');
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/Callback?code=abc&state=state-1']}>
-        <Routes>
-          <Route element={<p>Login page</p>} path="/Login" />
-          <Route
-            element={
-              <Routes>
-                <Route element={<OpenIDCallback />} path="/Callback" />
-                <Route element={<p>Home page</p>} path="/home" />
-              </Routes>
-            }
-            path="/:lang/*"
-          />
-        </Routes>
-      </MemoryRouter>
+      <Route path="/Login">
+        <p>Login page</p>
+      </Route>
+      <Route path="/:lang/Callback">
+        <OpenIDCallback />
+      </Route>
+      <Route path="/:lang/home">
+        <p>Home page</p>
+      </Route>
     </IntlProvider>,
   );
 }

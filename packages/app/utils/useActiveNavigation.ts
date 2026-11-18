@@ -1,5 +1,5 @@
 import { getPageAncestors, type PageDefinition } from '@appsemble/lang-sdk';
-import { useMemo } from 'react';
+import { useMemo } from 'preact/hooks';
 
 import { shouldShowPage } from './layout.js';
 import { useAppDefinition } from '../components/AppDefinitionProvider/index.js';

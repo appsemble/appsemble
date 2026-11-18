@@ -1,11 +1,13 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { type ReactNode, useEffect } from 'react';
-import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/preact';
+import { type VNode } from 'preact';
+import { useEffect } from 'preact/hooks';
+import { Link, Route, Switch } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppMessagesProvider, useAppMessages } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
+import { useLocationString } from '../../utils/useLocationString.js';
 
 const { axiosGet } = vi.hoisted(() => ({ axiosGet: vi.fn() }));
 
@@ -28,7 +30,7 @@ function resolveLanguage(language: string, name: string): Promise<void> {
   });
 }
 
-function Probe(): ReactNode {
+function Probe(): VNode {
   const { getAppMessage, messagesReady } = useAppMessages();
 
   useEffect(() => {
@@ -43,35 +45,29 @@ function Probe(): ReactNode {
   );
 }
 
-function LocationProbe(): ReactNode {
-  const { hash, pathname, search } = useLocation();
-  return <p>{`${pathname}${search}${hash}`}</p>;
+function LocationProbe(): VNode {
+  return <p>{useLocationString()}</p>;
 }
 
 function renderProvider(initialEntry = '/en'): void {
+  window.history.replaceState(null, '', initialEntry);
   render(
-    <MemoryRouter initialEntries={[initialEntry]}>
+    <>
       <Link to="/nl">switch to nl</Link>
       <LocationProbe />
-      <Routes>
-        <Route
-          element={
-            <AppMessagesProvider>
-              <Probe />
-            </AppMessagesProvider>
-          }
-          path="/:lang/*"
-        />
-        <Route
-          element={
-            <AppMessagesProvider>
-              <Probe />
-            </AppMessagesProvider>
-          }
-          path="/*"
-        />
-      </Routes>
-    </MemoryRouter>,
+      <Switch>
+        <Route path="/:lang/*?">
+          <AppMessagesProvider>
+            <Probe />
+          </AppMessagesProvider>
+        </Route>
+        <Route path="/*?">
+          <AppMessagesProvider>
+            <Probe />
+          </AppMessagesProvider>
+        </Route>
+      </Switch>
+    </>,
   );
 }
 

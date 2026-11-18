@@ -1,13 +1,13 @@
-import { ModalCard } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
+import { type ComponentProps, type VNode } from 'preact';
 
 import styles from './index.module.css';
+import { ModalCard } from '../ModalCard/index.js';
 import { type ShowDialogParams } from '../../types.js';
 import { BlockList } from '../BlockList/index.js';
 
 interface PageDialogProps extends Omit<
-  ComponentPropsWithoutRef<typeof BlockList>,
+  ComponentProps<typeof BlockList>,
   'blocks' | 'prefix' | 'prefixIndex'
 > {
   readonly dialog?: ShowDialogParams;
@@ -16,7 +16,7 @@ interface PageDialogProps extends Omit<
 /**
  * The dialog component to render on a page when the `dialog` action is dispatched.
  */
-export function PageDialog({ dialog, remap, ...props }: PageDialogProps): ReactNode {
+export function PageDialog({ dialog, remap, ...props }: PageDialogProps): VNode {
   return (
     <ModalCard
       cardClassName={classNames({ [styles.fullscreen]: dialog?.fullscreen })}
