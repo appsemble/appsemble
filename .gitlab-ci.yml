@@ -1034,7 +1034,7 @@ e2e keycloak:
         S3_SECRET_KEY: password
         E2E: true
         # The Keycloak service runs on the build's private network.
-        SSRF_ALLOW_IP_ADDRESS_LIST: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+        SSRF_ALLOW_IP_ADDRESS_LIST: keycloak
   script:
     - npm run appsemble -- config set context e2e
     - npm run appsemble -- config set remote "$E2E_HOST"
