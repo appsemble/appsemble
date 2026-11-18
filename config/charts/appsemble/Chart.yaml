@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.41.0
-appVersion: 0.41.0
+version: 0.41.1
+appVersion: 0.41.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,15 +33,24 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Server: Add organization sign-on, identity management and
-        group-based access."
+      description: "Server: Allow app requests to internal host names with the
+        ssrfAllowIpAddressList Helm value."
     - kind: added
-      description: "Studio: Add organization single sign-on and linked identity management."
+      description: "Server: Reject service, OAuth2 and SCIM secrets without a value,
+        and list them as app warnings."
+    - kind: added
+      description: "Studio: List the app secrets that need a value at the top of the app pages."
+    - kind: changed
+      description: "Preact-components: Set the Loader test id through its testId prop."
     - kind: removed
-      description: "Types: Remove the Training and TrainingChapter types."
+      description: "Server: Remove the unused react-components messages from app core messages."
     - kind: fixed
-      description: "Types: Grant resource history and webhook invocation to the
-        matching organization roles."
+      description: "Block(table): Show the dropdown label only as an accessible name
+        when the dropdown has an icon."
+    - kind: fixed
+      description: "Cli: Keep app secrets and variables without a file in config on app update."
+    - kind: fixed
+      description: "Server: Check permissions before updating app SSL secrets."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.41.1](https://gitlab.com/appsemble/appsemble/-/releases/0.41.1)] - 2026-11-18
+
+### Added
+
+- Server: Allow app requests to internal host names with the `ssrfAllowIpAddressList` Helm value.
+- Server: Reject service, OAuth2 and SCIM secrets without a value, and list them as app warnings.
+- Studio: List the app secrets that need a value at the top of the app pages.
+
+### Changed
+
+- Preact-components: Set the `Loader` test id through its `testId` prop.
+
+### Removed
+
+- Server: Remove the unused `react-components` messages from app core messages.
+
+### Fixed
+
+- Block(`table`): Show the dropdown label only as an accessible name when the dropdown has an icon.
+- Cli: Keep app secrets and variables without a file in `config` on `app update`.
+- Server: Check permissions before updating app SSL secrets.
+
 ## \[[0.41.0](https://gitlab.com/appsemble/appsemble/-/releases/0.41.0)] - 2026-11-17
 
 ### Added
