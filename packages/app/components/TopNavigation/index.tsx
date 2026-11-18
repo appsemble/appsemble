@@ -7,7 +7,8 @@ import {
   type RemapperContext,
 } from '@appsemble/lang-sdk';
 import { Button, Icon, NavbarBurger, useToggle } from '@appsemble/preact-components';
-import { type ReactNode, useMemo, useState } from 'react';
+import { type ComponentChildren, type VNode } from 'preact';
+import { useMemo, useState } from 'preact/hooks';
 import { Link, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
@@ -33,7 +34,7 @@ import { usePWAInstall } from '../../utils/usePWAInstall.js';
  * native navbar behavior. Below the desktop breakpoint the menu also lists the
  * profile dropdown items, which the title bar hides there.
  */
-export function TopNavigation(): ReactNode {
+export function TopNavigation(): VNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
   const [active, setActive] = useState(false);
@@ -71,10 +72,10 @@ export function TopNavigation(): ReactNode {
       locale: lang!,
     }) satisfies RemapperContext;
 
-  const getNavName = (page: PageDefinition): ReactNode => {
+  const getNavName = (page: PageDefinition): ComponentChildren => {
     const name = getPageDisplayName(page, getAppMessage);
     return page.navTitle
-      ? (remap(page.navTitle, null, createRemapperContext(name)) as ReactNode)
+      ? (remap(page.navTitle, null, createRemapperContext(name)) as ComponentChildren)
       : name;
   };
 
@@ -83,7 +84,7 @@ export function TopNavigation(): ReactNode {
     setOpenDropdown(undefined);
   };
 
-  const renderLink = (page: PageDefinition): ReactNode => {
+  const renderLink = (page: PageDefinition): VNode => {
     const navName = getNavName(page);
     const count = page.badgeCount
       ? (remap(page.badgeCount, null, createRemapperContext(navName as string)) as number)
@@ -106,7 +107,7 @@ export function TopNavigation(): ReactNode {
     );
   };
 
-  const renderItem = (page: PageDefinition): ReactNode => {
+  const renderItem = (page: PageDefinition): VNode | null => {
     if (page.type === 'container') {
       const navName = getNavName(page);
       const children = page.pages.filter((child) =>

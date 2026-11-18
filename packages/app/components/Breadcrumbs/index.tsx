@@ -7,7 +7,7 @@ import {
   type Remapper,
 } from '@appsemble/lang-sdk';
 import { Icon } from '@appsemble/preact-components';
-import { type ReactNode } from 'react';
+import { type VNode } from 'preact';
 import { Link, useParams } from 'wouter-preact';
 import { useLocationProperty } from 'wouter-preact/use-browser-location';
 
@@ -59,7 +59,7 @@ export function Breadcrumbs({
   pageDefinition,
   remap,
   subPageName,
-}: BreadcrumbsProps): ReactNode {
+}: BreadcrumbsProps): VNode | null {
   const { definition } = useAppDefinition();
   const { appMemberRoles, appMemberSelectedGroup } = useAppMember();
   const { getAppMessage } = useAppMessages();

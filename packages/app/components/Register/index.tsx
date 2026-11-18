@@ -1,6 +1,7 @@
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ReactNode, useCallback } from 'react';
+import { type VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 import { useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
@@ -12,7 +13,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
 import { useQuery } from '../../utils/useQuery.js';
 
-export function Register(): ReactNode {
+export function Register(): VNode {
   const { passwordLogin } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const qs = useQuery();

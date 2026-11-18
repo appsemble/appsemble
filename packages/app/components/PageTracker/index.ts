@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from 'preact/hooks';
 import { useLocation } from 'wouter-preact';
 
 export function PageTracker(): null {

@@ -13,7 +13,8 @@ import {
 } from '@appsemble/preact-components';
 import { emailPattern, getLanguageDisplayName } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactNode, useCallback, useMemo, useState } from 'react';
+import { type VNode } from 'preact';
+import { useCallback, useMemo, useState } from 'preact/hooks';
 import { useLocation, useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
@@ -32,7 +33,7 @@ import { TotpSettings } from '../TotpSettings/index.js';
 
 const DEFAULT_IMAGE_PREFIX = 'https://www.gravatar.com/avatar/';
 
-export function ProfileSettings(): ReactNode {
+export function ProfileSettings(): VNode | null {
   const { formatMessage } = useIntl();
   const { appMemberInfo, setAppMemberInfo } = useAppMember();
   const { definition } = useAppDefinition();

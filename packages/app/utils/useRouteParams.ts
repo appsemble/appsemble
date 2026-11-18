@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo } from 'preact/hooks';
 import { useParams } from 'wouter-preact';
 
 /**

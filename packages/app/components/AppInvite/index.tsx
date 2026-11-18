@@ -9,7 +9,8 @@ import {
 import { type AppInvite as AppInviteType, type AppMemberInfo } from '@appsemble/types';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ReactNode, useCallback, useState } from 'react';
+import { type VNode } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
 import { useLocation, useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
@@ -31,7 +32,7 @@ interface AppInviteFormProps {
   readonly accepted: boolean;
 }
 
-export function AppInvite(): ReactNode {
+export function AppInvite(): VNode {
   const query = useQuery();
 
   const { definition } = useAppDefinition();

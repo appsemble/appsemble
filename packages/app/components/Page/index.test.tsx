@@ -1,10 +1,10 @@
 import { type AppDefinition, type PageDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { noop } from '@appsemble/utils';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/preact';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { type ReactNode } from 'react';
+import { type ComponentChildren, type VNode } from 'preact';
 import { Link, Route, Switch } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
@@ -25,7 +25,7 @@ import { useLocationString } from '../../utils/useLocationString.js';
 
 vi.mock('../TitleBar/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention -- This mocks a component export.
-  AppBar: ({ children }: { readonly children?: ReactNode }) => (
+  AppBar: ({ children }: { readonly children?: ComponentChildren }) => (
     <div data-testid="app-bar">{children}</div>
   ),
 }));
@@ -33,11 +33,11 @@ vi.mock('../TitleBar/index.js', () => ({
 // A hidden block renders nothing, which keeps the page from redirecting as an empty one does.
 const block = { type: 'test', version: '0.0.0' };
 
-function LocationProbe(): ReactNode {
+function LocationProbe(): VNode {
   return <p>{useLocationString()}</p>;
 }
 
-function BuiltinPage(): ReactNode {
+function BuiltinPage(): VNode {
   return <span>Settings</span>;
 }
 
@@ -63,7 +63,7 @@ function mockApp(definition: AppDefinition): void {
 
 function renderApp(path = '/en/home'): () => void {
   window.history.replaceState(null, '', path);
-  const app = (): ReactNode => (
+  const app = (): VNode => (
     <IntlProvider locale="en" messages={{}}>
       <MenuProvider>
         <VerifyBanner />

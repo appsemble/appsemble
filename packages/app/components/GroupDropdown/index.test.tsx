@@ -1,7 +1,8 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { type AppMemberGroup } from '@appsemble/types';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { type ReactNode, useMemo, useState } from 'react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/preact';
+import { type VNode } from 'preact';
+import { useMemo, useState } from 'preact/hooks';
 import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -55,8 +56,9 @@ vi.mock('../SentryFeedback/index.js', () => ({ SentryFeedback: nullComponent }))
 vi.mock('../Verify/index.js', () => ({ Verify: nullComponent }));
 
 vi.mock('../Page/index.js', async () => {
-  const { createElement, useState: usePageState } = await import('react');
-  const Page = (): ReactNode => {
+  const { createElement } = await import('preact');
+  const { useState: usePageState } = await import('preact/hooks');
+  const Page = (): VNode => {
     const [loadedGroup] = usePageState(
       testState.appMember.appMemberSelectedGroup?.name ?? 'No Group',
     );
@@ -66,7 +68,7 @@ vi.mock('../Page/index.js', async () => {
   return { Page };
 });
 
-function AppHarness(): ReactNode {
+function AppHarness(): VNode {
   const [selectedGroup, setSelectedGroup] = useState<AppMemberGroup>();
   const groups = useMemo<AppMemberGroup[]>(() => [{ id: 1, name: 'Team One', role: 'Member' }], []);
 

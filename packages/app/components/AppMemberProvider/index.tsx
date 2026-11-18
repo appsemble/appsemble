@@ -3,19 +3,18 @@ import { type AppMemberGroup, type AppMemberInfo } from '@appsemble/types';
 import { setUser as setSentryUser } from '@sentry/browser';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import { type ComponentChildren, createContext, type VNode } from 'preact';
+import { type MutableRefObject } from 'preact/compat';
 import {
-  createContext,
   type Dispatch,
-  type MutableRefObject,
-  type ReactNode,
-  type SetStateAction,
+  type StateUpdater,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
-} from 'react';
+} from 'preact/hooks';
 import { useLocation, useParams } from 'wouter-preact';
 
 import { Loader } from '../Loader/index.js';
@@ -94,11 +93,11 @@ interface AppMemberContext extends LoginState {
   setAppMemberInfo: Dispatch<AppMemberInfo>;
   addAppMemberGroup: (group: AppMemberGroup) => void;
   appMemberSelectedGroup: AppMemberGroup;
-  setAppMemberSelectedGroup: Dispatch<SetStateAction<AppMemberGroup>>;
+  setAppMemberSelectedGroup: Dispatch<StateUpdater<AppMemberGroup>>;
 }
 
 interface AppMemberProviderProps {
-  readonly children: ReactNode;
+  readonly children: ComponentChildren;
 }
 
 /**
@@ -119,7 +118,7 @@ interface TokenResponse {
 // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
 const Context = createContext<AppMemberContext>(null);
 
-export function AppMemberProvider({ children }: AppMemberProviderProps): ReactNode {
+export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
   const { definition } = useAppDefinition();
   // If there is no security definition, don’t even bother going into the loading state.
   const [isLoading, setIsLoading] = useState(Boolean(definition.security));

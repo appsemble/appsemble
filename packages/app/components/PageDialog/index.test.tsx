@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events';
 
 import { remap } from '@appsemble/lang-sdk';
 import { noop } from '@appsemble/utils';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/preact';
 import { userEvent } from '@testing-library/user-event';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 

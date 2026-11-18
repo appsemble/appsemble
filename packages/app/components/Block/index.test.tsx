@@ -4,8 +4,9 @@ import { type AppDefinition, type BlockDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
 import { noop } from '@appsemble/utils';
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
-import { type ReactNode, useEffect, useState } from 'react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/preact';
+import { type VNode } from 'preact';
+import { useEffect, useState } from 'preact/hooks';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MessagesProvider } from '../MessagesProvider/index.js';
 import { ModalCard } from '../ModalCard/index.js';
@@ -317,7 +318,7 @@ describe('dialog blocks', () => {
     const refresh = vi.fn();
     ee.on('refresh', refresh);
 
-    function DialogHost(): ReactNode {
+    function DialogHost(): VNode {
       const [dialog, setDialog] = useState<ShowDialogParams>();
       useEffect(() => {
         const [open] = dialogAction({

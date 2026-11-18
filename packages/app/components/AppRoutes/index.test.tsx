@@ -1,7 +1,7 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/preact';
 import { userEvent } from '@testing-library/user-event';
-import { type ReactNode } from 'react';
+import { type VNode } from 'preact';
 import { Route, Router } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -81,7 +81,7 @@ vi.mock('../Verify/index.js', () => ({
   Verify: () => <p>Verify route</p>,
 }));
 
-function LocationProbe(): ReactNode {
+function LocationProbe(): VNode {
   return <p>{useLocationString()}</p>;
 }
 

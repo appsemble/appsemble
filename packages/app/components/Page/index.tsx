@@ -17,15 +17,8 @@ import {
 import { Button, Content, Message } from '@appsemble/preact-components';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import classNames from 'classnames';
-import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { type VNode } from 'preact';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { parse } from 'regexparam';
 import { Link, Redirect, Route, useLocation, useParams } from 'wouter-preact';
 import { useLocationProperty } from 'wouter-preact/use-browser-location';
@@ -59,7 +52,7 @@ import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvid
 import { TabsPage } from '../TabsPage/index.js';
 import { AppBar } from '../TitleBar/index.js';
 
-export function Page(): ReactNode {
+export function Page(): VNode {
   const redirect = useLocationString();
   const { definition: appDefinition } = useAppDefinition();
   const {
@@ -94,7 +87,7 @@ export function Page(): ReactNode {
   const url = `/${lang}`;
 
   const permissionError = useCallback(
-    (): ReactNode => (
+    (): VNode => (
       <Message color="danger">
         <p>
           <FormattedMessage

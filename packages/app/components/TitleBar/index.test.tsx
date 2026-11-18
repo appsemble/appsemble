@@ -1,6 +1,6 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { type ComponentProps } from 'react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
+import { type ComponentProps } from 'preact';
 import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

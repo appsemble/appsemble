@@ -3,7 +3,7 @@ import { EventEmitter } from 'node:events';
 import { remap, type AppDefinition, type BlockDefinition } from '@appsemble/lang-sdk';
 import { type EventParams } from '@appsemble/sdk';
 import { noop } from '@appsemble/utils';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/preact';
 import { afterEach, expect, it, vi } from 'vitest';
 import { MessagesProvider } from '../MessagesProvider/index.js';
 

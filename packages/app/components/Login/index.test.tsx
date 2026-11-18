@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/preact';
 import { Route } from 'wouter-preact';
 import { describe, expect, it, vi } from 'vitest';
 

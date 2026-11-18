@@ -8,7 +8,8 @@ import {
   SimpleSubmit,
 } from '@appsemble/preact-components';
 import axios from 'axios';
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type VNode } from 'preact';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { messages } from './messages.js';
 import { FormOutput } from '../FormOutput/index.js';
@@ -56,7 +57,7 @@ export function TotpSetup({
   onCancel,
   onComplete,
   totpToken,
-}: TotpSetupProps): ReactNode {
+}: TotpSetupProps): VNode {
   const { formatMessage } = useIntl();
   const { appMemberInfo, setAppMemberInfo } = useAppMember();
   const push = useMessages();

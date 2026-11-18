@@ -1,13 +1,14 @@
 import { Option, SelectField } from '@appsemble/preact-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
-import { type ReactNode, useCallback, useState } from 'react';
+import { type VNode } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
 import { useLocation, useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { FormattedMessage, useIntl } from '../../IntlProvider/index.js';
 import { languages, supportedLanguages } from '../../../utils/settings.js';
 
-export function LanguagePreference(): ReactNode {
+export function LanguagePreference(): VNode {
   const [, navigate] = useLocation();
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}/Settings`;

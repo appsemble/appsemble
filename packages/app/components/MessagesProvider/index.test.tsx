@@ -75,6 +75,12 @@ it('should announce other messages politely', () => {
   expect(politeRegion?.textContent).toBe('Saved');
 });
 
+it('should remove a dismissed message', async () => {
+  showMessage({ body: 'Saved', color: 'success', dismissable: true });
+  fireEvent.click(screen.getByRole('button', { name: 'Dismiss message' }));
+  await waitFor(() => expect(screen.queryByText('Saved')).toBeNull());
+});
+
 describe('modal dialogs', () => {
   function Page({ hiddenDialog = false }: { readonly hiddenDialog?: boolean }): VNode {
     const [isActive, setIsActive] = useState(true);

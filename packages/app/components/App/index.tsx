@@ -1,5 +1,5 @@
 import { FormComponentOptionalLabelContext } from '@appsemble/preact-components';
-import { type ReactNode } from 'react';
+import { type VNode } from 'preact';
 import { Route, Router, Switch } from 'wouter-preact';
 
 import { messages } from './messages.js';
@@ -38,7 +38,7 @@ interface AppProps {
  *
  * This configures all providers and sets up the global app structure.
  */
-export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactNode {
+export function App({ serviceWorkerRegistrationPromise }: AppProps): VNode {
   const appContent = (
     <AppDefinitionProvider>
       <AppIconProvider>

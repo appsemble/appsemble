@@ -19,7 +19,7 @@ import {
   type ResourceSubscribableAction,
   type UserInfo,
 } from '@appsemble/types';
-import { type Dispatch } from 'react';
+import { type Dispatch } from 'preact/hooks';
 import { type navigate } from 'wouter-preact/use-browser-location';
 import { type JsonValue } from 'type-fest';
 

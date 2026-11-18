@@ -1,12 +1,12 @@
-import { render, screen } from '@testing-library/react';
-import { type ReactNode } from 'react';
+import { render, screen } from '@testing-library/preact';
+import { type VNode } from 'preact';
 import { Route, Router } from 'wouter-preact';
 import { expect, it } from 'vitest';
 
 import { useRawLocation } from './useRawLocation.js';
 import { useRouteParams } from './useRouteParams.js';
 
-function ParamsProbe(): ReactNode {
+function ParamsProbe(): VNode {
   return <p>{JSON.stringify(useRouteParams())}</p>;
 }
 

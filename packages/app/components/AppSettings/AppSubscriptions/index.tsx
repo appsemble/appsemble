@@ -3,7 +3,8 @@ import { CheckboxField, FormComponent } from '@appsemble/preact-components';
 import { resourceSubscribableAction, type SubscriptionResponse } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactNode, useEffect, useState } from 'react';
+import { type JSX, type VNode } from 'preact';
+import { useEffect, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -26,7 +27,7 @@ interface SubscriptionState {
   delete?: ExtendedResourceHooks;
 }
 
-export function AppSubscriptions(): ReactNode {
+export function AppSubscriptions(): VNode | null {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const [subscriptions, setSubscriptions] = useState<ResourceState>();
@@ -91,7 +92,7 @@ export function AppSubscriptions(): ReactNode {
     }
   }, [definition, push, subscription]);
 
-  const onSubscribeClick = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
+  const onSubscribeClick = async (event: JSX.TargetedEvent<HTMLInputElement>): Promise<void> => {
     event.preventDefault();
 
     if (subscription) {

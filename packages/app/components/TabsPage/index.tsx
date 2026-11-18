@@ -9,15 +9,8 @@ import {
   type TabsPageDefinition,
 } from '@appsemble/lang-sdk';
 import { Tab, Tabs } from '@appsemble/preact-components';
-import {
-  type ComponentPropsWithoutRef,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { type ComponentProps, type VNode } from 'preact';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Redirect, Route, useLocation, useParams } from 'wouter-preact';
 
 import { TabContent } from './TabContent/index.js';
@@ -32,7 +25,7 @@ import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { type BlockList } from '../BlockList/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
 
-interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
+interface TabsPageProps extends Omit<ComponentProps<typeof BlockList>, 'blocks'> {
   readonly pageDefinition: TabsPageDefinition;
 }
 
@@ -46,7 +39,7 @@ export function TabsPage({
   showDialog,
   showShareDialog,
   ...blockListProps
-}: TabsPageProps): ReactNode {
+}: TabsPageProps): VNode | null {
   const { definition: appDefinition, pageManifests } = useAppDefinition();
   const {
     '*': wildcard,
@@ -292,4 +285,6 @@ export function TabsPage({
       </>
     );
   }
+
+  return null;
 }
