@@ -176,6 +176,25 @@ Restrict the token to the records Appsemble manages. For deSEC, give it token po
 writing `A` and `AAAA` record sets in `dns.zone` and nothing else, so it cannot touch the
 `_acme-challenge` records of cert-manager or the records of custom domains in the same zone.
 
+### App host names
+
+Apps are served on `<app>.<organization>.ingress.host` by default. Where the network cannot route
+those wildcard host names, for example because a proxy in front of the cluster forwards only host
+names it knows, give each app a host name of its own in the _Domain name_ app setting, as described
+in the [DNS guide](https://appsemble.app/docs/guides/dns). Pick names the network already serves,
+outside `ingress.host`, because Appsemble reads the host names below `ingress.host` as organizations
+and apps. Create a DNS record for each name:
+
+| App      | Domain name               | DNS record                            |
+| -------- | ------------------------- | ------------------------------------- |
+| `survey` | `survey.apps.example.com` | `CNAME` to `my-appsemble.example.com` |
+| `intake` | `intake.apps.example.com` | `CNAME` to `my-appsemble.example.com` |
+
+Appsemble creates an Ingress for each domain name with the `ingress.annotations` and the
+cert-manager issuer of `ingress.clusterIssuer` or `ingress.issuer`. Its certificate covers a single
+host, so an ACME issuer can validate it with HTTP01. For an app with its own certificate in its SSL
+secrets, Appsemble writes that certificate to the TLS secret of the Ingress and sets no issuer.
+
 ## OpenShift
 
 The OpenShift router serves an Ingress by generating a Route for each of its hosts. A host with a
@@ -199,7 +218,9 @@ cert-manager issues a certificate for `ingress.host` into `ingress.tlsSecretName
 `*.ingress.host` into `ingress.tlsWildcardSecretName`, like it does for the Ingress of every
 organization. The issuer must be able to sign wildcard hosts, which takes a DNS01 solver for an ACME
 issuer, and the IngressController must admit wildcard Routes
-(`routeAdmission.wildcardPolicy: WildcardsAllowed`).
+(`routeAdmission.wildcardPolicy: WildcardsAllowed`). The Ingress of an
+[app host name](#app-host-names) serves a single host, so it needs neither, and the router generates
+its Route once its TLS secret exists.
 
 The Routes of `route.enabled` terminate TLS with the default certificate of the router. OpenShift
 generates no Route for an Ingress host whose TLS secret does not exist. On an installation which
