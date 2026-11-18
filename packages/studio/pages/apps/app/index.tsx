@@ -19,12 +19,15 @@ import {
   type ReactNode,
   type SetStateAction,
   Suspense,
+  useCallback,
   useContext,
   useMemo,
+  useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
 
+import { AppWarnings } from './AppWarnings/index.js';
 import { AssetsPage } from './assets/index.js';
 import { ContainerLogs } from './containerLogs/index.js';
 import { DefinitionPage } from './definition/index.js';
@@ -56,6 +59,11 @@ interface AppValueContext {
    * Update the app in the current context.
    */
   setApp: Dispatch<SetStateAction<App>>;
+
+  /**
+   * Reload the app warnings after a secret changes.
+   */
+  refreshWarnings: () => void;
 }
 
 const Context = createContext<AppValueContext>(null);
@@ -71,6 +79,8 @@ export function AppRoutes(): ReactNode {
     path,
   } = useParams<{ id: string; lang: string; path?: string; '*': string }>();
   const { organizations } = useUser();
+  const [warningsKey, setWarningsKey] = useState(0);
+  const refreshWarnings = useCallback(() => setWarningsKey((key) => key + 1), []);
 
   const {
     data: app,
@@ -200,7 +210,7 @@ export function AppRoutes(): ReactNode {
     [userOrganizationRole],
   );
 
-  const value = useMemo(() => ({ app, setApp }), [app, setApp]);
+  const value = useMemo(() => ({ app, setApp, refreshWarnings }), [app, setApp, refreshWarnings]);
 
   useSideMenu(
     app && (
@@ -349,6 +359,7 @@ export function AppRoutes(): ReactNode {
 
   return (
     <Context.Provider value={value}>
+      {organization && mayVisitSecrets ? <AppWarnings key={warningsKey} /> : null}
       <MetaSwitch
         description={app.messages?.app?.description || app.definition.description}
         title={app.messages?.app?.name || app.definition.name}

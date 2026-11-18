@@ -42,12 +42,14 @@ function parseSettingsScript(settings: string): {
   blockManifests: { name: string; version: string; fileUrls?: Record<string, string> }[];
   definition: AppDefinition & Record<string, unknown>;
   iconAssetIds: Record<string, string>;
+  logins: unknown[];
   staticAssets: string[];
 } {
   return JSON.parse(settings.slice('<script>window.settings='.length, -'</script>'.length)) as {
     blockManifests: { name: string; version: string; fileUrls?: Record<string, string> }[];
     definition: AppDefinition & Record<string, unknown>;
     iconAssetIds: Record<string, string>;
+    logins: unknown[];
     staticAssets: string[];
   };
 }
@@ -756,6 +758,38 @@ describe('indexHandler', () => {
     expect(parseSettingsScript(response.data.data.settings).iconAssetIds).toStrictEqual({
       'lot-icon': copy.id,
     });
+  });
+
+  it('should only offer OAuth2 logins whose client secret has a value', async () => {
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: { name: 'Test App', defaultPage: 'Home', pages: [{ name: 'Home', blocks: [] }] },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    const login = {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      icon: 'key',
+      scope: 'openid',
+      tokenUrl: 'https://example.com/oauth/token',
+    };
+    const complete = await AppOAuth2Secret.create({
+      ...login,
+      clientSecret: 'example_client_secret',
+      name: 'Complete',
+    });
+    await AppOAuth2Secret.create({ ...login, clientSecret: '', name: 'Incomplete' });
+
+    const response = await request.get('/');
+
+    expect(parseSettingsScript(response.data.data.settings).logins).toStrictEqual([
+      { icon: 'key', id: complete.id, name: 'Complete', type: 'oauth2' },
+    ]);
   });
 
   it('should omit non-bootstrapped app definition fields from bootstrapped settings', async () => {

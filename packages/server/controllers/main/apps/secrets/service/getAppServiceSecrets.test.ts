@@ -111,6 +111,7 @@ describe('getAppServiceSecrets', () => {
           "ca": null,
           "id": 1,
           "identifier": "key",
+          "incomplete": false,
           "lastTokenError": null,
           "lastTokenErrorAt": null,
           "name": "Test service",
@@ -123,6 +124,7 @@ describe('getAppServiceSecrets', () => {
           "ca": null,
           "id": 2,
           "identifier": "john_doe",
+          "incomplete": false,
           "lastTokenError": null,
           "lastTokenErrorAt": null,
           "name": "Test service",
@@ -135,6 +137,7 @@ describe('getAppServiceSecrets', () => {
           "ca": null,
           "id": 3,
           "identifier": "client-id",
+          "incomplete": false,
           "lastTokenError": "AADSTS7000215: Invalid client secret provided.",
           "lastTokenErrorAt": "2026-09-15T08:00:00.000Z",
           "name": "Graph",
@@ -144,5 +147,25 @@ describe('getAppServiceSecrets', () => {
         },
       ]
     `);
+  });
+
+  it('should mark service secrets without a value as incomplete', async () => {
+    const { AppServiceSecret } = await getAppDB(app.id);
+    await AppServiceSecret.bulkCreate([
+      {
+        name: 'Complete',
+        urlPatterns: 'example.com',
+        authenticationMethod: 'custom-header',
+        secret: 'c6a5e780dee8e2f1f576538c8',
+      },
+      { name: 'Incomplete', urlPatterns: 'example.com', authenticationMethod: 'custom-header' },
+    ]);
+
+    const response = await request.get(`/api/apps/${app.id}/secrets/service`);
+
+    expect(response.data).toMatchObject([
+      { incomplete: false, name: 'Complete' },
+      { incomplete: true, name: 'Incomplete' },
+    ]);
   });
 });

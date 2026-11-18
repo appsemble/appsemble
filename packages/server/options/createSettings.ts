@@ -18,6 +18,7 @@ import {
 } from '../utils/appBuildManifest.js';
 import { getSettingsBlockFileUrls } from '../utils/blockAssets.js';
 import { createGtagCode, createMetaPixelCode, createMSClarityCode } from '../utils/render.js';
+import { isSecretIncomplete } from '../utils/secrets.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
 function sanitizeAppDefinitionForPublicSettings(
@@ -206,7 +207,9 @@ export async function createSettings({
   // Public URLs embed deployment configuration, so derive them from stable storage keys per request.
   const blockFileUrls = await getSettingsBlockFileUrls(blockManifests ?? []);
 
-  const appOAuth2Secrets = await AppOAuth2Secret.findAll({ attributes: ['icon', 'id', 'name'] });
+  const appOAuth2Secrets = (
+    await AppOAuth2Secret.findAll({ attributes: ['clientSecret', 'icon', 'id', 'name'] })
+  ).filter(({ clientSecret }) => !isSecretIncomplete(clientSecret));
   const appSamlSecrets = await AppSamlSecret.findAll({ attributes: ['icon', 'id', 'name'] });
 
   // Icons are requested by asset id, which addresses fixed bytes the browser may cache for good.

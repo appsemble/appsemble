@@ -1264,6 +1264,65 @@ describe('applyAppServiceSecrets', () => {
     });
   });
 
+  it('should refuse a request action that needs a service secret without a value', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      userId: user.id,
+      role: 'Admin',
+    });
+    authorizeAppMember(app, member);
+    await AppServiceSecret.create({
+      name: 'Orders API',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'http-basic',
+      identifier: 'john_doe',
+    });
+
+    const response = await request.get('/api/apps/1/actions/pages.0.blocks.0.actions.get?data={}');
+
+    expect(response.data).toStrictEqual({
+      error: 'Service Unavailable',
+      message: 'Service secret "Orders API" is incomplete',
+      statusCode: 503,
+    });
+  });
+
+  it('should refuse client credentials whose client certificate has no value', async () => {
+    const { AppMember, AppServiceSecret } = await getAppDB(app.id);
+    const member = await AppMember.create({
+      email: user.primaryEmail,
+      userId: user.id,
+      role: 'Admin',
+    });
+    authorizeAppMember(app, member);
+    const tokenUrl = `${proxiedRequest.defaults.baseURL}oauth/token`;
+    await AppServiceSecret.bulkCreate([
+      {
+        name: 'Orders API',
+        urlPatterns: proxiedRequest.defaults.baseURL,
+        authenticationMethod: 'client-credentials',
+        identifier: 'id',
+        secret: encrypt('secret', argv.aesSecret),
+        tokenUrl,
+      },
+      {
+        name: 'Token endpoint certificate',
+        urlPatterns: tokenUrl,
+        authenticationMethod: 'client-certificate',
+        identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
+      },
+    ]);
+
+    const response = await request.get('/api/apps/1/actions/pages.0.blocks.0.actions.get?data={}');
+
+    expect(response.data).toStrictEqual({
+      error: 'Service Unavailable',
+      message: 'Service secret "Token endpoint certificate" is incomplete',
+      statusCode: 503,
+    });
+  });
+
   it('should not log credentials', async () => {
     const { baseURL } = proxiedRequest.defaults;
     const tokenUrl = `${baseURL}oauth/token`;
