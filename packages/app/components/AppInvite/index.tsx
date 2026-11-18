@@ -1,29 +1,30 @@
 import {
   AsyncButton,
-  BreachedPasswordSimpleFormError,
   Button,
   Message,
-  PasswordField,
-  PasswordStrengthIndicator,
   SimpleForm,
   SimpleFormField,
   SimpleSubmit,
-  useData,
-  useQuery,
-} from '@appsemble/react-components';
+} from '@appsemble/preact-components';
 import { type AppInvite as AppInviteType, type AppMemberInfo } from '@appsemble/types';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ReactNode, useCallback, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { useNavigate, useParams } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
+import { useLocation, useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
+import { BreachedPasswordSimpleFormError } from '../BreachedPasswordSimpleFormError/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
+import { PasswordField } from '../PasswordField/index.js';
+import { PasswordStrengthIndicator } from '../PasswordStrengthIndicator/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
+import { useData } from '../../utils/useData.js';
+import { useQuery } from '../../utils/useQuery.js';
 
 interface AppInviteFormProps {
   readonly password: string;
@@ -31,13 +32,13 @@ interface AppInviteFormProps {
   readonly accepted: boolean;
 }
 
-export function AppInvite(): ReactNode {
+export function AppInvite(): VNode {
   const query = useQuery();
 
   const { definition } = useAppDefinition();
   const { passwordLogin } = useAppMember();
   const { getAppMessage } = useAppMessages();
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   const { lang } = useParams<{ lang: string }>();
 
   const [accepted, setAccepted] = useState(false);

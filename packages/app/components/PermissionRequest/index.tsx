@@ -1,4 +1,5 @@
-import { type ReactNode, useEffect } from 'react';
+import { type VNode } from 'preact';
+import { useEffect } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { getNotificationStrategy } from '../../utils/notifications.js';
@@ -9,7 +10,7 @@ import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvid
 /**
  * Render all different authentication methods for an app.
  */
-export function PermissionRequest(): ReactNode {
+export function PermissionRequest(): VNode | null {
   const { definition } = useAppDefinition();
   const { appMemberInfo, appMemberRoles } = useAppMember();
   const { permission, requestPermission, subscribe } = useServiceWorkerRegistration();

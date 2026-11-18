@@ -1,0 +1,229 @@
+import { type BaseMessage } from '@appsemble/lang-sdk';
+import { Message } from '@appsemble/preact-components';
+import classNames from 'classnames';
+import { type ComponentChildren, createContext, Fragment, type VNode } from 'preact';
+import { createPortal } from 'preact/compat';
+import { useCallback, useContext, useLayoutEffect, useRef, useState } from 'preact/hooks';
+
+import styles from './index.module.css';
+import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
+import { type ModalDialog, useModalDialogs } from '../ModalCard/useModalDialog.js';
+
+export interface Msg extends BaseMessage {
+  /**
+   * The content of the message to display.
+   */
+  body: string;
+}
+
+export type ShowMessage = (message: Msg | string) => void;
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const Context = createContext<ShowMessage>(() => {});
+
+interface MessagesProviderProps {
+  /**
+   * Children to which {@link useMessages} will be available.
+   */
+  readonly children: ComponentChildren;
+}
+
+interface UniqueMessage extends Msg {
+  id: number;
+
+  dismiss?: () => void;
+
+  /**
+   * Whether the message transitions out.
+   */
+  exiting?: boolean;
+}
+
+const transitionDuration = 300;
+
+/**
+ * The messages that finished transitioning in.
+ */
+const shownMessages = new WeakSet<UniqueMessage>();
+
+/**
+ * The keys of the live regions rendered inside modal dialogs.
+ */
+const regionKeys = new WeakMap<ModalDialog, string>();
+let regionCount = 0;
+
+function getRegionKey(modalDialog: ModalDialog): string {
+  if (!regionKeys.has(modalDialog)) {
+    regionCount += 1;
+    regionKeys.set(modalDialog, String(regionCount));
+  }
+  return regionKeys.get(modalDialog)!;
+}
+
+interface LiveRegionProps {
+  /**
+   * Whether the messages are rendered in this live region.
+   */
+  readonly active: boolean;
+
+  readonly children: ComponentChildren;
+
+  /**
+   * The modal dialogs. The active live region is raised to the top when they change, so it's
+   * rendered on top of them.
+   */
+  readonly modalDialogs: readonly ModalDialog[];
+
+  /**
+   * The name of the slot of a dialog in a shadow root to render the live region in.
+   */
+  readonly slot?: string;
+}
+
+/**
+ * Render a live region on top of the page.
+ *
+ * The live region is shown as a popover, so it's rendered on top of a dialog that transitions out.
+ */
+function LiveRegion({ active, children, modalDialogs, slot }: LiveRegionProps): VNode {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const region = ref.current!;
+    if (!('showPopover' in region)) {
+      return;
+    }
+    region.setAttribute('popover', 'manual');
+    if (active) {
+      region.hidePopover();
+    }
+    region.showPopover();
+  }, [active, modalDialogs]);
+
+  return (
+    <div aria-live="polite" className={`${styles.root} mx-3`} ref={ref} slot={slot}>
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Render messages that may be pushed using {@link useMessages}.
+ *
+ * While a modal dialog is open, the messages are rendered inside the topmost dialog, because
+ * everything outside of it is blocked. Every modal dialog has its own live region, which is rendered
+ * as long as the dialog is shown, because screen readers only announce content that is added to an
+ * existing live region.
+ */
+export function MessagesProvider({ children }: MessagesProviderProps): VNode {
+  const { formatMessage } = useIntl();
+  const [, setRenderCount] = useState(0);
+  const forceUpdate = useCallback(() => setRenderCount((count) => count + 1), []);
+  const modalDialogs = useModalDialogs();
+
+  // The counter is used as a key of messages.
+  const counter = useRef(0);
+  // Updating messages should not redefine the push callback.
+  const msgs = useRef<UniqueMessage[]>([]);
+
+  const push = useCallback(
+    (message: Msg | string) => {
+      const id = counter.current;
+      counter.current += 1;
+      const uniqueMessage: UniqueMessage =
+        typeof message === 'string' ? { id, body: message } : { id, ...message };
+
+      const dismiss = (): void => {
+        if (uniqueMessage.exiting) {
+          return;
+        }
+        uniqueMessage.exiting = true;
+        forceUpdate();
+        setTimeout(() => {
+          msgs.current = msgs.current.filter((msg) => msg !== uniqueMessage);
+          forceUpdate();
+        }, transitionDuration);
+      };
+      uniqueMessage.dismiss = dismiss;
+      msgs.current.push(uniqueMessage);
+      // Since messages are in a ref, pushing a message won’t trigger a rerender.
+      forceUpdate();
+      setTimeout(() => shownMessages.add(uniqueMessage), transitionDuration);
+      const { dismissable, timeout = dismissable ? undefined : 5e3 } = uniqueMessage;
+
+      if (timeout) {
+        setTimeout(dismiss, timeout);
+      }
+    },
+    [forceUpdate],
+  );
+
+  const activeDialog = modalDialogs.at(-1);
+  const lastActiveDialog = useRef(activeDialog);
+  if (lastActiveDialog.current !== activeDialog) {
+    lastActiveDialog.current = activeDialog;
+    // A message that transitions out isn't rendered in another live region, so it isn't announced
+    // again.
+    msgs.current = msgs.current.filter((message) => !message.exiting);
+  }
+
+  const renderRegion = (active: boolean, slot?: string): VNode => (
+    <LiveRegion active={active} modalDialogs={modalDialogs} slot={slot}>
+      {(active ? msgs.current : []).map((message) => {
+        // A message is rendered in another live region when a modal dialog opens or closes. A
+        // message that finished transitioning in or transitions out isn't transitioned in or
+        // announced assertively.
+        const entering = !shownMessages.has(message) && !message.exiting;
+        return (
+          <Message
+            className={classNames(styles.content, styles[message.layout || 'bottom'], {
+              [styles.messageEnter]: entering,
+              [styles.messageExit]: message.exiting,
+            })}
+            color={message.color || 'danger'}
+            key={message.id}
+          >
+            <span
+              className={styles.body}
+              role={(message.color || 'danger') === 'danger' && entering ? 'alert' : undefined}
+            >
+              {message.body}
+            </span>
+            {message.dismissable ? (
+              <button
+                aria-label={formatMessage(messages.dismiss)}
+                className={`delete ${styles.deleteButton}`}
+                onClick={message.dismiss}
+                type="button"
+              />
+            ) : null}
+          </Message>
+        );
+      })}
+    </LiveRegion>
+  );
+
+  return (
+    <Context.Provider value={push}>
+      {children}
+      {renderRegion(!modalDialogs.length)}
+      {modalDialogs.map((modalDialog, index) => {
+        const root = modalDialog.dialog.getRootNode();
+        // The shadow host renders content inside a dialog in its shadow root using a slot.
+        return (
+          <Fragment key={getRegionKey(modalDialog)}>
+            {createPortal(
+              renderRegion(index === modalDialogs.length - 1, modalDialog.slot),
+              root instanceof ShadowRoot ? root.host : modalDialog.dialog,
+            )}
+          </Fragment>
+        );
+      })}
+    </Context.Provider>
+  );
+}
+
+export function useMessages(): ShowMessage {
+  return useContext(Context);
+}

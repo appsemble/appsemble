@@ -1,7 +1,6 @@
 import { type AppRole, getAppRoles } from '@appsemble/lang-sdk';
 import {
-  type MinimalHTMLElement,
-  ModalCard,
+  Option,
   SelectField,
   SimpleForm,
   SimpleFormError,
@@ -9,10 +8,10 @@ import {
   SimpleSubmit,
   type Toggle,
   useToggle,
-} from '@appsemble/react-components';
+} from '@appsemble/preact-components';
 import { type AppMemberInfo } from '@appsemble/types';
-import { type ChangeEvent, type ReactNode, useCallback, useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { type VNode } from 'preact';
+import { useCallback, useMemo, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -20,12 +19,14 @@ import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
+import { ModalCard } from '../ModalCard/index.js';
 
 interface DemoLoginProps {
   readonly modal?: Toggle;
 }
 
-export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
+export function DemoLogin({ modal }: DemoLoginProps): VNode {
   const { demoLogin } = useAppMember();
   const { definition: appDefinition } = useAppDefinition();
   const { getAppMessage } = useAppMessages();
@@ -68,14 +69,14 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
 
   const selectedAppRoleDescription = getRoleDescription(selectedAppRole);
 
-  const changeDemoAppMember = (event: ChangeEvent<MinimalHTMLElement>): void => {
+  const changeDemoAppMember = (event: unknown, sub: string): void => {
     setSelectedDemoAppMember(
-      demoAppMembers.find((appMember) => appMember.sub === event.target.value) ?? demoAppMembers[0],
+      demoAppMembers.find((appMember) => appMember.sub === sub) ?? demoAppMembers[0],
     );
   };
 
-  const changeAppRole = (event: ChangeEvent<MinimalHTMLElement>): void => {
-    setSelectedAppRole(event.target.value);
+  const changeAppRole = (event: unknown, appRole: string): void => {
+    setSelectedAppRole(appRole);
   };
 
   const setLogin = (): void => {
@@ -126,11 +127,12 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
             name="appMemberId"
             onChange={changeDemoAppMember}
             required
+            value={demoAppMember.sub}
           >
             {demoAppMembers.map((appMember) => (
-              <option key={appMember.sub} value={appMember.sub}>
+              <Option key={appMember.sub} value={appMember.sub}>
                 {appMember.name}
-              </option>
+              </Option>
             ))}
           </SimpleFormField>
           <SimpleSubmit allowPristine dataTestId="login" disabled={busy.enabled} onClick={setLogin}>
@@ -155,12 +157,14 @@ export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
             required
           >
             {appRoles.map((appRole) => (
-              <option key={appRole} value={appRole}>
-                {getAppMessage({
-                  id: `app.roles.${appRole}`,
-                  defaultMessage: appRole,
-                }).format()}
-              </option>
+              <Option key={appRole} value={appRole}>
+                {
+                  getAppMessage({
+                    id: `app.roles.${appRole}`,
+                    defaultMessage: appRole,
+                  }).format() as string
+                }
+              </Option>
             ))}
           </SimpleFormField>
           <SimpleSubmit

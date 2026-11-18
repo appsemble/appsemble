@@ -127,16 +127,16 @@ export const link: ActionCreator<'link'> = ({
   ];
 };
 
-export const back: ActionCreator<'link.back'> = ({ navigate }) => [
+export const back: ActionCreator<'link.back'> = () => [
   (data) => {
-    navigate?.(-1);
+    window.history.back();
     return data;
   },
 ];
 
-export const next: ActionCreator<'link.next'> = ({ navigate }) => [
+export const next: ActionCreator<'link.next'> = () => [
   (data) => {
-    navigate?.(+1);
+    window.history.forward();
     return data;
   },
 ];

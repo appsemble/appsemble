@@ -46,8 +46,8 @@ export function ValuePickerProvider<T>({
 
   return (
     <>
-      <span ref={errorLinkRef as unknown as Ref<HTMLDivElement>} />
-      <Context.Provider value={context}>{children}</Context.Provider>
+      <span ref={errorLinkRef as unknown as Ref<HTMLSpanElement>} />
+      <Context.Provider value={context as ValuePickerContext<unknown>}>{children}</Context.Provider>
     </>
   );
 }

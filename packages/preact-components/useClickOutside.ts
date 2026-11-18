@@ -8,8 +8,13 @@ import { useEventListener } from './index.js';
  *
  * @param ref A ref for the HTML element.
  * @param handler The function to run.
+ * @param exceptionRef A ref which is exempt from triggering the handler.
  */
-export function useClickOutside(ref: RefObject<Element>, handler: (event: Event) => void): void {
+export function useClickOutside(
+  ref: RefObject<Element>,
+  handler: (event: Event) => void,
+  exceptionRef?: RefObject<Element>,
+): void {
   const listener = useCallback(
     (event: Event): void => {
       if (!ref.current) {
@@ -19,13 +24,16 @@ export function useClickOutside(ref: RefObject<Element>, handler: (event: Event)
       const composedPath = event.composedPath();
 
       // Do nothing if clicking ref's element or descendent elements
-      if (composedPath.indexOf(ref.current) > 0) {
+      if (composedPath.includes(ref.current)) {
+        return;
+      }
+      if (exceptionRef?.current && composedPath.includes(exceptionRef.current)) {
         return;
       }
 
       handler(event);
     },
-    [handler, ref],
+    [exceptionRef, handler, ref],
   );
 
   useEventListener(document, 'mousedown', listener);
