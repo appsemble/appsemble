@@ -1,6 +1,6 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render, screen, within } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { render, screen, within } from '@testing-library/preact';
+import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ProfileDropdown } from './index.js';
@@ -57,14 +57,13 @@ afterEach(() => {
 });
 
 function renderProfileDropdown(): void {
+  window.history.replaceState(null, '', '/en/Home');
   render(
     <IntlProvider locale="en" messages={{}}>
       <AppIconProvider>
-        <MemoryRouter initialEntries={['/en/Home']}>
-          <Routes>
-            <Route element={<ProfileDropdown />} path="/:lang/*" />
-          </Routes>
-        </MemoryRouter>
+        <Route path="/:lang/*?">
+          <ProfileDropdown />
+        </Route>
       </AppIconProvider>
     </IntlProvider>,
   );

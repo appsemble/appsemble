@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { Icon } from '@appsemble/preact-components';
 import { type ComponentChildren, type JSX, type VNode } from 'preact';
 import { useCallback, useContext } from 'preact/hooks';
-import { Link } from 'react-router-dom';
+import { Link } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { CollapsedContext } from '../CollapsibleMenuSection/index.js';
@@ -111,12 +111,17 @@ export function MenuItem({
 
   return to ? (
     <NavLink
-      className={classNames(`is-relative is-flex is-align-items-center ${styles.root}`)}
+      className={(isActive) =>
+        classNames(
+          `is-relative is-flex is-align-items-center is-radiusless ${styles.root}`,
+          isActive && 'is-active',
+        )
+      }
       end={end}
       title={title}
       to={to}
     >
-      {({ isActive }) => renderMenuItem(isActive)}
+      {renderMenuItem}
     </NavLink>
   ) : (
     <div

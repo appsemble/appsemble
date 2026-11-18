@@ -1,7 +1,7 @@
 import { getPagePathSegment } from '@appsemble/lang-sdk';
 import { Message } from '@appsemble/preact-components';
-import { type ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { Redirect, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -25,17 +25,21 @@ import { useQuery } from '../../utils/useQuery.js';
 
 type LoginState = 'demo' | 'form' | 'permission-error' | 'totp-setup' | 'totp';
 
-export function Login(): ReactNode {
+export function Login(): VNode {
   const { definition } = useAppDefinition();
   const { totpPending } = useAppMember();
   const { getAppMessage } = useAppMessages();
+  const { lang } = useParams<{ lang: string }>();
   const qs = useQuery();
   const redirect = qs.get('redirect');
 
   if (!definition.security) {
     return (
-      <Navigate
-        to={redirect || `../${getPagePathSegment({ name: definition.defaultPage }, getAppMessage)}`}
+      <Redirect
+        to={
+          redirect ||
+          `/${lang}/${getPagePathSegment({ name: definition.defaultPage }, getAppMessage)}`
+        }
       />
     );
   }

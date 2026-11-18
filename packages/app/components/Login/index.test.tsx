@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { render, screen } from '@testing-library/preact';
+import { Route } from 'wouter-preact';
 import { describe, expect, it, vi } from 'vitest';
 
 import { Login } from './index.js';
@@ -23,21 +23,15 @@ describe('Login', () => {
       }),
     } as never);
 
+    window.history.replaceState(null, '', '/en/Login');
     render(
       <IntlProvider locale="en" messages={{}}>
-        <MemoryRouter initialEntries={['/en/Login']}>
-          <Routes>
-            <Route
-              element={
-                <Routes>
-                  <Route element={<Login />} path="/Login" />
-                  <Route element={<p>Home page</p>} path="/home" />
-                </Routes>
-              }
-              path="/:lang/*"
-            />
-          </Routes>
-        </MemoryRouter>
+        <Route path="/:lang/Login">
+          <Login />
+        </Route>
+        <Route path="/:lang/home">
+          <p>Home page</p>
+        </Route>
       </IntlProvider>,
     );
 

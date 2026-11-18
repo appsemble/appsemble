@@ -1,6 +1,7 @@
 import { getPagePathSegment, remap, type RemapperContext } from '@appsemble/lang-sdk';
-import { type ReactNode, useMemo } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { type ComponentChildren, type VNode } from 'preact';
+import { useMemo } from 'preact/hooks';
+import { Link, useLocation, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -37,7 +38,7 @@ const NAVBAR_DEFAULT_LAYOUT_WITHOUT_LOGO = {
 };
 
 interface AppBarProps {
-  readonly children?: ReactNode;
+  readonly children?: ComponentChildren;
 
   /**
    * Whether the page renders its name as an H1 of its own, so the title bar shows it as text.
@@ -51,7 +52,7 @@ interface AppBarProps {
  *
  * This displays the app name,
  */
-export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): ReactNode {
+export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): VNode | null {
   const { definition, demoMode } = useAppDefinition();
   const { appMemberGroups, appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn } =
     useAppMember();
@@ -59,7 +60,7 @@ export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): Rea
   const { page } = usePage();
   const { getAppMessage, getMessage } = useAppMessages();
   const { lang: locale } = useParams();
-  const { pathname } = useLocation();
+  const [pathname] = useLocation();
   const logoInNavbar = (definition.layout?.logo?.position || 'hidden') === 'navbar';
   const BREAKPOINTS = useGridBreakpoints(definition.layout?.breakpoints);
   const isDesktop = useIsDesktop(definition.layout?.breakpoints);

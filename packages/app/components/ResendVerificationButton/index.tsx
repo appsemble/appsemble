@@ -1,6 +1,7 @@
 import { Button } from '@appsemble/preact-components';
 import axios from 'axios';
-import { type ReactNode, useCallback } from 'react';
+import { type VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 
 import { messages } from './messages.js';
 import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
@@ -12,7 +13,7 @@ interface ResendVerificationButtonProps {
   readonly className?: string;
 }
 
-export function ResendVerificationButton({ className }: ResendVerificationButtonProps): ReactNode {
+export function ResendVerificationButton({ className }: ResendVerificationButtonProps): VNode {
   const { appMemberInfo } = useAppMember();
   const push = useMessages();
   const { formatMessage } = useIntl();

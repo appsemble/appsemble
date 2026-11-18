@@ -1,9 +1,9 @@
 import { type AppDefinition, type BuiltinPagesLayoutDefinition } from '@appsemble/lang-sdk';
 import { noop } from '@appsemble/utils';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
 import axios from 'axios';
-import { type ReactNode } from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { type ComponentChildren } from 'preact';
+import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppDebug } from '../AppDebug/index.js';
@@ -60,10 +60,15 @@ vi.mock('../../utils/settings.js', async (importOriginal) => {
 });
 
 // A page that navigates away unmounts, which would hide the state it renders on its way out.
-vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react-router-dom')>();
+vi.mock('wouter-preact', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('wouter-preact')>();
 
-  return { ...actual, useNavigate: () => vi.fn() };
+  return {
+    ...actual,
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- This mocks a component export.
+    Redirect: () => null,
+    useLocation: () => [actual.useLocation()[0], vi.fn()],
+  };
 });
 
 const appMember = {
@@ -142,16 +147,13 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-function renderRoute(element: ReactNode, path = '/en/Page'): void {
+function renderRoute(element: ComponentChildren, path = '/en/Page'): void {
+  window.history.replaceState(null, '', path);
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={[path]}>
-        <MenuProvider>
-          <Routes>
-            <Route element={element} path="/:lang/*" />
-          </Routes>
-        </MenuProvider>
-      </MemoryRouter>
+      <MenuProvider>
+        <Route path="/:lang/*?">{element}</Route>
+      </MenuProvider>
     </IntlProvider>,
     { wrapper: IconTestWrapper },
   );

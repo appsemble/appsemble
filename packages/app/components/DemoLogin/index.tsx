@@ -10,7 +10,8 @@ import {
   useToggle,
 } from '@appsemble/preact-components';
 import { type AppMemberInfo } from '@appsemble/types';
-import { type ReactNode, useCallback, useMemo, useState } from 'react';
+import { type VNode } from 'preact';
+import { useCallback, useMemo, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -25,7 +26,7 @@ interface DemoLoginProps {
   readonly modal?: Toggle;
 }
 
-export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
+export function DemoLogin({ modal }: DemoLoginProps): VNode {
   const { demoLogin } = useAppMember();
   const { definition: appDefinition } = useAppDefinition();
   const { getAppMessage } = useAppMessages();

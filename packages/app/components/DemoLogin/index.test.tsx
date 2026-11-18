@@ -1,6 +1,6 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { type AppMemberInfo } from '@appsemble/types';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/preact';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { DemoLogin } from './index.js';

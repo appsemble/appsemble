@@ -9,7 +9,8 @@ import {
 import { emailPattern } from '@appsemble/utils';
 import { type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'wouter-preact';
+import { useLocationProperty } from 'wouter-preact/use-browser-location';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -35,7 +36,9 @@ export function LoginForm({
   resetPasswordLink,
 }: LoginFormProps): VNode {
   const busy = useToggle();
-  const location = useLocation();
+  const locationSuffix = useLocationProperty(
+    () => `${window.location.search}${window.location.hash}`,
+  );
 
   const handleLogin = useCallback(
     async (credentials: LoginFormValues) => {
@@ -90,10 +93,7 @@ export function LoginForm({
       <FormButtons>
         <div>
           {enableRegistration ? (
-            <Link
-              className="is-block"
-              to={{ pathname: registerLink, search: location.search, hash: location.hash }}
-            >
+            <Link className="is-block" to={`${registerLink}${locationSuffix}`}>
               <FormattedMessage {...messages.registerLink} />
             </Link>
           ) : null}

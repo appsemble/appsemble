@@ -1,5 +1,5 @@
 import { pwaInstallHandler } from 'pwa-install-handler';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'preact/hooks';
 
 /**
  * Track whether the browser offers to install the app.

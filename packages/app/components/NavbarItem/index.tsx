@@ -1,4 +1,5 @@
 import { ButtonChildren, type ButtonChildrenProps } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { type ComponentProps, type JSX, type VNode } from 'preact';
 
 import styles from './index.module.css';
@@ -44,9 +45,13 @@ export function NavbarItem({
       {content}
     </button>
   ) : (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
-    <NavLink className="navbar-item" {...props} to={to}>
+    <NavLink
+      className={(isActive) => classNames('navbar-item is-radiusless', isActive && 'is-active')}
+      {...props}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
+      to={to}
+    >
       {content}
     </NavLink>
   );

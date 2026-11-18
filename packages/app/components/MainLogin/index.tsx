@@ -1,7 +1,8 @@
 import { getRouteSegment } from '@appsemble/lang-sdk';
 import { Button, Message, useToggle } from '@appsemble/preact-components';
-import { type ReactNode, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
+import { useLocation, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -23,7 +24,7 @@ import { TotpLogin } from '../TotpLogin/index.js';
 import { TotpSetup, type TotpSetupTokenResponse } from '../TotpSetup/index.js';
 import { useQuery } from '../../utils/useQuery.js';
 
-export function MainLogin(): ReactNode {
+export function MainLogin(): VNode {
   const { lang } = useParams<{ lang: string }>();
   const busy = useToggle(false);
   const { formatMessage } = useIntl();
@@ -46,7 +47,7 @@ export function MainLogin(): ReactNode {
       : logins,
   };
 
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
 
   const onPasswordLogin = useCallback(
     async (credentials: LoginFormValues): Promise<void> => {

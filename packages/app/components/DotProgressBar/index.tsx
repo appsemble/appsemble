@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ReactNode } from 'react';
+import { type VNode } from 'preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -10,7 +10,7 @@ interface DotProgressBarProps {
   readonly active: number;
 }
 
-export function DotProgressBar({ active, amount }: DotProgressBarProps): ReactNode {
+export function DotProgressBar({ active, amount }: DotProgressBarProps): VNode {
   const { formatMessage } = useIntl();
 
   return (

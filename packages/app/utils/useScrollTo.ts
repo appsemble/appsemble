@@ -1,5 +1,5 @@
 import { type MutableRef, useEffect } from 'preact/hooks';
-import { useLocation } from 'react-router-dom';
+import { useLocationProperty } from 'wouter-preact/use-browser-location';
 
 /**
  * Scroll to an element if the id matches the location hash.
@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
  * @param ref A ref which holds the the element to scroll to.
  */
 export function useScrollTo(ref: MutableRef<HTMLElement | null>): void {
-  const { hash } = useLocation();
+  const hash = useLocationProperty(() => window.location.hash);
 
   useEffect(() => {
     const element = ref.current;

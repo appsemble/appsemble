@@ -1,7 +1,8 @@
 import { Message } from '@appsemble/preact-components';
 import axios from 'axios';
-import { type ReactNode, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { useEffect, useState } from 'preact/hooks';
+import { Link, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -10,7 +11,7 @@ import { apiUrl, appId } from '../../utils/settings.js';
 import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
 import { useQuery } from '../../utils/useQuery.js';
 
-export function Verify(): ReactNode {
+export function Verify(): VNode {
   const [submitting, setSubmitting] = useState(true);
   const [success, setSuccess] = useState(false);
   const qs = useQuery();

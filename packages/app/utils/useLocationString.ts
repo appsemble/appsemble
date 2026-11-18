@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocationProperty } from 'wouter-preact/use-browser-location';
 
 /**
  * Get a string representing the current location.
@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom';
  * @returns The string representing the current location.
  */
 export function useLocationString(): string {
-  const location = useLocation();
-
-  return `${location.pathname}${location.search}${location.hash}`;
+  return useLocationProperty(
+    () => `${window.location.pathname}${window.location.search}${window.location.hash}`,
+  );
 }

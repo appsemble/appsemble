@@ -1,6 +1,6 @@
 import { Button, Content, Message } from '@appsemble/preact-components';
-import { type ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { Link } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { FormattedMessage } from '../IntlProvider/index.js';
@@ -23,7 +23,7 @@ interface ErrorFallbackProps {
 /**
  * Capture renderer errors using Sentry.
  */
-export function ErrorFallback({ eventId, resetErrorBoundary }: ErrorFallbackProps): ReactNode {
+export function ErrorFallback({ eventId, resetErrorBoundary }: ErrorFallbackProps): VNode {
   const appMemberContext = useAppMember();
 
   return (

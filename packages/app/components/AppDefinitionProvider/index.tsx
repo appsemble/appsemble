@@ -1,15 +1,8 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { useEventListener } from '@appsemble/preact-components';
 import { type BlockManifest, type ProjectImplementations } from '@appsemble/types';
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { type ComponentChildren, createContext, type VNode } from 'preact';
+import { useCallback, useContext, useMemo, useRef, useState } from 'preact/hooks';
 
 import {
   apiUrl,
@@ -29,7 +22,7 @@ interface AppDefinitionContext {
 }
 
 interface AppDefinitionProviderProps {
-  readonly children: ReactNode;
+  readonly children: ComponentChildren;
 }
 
 function replaceStyle(id: string, style: string): void {
@@ -54,7 +47,7 @@ const Context = createContext<AppDefinitionContext>({
   snapshotId,
 });
 
-export function AppDefinitionProvider({ children }: AppDefinitionProviderProps): ReactNode {
+export function AppDefinitionProvider({ children }: AppDefinitionProviderProps): VNode {
   const [blockManifests, setBlockManifests] = useState(initialBlockManifests);
   const [definition, setDefinition] = useState(initialDefinition);
   const [revision, setRevision] = useState(0);

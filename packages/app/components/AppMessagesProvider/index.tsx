@@ -5,16 +5,9 @@ import { detectLocale, has, objectCache } from '@appsemble/utils';
 import { memoize } from '@formatjs/fast-memoize';
 import axios from 'axios';
 import { type Formatters, IntlMessageFormat } from 'intl-messageformat';
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { type ComponentChildren, createContext, type VNode } from 'preact';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/hooks';
+import { useLocation, useParams } from 'wouter-preact';
 
 import { IntlProvider } from '../IntlProvider/index.js';
 import { Loader } from '../Loader/index.js';
@@ -23,7 +16,7 @@ import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useLocationString } from '../../utils/useLocationString.js';
 
 interface IntlMessagesProviderProps {
-  readonly children: ReactNode;
+  readonly children: ComponentChildren;
 }
 
 interface AppMessageContext {
@@ -57,9 +50,9 @@ const formatters = {
   ),
 } as Formatters;
 
-export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactNode {
+export function AppMessagesProvider({ children }: IntlMessagesProviderProps): VNode {
   const { definition } = useAppDefinition();
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   const redirect = useLocationString();
   const { lang } = useParams<{ lang: string }>();
 
@@ -74,8 +67,6 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
     if (lang === defaultLanguage || languages.includes(lang)) {
       return;
     }
@@ -97,14 +88,11 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
     if (lang !== defaultLanguage && !languages.includes(lang)) {
       document.documentElement.lang = defaultLocale;
       return;
     }
 
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     document.documentElement.lang = lang;
     // A response for a language the user has already navigated away from is discarded, so the
     // routes never run against the messages of another language.
@@ -191,11 +179,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   return (
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     <Context.Provider value={value}>
-      <IntlProvider
-        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-        locale={lang}
-        messages={intlMessages}
-      >
+      <IntlProvider locale={lang} messages={intlMessages}>
         {children}
       </IntlProvider>
     </Context.Provider>

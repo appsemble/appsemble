@@ -3,8 +3,7 @@ import { EventEmitter } from 'node:events';
 import { remap, type AppDefinition, type BlockDefinition } from '@appsemble/lang-sdk';
 import { type EventParams } from '@appsemble/sdk';
 import { noop } from '@appsemble/utils';
-import { cleanup, render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { cleanup, render, screen } from '@testing-library/preact';
 import { afterEach, expect, it, vi } from 'vitest';
 import { MessagesProvider } from '../MessagesProvider/index.js';
 
@@ -93,19 +92,17 @@ it('should display error and success messages from controller action callbacks',
   render(
     <IntlProvider locale="en">
       <MessagesProvider>
-        <MemoryRouter>
-          <BlockList
-            appStorage={{} as never}
-            blocks={blocks}
-            ee={ee}
-            pageDefinition={definition.pages[0]}
-            prefix="pages.home"
-            prefixIndex="pages.0"
-            remap={(mapping, data) => remap(mapping, data, {} as never)}
-            showDialog={noop as never}
-            showShareDialog={noop as never}
-          />
-        </MemoryRouter>
+        <BlockList
+          appStorage={{} as never}
+          blocks={blocks}
+          ee={ee}
+          pageDefinition={definition.pages[0]}
+          prefix="pages.home"
+          prefixIndex="pages.0"
+          remap={(mapping, data) => remap(mapping, data, {} as never)}
+          showDialog={noop as never}
+          showShareDialog={noop as never}
+        />
       </MessagesProvider>
     </IntlProvider>,
     { wrapper: IconTestWrapper },
