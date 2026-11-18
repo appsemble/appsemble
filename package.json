@@ -49,7 +49,7 @@
     },
     "katex": "0.19.1",
     "third-party-web": "0.30.0",
-    "vscode-languageserver-types": "3.17.5",
+    "vscode-languageserver-types": "3.18.5",
     "yaml-language-server": {
       "vscode-languageserver": "^11.0.0"
     }
