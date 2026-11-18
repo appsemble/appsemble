@@ -1,8 +1,10 @@
-import { ModalCard, useToggle } from '@appsemble/react-components';
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { useToggle } from '@appsemble/preact-components';
+import { type VNode } from 'preact';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
+import { ModalCard } from '../ModalCard/index.js';
 import { displayInstallationPrompt } from '../../utils/settings.js';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -31,7 +33,7 @@ function getInstallationState(): {
   return { isAndroid, isIOS, isSafari, isStandalone };
 }
 
-export function InstallationTracker(): ReactNode {
+export function InstallationTracker(): VNode | null {
   const promptToggle = useToggle(true);
   const hasPromptedRef = useRef(false);
   const [showPrompt, setShowPrompt] = useState(false);

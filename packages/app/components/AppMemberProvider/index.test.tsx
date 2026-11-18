@@ -1,12 +1,12 @@
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/preact';
 import {
   AxiosError,
   AxiosHeaders,
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios';
-import { type ReactNode } from 'react';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppMemberProvider, useAppMember } from './index.js';
@@ -67,28 +67,20 @@ let requestInterceptor:
   | undefined;
 
 let accessToken: string;
-let location: ReturnType<typeof useLocation> | undefined;
 
-function Consumer(): ReactNode {
+function Consumer(): VNode | null {
   appMember = useAppMember();
-  location = useLocation();
   return null;
 }
 
 function renderProvider(initialEntry = '/en/Home'): void {
+  window.history.replaceState(null, '', initialEntry);
   render(
-    <MemoryRouter initialEntries={[initialEntry]}>
-      <Routes>
-        <Route
-          element={
-            <AppMemberProvider>
-              <Consumer />
-            </AppMemberProvider>
-          }
-          path="/:lang/*"
-        />
-      </Routes>
-    </MemoryRouter>,
+    <Route path="/:lang/*?">
+      <AppMemberProvider>
+        <Consumer />
+      </AppMemberProvider>
+    </Route>,
   );
 }
 
@@ -128,7 +120,6 @@ beforeEach(() => {
     getMessage: () => ({ format: () => '' }),
   } as never);
   appMember = undefined;
-  location = undefined;
   requestInterceptor = undefined;
   definitionSecurity.value = undefined;
   accessToken = createAccessToken();
@@ -202,7 +193,10 @@ describe('AppMemberProvider', () => {
 
     // The second factor is only rendered on the login page, which keeps the page the login was
     // started for.
-    expect(location).toMatchObject({ pathname: '/en/Login', search: '?redirect=%2Fen%2FSecret' });
+    expect(window.location).toMatchObject({
+      pathname: '/en/Login',
+      search: '?redirect=%2Fen%2FSecret',
+    });
     expect(appMember?.totpPending).toMatchObject({ redirect: '/en/Secret', totpToken: 'pending' });
   });
 
@@ -216,7 +210,7 @@ describe('AppMemberProvider', () => {
       await appMember?.passwordLogin({ username: 'test@example.com', password: 'password' });
     });
 
-    expect(location).toMatchObject({ pathname: '/en/Login', search: '' });
+    expect(window.location).toMatchObject({ pathname: '/en/Login', search: '' });
     expect(appMember?.totpPending).toMatchObject({ totpToken: 'pending' });
   });
 

@@ -1,14 +1,14 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render, screen } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter } from 'react-router-dom';
+import { render, screen } from '@testing-library/preact';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ProfileMenuItems } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
+import { IconTestWrapper } from '../../utils/test-utils.js';
 
 const appDefinition = {
   name: 'Test App',
@@ -36,10 +36,9 @@ function renderProfileMenuItems(
   } as never);
   render(
     <IntlProvider locale="en">
-      <MemoryRouter>
-        <ProfileMenuItems onDemoLogin={vi.fn()} />
-      </MemoryRouter>
+      <ProfileMenuItems onDemoLogin={vi.fn()} />
     </IntlProvider>,
+    { wrapper: IconTestWrapper },
   );
 }
 

@@ -7,12 +7,17 @@ import {
   hasBuiltinPagesGridArea,
   resendBannerGridArea,
 } from '@appsemble/lang-sdk';
-import { Content, Loader, Title, useMeta } from '@appsemble/react-components';
+import { Content } from '@appsemble/preact-components';
+import { type MessageDescriptor } from '@formatjs/intl';
 import classNames from 'classnames';
-import { type ReactNode, useMemo } from 'react';
-import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
+import { type ComponentChildren, type VNode } from 'preact';
+import { useMemo } from 'preact/hooks';
 
 import styles from './index.module.css';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
+import { Loader } from '../Loader/index.js';
+import { useMeta } from '../Meta/index.js';
+import { Title } from '../Title/index.js';
 import { titleBarShowsPageName } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
@@ -61,7 +66,7 @@ interface BuiltinPageProps {
   /**
    * What to render inside the title bar of the app.
    */
-  readonly appBarName?: ReactNode;
+  readonly appBarName?: ComponentChildren;
 
   /**
    * An additional class name for the content region, in both modes.
@@ -96,7 +101,7 @@ interface BuiltinPageProps {
   /**
    * The content of the page.
    */
-  readonly children: ReactNode;
+  readonly children: ComponentChildren;
 }
 
 /**
@@ -112,7 +117,7 @@ export function useBuiltinPagesLayout(): BuiltinPagesLayoutDefinition | undefine
 /**
  * A loader for a built-in page that is still resolving its state.
  */
-export function BuiltinPageLoader(): ReactNode {
+export function BuiltinPageLoader(): VNode {
   const layout = useBuiltinPagesLayout();
 
   return <Loader className={layout ? styles.loader : undefined} />;
@@ -135,7 +140,7 @@ export function BuiltinPage({
   showTitle,
   state,
   title,
-}: BuiltinPageProps): ReactNode {
+}: BuiltinPageProps): VNode {
   const { definition } = useAppDefinition();
   const { hasBottomNavigation } = usePage();
   const { formatMessage } = useIntl();

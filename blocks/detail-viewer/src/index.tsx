@@ -32,7 +32,7 @@ export function DetailViewer({
   }, [events, ready]);
 
   if (loading) {
-    return <Loader label={utils.formatMessage('loading')} />;
+    return <Loader label={utils.formatMessage('loading')} testId="loader-comp" />;
   }
 
   return (

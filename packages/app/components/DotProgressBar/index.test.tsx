@@ -1,8 +1,8 @@
-import { render, screen } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
+import { render, screen } from '@testing-library/preact';
 import { describe, expect, it } from 'vitest';
 
 import { DotProgressBar } from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 describe('DotProgressBar', () => {
   it('should announce the current step of the flow', () => {

@@ -147,7 +147,7 @@ export function SelectionInput({
     <>
       {!disableSearch && <Input className="mb-2" onChange={handleSearch} />}
       {loading ? (
-        <Loader label={utils.formatMessage('loading')} />
+        <Loader label={utils.formatMessage('loading')} testId="loader-comp" />
       ) : optionsError ? (
         <Message className="mt-4 mr-6 mb-4 ml-5" color="danger">
           <span>

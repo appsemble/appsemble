@@ -1,13 +1,10 @@
+import { noop } from '@appsemble/utils';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createTestAction } from '../makeActions.js';
 
 const navigate = vi.fn();
-vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) as typeof import('react-router-dom')),
-  useNavigate: () => navigate,
-}));
 
 let originalLocation: Location;
 
@@ -374,10 +371,10 @@ describe('link.back', () => {
   it('should go back in history', async () => {
     const action = createTestAction({
       definition: { type: 'link.back' },
-      navigate,
     });
+    const back = vi.spyOn(window.history, 'back').mockImplementation(noop);
     const result = await action({ input: 'data' });
-    expect(navigate).toHaveBeenCalledWith(-1);
+    expect(back).toHaveBeenCalledWith();
     expect(result).toStrictEqual({ input: 'data' });
   });
 });
@@ -386,10 +383,10 @@ describe('link.next', () => {
   it('should go forward in history', async () => {
     const action = createTestAction({
       definition: { type: 'link.next' },
-      navigate,
     });
+    const forward = vi.spyOn(window.history, 'forward').mockImplementation(noop);
     const result = await action({ input: 'data' });
-    expect(navigate).toHaveBeenCalledWith(1);
+    expect(forward).toHaveBeenCalledWith();
     expect(result).toStrictEqual({ input: 'data' });
   });
 });

@@ -1,30 +1,31 @@
 import {
   Button,
   FormButtons,
-  FormOutput,
   Icon,
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
-  Title,
-  useMessages,
-} from '@appsemble/react-components';
+} from '@appsemble/preact-components';
 import axios from 'axios';
-import { type ReactNode, useCallback, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { type VNode } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
 
 import { messages } from './messages.js';
+import { FormOutput } from '../FormOutput/index.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
+import { useMessages } from '../MessagesProvider/index.js';
+import { QRCode } from '../QRCode/index.js';
+import { Title } from '../Title/index.js';
 import { apiUrl, appId, demoMode, totp as totpSetting } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
-import { QRCode } from '../QRCode/index.js';
 
 interface SetupResponse {
   secret: string;
   otpauthUrl: string;
 }
 
-export function TotpSettings(): ReactNode {
+export function TotpSettings(): VNode | null {
   const { formatMessage } = useIntl();
   const { appMemberInfo, setAppMemberInfo } = useAppMember();
   const push = useMessages();

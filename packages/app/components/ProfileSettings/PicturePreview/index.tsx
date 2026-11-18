@@ -1,9 +1,9 @@
-import { useObjectURL, useSimpleForm } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
-import { useIntl } from 'react-intl';
+import { useObjectURL, useSimpleForm } from '@appsemble/preact-components';
+import { type VNode } from 'preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useIntl } from '../../IntlProvider/index.js';
 
 interface PicturePreviewProps {
   /**
@@ -17,7 +17,7 @@ interface PicturePreviewProps {
   readonly pictureCamera?: any;
 }
 
-export function PicturePreview({ pictureCamera, pictureUrl }: PicturePreviewProps): ReactNode {
+export function PicturePreview({ pictureCamera, pictureUrl }: PicturePreviewProps): VNode {
   const { formatMessage } = useIntl();
   const { values } = useSimpleForm();
 

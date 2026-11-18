@@ -1,5 +1,4 @@
-import { render, screen } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
+import { render, screen } from '@testing-library/preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../utils/settings.js', () => ({
@@ -21,6 +20,7 @@ function createMatchMedia(matches = false): typeof window.matchMedia {
 
 async function renderTracker(): Promise<void> {
   const { InstallationTracker } = await import('./index.js');
+  const { IntlProvider } = await import('../IntlProvider/index.js');
 
   render(
     <IntlProvider locale="en" messages={{}}>

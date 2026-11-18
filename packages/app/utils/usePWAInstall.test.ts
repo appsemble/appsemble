@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/preact';
 import { describe, expect, it, vi } from 'vitest';
 
 import { usePWAInstall } from './usePWAInstall.js';
