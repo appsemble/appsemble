@@ -44,7 +44,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@ngruychev/json-schema-to-ts": "0.0.1",
+    "@ngruychev/json-schema-to-ts": "0.0.2",
     "@odata/parser": "^0.2.14",
     "cron-parser": "^4.0.0",
     "date-fns": "^2.0.0",
