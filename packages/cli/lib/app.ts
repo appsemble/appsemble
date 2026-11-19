@@ -654,15 +654,15 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
 
   if (existsSync(configPath)) {
     try {
-      logger.info(`Deleting existing variables from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/variables`, { baseURL: remote });
-
       const appVariablesPath = join(configPath, 'variables.json');
       if (existsSync(appVariablesPath)) {
         const [appVariables] = (await readData(appVariablesPath)) as [
           AppConfigEntryDefinition[],
           string,
         ];
+
+        logger.info(`Deleting existing variables from app ${app.id}`);
+        await axios.delete(`/api/apps/${app.id}/variables`, { baseURL: remote });
 
         if (appVariables.length) {
           logger.info(`Publishing ${appVariables.length} app variable(s)`);
@@ -689,15 +689,15 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
     }
 
     try {
-      logger.info(`Deleting existing service secrets from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/secrets/service`, { baseURL: remote });
-
       const serviceSecretsPath = join(configPath, 'secrets', 'service.json');
       if (existsSync(serviceSecretsPath)) {
         const [serviceSecrets] = (await readData(serviceSecretsPath)) as [
           AppServiceSecretDefinition[],
           string,
         ];
+
+        logger.info(`Deleting existing service secrets from app ${app.id}`);
+        await axios.delete(`/api/apps/${app.id}/secrets/service`, { baseURL: remote });
 
         if (serviceSecrets.length) {
           logger.info(`Publishing ${serviceSecrets.length} app service secret(s)`);
@@ -731,15 +731,15 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
     }
 
     try {
-      logger.info(`Deleting existing saml secrets from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/secrets/saml`, { baseURL: remote });
-
       const samlSecretsPath = join(configPath, 'secrets', 'saml.json');
       if (existsSync(samlSecretsPath)) {
         const [samlSecrets] = (await readData(samlSecretsPath)) as [
           WritableAppSamlSecret[],
           string,
         ];
+
+        logger.info(`Deleting existing saml secrets from app ${app.id}`);
+        await axios.delete(`/api/apps/${app.id}/secrets/saml`, { baseURL: remote });
 
         if (samlSecrets.length) {
           logger.info(`Publishing ${samlSecrets.length} app saml secret(s)`);
@@ -771,12 +771,12 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
     }
 
     try {
-      logger.info(`Deleting existing oauth2 secrets from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/secrets/oauth2`, { baseURL: remote });
-
       const oauth2SecretsPath = join(configPath, 'secrets', 'oauth2.json');
       if (existsSync(oauth2SecretsPath)) {
         const [oauth2Secrets] = (await readData(oauth2SecretsPath)) as [AppOAuth2Secret[], string];
+
+        logger.info(`Deleting existing oauth2 secrets from app ${app.id}`);
+        await axios.delete(`/api/apps/${app.id}/secrets/oauth2`, { baseURL: remote });
 
         if (oauth2Secrets.length) {
           logger.info(`Publishing ${oauth2Secrets.length} app oauth2 secrets`);

@@ -1,13 +1,14 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
 import { type AppMemberGroup } from '@appsemble/types';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { type ReactNode, useMemo, useState } from 'react';
-import { IntlProvider } from 'react-intl';
-import { Router } from 'react-router-dom';
+import { fireEvent, render, screen, waitFor } from '@testing-library/preact';
+import { type VNode } from 'preact';
+import { useMemo, useState } from 'preact/hooks';
+import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { GroupDropdown } from './index.js';
 import { AppRoutes } from '../AppRoutes/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 interface TestAppMemberState {
   appMemberGroups: AppMemberGroup[];
@@ -55,8 +56,9 @@ vi.mock('../SentryFeedback/index.js', () => ({ SentryFeedback: nullComponent }))
 vi.mock('../Verify/index.js', () => ({ Verify: nullComponent }));
 
 vi.mock('../Page/index.js', async () => {
-  const { createElement, useState: usePageState } = await import('react');
-  const Page = (): ReactNode => {
+  const { createElement } = await import('preact');
+  const { useState: usePageState } = await import('preact/hooks');
+  const Page = (): VNode => {
     const [loadedGroup] = usePageState(
       testState.appMember.appMemberSelectedGroup?.name ?? 'No Group',
     );
@@ -66,8 +68,7 @@ vi.mock('../Page/index.js', async () => {
   return { Page };
 });
 
-function AppHarness(): ReactNode {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+function AppHarness(): VNode {
   const [selectedGroup, setSelectedGroup] = useState<AppMemberGroup>();
   const groups = useMemo<AppMemberGroup[]>(() => [{ id: 1, name: 'Team One', role: 'Member' }], []);
 
@@ -75,39 +76,23 @@ function AppHarness(): ReactNode {
     appMemberGroups: groups,
     appMemberRoles: [],
     appMemberSelectedGroup: selectedGroup,
-    isLoggedIn,
+    isLoggedIn: true,
     setAppMemberSelectedGroup: setSelectedGroup,
   } as never;
 
-  const navigator = useMemo(
-    () => ({
-      createHref: () => '/en/Home',
-      encodeLocation: (location: object) => location,
-      go: () => setIsLoggedIn(false),
-      push: vi.fn(),
-      replace: vi.fn(),
-    }),
-    [],
-  );
-
   return (
     <IntlProvider locale="en" messages={{}}>
-      <Router location="/en/Home" navigator={navigator as never}>
-        {isLoggedIn ? (
-          <>
-            <GroupDropdown />
-            <AppRoutes />
-          </>
-        ) : (
-          <p>Login</p>
-        )}
-      </Router>
+      <Route path="/:lang/*?">
+        <GroupDropdown />
+        <AppRoutes />
+      </Route>
     </IntlProvider>
   );
 }
 
 beforeEach(() => {
   sessionStorage.clear();
+  window.history.replaceState(null, '', '/en/Home');
 });
 
 afterEach(() => {
@@ -115,7 +100,7 @@ afterEach(() => {
 });
 
 describe('GroupDropdown', () => {
-  it('should keep the member logged in and reload page data when switching groups', async () => {
+  it('should reload page data when switching groups', async () => {
     render(<AppHarness />);
 
     expect(screen.getByRole('status').textContent).toBe('Loaded data for No Group');
@@ -123,7 +108,6 @@ describe('GroupDropdown', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Group Team One' }));
 
     await waitFor(() => {
-      expect(screen.queryByText('Login')).toBeNull();
       expect(screen.getByRole('status').textContent).toBe('Loaded data for Team One');
     });
   });

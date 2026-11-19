@@ -626,7 +626,7 @@ describe('createAppFromTemplate', () => {
 
     const { AppOAuth2Secret, AppSamlSecret, AppServiceSecret } = await getAppDB(id!);
     const appServiceSecret = (await AppServiceSecret.findOne({
-      attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
+      attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier'],
     }))!;
 
     expect(appServiceSecret.toJSON()).toStrictEqual({
@@ -634,7 +634,6 @@ describe('createAppFromTemplate', () => {
       authenticationMethod: 'custom-header',
       urlPatterns: 'urlPatterns',
       identifier: 'identifier',
-      secret: Buffer.from('placeholder'),
     });
 
     const appSamlSecret = (await AppSamlSecret.findOne({
@@ -695,6 +694,27 @@ describe('createAppFromTemplate', () => {
       tokenUrl: 'tokenUrl',
       userInfoUrl: 'userInfoUrl',
     });
+  });
+
+  it('should list the copied secrets as missing their values', async () => {
+    const [, template] = templates;
+    vi.useRealTimers();
+    authorizeStudio();
+    const { data: app } = await request.post<App>('/api/app-templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      secrets: true,
+    });
+
+    const { data: warnings } = await request.get(`/api/apps/${app.id}/warnings`);
+
+    expect(warnings).toStrictEqual([
+      { code: 'missing-secret', type: 'service', id: expect.any(Number), name: 'test' },
+      { code: 'missing-secret', type: 'oauth2', id: expect.any(Number), name: 'test' },
+      { code: 'missing-secret', type: 'scim', name: 'SCIM' },
+    ]);
   });
 
   it('should remove name and description when cloning an app', async () => {

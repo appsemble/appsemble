@@ -103,6 +103,7 @@ import { pathItems as appsAppIdStyleShared } from './apps/appId/style/shared.js'
 import { pathItems as appsAppIdSubscriptions } from './apps/appId/subscriptions.js';
 import { pathItems as appsAppIdVariablesAppVariableId } from './apps/appId/variables/variableId.js';
 import { pathItems as appsAppIdVariables } from './apps/appId/variables.js';
+import { pathItems as appsAppIdWarnings } from './apps/appId/warnings.js';
 import { pathItems as appsAppIdWebhooksWebhookName } from './apps/appId/webhooks/webhookName.js';
 import { pathItems as appsAppId } from './apps/appId.js';
 import { pathItems as apps } from './apps.js';
@@ -280,6 +281,7 @@ export const paths = {
   '/api/apps/{appId}/subscriptions': appsAppIdSubscriptions,
   '/api/apps/{appId}/variables/{appVariableId}': appsAppIdVariablesAppVariableId,
   '/api/apps/{appId}/variables': appsAppIdVariables,
+  '/api/apps/{appId}/warnings': appsAppIdWarnings,
   '/api/apps/{appId}/webhooks/{webhookName}': appsAppIdWebhooksWebhookName,
   '/api/apps/{appId}': appsAppId,
   '/api/apps/{appId}/auth/email/login': appsAppIdAuthEmailLogin,

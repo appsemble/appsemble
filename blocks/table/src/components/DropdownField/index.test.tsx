@@ -100,7 +100,7 @@ it.each([
   expect(screen.getByRole('button', { name })).toBeDefined();
 });
 
-it('should name a dropdown by its visible label', () => {
+it('should name an icon dropdown by its label without showing it', () => {
   renderDropdown({
     label: 'Actions',
     dropdown: {
@@ -111,4 +111,13 @@ it('should name a dropdown by its visible label', () => {
   });
 
   expect(screen.getByRole('button', { name: 'Manage' })).toBeDefined();
+  expect(screen.queryByText('Manage')).toBeNull();
+});
+
+it('should show the label of a dropdown without an icon', () => {
+  renderDropdown({
+    dropdown: { label: 'Manage', options: [{ onClick: 'onClick', label: 'Edit' }] },
+  });
+
+  expect(screen.getByRole('button', { name: 'Manage' }).textContent).toBe('Manage');
 });

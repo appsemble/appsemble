@@ -176,6 +176,25 @@ Restrict the token to the records Appsemble manages. For deSEC, give it token po
 writing `A` and `AAAA` record sets in `dns.zone` and nothing else, so it cannot touch the
 `_acme-challenge` records of cert-manager or the records of custom domains in the same zone.
 
+### App host names
+
+Apps are served on `<app>.<organization>.ingress.host` by default. Where the network cannot route
+those wildcard host names, for example because a proxy in front of the cluster forwards only host
+names it knows, give each app a host name of its own in the _Domain name_ app setting, as described
+in the [DNS guide](https://appsemble.app/docs/guides/dns). Pick names the network already serves,
+outside `ingress.host`, because Appsemble reads the host names below `ingress.host` as organizations
+and apps. Create a DNS record for each name:
+
+| App      | Domain name               | DNS record                            |
+| -------- | ------------------------- | ------------------------------------- |
+| `survey` | `survey.apps.example.com` | `CNAME` to `my-appsemble.example.com` |
+| `intake` | `intake.apps.example.com` | `CNAME` to `my-appsemble.example.com` |
+
+Appsemble creates an Ingress for each domain name with the `ingress.annotations` and the
+cert-manager issuer of `ingress.clusterIssuer` or `ingress.issuer`. Its certificate covers a single
+host, so an ACME issuer can validate it with HTTP01. For an app with its own certificate in its SSL
+secrets, Appsemble writes that certificate to the TLS secret of the Ingress and sets no issuer.
+
 ## OpenShift
 
 The OpenShift router serves an Ingress by generating a Route for each of its hosts. A host with a
@@ -199,7 +218,9 @@ cert-manager issues a certificate for `ingress.host` into `ingress.tlsSecretName
 `*.ingress.host` into `ingress.tlsWildcardSecretName`, like it does for the Ingress of every
 organization. The issuer must be able to sign wildcard hosts, which takes a DNS01 solver for an ACME
 issuer, and the IngressController must admit wildcard Routes
-(`routeAdmission.wildcardPolicy: WildcardsAllowed`).
+(`routeAdmission.wildcardPolicy: WildcardsAllowed`). The Ingress of an
+[app host name](#app-host-names) serves a single host, so it needs neither, and the router generates
+its Route once its TLS secret exists.
 
 The Routes of `route.enabled` terminate TLS with the default certificate of the router. OpenShift
 generates no Route for an Ingress host whose TLS secret does not exist. On an installation which
@@ -347,19 +368,21 @@ or a cloud metadata endpoint.
 
 An installation needs an exception when its apps call services on the internal network, for example
 an internal API or an OAuth2 or OpenID Connect provider such as Keycloak that runs in the cluster.
-List the addresses those hosts resolve to in `ssrfAllowIpAddressList`:
+List those hosts in `ssrfAllowIpAddressList`:
 
 ```yaml
 ssrfAllowIpAddressList:
-  - 10.43.12.7 # The internal Keycloak service
+  - keycloak.example.internal # The internal Keycloak service
   - 192.168.10.25 # An internal API that apps call
 ```
 
-Each entry is a single IP address or a CIDR range. Host names are not accepted, because the check
-applies to the address a host name resolves to. The chart joins the entries with commas into the
-`SSRF_ALLOW_IP_ADDRESS_LIST` environment variable of the server deployment and of the `run-cronjobs`
-cron job, which runs app cron jobs. The variable is not set when the list is empty, which is the
-default.
+Each entry is a single IP address, a CIDR range or a host name. A host name matches the host of the
+URL exactly, ignoring case, so `keycloak.example.internal` does not allow `api.example.internal`.
+The server connects to a listed host name whatever private address it resolves to. Each redirect is
+checked against its own host, so a listed host cannot redirect a request to a private address that
+is not listed. The chart joins the entries with commas into the `SSRF_ALLOW_IP_ADDRESS_LIST`
+environment variable of the server deployment and of the `run-cronjobs` cron job, which runs app
+cron jobs. The variable is not set when the list is empty, which is the default.
 
 Allow only the specific hosts an app needs. Allowing a whole private range such as `10.0.0.0/8`
 opens every service in that range to every app developer on the installation.
@@ -736,7 +759,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `remote`                                    | `null`                         | A remote Appsemble server to connect to in order to synchronize blocks.                                                                   |
 | `securityEmail`                             | `security@appsemble.com`       | The default security contact email for reporting security vulnerabilities.                                                                |
 | `rejectBreachedPasswords`                   | `false`                        | If `true`, reject new passwords that appear in the Have I Been Pwned Pwned Passwords data set.                                            |
-| `ssrfAllowIpAddressList`                    | `[]`                           | Private IPs or CIDRs apps may connect to. See [Connections to private addresses](#connections-to-private-addresses).                      |
+| `ssrfAllowIpAddressList`                    | `[]`                           | Private IPs, CIDRs or host names apps may connect to. See [Connections to private addresses](#connections-to-private-addresses).          |
 | `trustedCaBundle.configMap`                 | `''`                           | A ConfigMap with PEM certificates to trust. See [Private certificate authorities](#private-certificate-authorities).                      |
 | `trustedCaBundle.key`                       | `ca-bundle.crt`                | The key in `trustedCaBundle.configMap` which holds the certificates.                                                                      |
 | `disableRegistration`                       | `false`                        | If `true`, disable registration with email and password. Without a Studio login provider (`oauthSecret`) nobody new can get an account.   |

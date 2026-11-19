@@ -1,13 +1,14 @@
 import { getRouteSegment } from '@appsemble/lang-sdk';
-import { useLocationString } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { useParams } from 'wouter-preact';
 
 import { GroupInvitePrompt } from './GroupInvitePrompt/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { useLocationString } from '../../utils/useLocationString.js';
+import { Redirect } from '../Redirect/index.js';
 
-export function GroupInvite(): ReactNode {
+export function GroupInvite(): VNode {
   const { isLoggedIn } = useAppMember();
   const { getAppMessage } = useAppMessages();
   const redirect = useLocationString();
@@ -15,11 +16,8 @@ export function GroupInvite(): ReactNode {
 
   if (!isLoggedIn) {
     return (
-      <Navigate
-        to={{
-          pathname: `/${lang}/${getRouteSegment('Login', getAppMessage)}`,
-          search: String(new URLSearchParams({ redirect })),
-        }}
+      <Redirect
+        to={`/${lang}/${getRouteSegment('Login', getAppMessage)}?${new URLSearchParams({ redirect })}`}
       />
     );
   }

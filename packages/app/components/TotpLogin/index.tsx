@@ -5,19 +5,20 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
-  Title,
-} from '@appsemble/react-components';
-import { type ReactNode, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+} from '@appsemble/preact-components';
+import { type VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 
 import { messages } from './messages.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
+import { Title } from '../Title/index.js';
 
 interface TotpLoginProps {
   readonly onVerify: (token: string) => Promise<void>;
   readonly onCancel: () => void;
 }
 
-export function TotpLogin({ onCancel, onVerify }: TotpLoginProps): ReactNode {
+export function TotpLogin({ onCancel, onVerify }: TotpLoginProps): VNode {
   const { formatMessage } = useIntl();
 
   const handleSubmit = useCallback(

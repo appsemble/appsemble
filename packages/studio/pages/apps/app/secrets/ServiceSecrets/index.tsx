@@ -43,7 +43,7 @@ interface ServiceSecretsParams {
  * Render a CRUD interface for managing app service secrets.
  */
 export function ServiceSecrets({ onClickServiceCheckbox }: ServiceSecretsParams): ReactNode {
-  const { app } = useApp();
+  const { app, refreshWarnings } = useApp();
   const modal = useToggle();
 
   const result = useData<AppServiceSecret[]>(`/api/apps/${app.id}/secrets/service`);
@@ -54,8 +54,9 @@ export function ServiceSecrets({ onClickServiceCheckbox }: ServiceSecretsParams)
       setAppServiceSecret((serviceSecret) =>
         serviceSecret.map((secret) => (secret.id === oldSecret.id ? newSecret : secret)),
       );
+      refreshWarnings();
     },
-    [setAppServiceSecret],
+    [refreshWarnings, setAppServiceSecret],
   );
 
   const create = useCallback(
@@ -71,8 +72,9 @@ export function ServiceSecrets({ onClickServiceCheckbox }: ServiceSecretsParams)
       setAppServiceSecret((serviceSecret) =>
         serviceSecret.filter((secret) => secret.id !== selected.id),
       );
+      refreshWarnings();
     },
-    [setAppServiceSecret],
+    [refreshWarnings, setAppServiceSecret],
   );
 
   const onEnableUnsecured = useConfirmation({

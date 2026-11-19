@@ -8407,7 +8407,9 @@ This can also be an \`icon:<key>\` reference to an icon from the app’s \`icons
                 "type": "string",
               },
               "label": {
-                "description": "The text to show in the dropdown button.",
+                "description": "The accessible name of the dropdown button.
+
+It is shown as the button text only when the dropdown has no icon.",
                 "format": "remapper",
               },
               "options": {

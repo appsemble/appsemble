@@ -5,7 +5,8 @@ import {
   type PageLayoutDefinition,
   type ResponsiveGridLayoutDefinition,
 } from '@appsemble/lang-sdk';
-import { useCallback, useId, useLayoutEffect, useMemo, useRef, useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from 'preact/compat';
+import { useCallback, useId, useLayoutEffect, useMemo, useRef } from 'preact/hooks';
 
 type DeviceName = 'desktop' | 'mobile' | 'tablet';
 

@@ -12,10 +12,15 @@ import {
   type Remapper,
   resendBannerGridArea,
 } from '@appsemble/lang-sdk';
-import { Loader, useLocationString, useMessages } from '@appsemble/react-components';
 import { type ProjectImplementations } from '@appsemble/types';
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState, Fragment } from 'react';
-import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Fragment, type VNode } from 'preact';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useLocation } from 'wouter-preact';
+import { useHistoryState } from 'wouter-preact/use-browser-location';
+import { Loader } from '../Loader/index.js';
+import { useMessages } from '../MessagesProvider/index.js';
+import { useLocationString } from '../../utils/useLocationString.js';
+import { useRouteParams } from '../../utils/useRouteParams.js';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { type ActionCreators } from '../../utils/actions/index.js';
@@ -32,6 +37,7 @@ import { Block } from '../Block/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
+import { Redirect } from '../Redirect/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import usePageGridCss, { useGridBreakpoints } from '../PageGridProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
@@ -51,6 +57,11 @@ interface BlockListProps {
   readonly showDialog: ShowDialogAction;
   readonly showShareDialog: ShowShareDialog;
   readonly pageLayout?: PageLayoutDefinition;
+
+  /**
+   * The signal that stops the action chains of the blocks, instead of their own unmount.
+   */
+  readonly signal?: AbortSignal;
 
   /**
    * The name of the addressable sub page these blocks belong to, used as the last breadcrumb.
@@ -73,11 +84,12 @@ export function BlockList({
   remap,
   showDialog,
   showShareDialog,
+  signal,
   subPageName,
-}: BlockListProps): ReactNode {
-  const params = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
+}: BlockListProps): VNode {
+  const params = useRouteParams();
+  const historyState = useHistoryState();
+  const [, navigate] = useLocation();
   const push = useMessages();
   const { definition: appDefinition, revision } = useAppDefinition();
   const {
@@ -208,7 +220,7 @@ export function BlockList({
           // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
           appDefinition.controller.events,
         ),
-        data: location.state,
+        data: historyState,
         utils: {
           // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
           remap,
@@ -227,7 +239,7 @@ export function BlockList({
     appDefinition,
     ee,
     getAppMessage,
-    location.state,
+    historyState,
     logout,
     pageReady,
     params,
@@ -262,13 +274,13 @@ export function BlockList({
   if (!blockList.length) {
     if (!isLoggedIn) {
       return (
-        <Navigate
+        <Redirect
           to={`/${params.lang}/${getRouteSegment('Login', getAppMessage)}?${new URLSearchParams({ redirect })}`}
         />
       );
     }
 
-    return <Navigate to="/" />;
+    return <Redirect to="/" />;
   }
   const Wrapper = gridClassName ? 'div' : Fragment;
   const wrapperProps = gridClassName ? { className: gridClassName } : {};
@@ -309,6 +321,7 @@ export function BlockList({
             remap={remap}
             showDialog={showDialog}
             showShareDialog={showShareDialog}
+            signal={signal}
           />
         ) : null,
       )}

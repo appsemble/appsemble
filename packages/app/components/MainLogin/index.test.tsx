@@ -1,13 +1,13 @@
-import { type LoginFormValues } from '@appsemble/react-components';
-import { act, fireEvent, render, screen } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { act, fireEvent, render, screen } from '@testing-library/preact';
+import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MainLogin } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
+import { type LoginFormValues } from '../LoginForm/index.js';
 
 const passwordLogin = vi.fn();
 
@@ -23,13 +23,13 @@ vi.mock('../../utils/settings.js', async (importOriginal) => {
   };
 });
 
-vi.mock('@appsemble/react-components', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@appsemble/react-components')>();
+vi.mock('../LoginForm/index.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../LoginForm/index.js')>();
 
   return {
     ...actual,
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    Login: ({
+    LoginForm: ({
       onPasswordLogin,
     }: {
       readonly onPasswordLogin: (credentials: LoginFormValues) => Promise<void>;
@@ -46,9 +46,13 @@ vi.mock('@appsemble/react-components', async (importOriginal) => {
         Login
       </button>
     ),
-    useMessages: () => vi.fn(),
   };
 });
+
+vi.mock('../MessagesProvider/index.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../MessagesProvider/index.js')>()),
+  useMessages: () => vi.fn(),
+}));
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -86,13 +90,12 @@ beforeEach(() => {
 
 describe('MainLogin', () => {
   it('should redirect after successful password login', async () => {
+    window.history.replaceState(null, '', '/en/Login?redirect=%2Fen%2Ftraining-details%2F168');
     render(
       <IntlProvider locale="en" messages={{}}>
-        <MemoryRouter initialEntries={['/en/Login?redirect=%2Fen%2Ftraining-details%2F168']}>
-          <Routes>
-            <Route element={<MainLogin />} path="/:lang/Login" />
-          </Routes>
-        </MemoryRouter>
+        <Route path="/:lang/Login">
+          <MainLogin />
+        </Route>
       </IntlProvider>,
     );
 

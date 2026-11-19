@@ -5,6 +5,7 @@ export const dialog: ActionCreator<'dialog'> = ({
   prefix,
   prefixIndex,
   showDialog,
+  signal,
 }) => [
   (data) =>
     new Promise((resolve, reject) => {
@@ -36,6 +37,7 @@ export const dialog: ActionCreator<'dialog'> = ({
         fullscreen,
         prefix,
         prefixIndex,
+        signal,
         title,
       });
     }),

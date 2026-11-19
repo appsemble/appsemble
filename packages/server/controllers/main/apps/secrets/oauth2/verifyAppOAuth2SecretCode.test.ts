@@ -176,6 +176,27 @@ describe('verifyAppOAuth2SecretCode', () => {
     `);
   });
 
+  it('should refuse the code exchange while the client secret has no value', async () => {
+    await secret.update({ clientSecret: '' });
+    authorizeStudio();
+    const response = await request.post(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://test-app.testorganization.localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
+      { headers: { referer: 'http://localhost' } },
+    );
+
+    expect(response.data).toStrictEqual({
+      error: 'Service Unavailable',
+      message: 'OAuth2 secret is incomplete',
+      statusCode: 503,
+    });
+  });
+
   it('should trade the authorization code for an Appsemble authorization code', async () => {
     const accessToken = jwt.sign(
       {

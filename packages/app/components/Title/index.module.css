@@ -1,0 +1,16 @@
+.content {
+  display: inline-block;
+  position: relative;
+}
+
+.anchor {
+  margin-right: 0.5rem;
+  opacity: 0;
+  position: absolute;
+  right: 100%;
+  transition: 300ms;
+}
+
+.root:hover .anchor {
+  opacity: 1;
+}

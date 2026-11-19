@@ -1,5 +1,5 @@
 import { type PageLayoutDefinition } from '@appsemble/lang-sdk';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/preact';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import usePageGridCss, { useGridBreakpoints, useGridCss } from './index.js';

@@ -12,20 +12,30 @@ export interface LoaderProps {
   /**
    * The text announced to assistive technology while loading.
    */
-  readonly label: string;
+  readonly label?: string;
+
+  /**
+   * The data-testid to apply to the element. Used for Playwright testing.
+   */
+  readonly testId?: string;
 }
 
-export function Loader({ className, component: Component = 'div', label }: LoaderProps): VNode {
+export function Loader({
+  className,
+  component: Component = 'div',
+  label,
+  testId,
+}: LoaderProps): VNode {
   // Typescript hack to avoid incompatible types error
   const C = Component as 'div';
   return (
     // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
     <C
       className={classNames(styles.loader, 'appsemble-loader', className)}
-      data-testid="loader-comp"
+      data-testid={testId}
       role="status"
     >
-      <span className="is-sr-only">{label}</span>
+      {label ? <span className="is-sr-only">{label}</span> : null}
     </C>
   );
 }

@@ -1,12 +1,13 @@
-import { SSOLoginButton, useQuery, useToggle } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { SSOLoginButton, useToggle } from '@appsemble/preact-components';
+import { type VNode } from 'preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { type Login } from '../../types.js';
 import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId } from '../../utils/settings.js';
+import { useQuery } from '../../utils/useQuery.js';
 
 export interface OpenIDLoginProps {
   readonly disabled: boolean;
@@ -18,7 +19,7 @@ export function OpenIDLogin({
   disabled,
   logins,
   showAppsembleOAuth2Login,
-}: OpenIDLoginProps): ReactNode {
+}: OpenIDLoginProps): VNode {
   const qs = useQuery();
   const busy = useToggle();
 

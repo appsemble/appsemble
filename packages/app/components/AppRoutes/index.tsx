@@ -5,10 +5,12 @@ import {
   translatableRoutes,
   type TranslatableRoute,
 } from '@appsemble/lang-sdk';
-import { Loader, MetaProvider } from '@appsemble/react-components';
-import { type ReactNode, useEffect, useRef } from 'react';
-import { Navigate, Route, Routes, useLocation, useMatch, useParams } from 'react-router-dom';
+import { type ComponentChildren, type VNode } from 'preact';
+import { useEffect, useRef } from 'preact/hooks';
+import { Route, Switch, useParams, useRoute } from 'wouter-preact';
 
+import { Loader } from '../Loader/index.js';
+import { MetaProvider } from '../Meta/index.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { sentryDsn, showDemoLogin } from '../../utils/settings.js';
 import { AppDebug } from '../AppDebug/index.js';
@@ -22,6 +24,7 @@ import { GroupInvite } from '../GroupInvite/index.js';
 import { Login } from '../Login/index.js';
 import { OpenIDCallback } from '../OpenIDCallback/index.js';
 import { Page } from '../Page/index.js';
+import { Redirect } from '../Redirect/index.js';
 import { Register } from '../Register/index.js';
 import { ResetPassword } from '../ResetPassword/index.js';
 import { SentryFeedback } from '../SentryFeedback/index.js';
@@ -39,15 +42,31 @@ interface RouteRedirectProps {
  *
  * Email links built by the server use the English path, so they keep working in every language.
  */
-function RouteRedirect({ segment }: RouteRedirectProps): ReactNode {
+function RouteRedirect({ segment }: RouteRedirectProps): VNode {
   const { lang } = useParams<{ lang: string }>();
-  const { hash, search } = useLocation();
 
-  return <Navigate replace to={{ hash, pathname: `/${lang}/${segment}`, search }} />;
+  return (
+    <Redirect replace to={`/${lang}/${segment}${window.location.search}${window.location.hash}`} />
+  );
+}
+
+/**
+ * Match a built-in route at the given segment after the language.
+ *
+ * Built-in routes are capitalized and match case sensitively, so they don't match the lowercase path
+ * of a page with the same name. The router matches the path as the browser encodes it, and a
+ * translated segment is literal text.
+ *
+ * @param segment The segment of the built-in route.
+ * @returns The pattern of the route, which captures the language as `lang`.
+ */
+function builtinPath(segment: string): RegExp {
+  const pattern = encodeURI(segment).replaceAll(/[$()*+.?[\\\]^{|}]/g, '\\$&');
+  return new RegExp(`^/(?<lang>[^/]+)/${pattern}/?$`);
 }
 
 interface TranslatedRouteProps {
-  readonly element: ReactNode;
+  readonly element: ComponentChildren;
   readonly getAppMessage: MessageGetter;
   readonly name: TranslatableRoute;
 }
@@ -59,19 +78,20 @@ interface TranslatedRouteProps {
  * English name, the English path redirects to it.
  *
  * @param props The element to mount, the message getter, and the English name of the route.
- * @returns The routes to render inside `Routes`.
+ * @returns The routes to render inside `Switch`.
  */
-function translatedRoute({ element, getAppMessage, name }: TranslatedRouteProps): ReactNode[] {
+function translatedRoute({ element, getAppMessage, name }: TranslatedRouteProps): VNode[] {
   const segment = getRouteSegment(name, getAppMessage);
-  const routes = [<Route caseSensitive element={element} key={segment} path={`/${segment}`} />];
+  const routes = [
+    <Route key={segment} path={builtinPath(segment)}>
+      {element}
+    </Route>,
+  ];
   if (segment !== name) {
     routes.push(
-      <Route
-        caseSensitive
-        element={<RouteRedirect segment={segment} />}
-        key={name}
-        path={`/${name}`}
-      />,
+      <Route key={name} path={builtinPath(name)}>
+        <RouteRedirect segment={segment} />
+      </Route>,
     );
   }
   return routes;
@@ -82,15 +102,17 @@ function translatedRoute({ element, getAppMessage, name }: TranslatedRouteProps)
  *
  * This maps the page to a route and displays a page depending on URL.
  */
-export function AppRoutes(): ReactNode {
+export function AppRoutes(): VNode | null {
   const { getAppMessage, messagesReady } = useAppMessages();
   const { definition } = useAppDefinition();
   const { appMemberRoles, appMemberSelectedGroup, isLoggedIn } = useAppMember();
   const focusedPage = useRef<string>();
+  const { lang } = useParams<{ lang: string }>();
 
   // The language and page segments identify the page, so switching tabs or page parameters keeps
   // focus where it is.
-  const pagePath = useMatch('/:lang/:pageId/*')?.pathnameBase;
+  const [isPage, pageParams] = useRoute('/:lang/:pageId/*?');
+  const pagePath = isPage ? `/${pageParams.lang}/${pageParams.pageId}` : undefined;
 
   // Client-side navigation keeps focus on the activated link, or drops it when the link unmounts.
   // Move it to the new page, so keyboard and screen reader users continue from its start. Until the
@@ -124,7 +146,7 @@ export function AppRoutes(): ReactNode {
   const hasCustomLogin = definition.pages.some((page) => page.name === 'Login');
   const hasCustomRegister = definition.pages.some((page) => page.name === 'Register');
 
-  const elements: Partial<Record<TranslatableRoute, ReactNode>> = {
+  const elements: Partial<Record<TranslatableRoute, ComponentChildren>> = {
     Settings: <AppSettings />,
     'Group-Invite': <GroupInvite />,
     'App-Invite': <AppInvite />,
@@ -134,7 +156,7 @@ export function AppRoutes(): ReactNode {
   };
   if (isLoggedIn) {
     // A member who logs in or registers without a redirect is still at the built-in route.
-    const defaultPage = <Navigate replace to={`../${defaultPageSegment}`} />;
+    const defaultPage = <Redirect replace to={`/${lang}/${defaultPageSegment}`} />;
     if (!hasCustomLogin) {
       elements.Login = defaultPage;
     }
@@ -158,21 +180,25 @@ export function AppRoutes(): ReactNode {
       description={getAppMessage({ id: 'description' }).format() as string}
       title={getAppMessage({ id: 'name' }).format() as string}
     >
-      <Routes>
-        <Route element={<AppDebug />} path="/debug" />
-        <Route caseSensitive element={<OpenIDCallback />} path="/Callback" />
+      <Switch>
+        <Route path={/^\/[^/]+\/debug\/?$/i}>
+          <AppDebug />
+        </Route>
+        <Route path={builtinPath('Callback')}>
+          <OpenIDCallback />
+        </Route>
 
         {translatableRoutes.flatMap((name) =>
           elements[name] ? translatedRoute({ element: elements[name], getAppMessage, name }) : [],
         )}
 
-        <Route
-          caseSensitive
-          element={<Page key={appMemberSelectedGroup?.id ?? 'no-group'} />}
-          path="/:pageId/*"
-        />
-        <Route element={<Navigate to={defaultPageSegment} />} path="*" />
-      </Routes>
+        <Route path="/:lang/:pageId/*?">
+          <Page key={appMemberSelectedGroup?.id ?? 'no-group'} />
+        </Route>
+        <Route>
+          <Redirect to={`/${lang}/${defaultPageSegment}`} />
+        </Route>
+      </Switch>
     </MetaProvider>
   );
 }

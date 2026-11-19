@@ -1,18 +1,21 @@
 import { getPagePathSegment, remap, type RemapperContext } from '@appsemble/lang-sdk';
-import { Portal, SideMenuButton } from '@appsemble/react-components';
-import { type ReactNode, useMemo } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { getAssetUrls } from '@appsemble/web-utils';
+import { type ComponentChildren, type VNode } from 'preact';
+import { useMemo, useState } from 'preact/hooks';
+import { Link, useLocation, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
+import { Portal } from '../Portal/index.js';
+import { SideMenuButton } from '../SideMenu/index.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import {
   shouldHideGroupDropdown,
   shouldShowMenu,
   titleBarShowsPageName,
 } from '../../utils/layout.js';
-import { apiUrl, appId, passwordToken } from '../../utils/settings.js';
+import { apiUrl, appId, assetIds, passwordToken } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -36,7 +39,7 @@ const NAVBAR_DEFAULT_LAYOUT_WITHOUT_LOGO = {
 };
 
 interface AppBarProps {
-  readonly children?: ReactNode;
+  readonly children?: ComponentChildren;
 
   /**
    * Whether the page renders its name as an H1 of its own, so the title bar shows it as text.
@@ -50,7 +53,7 @@ interface AppBarProps {
  *
  * This displays the app name,
  */
-export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): ReactNode {
+export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): VNode | null {
   const { definition, demoMode } = useAppDefinition();
   const { appMemberGroups, appMemberInfo, appMemberRoles, appMemberSelectedGroup, isLoggedIn } =
     useAppMember();
@@ -58,8 +61,16 @@ export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): Rea
   const { page } = usePage();
   const { getAppMessage, getMessage } = useAppMessages();
   const { lang: locale } = useParams();
-  const { pathname } = useLocation();
+  const [pathname] = useLocation();
   const logoInNavbar = (definition.layout?.logo?.position || 'hidden') === 'navbar';
+  const logoUrls = getAssetUrls(
+    apiUrl,
+    appId,
+    definition.layout?.logo?.asset || 'logo',
+    assetIds,
+    passwordToken,
+  );
+  const [logoFailed, setLogoFailed] = useState(false);
   const BREAKPOINTS = useGridBreakpoints(definition.layout?.breakpoints);
   const isDesktop = useIsDesktop(definition.layout?.breakpoints);
   const navbarGridClassName = useGridCss({
@@ -128,10 +139,13 @@ export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): Rea
 
   const logoNode = logoInNavbar ? (
     <Link to={`/${locale}/${getPagePathSegment({ name: defaultPageName }, getAppMessage)}`}>
+      {/* The error handler only tracks loading failures, it doesn't make the image interactive. */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <img
         alt="app-logo"
         className={styles.logo}
-        src={`${apiUrl}/api/apps/${appId}/assets/${definition.layout?.logo?.asset || 'logo'}${passwordToken ? `?passwordToken=${passwordToken}` : ''}`}
+        onError={() => setLogoFailed(true)}
+        src={logoFailed && logoUrls.fallbackUrl ? logoUrls.fallbackUrl : logoUrls.url}
       />
     </Link>
   ) : null;

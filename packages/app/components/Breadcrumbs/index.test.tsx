@@ -1,14 +1,14 @@
 import { type AppDefinition, type PageDefinition, remap, type Remapper } from '@appsemble/lang-sdk';
-import { IconProvider } from '@appsemble/react-components';
-import { render, screen } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { IconProvider } from '@appsemble/preact-components';
+import { render, screen } from '@testing-library/preact';
+import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Breadcrumbs } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 function createAppDefinition(pages: PageDefinition[]): AppDefinition {
   return {
@@ -53,6 +53,7 @@ function renderBreadcrumbs(
   const remapWithContext = (mappers: Remapper, input: unknown): unknown =>
     remap(mappers, input, { pageData: data, pageName: page.name } as never);
 
+  window.history.replaceState(null, '', path);
   render(
     <IntlProvider locale="en" messages={{}}>
       <IconProvider
@@ -60,22 +61,15 @@ function renderBreadcrumbs(
         appId={42}
         registry={{ logo: { asset: 'company-logo' } }}
       >
-        <MemoryRouter initialEntries={[path]}>
-          <Routes>
-            <Route
-              element={
-                <Breadcrumbs
-                  data={data}
-                  inGrid={inGrid}
-                  pageDefinition={page}
-                  remap={remapWithContext}
-                  subPageName={subPageName}
-                />
-              }
-              path="/:lang/:pageId/*"
-            />
-          </Routes>
-        </MemoryRouter>
+        <Route path="/:lang/:pageId/*?">
+          <Breadcrumbs
+            data={data}
+            inGrid={inGrid}
+            pageDefinition={page}
+            remap={remapWithContext}
+            subPageName={subPageName}
+          />
+        </Route>
       </IconProvider>
     </IntlProvider>,
   );

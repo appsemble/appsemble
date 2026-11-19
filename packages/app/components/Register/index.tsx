@@ -1,21 +1,19 @@
-import {
-  Register as RegisterForm,
-  type RegistrationFormValues,
-  useQuery,
-} from '@appsemble/react-components';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ReactNode, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
+import { useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
+import { RegisterForm, type RegistrationFormValues } from '../RegisterForm/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { getTotpChallenge } from '../../utils/totp.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
+import { useQuery } from '../../utils/useQuery.js';
 
-export function Register(): ReactNode {
+export function Register(): VNode {
   const { passwordLogin } = useAppMember();
   const { lang } = useParams<{ lang: string }>();
   const qs = useQuery();
@@ -27,7 +25,6 @@ export function Register(): ReactNode {
       const formData = new FormData();
       formData.append('email', values.email);
       formData.append('password', values.password);
-      // @ts-expect-error 2769 No overload matches this call (strictNullChecks)
       formData.append('locale', lang);
       formData.append('timezone', timezone);
 

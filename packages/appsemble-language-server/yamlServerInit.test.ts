@@ -9,7 +9,7 @@ import {
   createMessageConnection,
   type CompletionItem,
   type CompletionList,
-  type Diagnostic,
+  Diagnostic,
   DiagnosticSeverity,
   type Hover,
   LSPErrorCodes,
@@ -135,7 +135,7 @@ function appWithYamlErrors(blocks: Block[]): string {
 function yamlServiceMessages(diagnostics: Diagnostic[]): string[] {
   return diagnostics
     .filter((diagnostic) => diagnostic.source)
-    .map((diagnostic) => diagnostic.message)
+    .map((diagnostic) => Diagnostic.getMessageString(diagnostic))
     .sort();
 }
 
@@ -367,7 +367,9 @@ describe('documents the app validation cannot read', () => {
       expect(latest.map(({ message }) => message).join('\n')).not.toMatch(/string/),
     );
     const aliasErrors = diagnostics.filter(
-      ({ message, severity }) => severity === DiagnosticSeverity.Error && /alias/i.test(message),
+      (diagnostic) =>
+        diagnostic.severity === DiagnosticSeverity.Error &&
+        /alias/i.test(Diagnostic.getMessageString(diagnostic)),
     );
     // `description` and `theme` are the second and third lines of the app definition.
     expect(aliasErrors).toStrictEqual([

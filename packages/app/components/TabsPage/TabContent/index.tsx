@@ -1,10 +1,11 @@
 import { type Remapper } from '@appsemble/lang-sdk';
-import { useMeta } from '@appsemble/react-components';
-import { type ComponentPropsWithoutRef, type ReactNode, useCallback } from 'react';
+import { type ComponentProps, type VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 
 import { BlockList } from '../../BlockList/index.js';
+import { useMeta } from '../../Meta/index.js';
 
-interface TabContentProps extends ComponentPropsWithoutRef<typeof BlockList> {
+interface TabContentProps extends ComponentProps<typeof BlockList> {
   /**
    * The name of the tab.
    *
@@ -16,7 +17,7 @@ interface TabContentProps extends ComponentPropsWithoutRef<typeof BlockList> {
 /**
  * Render content for a single tab page.
  */
-export function TabContent({ name, remap, ...props }: TabContentProps): ReactNode {
+export function TabContent({ name, remap, ...props }: TabContentProps): VNode {
   useMeta(name);
 
   const remapInTab = useCallback(

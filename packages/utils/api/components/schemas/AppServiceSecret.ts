@@ -71,5 +71,10 @@ export const AppServiceSecret: OpenAPIV3.NonArraySchemaObject = {
       description: 'When the most recent client-credentials token request failed.',
       readOnly: true,
     },
+    incomplete: {
+      type: 'boolean',
+      description: 'Whether the secret has no value yet.',
+      readOnly: true,
+    },
   },
 };

@@ -127,7 +127,6 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       sharedStyle: template.sharedStyle,
       sslKey: '',
       sslCertificate: '',
-      scimToken: Buffer.from('placeholder'),
       scimEnabled: template.scimEnabled,
       OrganizationId: organizationId,
       AppMessages: ([] as AppMessages[]).concat(template.AppMessages),
@@ -319,7 +318,6 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
             authenticationMethod,
             identifier,
             tokenUrl,
-            secret: Buffer.from('placeholder'),
           }),
         ),
       );

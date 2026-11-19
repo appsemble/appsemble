@@ -3,6 +3,7 @@ import { type IconRenderOptions, type RenderableIcon } from '@appsemble/sdk';
 import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 
+import { getAssetUrls } from './asset.js';
 import { fa } from './fa.js';
 
 /**
@@ -74,14 +75,10 @@ export function getMessageIcon(color?: BulmaColor): IconName | undefined {
 /**
  * Get an icon asset of an app.
  *
- * The icon is addressed by id when its id is known, because the asset served under an id never
- * changes, so it can be cached for good. The name URL is then its fallback, because the id goes
- * stale when the asset is replaced. Otherwise the icon is addressed by name.
- *
  * @param apiUrl The base URL of the Appsemble API.
  * @param appId The ID of the app owning the asset.
  * @param asset The validated name of the asset.
- * @param assetIds The asset ids of the app’s icon assets, by asset name.
+ * @param assetIds The asset ids of the app’s assets, by asset name.
  * @param passwordToken The token which grants access to the assets of a password protected app.
  * @returns The renderable icon of the asset.
  */
@@ -92,16 +89,7 @@ export function getIconAsset(
   assetIds?: Record<string, string>,
   passwordToken?: string,
 ): AssetIcon {
-  const assetsUrl = `${apiUrl}/api/apps/${appId}/assets`;
-  const search = passwordToken ? `?passwordToken=${passwordToken}` : '';
-  const url = `${assetsUrl}/${encodeURIComponent(asset)}${search}`;
-  return assetIds && Object.hasOwn(assetIds, asset)
-    ? {
-        type: 'asset',
-        url: `${assetsUrl}/${encodeURIComponent(assetIds[asset])}${search}`,
-        fallbackUrl: url,
-      }
-    : { type: 'asset', url };
+  return { type: 'asset', ...getAssetUrls(apiUrl, appId, asset, assetIds, passwordToken) };
 }
 
 /**

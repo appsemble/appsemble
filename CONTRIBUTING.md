@@ -239,7 +239,8 @@ These tests are intended to test preact/react components in isolation and focus 
 They are mainly written for the `@appsemble/preact-components` and `@appsemble/react-components`
 packages.
 
-We use `@testing-library/preact` and `@testing-library/react` with `vitest`.
+We use `@testing-library/preact` for the app and Preact components, and `@testing-library/react` for
+the studio and React components, with `vitest`.
 
 To see an example of how to write these tests, check an existing test in the repo (e.g. in
 `packages/preact-components/Button/index.test.tsx`) and/or read the documentation of the testing

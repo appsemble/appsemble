@@ -1,18 +1,17 @@
-import {
-  EditPassword as EditPasswordForm,
-  type EditPasswordValues,
-  useQuery,
-} from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactNode, useCallback, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
+import { Link, useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
+import { EditPasswordForm, type EditPasswordValues } from '../EditPasswordForm/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
+import { useQuery } from '../../utils/useQuery.js';
+import { Redirect } from '../Redirect/index.js';
 
-export function EditPassword(): ReactNode {
+export function EditPassword(): VNode {
   const [success, setSuccess] = useState(false);
   const qs = useQuery();
   const token = qs.get('token');
@@ -29,7 +28,7 @@ export function EditPassword(): ReactNode {
   );
 
   if (!token) {
-    return <Navigate to={`/${lang}`} />;
+    return <Redirect to={`/${lang}`} />;
   }
 
   return (

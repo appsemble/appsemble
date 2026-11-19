@@ -877,7 +877,7 @@
     },
     "ssrfAllowIpAddressList": {
       "type": "array",
-      "description": "Private IP addresses or CIDR ranges the server may connect to on behalf of apps, for example in request actions, OAuth2 logins and app SMTP. Allow only the specific internal hosts an app needs, not whole private ranges, because the block also protects cluster internals.",
+      "description": "Private IP addresses, CIDR ranges or host names the server may connect to on behalf of apps, for example in request actions, OAuth2 logins and app SMTP. A listed host name may resolve to any private address. Allow only the specific internal hosts an app needs, not whole private ranges, because the block also protects cluster internals.",
       "items": {
         "type": "string"
       },

@@ -76,9 +76,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     ref,
   ) => {
     const childArray = toChildArray(children).filter(
-      (child): child is VNode<OptionProps> =>
-        typeof child !== 'string' && typeof child !== 'number' && child.type === Option,
-    );
+      (child) => typeof child !== 'string' && typeof child !== 'number' && child.type === Option,
+    ) as VNode<OptionProps>[];
 
     const handleChange = useCallback(
       (event: JSX.TargetedEvent<HTMLSelectElement>) => {

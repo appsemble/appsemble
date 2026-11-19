@@ -4,6 +4,7 @@ import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
+import { isSecretIncomplete } from '../../../../../utils/secrets.js';
 
 export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
   const { appId } = ctx.pathParams;
@@ -20,5 +21,8 @@ export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.QueryAppSecrets],
   });
 
-  ctx.body = appOAuth2Secrets;
+  ctx.body = appOAuth2Secrets.map((secret) => ({
+    ...secret.toJSON(),
+    incomplete: isSecretIncomplete(secret.clientSecret),
+  }));
 }

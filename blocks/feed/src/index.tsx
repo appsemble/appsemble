@@ -37,7 +37,7 @@ bootstrap(({ events, ready, utils }) => {
   }, [events, loadData, ready]);
 
   if (loading) {
-    return <Loader label={utils.formatMessage('loading')} />;
+    return <Loader label={utils.formatMessage('loading')} testId="loader-comp" />;
   }
 
   if (!data.length) {

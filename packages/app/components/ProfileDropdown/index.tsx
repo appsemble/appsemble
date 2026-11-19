@@ -1,16 +1,16 @@
-import { Icon, NavbarDropdown, useToggle } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Icon, NavbarDropdown, useToggle } from '@appsemble/preact-components';
+import { type VNode } from 'preact';
+import { Link } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { showDemoLogin } from '../../utils/settings.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
 import { ProfileMenuItems, useProfileMenu } from '../ProfileMenu/index.js';
 
-export function ProfileDropdown(): ReactNode {
+export function ProfileDropdown(): VNode | null {
   const { formatMessage } = useIntl();
   const { appMemberInfo } = useAppMember();
   const profileMenu = useProfileMenu();
