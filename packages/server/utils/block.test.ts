@@ -110,6 +110,29 @@ describe('syncBlock', () => {
     await expectSynchronizedAsset();
   });
 
+  it('should create the organization of the block from the remote if it does not exist', async () => {
+    await Organization.destroy({ where: { id: organizationId }, force: true });
+    mock.onGet(`${remote}/api/organizations/${organizationId}`).reply(200, {
+      id: organizationId,
+      name: 'Remote Test',
+      description: 'The organization on the remote',
+      website: 'https://test.example',
+    });
+    mock.onGet(blockUrl).reply(200, createManifest());
+    mock.onGet(legacyAssetUrl).reply(200, content, {
+      'content-type': 'application/javascript',
+    });
+
+    await syncBlock({ OrganizationId: organizationId, name: blockName, version: blockVersion });
+
+    expect(await Organization.findByPk(organizationId)).toMatchObject({
+      name: 'Remote Test',
+      description: 'The organization on the remote',
+      website: 'https://test.example',
+    });
+    await expectSynchronizedAsset();
+  });
+
   it('should reject private file URLs without persisting a partial block', async () => {
     process.env.VITEST_CONF_ALLOW_PRIVATE_IP_PROXY = '0';
     const privateServer = createServer((request, response) => {

@@ -18,7 +18,17 @@ import {
   getBlockAssetFileUrls,
   getBlockAssetStorageKey,
 } from './blockAssets.js';
-import { App, BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
+import {
+  App,
+  BlockAsset,
+  BlockMessages,
+  BlockVersion,
+  Organization,
+  transactional,
+} from '../models/index.js';
+
+// Requests to the remote fail instead of hanging when it cannot be reached.
+const remoteTimeout = 30_000;
 
 interface BlockVersionToJsonOptions {
   includeFileUrls?: boolean;
@@ -30,7 +40,6 @@ export function blockVersionToJson(
 ): BlockManifest {
   const {
     BlockAssets,
-    Organization,
     OrganizationId,
     actions,
     description,
@@ -45,12 +54,12 @@ export function blockVersionToJson(
     wildcardActions,
   } = blockVersion;
   // Call blockVersionToJson with a blockVersion that includes an Organization
-  const blockName = `@${OrganizationId || Organization!.id}/${name}`;
+  const blockName = `@${OrganizationId || blockVersion.Organization!.id}/${name}`;
   let iconUrl = null;
   if (blockVersion.icon || blockVersion.get('hasIcon')) {
     iconUrl = `/api/blocks/${blockName}/versions/${version}/icon`;
   } else if (blockVersion.Organization?.icon || blockVersion.Organization?.get('hasIcon')) {
-    iconUrl = `/api/organizations/${Organization!.id}/icon?${new URLSearchParams({
+    iconUrl = `/api/organizations/${blockVersion.Organization!.id}/icon?${new URLSearchParams({
       updated: blockVersion.Organization?.updated.toISOString(),
     })}`;
   }
@@ -90,12 +99,25 @@ export async function syncBlock({
   const uploadedKeys: string[] = [];
 
   try {
-    const { data: block } = await axios.get<BlockManifest>(blockUrl);
+    const { data: block } = await axios.get<BlockManifest>(blockUrl, { timeout: remoteTimeout });
     if (block.name !== id) {
       return;
     }
     if (block.version !== version) {
       return;
+    }
+    if (!(await Organization.count({ where: { id: OrganizationId }, paranoid: false }))) {
+      const {
+        data: { description, name: organizationName, website },
+      } = await axios.get<Pick<Organization, 'description' | 'name' | 'website'>>(
+        String(new URL(`/api/organizations/${OrganizationId}`, argv.remote)),
+        { timeout: remoteTimeout },
+      );
+      // Concurrent synchronizations may create the organization at the same time.
+      await Organization.bulkCreate(
+        [{ id: OrganizationId, name: organizationName, description, website }],
+        { ignoreDuplicates: true },
+      );
     }
     await transactional(async (transaction) => {
       const blockVersion = { ...block };
@@ -121,6 +143,7 @@ export async function syncBlock({
           httpAgent,
           httpsAgent,
           responseType: 'arraybuffer',
+          timeout: remoteTimeout,
         });
         const contentType = headers['content-type'];
         if (typeof contentType !== 'string') {
@@ -159,7 +182,9 @@ export async function syncBlock({
       if (block.languages) {
         promises.push(
           ...block.languages.map((language) => async () => {
-            const { data: messages } = await axios.get(`${blockUrl}/messages/${language}`);
+            const { data: messages } = await axios.get(`${blockUrl}/messages/${language}`, {
+              timeout: remoteTimeout,
+            });
             await BlockMessages.create({ BlockVersionId, language, messages }, { transaction });
           }),
         );
