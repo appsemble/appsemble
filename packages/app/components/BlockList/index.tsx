@@ -15,7 +15,7 @@ import {
 import { type ProjectImplementations } from '@appsemble/types';
 import { Fragment, type VNode } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { Redirect, useLocation } from 'wouter-preact';
+import { useLocation } from 'wouter-preact';
 import { useHistoryState } from 'wouter-preact/use-browser-location';
 import { Loader } from '../Loader/index.js';
 import { useMessages } from '../MessagesProvider/index.js';
@@ -37,6 +37,7 @@ import { Block } from '../Block/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
 import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
+import { Redirect } from '../Redirect/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import usePageGridCss, { useGridBreakpoints } from '../PageGridProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';

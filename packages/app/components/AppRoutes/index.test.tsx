@@ -42,12 +42,8 @@ vi.mock('../OpenIDCallback/index.js', () => ({
   OpenIDCallback: () => <p>Callback route</p>,
 }));
 vi.mock('../Page/index.js', async () => {
-  const {
-    Link,
-    Redirect,
-    Route: MockRoute,
-    useLocation: useMockLocation,
-  } = await import('wouter-preact');
+  const { Link, Route: MockRoute, useLocation: useMockLocation } = await import('wouter-preact');
+  const { Redirect } = await import('../Redirect/index.js');
   return {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     Page: () => (

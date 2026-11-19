@@ -2,8 +2,8 @@ import { getPagePathSegment, getRouteSegment } from '@appsemble/lang-sdk';
 import { Button, Message } from '@appsemble/preact-components';
 import { clearOAuth2State, loadOAuth2State, type OAuth2State } from '@appsemble/web-utils';
 import { type VNode } from 'preact';
-import { useEffect, useLayoutEffect, useMemo, useState } from 'preact/hooks';
-import { Link, Redirect, useParams } from 'wouter-preact';
+import { useEffect, useMemo, useState } from 'preact/hooks';
+import { Link, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -17,6 +17,7 @@ import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
 import { useQuery } from '../../utils/useQuery.js';
+import { Redirect } from '../Redirect/index.js';
 
 /**
  * Handle the OAuth2 callback.
@@ -77,9 +78,7 @@ export function OpenIDCallback(): VNode {
     }
   }, [authorizationCodeLogin, code, isOk, redirect, shouldLink]);
 
-  // The redirects below navigate as soon as they mount, which unmounts this component before its
-  // passive effects run.
-  useLayoutEffect(() => {
+  useEffect(() => {
     // A pending TOTP challenge navigates away from this component just like a completed login
     // does, so the stored OAuth2 state is equally spent.
     if (isLoggedIn || totpPending) {

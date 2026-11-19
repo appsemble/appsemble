@@ -65,8 +65,6 @@ vi.mock('wouter-preact', async (importOriginal) => {
 
   return {
     ...actual,
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- This mocks a component export.
-    Redirect: () => null,
     useLocation: () => [actual.useLocation()[0], vi.fn()],
   };
 });

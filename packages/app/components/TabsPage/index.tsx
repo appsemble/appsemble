@@ -11,7 +11,7 @@ import {
 import { Tab, Tabs } from '@appsemble/preact-components';
 import { type ComponentProps, type VNode } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { Redirect, Route, useLocation, useParams } from 'wouter-preact';
+import { Route, useLocation, useParams } from 'wouter-preact';
 
 import { TabContent } from './TabContent/index.js';
 import { MetaSwitch } from '../Meta/index.js';
@@ -24,6 +24,7 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
 import { type BlockList } from '../BlockList/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
+import { Redirect } from '../Redirect/index.js';
 
 interface TabsPageProps extends Omit<ComponentProps<typeof BlockList>, 'blocks'> {
   readonly pageDefinition: TabsPageDefinition;

@@ -7,7 +7,7 @@ import {
 } from '@appsemble/lang-sdk';
 import { type ComponentChildren, type VNode } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
-import { Redirect, Route, Switch, useParams, useRoute } from 'wouter-preact';
+import { Route, Switch, useParams, useRoute } from 'wouter-preact';
 
 import { Loader } from '../Loader/index.js';
 import { MetaProvider } from '../Meta/index.js';
@@ -24,6 +24,7 @@ import { GroupInvite } from '../GroupInvite/index.js';
 import { Login } from '../Login/index.js';
 import { OpenIDCallback } from '../OpenIDCallback/index.js';
 import { Page } from '../Page/index.js';
+import { Redirect } from '../Redirect/index.js';
 import { Register } from '../Register/index.js';
 import { ResetPassword } from '../ResetPassword/index.js';
 import { SentryFeedback } from '../SentryFeedback/index.js';

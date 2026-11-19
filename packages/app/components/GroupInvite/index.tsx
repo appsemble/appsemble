@@ -1,11 +1,12 @@
 import { getRouteSegment } from '@appsemble/lang-sdk';
 import { type VNode } from 'preact';
-import { Redirect, useParams } from 'wouter-preact';
+import { useParams } from 'wouter-preact';
 
 import { GroupInvitePrompt } from './GroupInvitePrompt/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useLocationString } from '../../utils/useLocationString.js';
+import { Redirect } from '../Redirect/index.js';
 
 export function GroupInvite(): VNode {
   const { isLoggedIn } = useAppMember();
