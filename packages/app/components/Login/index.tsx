@@ -1,7 +1,7 @@
 import { getPagePathSegment } from '@appsemble/lang-sdk';
 import { Message } from '@appsemble/preact-components';
 import { type VNode } from 'preact';
-import { Redirect, useParams } from 'wouter-preact';
+import { useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -22,6 +22,7 @@ import { BuiltinPage } from '../BuiltinPage/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
 import { MainLogin } from '../MainLogin/index.js';
 import { useQuery } from '../../utils/useQuery.js';
+import { Redirect } from '../Redirect/index.js';
 
 type LoginState = 'demo' | 'form' | 'permission-error' | 'totp-setup' | 'totp';
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { type VNode } from 'preact';
 import { useCallback, useState } from 'preact/hooks';
-import { Link, Redirect, useParams } from 'wouter-preact';
+import { Link, useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
 import { EditPasswordForm, type EditPasswordValues } from '../EditPasswordForm/index.js';
@@ -9,6 +9,7 @@ import { FormattedMessage } from '../IntlProvider/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
 import { useQuery } from '../../utils/useQuery.js';
+import { Redirect } from '../Redirect/index.js';
 
 export function EditPassword(): VNode {
   const [success, setSuccess] = useState(false);
