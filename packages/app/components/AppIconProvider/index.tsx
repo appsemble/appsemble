@@ -1,7 +1,7 @@
 import { IconProvider } from '@appsemble/preact-components';
 import { type ComponentChildren, type VNode } from 'preact';
 
-import { apiUrl, appId, iconAssetIds, passwordToken } from '../../utils/settings.js';
+import { apiUrl, appId, assetIds, passwordToken } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 interface AppIconProviderProps {
@@ -20,7 +20,7 @@ export function AppIconProvider({ children }: AppIconProviderProps): VNode {
     <IconProvider
       apiUrl={apiUrl}
       appId={appId}
-      assetIds={iconAssetIds}
+      assetIds={assetIds}
       passwordToken={passwordToken}
       registry={definition.icons}
     >

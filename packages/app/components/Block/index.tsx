@@ -27,7 +27,7 @@ import { callBootstrap, getBlockFileURL } from '../../utils/bootstrapper.js';
 import { createEvents } from '../../utils/events.js';
 import { injectCSS } from '../../utils/injectCSS.js';
 import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
-import { apiUrl, appId, appUpdated, iconAssetIds, passwordToken } from '../../utils/settings.js';
+import { apiUrl, appId, appUpdated, assetIds, passwordToken } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
 import { useQuery } from '../../utils/useQuery.js';
 import { useRouteParams } from '../../utils/useRouteParams.js';
@@ -259,7 +259,7 @@ export function Block({
       fa,
       resolveIcon(reference) {
         return resolveIcon(reference, appDefinition.icons, (asset) =>
-          getIconAsset(apiUrl, appId, asset, iconAssetIds, passwordToken),
+          getIconAsset(apiUrl, appId, asset, assetIds, passwordToken),
         );
       },
       icon(reference, options) {
