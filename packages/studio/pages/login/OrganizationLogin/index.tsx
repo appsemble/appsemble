@@ -13,7 +13,7 @@ import { storageKey } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { LoginForm } from '../LoginForm.js';
@@ -39,6 +39,7 @@ export function OrganizationLogin({
 }: OrganizationLoginProps): ReactNode {
   const { userInfo } = useUser();
   const qs = useQuery();
+  const { lang } = useParams<{ lang: string }>();
   const url = `/api/organizations/${encodeURIComponent(organizationId)}/sso/login`;
   const { data, error, loading } =
     useData<Pick<OrganizationSsoSettings, 'name' | 'policy' | 'allowedLoginMethods'>>(url);
@@ -107,15 +108,13 @@ export function OrganizationLogin({
           <FormattedMessage {...messages.error} />
         </Message>
       ) : null}
-      {userInfo || autoStart ? (
-        <Button color="primary" disabled={busy.enabled} onClick={start}>
-          {userInfo ? (
-            <FormattedMessage {...messages.link} />
-          ) : (
-            <FormattedMessage {...messages.loginWith} values={{ name: data.name }} />
-          )}
-        </Button>
-      ) : null}
+      <Button color="primary" disabled={busy.enabled} onClick={start}>
+        {userInfo ? (
+          <FormattedMessage {...messages.link} />
+        ) : (
+          <FormattedMessage {...messages.loginWith} values={{ name: data.name }} />
+        )}
+      </Button>
       {onBack ? (
         <Button className="ml-3" disabled={busy.enabled} onClick={onBack}>
           <FormattedMessage {...loginMessages.changeEmail} />
@@ -130,11 +129,13 @@ export function OrganizationLogin({
         <Button className="ml-3" component={Link} to={redirect}>
           <FormattedMessage {...messages.continue} />
         </Button>
-      ) : autoStart ? null : (
+      ) : autoStart || !allowOtherMethods ? null : (
         <LoginForm
-          allowedLoginMethods={allowOtherMethods ? data.allowedLoginMethods : []}
+          allowedLoginMethods={data.allowedLoginMethods}
           busy={busy}
-          onOrganizationSelected={start}
+          onOrganizationSelected={(id) =>
+            id === organizationId ? start() : onOrganizationSelected(id)
+          }
           onPasswordLogin={onPasswordLogin}
           organizationId={organizationId}
         />
@@ -145,9 +146,9 @@ export function OrganizationLogin({
             <FormattedMessage {...loginMessages.otherOptions} />
           </summary>
           <Link
-            to={`/login?${new URLSearchParams({
+            to={`/${lang}/login?${new URLSearchParams({
               personal: '1',
-              redirect: `/login?${new URLSearchParams({ organization: organizationId, redirect })}`,
+              redirect: `/${lang}/login?${new URLSearchParams({ organization: organizationId, redirect })}`,
             })}`}
           >
             <FormattedMessage {...loginMessages.existingAccount} />

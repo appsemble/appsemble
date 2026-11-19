@@ -166,8 +166,9 @@ test.describe('Studio organization Keycloak OIDC', () => {
       try {
         await firstStaffPage.goto(`/en/login?organization=${organization.id}`);
         await expect(firstStaffPage.getByLabel('Password', { exact: true })).toBeHidden();
-        await firstStaffPage.getByRole('textbox', { name: 'Email', exact: true }).fill(staffEmail);
-        await firstStaffPage.getByRole('button', { name: 'Continue', exact: true }).click();
+        await firstStaffPage
+          .getByRole('button', { name: 'Login with Staff Keycloak', exact: true })
+          .click();
         await signInAtKeycloak(firstStaffPage, staffEmail, organization.id);
         await expect(firstStaffPage).toHaveURL(
           new RegExp(`/organizations/${organization.id}(?:/|$)`),
@@ -187,8 +188,9 @@ test.describe('Studio organization Keycloak OIDC', () => {
         );
         const returningPage = await returningContext.newPage();
         await returningPage.goto(`/en/login?organization=${organization.id}`);
-        await returningPage.getByRole('textbox', { name: 'Email', exact: true }).fill(staffEmail);
-        await returningPage.getByRole('button', { name: 'Continue', exact: true }).click();
+        await returningPage
+          .getByRole('button', { name: 'Login with Staff Keycloak', exact: true })
+          .click();
         await signInAtKeycloak(returningPage, staffEmail, organization.id);
         await expect(returningPage).toHaveURL(
           new RegExp(`/organizations/${organization.id}(?:/|$)`),

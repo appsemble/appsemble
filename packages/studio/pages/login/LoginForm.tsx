@@ -80,7 +80,6 @@ export function LoginForm({
     try {
       ({ data } = await axios.post<typeof data>('/api/auth/email/discover', {
         email: values.email,
-        organizationId,
       }));
     } finally {
       busy.disable();

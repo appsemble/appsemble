@@ -59,6 +59,7 @@ export function LoginPage(): ReactNode {
         <OrganizationLogin
           autoStart={Boolean(discoveredOrganization)}
           busy={busy}
+          key={organizationId}
           onBack={discoveredOrganization ? () => setDiscoveredOrganization(undefined) : undefined}
           onOrganizationSelected={setDiscoveredOrganization}
           onPasswordLogin={onPasswordLogin}

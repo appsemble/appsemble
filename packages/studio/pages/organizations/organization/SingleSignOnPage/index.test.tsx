@@ -1,6 +1,6 @@
 import {
   type OrganizationSsoConfiguration,
-  type OrganizationSsoDomain,
+  type OrganizationSsoDomains,
   type OrganizationSsoSettings,
   PredefinedOrganizationRole,
 } from '@appsemble/types';
@@ -27,34 +27,37 @@ const settings: OrganizationSsoSettings = {
 const transport = axios.defaults.adapter;
 let configuration: OrganizationSsoSettings | null;
 let stored: OrganizationSsoConfiguration | null;
-let domains: OrganizationSsoDomain[];
+let domains: OrganizationSsoDomains;
+let publishedRecords: string[];
 
 beforeEach(() => {
   configuration = { ...settings };
   stored = { ...settings, clientSecret: 'existing-secret' };
-  domains = [];
+  domains = { recordValue: 'appsemble-sso=ownership-proof', domains: [] };
+  publishedRecords = [];
   axios.defaults.adapter = (config) => {
     if (config.url.includes('/sso/domains')) {
-      let data: OrganizationSsoDomain | OrganizationSsoDomain[] = domains;
       if (config.method === 'post') {
-        if (config.url.endsWith('/verify')) {
-          domains = domains.map((claim) => ({ ...claim, verified: true }));
-          [data] = domains;
-        } else {
-          const { domain } = JSON.parse(config.data) as { domain: string };
-          data = {
-            domain,
-            verified: false,
-            managedBy: 'studio',
-            recordName: `_appsemble-sso.${domain}`,
-            recordValue: 'appsemble-sso=ownership-proof',
-          };
-          domains = [...domains, data];
+        const { domain } = JSON.parse(config.data) as { domain: string };
+        if (!publishedRecords.includes(`_appsemble-sso.${domain}`)) {
+          return Promise.reject(
+            new AxiosError('Missing record', 'ERR_BAD_REQUEST', config, undefined, {
+              data: { message: `No matching TXT record found at _appsemble-sso.${domain}.` },
+              status: 400,
+              statusText: 'Bad Request',
+              headers: {},
+              config,
+            }),
+          );
         }
+        domains = { ...domains, domains: [...domains.domains, domain] };
       } else if (config.method === 'delete') {
-        domains = [];
+        domains = {
+          ...domains,
+          domains: domains.domains.filter((domain) => !config.url.endsWith(`/${domain}`)),
+        };
       }
-      return Promise.resolve({ data, status: 200, statusText: 'OK', headers: {}, config });
+      return Promise.resolve({ data: domains, status: 200, statusText: 'OK', headers: {}, config });
     }
     if (config.method === 'post' && config.url.endsWith('/sso/login')) {
       return Promise.reject(
@@ -182,39 +185,48 @@ it('should verify a first connection before creating its configuration', async (
   expect(stored).toBeNull();
 });
 
-it('should let an owner add, verify and remove an email alias for discovery', async () => {
+it('should add an email domain once its DNS record is published', async () => {
+  publishedRecords = ['_appsemble-sso.staff.example.com'];
   renderSettings();
   fireEvent.change(await screen.findByRole('textbox', { name: 'Email domain' }), {
     target: { value: 'staff.example.com' },
   });
-  fireEvent.click(screen.getByRole('button', { name: 'Add domain' }));
-  await screen.findByText('Pending DNS verification');
   expect(screen.getByText('_appsemble-sso.staff.example.com')).toBeDefined();
   expect(screen.getByText('appsemble-sso=ownership-proof')).toBeDefined();
+  fireEvent.click(screen.getByRole('button', { name: 'Verify and add domain' }));
 
-  fireEvent.click(screen.getByRole('button', { name: 'Verify staff.example.com' }));
-  await screen.findByText('Verified');
-  expect(screen.queryByText('Pending DNS verification')).toBeNull();
+  expect(await screen.findByText('staff.example.com')).toBeDefined();
+});
 
-  fireEvent.click(screen.getByRole('button', { name: 'Remove staff.example.com' }));
+it('should explain why an email domain could not be added', async () => {
+  renderSettings();
+  fireEvent.change(await screen.findByRole('textbox', { name: 'Email domain' }), {
+    target: { value: 'staff.example.com' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Verify and add domain' }));
+
+  expect(await screen.findByRole('alert')).toHaveProperty(
+    'textContent',
+    'No matching TXT record found at _appsemble-sso.staff.example.com.',
+  );
+  expect(screen.queryByText('staff.example.com')).toBeNull();
+});
+
+it('should let an owner remove an email domain', async () => {
+  domains.domains = ['staff.example.com'];
+  renderSettings();
+  fireEvent.click(await screen.findByRole('button', { name: 'Remove staff.example.com' }));
+
   await waitFor(() => expect(screen.queryByText('staff.example.com')).toBeNull());
 });
 
-it('should show trusted deployment domains without DNS verification controls', async () => {
+it('should show trusted deployment domains read-only', async () => {
   configuration.managedBy = 'deployment';
-  domains = [
-    {
-      domain: 'staff.example.com',
-      verified: true,
-      managedBy: 'deployment',
-      recordName: '',
-      recordValue: '',
-    },
-  ];
+  domains.domains = ['staff.example.com'];
   renderSettings();
 
   await screen.findByText('Trusted by deployment configuration');
-  expect(screen.queryByRole('button', { name: 'Verify staff.example.com' })).toBeNull();
+  expect(screen.getByText('staff.example.com')).toBeDefined();
   expect(screen.queryByRole('button', { name: 'Remove staff.example.com' })).toBeNull();
-  expect(screen.queryByRole('button', { name: 'Add domain' })).toBeNull();
+  expect(screen.queryByRole('textbox', { name: 'Email domain' })).toBeNull();
 });

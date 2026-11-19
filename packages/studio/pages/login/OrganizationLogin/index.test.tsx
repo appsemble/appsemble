@@ -33,8 +33,9 @@ vi.hoisted(() => {
 });
 
 const transport = axios.defaults.adapter;
-let policy: 'required' | 'required-with-guests';
+let policy: 'optional' | 'required' | 'required-with-guests';
 let discoveryFailure: boolean;
+let startFailure: boolean;
 let configuredSso: boolean;
 let discoveryPending: Promise<void> | undefined;
 
@@ -43,6 +44,7 @@ beforeEach(() => {
   sessionStorage.clear();
   policy = 'required';
   discoveryFailure = false;
+  startFailure = false;
   configuredSso = true;
   discoveryPending = undefined;
   axios.defaults.adapter = async (config) => {
@@ -54,17 +56,14 @@ beforeEach(() => {
         throw new AxiosError('Unavailable', 'ERR_NETWORK', config);
       }
       response.data = {
-        organizations:
-          body.organizationId && configuredSso
-            ? [{ id: body.organizationId, name: 'Example', ssoName: 'Staff SSO' }]
-            : body.email.endsWith('@staff.example')
-              ? [{ id: 'staff', name: 'Staff', ssoName: 'Staff SSO' }]
-              : body.email.endsWith('@shared.example')
-                ? [
-                    { id: 'staff', name: 'Staff', ssoName: 'Staff SSO' },
-                    { id: 'partners', name: 'Partners', ssoName: 'Partner SSO' },
-                  ]
-                : [],
+        organizations: body.email.endsWith('@staff.example')
+          ? [{ id: 'staff', name: 'Staff', ssoName: 'Staff SSO' }]
+          : body.email.endsWith('@shared.example')
+            ? [
+                { id: 'staff', name: 'Staff', ssoName: 'Staff SSO' },
+                { id: 'partners', name: 'Partners', ssoName: 'Partner SSO' },
+              ]
+            : [],
       };
     } else if (config.url === '/api/auth/email/login') {
       response.data = {
@@ -76,6 +75,12 @@ beforeEach(() => {
     } else if (config.url === '/api/users/current/organizations') {
       response.data = [];
     } else if (config.method === 'post' && config.url.endsWith('/sso/login')) {
+      if (startFailure) {
+        throw new AxiosError('Unavailable', 'ERR_BAD_RESPONSE', config, undefined, {
+          ...response,
+          status: 502,
+        });
+      }
       response.data = { authorizationUrl: 'https://identity.example/authorize?state=state' };
     } else if (config.url.endsWith('/sso/login')) {
       if (!configuredSso) {
@@ -107,6 +112,7 @@ function renderLogin(initialEntry = '/login'): void {
         <UserProvider>
           <Routes>
             <Route element={<LoginPage />} path="/login" />
+            <Route element={<LoginPage />} path="/:lang/login" />
             <Route element={<p>Returned to destination</p>} path="/destination" />
           </Routes>
         </UserProvider>
@@ -193,17 +199,65 @@ it('returns keyboard focus to email when leaving the organization chooser', asyn
   expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Email' }));
 });
 
-it('uses organization context for an email from a different domain', async () => {
+it('starts organization single sign-on with one click in organization context', async () => {
+  policy = 'optional';
   renderLogin(
     `/login?${new URLSearchParams({ organization: 'example', redirect: '/destination' })}`,
   );
-  await continueWithEmail('personal@example.com');
+  fireEvent.click(await screen.findByRole('button', { name: 'Login with Staff SSO' }));
   await vi.waitFor(() => {
     expect(JSON.parse(sessionStorage.getItem(storageKey)!)).toMatchObject({
       organizationId: 'example',
       redirect: '/destination',
     });
   });
+});
+
+it('offers password sign-in in organization context for an unclaimed email domain', async () => {
+  policy = 'optional';
+  renderLogin('/login?organization=example');
+  await continueWithEmail('personal@example.com');
+  expect(await screen.findByLabelText('Password')).toBeDefined();
+  expect(sessionStorage.getItem(storageKey)).toBeNull();
+});
+
+it('starts the organization that claims the email domain instead of the context organization', async () => {
+  policy = 'optional';
+  renderLogin('/login?organization=example');
+  await continueWithEmail('staff@staff.example');
+  await vi.waitFor(() => {
+    expect(JSON.parse(sessionStorage.getItem(storageKey)!)).toMatchObject({
+      organizationId: 'staff',
+    });
+  });
+});
+
+it('starts a discovered organization again after changing the email', async () => {
+  policy = 'optional';
+  startFailure = true;
+  renderLogin('/login?organization=example');
+  await continueWithEmail('staff@staff.example');
+  await screen.findByText('Unable to start organization sign-in. Please try again.');
+  startFailure = false;
+  fireEvent.click(screen.getByRole('button', { name: 'Change email' }));
+  await continueWithEmail('staff@staff.example');
+  await vi.waitFor(() => {
+    expect(JSON.parse(sessionStorage.getItem(storageKey)!)).toMatchObject({
+      organizationId: 'staff',
+    });
+  });
+});
+
+it('offers only organization single sign-on and an existing account link when it is required', async () => {
+  renderLogin('/nl/login?organization=example');
+  await screen.findByRole('button', { name: 'Login with Staff SSO' });
+  expect(screen.queryByRole('textbox', { name: 'Email' })).toBeNull();
+  expect(screen.queryByLabelText('Password')).toBeNull();
+  fireEvent.click(screen.getByText('Other sign-in options'));
+  expect(screen.getByRole('link', { name: 'Sign in to your existing account' })).toHaveProperty(
+    'href',
+    'http://localhost/nl/login?personal=1&redirect=%2Fnl%2Flogin%3Forganization%3Dexample%26redirect%3D%252Forganizations%252Fexample',
+  );
 });
 
 it.each(['', 'example'])(
@@ -232,7 +286,7 @@ it('shows only permitted alternative providers for invited guests', async () => 
   fireEvent.click(screen.getByRole('button', { name: 'Other sign-in options' }));
   expect(
     screen.getAllByRole('button', { name: /Login with/ }).map((button) => button.textContent),
-  ).toStrictEqual(['Login with GitLab']);
+  ).toStrictEqual(['Login with Staff SSO', 'Login with GitLab']);
 });
 
 it('keeps organization linking explicit after a guest signs in personally', async () => {

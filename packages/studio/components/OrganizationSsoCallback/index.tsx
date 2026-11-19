@@ -4,7 +4,7 @@ import { clearOAuth2State, timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ReactNode, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { type ExtendedOAuth2State } from '../../types.js';
@@ -19,6 +19,7 @@ interface OrganizationSsoCallbackProps {
 export function OrganizationSsoCallback({ session }: OrganizationSsoCallbackProps): ReactNode {
   const qs = useQuery();
   const navigate = useNavigate();
+  const { lang } = useParams<{ lang: string }>();
   const { login } = useUser();
   const [error, setError] = useState<'conflict' | 'error' | 'invalidState'>();
   const [failureMessage, setFailureMessage] = useState<string>();
@@ -59,7 +60,7 @@ export function OrganizationSsoCallback({ session }: OrganizationSsoCallbackProp
     return <Loader />;
   }
 
-  const returnToOrganization = `/login?${new URLSearchParams({ organization: session.organizationId, redirect: session.redirect })}`;
+  const returnToOrganization = `/${lang}/login?${new URLSearchParams({ organization: session.organizationId, redirect: session.redirect })}`;
 
   return (
     <>
@@ -75,7 +76,7 @@ export function OrganizationSsoCallback({ session }: OrganizationSsoCallbackProp
       {error === 'conflict' ? (
         <Button
           component={Link}
-          to={`/login?${new URLSearchParams({ personal: '1', redirect: returnToOrganization })}`}
+          to={`/${lang}/login?${new URLSearchParams({ personal: '1', redirect: returnToOrganization })}`}
         >
           <FormattedMessage {...messages.signIn} />
         </Button>

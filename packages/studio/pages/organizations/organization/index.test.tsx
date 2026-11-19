@@ -204,3 +204,34 @@ it('opens an organization collection at its global collection URL', async () => 
   fireEvent.click(collection);
   expect(await screen.findByText('Collection destination')).toBeDefined();
 });
+
+it('keeps the organization loaded when a member opens its settings from its profile', async () => {
+  localStorage.access_token = `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`;
+  localStorage.refresh_token = 'refresh';
+  const owner = { ...organization, roles: [PredefinedOrganizationRole.Owner] };
+  const responses: Record<string, unknown> = {
+    '/api/users/current': { sub: 'owner', email: 'owner@example.com' },
+    '/api/users/current/organizations': [owner],
+    '/api/organizations/example': organization,
+  };
+  let organizationRequests = 0;
+  axios.defaults.adapter = (config) => {
+    if (config.url === '/api/organizations/example') {
+      organizationRequests += 1;
+    }
+    return Promise.resolve({
+      data: responses[config.url] ?? [],
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config,
+    });
+  };
+  renderTarget('/en/organizations/example');
+  fireEvent.click(await screen.findByRole('link', { name: 'Edit organization' }));
+
+  expect(
+    await screen.findByRole('heading', { name: 'Settings Example organization' }),
+  ).toBeDefined();
+  expect(organizationRequests).toBe(1);
+});

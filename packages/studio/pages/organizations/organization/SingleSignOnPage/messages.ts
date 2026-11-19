@@ -6,45 +6,25 @@ export const messages = defineMessages({
     defaultMessage: 'Email domains for sign-in discovery',
   },
   domainHelp: {
-    id: 'studio.cnQKYL',
+    id: 'studio.65YOOQ',
     defaultMessage:
-      'Add each email domain and alias separately. Domains added here require the displayed DNS TXT record before they route users to your single sign-on provider.',
+      'Publish a DNS TXT record named {name} with the value {value}, then verify and add the domain. Add each email domain and alias separately.',
   },
   domain: {
     id: 'studio.Wrwi+e',
     defaultMessage: 'Email domain',
   },
-  addDomain: {
-    id: 'studio.EkcNZU',
-    defaultMessage: 'Add domain',
-  },
-  verifyDomain: {
-    id: 'studio.EUpfHu',
-    defaultMessage: 'Verify {domain}',
+  verifyAndAddDomain: {
+    id: 'studio.+jUE3K',
+    defaultMessage: 'Verify and add domain',
   },
   removeDomain: {
     id: 'studio.7tU4Fa',
     defaultMessage: 'Remove {domain}',
   },
-  domainVerified: {
-    id: 'studio.Z8971h',
-    defaultMessage: 'Verified',
-  },
-  domainPending: {
-    id: 'studio.7hEPQZ',
-    defaultMessage: 'Pending DNS verification',
-  },
   domainManaged: {
     id: 'studio.PKMe8/',
     defaultMessage: 'Trusted by deployment configuration',
-  },
-  recordName: {
-    id: 'studio./JoN7T',
-    defaultMessage: 'TXT record name',
-  },
-  recordValue: {
-    id: 'studio.IK2ktL',
-    defaultMessage: 'TXT record value',
   },
   domainError: {
     id: 'studio.kOhY6v',

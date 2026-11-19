@@ -13,7 +13,7 @@ import {
 } from '@appsemble/react-components';
 import {
   type OrganizationSsoConfiguration,
-  type OrganizationSsoDomain,
+  type OrganizationSsoDomains,
   type OrganizationSsoSettings,
   PredefinedOrganizationRole,
   organizationLoginMethods,
@@ -40,7 +40,7 @@ export function SingleSignOnPage(): ReactNode {
     error: domainsError,
     loading: domainsLoading,
     setData: setDomains,
-  } = useData<OrganizationSsoDomain[]>(`${url}/domains`);
+  } = useData<OrganizationSsoDomains>(`${url}/domains`);
   const [domain, setDomain] = useState('');
   const [changingDomain, setChangingDomain] = useState(false);
   const [domainError, setDomainError] = useState<string>();
@@ -156,26 +156,22 @@ export function SingleSignOnPage(): ReactNode {
   });
 
   const updateDomain = useCallback(
-    async (action: 'add' | 'verify' | 'remove', value: string) => {
+    async (action: 'add' | 'remove', value: string) => {
       setChangingDomain(true);
       setDomainError(undefined);
-      const domainUrl = `${url}/domains/${encodeURIComponent(value)}`;
       try {
-        const response = await axios<OrganizationSsoDomain>({
-          method: action === 'remove' ? 'delete' : 'post',
-          url:
-            action === 'add'
-              ? `${url}/domains`
-              : `${domainUrl}${action === 'verify' ? '/verify' : ''}`,
-          ...(action === 'add' ? { data: { domain: value } } : {}),
-        });
-        setDomains((current) =>
-          action === 'remove'
-            ? current.filter((claim) => claim.domain !== value)
-            : [...current.filter((claim) => claim.domain !== response.data.domain), response.data],
-        );
         if (action === 'add') {
+          const response = await axios.post<OrganizationSsoDomains>(`${url}/domains`, {
+            domain: value,
+          });
+          setDomains(response.data);
           setDomain('');
+        } else {
+          await axios.delete(`${url}/domains/${encodeURIComponent(value)}`);
+          setDomains((current) => ({
+            ...current,
+            domains: current.domains.filter((entry) => entry !== value),
+          }));
         }
       } catch (err: unknown) {
         setDomainError(
@@ -416,9 +412,6 @@ export function SingleSignOnPage(): ReactNode {
           <Title level={2} size={4}>
             <FormattedMessage {...messages.domains} />
           </Title>
-          <p className="mb-3">
-            <FormattedMessage {...messages.domainHelp} />
-          </p>
           {domainsError || domainError ? (
             <Message color="danger">
               <span role="alert">
@@ -431,53 +424,23 @@ export function SingleSignOnPage(): ReactNode {
           ) : domainsError ? null : (
             <>
               <ul>
-                {domains.map((claim) => (
-                  <li className="box" key={claim.domain}>
-                    <strong>{claim.domain}</strong>
-                    <p>
-                      <FormattedMessage
-                        {...(claim.managedBy === 'deployment'
-                          ? messages.domainManaged
-                          : claim.verified
-                            ? messages.domainVerified
-                            : messages.domainPending)}
-                      />
-                    </p>
-                    {claim.verified ? null : (
-                      <>
-                        <p>
-                          <FormattedMessage {...messages.recordName} />:{' '}
-                          <code className={styles.record}>{claim.recordName}</code>
-                        </p>
-                        <p>
-                          <FormattedMessage {...messages.recordValue} />:{' '}
-                          <code className={styles.record}>{claim.recordValue}</code>
-                        </p>
-                        <Button
-                          className="mt-3 mr-3"
-                          disabled={managed || changingDomain}
-                          onClick={() => updateDomain('verify', claim.domain)}
-                        >
-                          <FormattedMessage
-                            {...messages.verifyDomain}
-                            values={{ domain: claim.domain }}
-                          />
-                        </Button>
-                      </>
-                    )}
-                    {claim.managedBy === 'studio' ? (
+                {domains.domains.map((value) => (
+                  <li className="box" key={value}>
+                    <strong>{value}</strong>
+                    {managed ? (
+                      <p>
+                        <FormattedMessage {...messages.domainManaged} />
+                      </p>
+                    ) : (
                       <Button
-                        className="mt-3"
+                        className="ml-3"
                         color="danger"
-                        disabled={managed || changingDomain}
-                        onClick={() => updateDomain('remove', claim.domain)}
+                        disabled={changingDomain}
+                        onClick={() => updateDomain('remove', value)}
                       >
-                        <FormattedMessage
-                          {...messages.removeDomain}
-                          values={{ domain: claim.domain }}
-                        />
+                        <FormattedMessage {...messages.removeDomain} values={{ domain: value }} />
                       </Button>
-                    ) : null}
+                    )}
                   </li>
                 ))}
               </ul>
@@ -489,6 +452,19 @@ export function SingleSignOnPage(): ReactNode {
                     }
                   }}
                 >
+                  <p className="mb-3">
+                    <FormattedMessage
+                      {...messages.domainHelp}
+                      values={{
+                        name: (
+                          <code className={styles.record}>
+                            _appsemble-sso.{domain || 'example.com'}
+                          </code>
+                        ),
+                        value: <code className={styles.record}>{domains.recordValue}</code>,
+                      }}
+                    />
+                  </p>
                   <InputField
                     disabled={changingDomain}
                     label={<FormattedMessage {...messages.domain} />}
@@ -498,7 +474,7 @@ export function SingleSignOnPage(): ReactNode {
                     value={domain}
                   />
                   <Button color="primary" loading={changingDomain} type="submit">
-                    <FormattedMessage {...messages.addDomain} />
+                    <FormattedMessage {...messages.verifyAndAddDomain} />
                   </Button>
                 </Form>
               )}
