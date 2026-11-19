@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.41.2](https://gitlab.com/appsemble/appsemble/-/releases/0.41.2)] - 2026-11-19
+
+### Fixed
+
+- App: Follow redirects in separate tasks so they don't block the page.
+- App: Request the navbar logo by asset id so browsers cache it.
+- Server: Reject $orderby values that are not property names.
+
 ## \[[0.41.1](https://gitlab.com/appsemble/appsemble/-/releases/0.41.1)] - 2026-11-18
 
 ### Added

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.41.1
-appVersion: 0.41.1
+version: 0.41.2
+appVersion: 0.41.2
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,25 +32,12 @@ dependencies:
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "Server: Allow app requests to internal host names with the
-        ssrfAllowIpAddressList Helm value."
-    - kind: added
-      description: "Server: Reject service, OAuth2 and SCIM secrets without a value,
-        and list them as app warnings."
-    - kind: added
-      description: "Studio: List the app secrets that need a value at the top of the app pages."
-    - kind: changed
-      description: "Preact-components: Set the Loader test id through its testId prop."
-    - kind: removed
-      description: "Server: Remove the unused react-components messages from app core messages."
     - kind: fixed
-      description: "Block(table): Show the dropdown label only as an accessible name
-        when the dropdown has an icon."
+      description: "App: Follow redirects in separate tasks so they don't block the page."
     - kind: fixed
-      description: "Cli: Keep app secrets and variables without a file in config on app update."
+      description: "App: Request the navbar logo by asset id so browsers cache it."
     - kind: fixed
-      description: "Server: Check permissions before updating app SSL secrets."
+      description: "Server: Reject $orderby values that are not property names."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
