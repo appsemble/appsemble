@@ -14,6 +14,12 @@ import { IntlProvider } from '../IntlProvider/index.js';
 import * as menuProvider from '../MenuProvider/index.js';
 import { SideMenuProvider } from '../SideMenu/index.js';
 
+vi.mock('../../utils/settings.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../utils/settings.js')>();
+
+  return { ...actual, assetIds: { brand: '0e1b2c3d' } };
+});
+
 const appDefinition = {
   name: 'Test App',
   defaultPage: 'Home',
@@ -63,6 +69,18 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
+function mockLogoDefinition(): void {
+  vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+    definition: {
+      ...appDefinition,
+      layout: { navigation: 'top', login: 'hidden', logo: { position: 'navbar', asset: 'brand' } },
+    },
+    demoMode: false,
+    revision: 1,
+    blockManifests: [],
+  } as never);
+}
+
 function renderAppBar(props: ComponentProps<typeof AppBar> = {}): void {
   window.history.replaceState(null, '', '/en/Home');
   render(
@@ -106,6 +124,27 @@ describe('AppBar top navigation', () => {
     expect(screen.getByAltText('app-logo')).not.toBeNull();
     expect(screen.getByText('Test App')).not.toBeNull();
     expect(screen.getByRole('link', { name: 'Reports' }).getAttribute('href')).toBe('/en/reports');
+  });
+
+  it('should request the navbar logo by asset id', () => {
+    mockLogoDefinition();
+
+    renderAppBar();
+
+    expect(screen.getByAltText('app-logo').getAttribute('src')).toBe(
+      'https://appsemble.app/api/apps/42/assets/0e1b2c3d',
+    );
+  });
+
+  it('should request the navbar logo by asset name when its id fails to load', () => {
+    mockLogoDefinition();
+
+    renderAppBar();
+    fireEvent.error(screen.getByAltText('app-logo'));
+
+    expect(screen.getByAltText('app-logo').getAttribute('src')).toBe(
+      'https://appsemble.app/api/apps/42/assets/brand',
+    );
   });
 
   it('should lay out all header content using the configured navbar grid', async () => {

@@ -212,17 +212,18 @@ export async function createSettings({
   ).filter(({ clientSecret }) => !isSecretIncomplete(clientSecret));
   const appSamlSecrets = await AppSamlSecret.findAll({ attributes: ['icon', 'id', 'name'] });
 
-  // Icons are requested by asset id, which addresses fixed bytes the browser may cache for good.
-  // Names resolve to the asset the asset endpoint serves for them, limited to app-level assets
-  // because the icon registry applies to the whole app.
-  const iconAssetNames = Object.values(persistedApp.definition.icons ?? {}).map(
-    ({ asset }) => asset,
-  );
-  const iconAssets = iconAssetNames.length
+  // The assets the app shell addresses by name are also offered by id, which addresses fixed bytes
+  // the browser may cache for good. Names resolve to the asset the asset endpoint serves for them,
+  // limited to app-level assets because the icon registry and the logo apply to the whole app.
+  const namedAssets = Object.values(persistedApp.definition.icons ?? {}).map(({ asset }) => asset);
+  if (persistedApp.definition.layout?.logo?.position === 'navbar') {
+    namedAssets.push(persistedApp.definition.layout.logo.asset || 'logo');
+  }
+  const assets = namedAssets.length
     ? await Asset.findAll({
         attributes: ['id', 'name'],
         where: {
-          name: iconAssetNames,
+          name: namedAssets,
           GroupId: null,
           ...(persistedApp.demoMode ? { seed: false, ephemeral: true } : {}),
         },
@@ -252,11 +253,11 @@ export async function createSettings({
       staticAssets: staticAssets.map(({ name }) => name),
       appControllerCode: persistedApp.controllerCode,
       appControllerImplementations: persistedApp.controllerImplementations,
+      assetIds: Object.fromEntries(assets.map(({ id, name }) => [name, id])),
       blockManifests: (blockManifests ?? []).map((blockManifest) => {
         const fileUrls = blockFileUrls[`${blockManifest.name}@${blockManifest.version}`];
         return fileUrls ? { ...blockManifest, fileUrls } : blockManifest;
       }),
-      iconAssetIds: Object.fromEntries(iconAssets.map(({ id, name }) => [name, id])),
       id: persistedApp.id,
       languages,
       logins: [

@@ -41,14 +41,14 @@ function parseCsp(csp: string): Record<string, string[]> {
 function parseSettingsScript(settings: string): {
   blockManifests: { name: string; version: string; fileUrls?: Record<string, string> }[];
   definition: AppDefinition & Record<string, unknown>;
-  iconAssetIds: Record<string, string>;
+  assetIds: Record<string, string>;
   logins: unknown[];
   staticAssets: string[];
 } {
   return JSON.parse(settings.slice('<script>window.settings='.length, -'</script>'.length)) as {
     blockManifests: { name: string; version: string; fileUrls?: Record<string, string> }[];
     definition: AppDefinition & Record<string, unknown>;
-    iconAssetIds: Record<string, string>;
+    assetIds: Record<string, string>;
     logins: unknown[];
     staticAssets: string[];
   };
@@ -289,7 +289,7 @@ describe('indexHandler', () => {
     expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Content-Security-Policy: base-uri 'self'; connect-src * blob: data:; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-LeK5R22j6uJeGL+P87i4pTi25Y3AggjIxURj3mtMLTM=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
+      Content-Security-Policy: base-uri 'self'; connect-src * blob: data:; default-src 'self'; font-src * data:; frame-ancestors http://host.example; frame-src 'self' *.vimeo.com *.weseedo.nl *.youtube.com blob: http://host.example; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; object-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-QOblIj228lo0zY4HndmiKxNhqyhbVEriguWsXGAAtUU=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:
       Content-Type: text/html; charset=utf-8
       Referrer-Policy: strict-origin-when-cross-origin
       X-Appsemble-Messages-Cache: miss
@@ -420,7 +420,7 @@ describe('indexHandler', () => {
           "messagesURL": "http://host.example/api/apps/1/messages/en",
           "noIndex": true,
           "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-          "settings": "<script>window.settings={"apiUrl":"http:\\u002F\\u002Fhost.example","staticAssets":[],"appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@appsemble\\u002Fa","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble\\u002Fa","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test\\u002Fa","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test\\u002Fb","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"iconAssetIds":{},"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test\\u002Fa","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test\\u002Fb","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]}</script>",
+          "settings": "<script>window.settings={"apiUrl":"http:\\u002F\\u002Fhost.example","staticAssets":[],"appControllerCode":null,"appControllerImplementations":null,"assetIds":{},"blockManifests":[{"name":"@appsemble\\u002Fa","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble\\u002Fa","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test\\u002Fa","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test\\u002Fb","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test\\u002Fa","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test\\u002Fb","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]}</script>",
           "themeColor": "#ffffff",
         },
         "filename": "app/index.html",
@@ -727,7 +727,7 @@ describe('indexHandler', () => {
 
     const response = await request.get('/');
 
-    expect(parseSettingsScript(response.data.data.settings).iconAssetIds).toStrictEqual({
+    expect(parseSettingsScript(response.data.data.settings).assetIds).toStrictEqual({
       'lot-icon': lot.id,
       'parking-icon': parking.id,
     });
@@ -755,8 +755,61 @@ describe('indexHandler', () => {
 
     const response = await request.get('/');
 
-    expect(parseSettingsScript(response.data.data.settings).iconAssetIds).toStrictEqual({
+    expect(parseSettingsScript(response.data.data.settings).assetIds).toStrictEqual({
       'lot-icon': copy.id,
+    });
+  });
+
+  it('should resolve the navbar logo alongside the icon assets', async () => {
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Home',
+        icons: { lot: { asset: 'lot-icon' } },
+        layout: { logo: { position: 'navbar', asset: 'brand' } },
+        pages: [{ name: 'Home', blocks: [] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+    const { Asset } = await getAppDB(app.id);
+    const lot = await Asset.create({ mime: 'image/svg+xml', name: 'lot-icon' });
+    const brand = await Asset.create({ mime: 'image/svg+xml', name: 'brand' });
+
+    const response = await request.get('/');
+
+    expect(parseSettingsScript(response.data.data.settings).assetIds).toStrictEqual({
+      'lot-icon': lot.id,
+      brand: brand.id,
+    });
+  });
+
+  it('should resolve the navbar logo to the `logo` asset when the definition names none', async () => {
+    const app = await App.create({
+      OrganizationId: 'test',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Home',
+        layout: { logo: { position: 'navbar' } },
+        pages: [{ name: 'Home', blocks: [] }],
+      },
+      path: 'app',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      coreStyle: '',
+      sharedStyle: '',
+    });
+    const { Asset } = await getAppDB(app.id);
+    const logo = await Asset.create({ mime: 'image/svg+xml', name: 'logo' });
+
+    const response = await request.get('/');
+
+    expect(parseSettingsScript(response.data.data.settings).assetIds).toStrictEqual({
+      logo: logo.id,
     });
   });
 
@@ -1179,7 +1232,7 @@ describe('indexHandler', () => {
           "messagesURL": "http://host.example/api/apps/1/messages/en",
           "noIndex": true,
           "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-          "settings": "<script>window.settings={"apiUrl":"http:\\u002F\\u002Fhost.example","staticAssets":[],"appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@appsemble\\u002Fa","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble\\u002Fa","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test\\u002Fa","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test\\u002Fb","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"iconAssetIds":{},"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test\\u002Fa","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test\\u002Fb","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]};(function(c,l,a,r,i,t,y){
+          "settings": "<script>window.settings={"apiUrl":"http:\\u002F\\u002Fhost.example","staticAssets":[],"appControllerCode":null,"appControllerImplementations":null,"assetIds":{},"blockManifests":[{"name":"@appsemble\\u002Fa","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@appsemble\\u002Fa","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.css","a1.js"]},{"name":"@test\\u002Fa","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.css","a0.js"]},{"name":"@test\\u002Fb","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.css","b2.js"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test\\u002Fa","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test\\u002Fb","version":"0.0.2"}]}}}]}]}]},"demoMode":false,"showAppsembleLogin":false,"displayAppMemberName":false,"displayInstallationPrompt":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"totp":"disabled","appUpdated":"1970-01-01T00:00:00.000Z","supportedLanguages":["en"]};(function(c,l,a,r,i,t,y){
           c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
           t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
           y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);

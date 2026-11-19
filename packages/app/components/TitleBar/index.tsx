@@ -1,6 +1,7 @@
 import { getPagePathSegment, remap, type RemapperContext } from '@appsemble/lang-sdk';
+import { getAssetUrls } from '@appsemble/web-utils';
 import { type ComponentChildren, type VNode } from 'preact';
-import { useMemo } from 'preact/hooks';
+import { useMemo, useState } from 'preact/hooks';
 import { Link, useLocation, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
@@ -14,7 +15,7 @@ import {
   shouldShowMenu,
   titleBarShowsPageName,
 } from '../../utils/layout.js';
-import { apiUrl, appId, passwordToken } from '../../utils/settings.js';
+import { apiUrl, appId, assetIds, passwordToken } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -62,6 +63,14 @@ export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): VNo
   const { lang: locale } = useParams();
   const [pathname] = useLocation();
   const logoInNavbar = (definition.layout?.logo?.position || 'hidden') === 'navbar';
+  const logoUrls = getAssetUrls(
+    apiUrl,
+    appId,
+    definition.layout?.logo?.asset || 'logo',
+    assetIds,
+    passwordToken,
+  );
+  const [logoFailed, setLogoFailed] = useState(false);
   const BREAKPOINTS = useGridBreakpoints(definition.layout?.breakpoints);
   const isDesktop = useIsDesktop(definition.layout?.breakpoints);
   const navbarGridClassName = useGridCss({
@@ -130,10 +139,13 @@ export function AppBar({ children, hasPageHeading, hideName }: AppBarProps): VNo
 
   const logoNode = logoInNavbar ? (
     <Link to={`/${locale}/${getPagePathSegment({ name: defaultPageName }, getAppMessage)}`}>
+      {/* The error handler only tracks loading failures, it doesn't make the image interactive. */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <img
         alt="app-logo"
         className={styles.logo}
-        src={`${apiUrl}/api/apps/${appId}/assets/${definition.layout?.logo?.asset || 'logo'}${passwordToken ? `?passwordToken=${passwordToken}` : ''}`}
+        onError={() => setLogoFailed(true)}
+        src={logoFailed && logoUrls.fallbackUrl ? logoUrls.fallbackUrl : logoUrls.url}
       />
     </Link>
   ) : null;
