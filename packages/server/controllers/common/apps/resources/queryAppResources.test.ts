@@ -1139,6 +1139,19 @@ describe('queryAppResources', () => {
     `);
   });
 
+  it('should reject sorting by a property name containing a quote', async () => {
+    authorizeStudio();
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $orderby: "foo'bar" },
+    });
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'Unable to process this query' },
+    });
+  });
+
   it('should be able to filter fields when fetching resources', async () => {
     const { Resource } = await getAppDB(app.id);
     await Resource.create({

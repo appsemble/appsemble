@@ -258,11 +258,23 @@ describe('odataOrderbyToSequelize', () => {
       ['foo', 'DESC'],
       ['bar', 'ASC'],
     ],
+    'foo desc, bar': [
+      ['foo', 'DESC'],
+      ['bar', 'ASC'],
+    ],
+    'foo/bar desc': [['foo/bar', 'DESC']],
+    'foo,': [['foo', 'ASC']],
   };
 
   it.each(Object.entries(cases))('%s', (filter, expected) => {
     const result = odataOrderbyToSequelize(filter);
     expect(result).toStrictEqual(expected);
+  });
+
+  const invalid = ["foo'", 'foo}', 'foo"', 'foo/', '/foo', 'foo;bar'];
+
+  it.each(invalid)('should reject %s', (filter) => {
+    expect(() => odataOrderbyToSequelize(filter)).toThrow('Invalid $orderby property');
   });
 
   const empty = ['', null, undefined];
