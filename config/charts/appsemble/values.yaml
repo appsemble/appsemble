@@ -216,7 +216,6 @@ pgbouncer:
 remote: null
 
 syncOrganizationBlocks: []
-syncOrganizationBlocksVersion: null
 
 securityEmail: security@appsemble.com
 

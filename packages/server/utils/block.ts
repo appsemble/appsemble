@@ -6,6 +6,7 @@ import {
   isValidBlockAssetFilename,
   logger,
   uploadS3File,
+  version as serverVersion,
 } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
@@ -239,38 +240,60 @@ export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<Blo
  * @param version The block version to synchronize, or `latest` for the latest version of each
  *   block on the remote.
  */
-export async function syncOrganizationBlocks(
-  organizationId: string,
-  version: string,
-): Promise<void> {
-  if (!(await Organization.findByPk(organizationId, { attributes: ['id'], paranoid: false }))) {
+export interface OrganizationBlocksVersion {
+  organization: string;
+
+  /**
+   * The block version to synchronize: `server` for the version of this server, `latest` for the
+   * latest version of each block, or an explicit version.
+   */
+  version: string;
+}
+
+async function syncBlocksOfOrganization({
+  organization,
+  version,
+}: OrganizationBlocksVersion): Promise<void> {
+  if (!(await Organization.findByPk(organization, { attributes: ['id'], paranoid: false }))) {
     const {
       data: { description, name, website },
     } = await axios.get<Pick<Organization, 'description' | 'name' | 'website'>>(
-      String(new URL(`/api/organizations/${organizationId}`, argv.remote)),
+      String(new URL(`/api/organizations/${organization}`, argv.remote)),
     );
-    await Organization.create({ id: organizationId, name, description, website });
-    logger.info(`Created organization ${organizationId} from ${argv.remote}`);
+    await Organization.create({ id: organization, name, description, website });
+    logger.info(`Created organization ${organization} from ${argv.remote}`);
   }
 
   const { data: remoteBlocks } = await axios.get<BlockManifest[]>(
-    String(new URL(`/api/organizations/${organizationId}/blocks`, argv.remote)),
+    String(new URL(`/api/organizations/${organization}/blocks`, argv.remote)),
   );
   const localBlocks = await BlockVersion.findAll({
     attributes: ['name', 'version'],
-    where: { OrganizationId: organizationId },
+    where: { OrganizationId: organization },
   });
   const localIds = new Set(localBlocks.map((block) => `${block.name}@${block.version}`));
+  const requestedVersion = version === 'server' ? serverVersion : version;
 
   // Intentionally not using Promise.all here to not overload the remote with requests
   for (const remoteBlock of remoteBlocks) {
-    const name = remoteBlock.name.slice(`@${organizationId}/`.length);
-    const blockVersion = version === 'latest' ? remoteBlock.version : version;
+    const name = remoteBlock.name.slice(`@${organization}/`.length);
+    const blockVersion = requestedVersion === 'latest' ? remoteBlock.version : requestedVersion;
     if (localIds.has(`${name}@${blockVersion}`)) {
-      logger.verbose(`Block @${organizationId}/${name}@${blockVersion} already exists`);
+      logger.verbose(`Block @${organization}/${name}@${blockVersion} already exists`);
       continue;
     }
-    await syncBlock({ OrganizationId: organizationId, name, version: blockVersion });
+    await syncBlock({ OrganizationId: organization, name, version: blockVersion });
+  }
+}
+
+export async function syncOrganizationBlocks(
+  organizationVersions: OrganizationBlocksVersion[],
+): Promise<void> {
+  for (const organizationVersion of organizationVersions) {
+    logger.info(
+      `Synchronizing blocks of organization ${organizationVersion.organization} at ${organizationVersion.version} from ${argv.remote}`,
+    );
+    await syncBlocksOfOrganization(organizationVersion);
   }
 }
 

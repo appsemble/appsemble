@@ -1,20 +1,19 @@
-import { initS3Client, logger, version } from '@appsemble/node-utils';
+import { initS3Client } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
 import { initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
-import { syncOrganizationBlocks } from '../utils/block.js';
+import { type OrganizationBlocksVersion, syncOrganizationBlocks } from '../utils/block.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
 interface AdditionalArguments {
-  blockVersion?: string;
-  organizations?: string[];
+  organization: OrganizationBlocksVersion[];
 }
 
 export const command = 'sync-organization-blocks';
 export const description =
-  'Synchronize a block version of organizations from the remote Appsemble server.';
+  'Synchronize the blocks of organizations from the remote Appsemble server.';
 
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs)
@@ -23,23 +22,23 @@ export function builder(yargs: Argv): Argv {
       demandOption: true,
       type: 'string',
     })
-    .option('organizations', {
-      desc: 'The IDs of the organizations whose blocks to synchronize.',
+    .option('organization', {
+      desc: 'An organization and the block version to synchronize, as `<id>:<version>`. The version is `server` for the version of this server, `latest` for the latest version of each block, or an explicit version. Repeat for multiple organizations.',
       demandOption: true,
       type: 'string',
       array: true,
-    })
-    .option('block-version', {
-      desc: 'The block version to synchronize, or `latest` for the latest version of each block. Defaults to the version of this server.',
-      type: 'string',
-      default: version,
+      coerce: (values: string[]) =>
+        values.map((value) => {
+          const [organization, version] = value.split(':');
+          if (!organization || !version) {
+            throw new Error(`Expected --organization as <id>:<version>, got ${value}`);
+          }
+          return { organization, version };
+        }),
     });
 }
 
-export async function handler({
-  blockVersion = version,
-  organizations = [],
-}: AdditionalArguments = {}): Promise<void> {
+export async function handler({ organization }: AdditionalArguments): Promise<void> {
   let db;
 
   try {
@@ -67,12 +66,7 @@ export async function handler({
     bucket: argv.s3Bucket,
   });
 
-  for (const organizationId of organizations) {
-    logger.info(
-      `Synchronizing blocks of organization ${organizationId} at ${blockVersion} from ${argv.remote}`,
-    );
-    await syncOrganizationBlocks(organizationId, blockVersion);
-  }
+  await syncOrganizationBlocks(organization);
 
   await db.close();
   process.exit();

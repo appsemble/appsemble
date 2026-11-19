@@ -859,12 +859,20 @@
       "type": "array",
       "description": "The organizations whose blocks are synchronized from `remote` on install and upgrade.",
       "items": {
-        "type": "string"
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["organization", "version"],
+        "properties": {
+          "organization": {
+            "type": "string",
+            "description": "The ID of the organization."
+          },
+          "version": {
+            "type": "string",
+            "description": "The block version to synchronize: `server` for the Appsemble version of the image, `latest` for the latest version of each block, or an explicit version."
+          }
+        }
       }
-    },
-    "syncOrganizationBlocksVersion": {
-      "type": ["string", "null"],
-      "description": "The block version to synchronize for `syncOrganizationBlocks`, or `latest` for the latest version of each block. Defaults to the Appsemble version of the image."
     },
     "securityEmail": {
       "type": "string",

@@ -1,7 +1,12 @@
 import { createServer } from 'node:http';
 import { type AddressInfo } from 'node:net';
 
-import { getBlockAssetLocation, getS3FileBuffer, uploadS3File } from '@appsemble/node-utils';
+import {
+  getBlockAssetLocation,
+  getS3FileBuffer,
+  uploadS3File,
+  version as serverVersion,
+} from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -176,6 +181,7 @@ describe('syncOrganizationBlocks', () => {
     ${'the latest version of a missing block'}        | ${'latest'} | ${[]}        | ${['3.0.0']}
     ${'the latest version of an outdated block'}      | ${'latest'} | ${['1.0.0']} | ${['1.0.0', '3.0.0']}
     ${'nothing if the latest version exists locally'} | ${'latest'} | ${['3.0.0']} | ${['3.0.0']}
+    ${'the version of the server'}                    | ${'server'} | ${[]}        | ${[serverVersion]}
   `(
     'should synchronize $description',
     async ({
@@ -199,12 +205,40 @@ describe('syncOrganizationBlocks', () => {
         .reply(200, [{ name: `@${organizationId}/${blockName}`, version: '3.0.0' }]);
       mockRemoteBlock('1.1.0');
       mockRemoteBlock('3.0.0');
+      mockRemoteBlock(serverVersion);
 
-      await syncOrganizationBlocks(organizationId, version);
+      await syncOrganizationBlocks([{ organization: organizationId, version }]);
 
       expect(await getLocalVersions()).toStrictEqual(expected);
     },
   );
+
+  it('should synchronize each organization at its own version', async () => {
+    const other = 'other';
+    await Organization.create({ id: other, name: 'Other' });
+    mock
+      .onGet(organizationBlocksUrl)
+      .reply(200, [{ name: `@${organizationId}/${blockName}`, version: '3.0.0' }]);
+    mockRemoteBlock('1.1.0');
+    mock
+      .onGet(`${remote}/api/organizations/${other}/blocks`)
+      .reply(200, [{ name: `@${other}/${blockName}`, version: '2.0.0' }]);
+    mock
+      .onGet(`${remote}/api/blocks/@${other}/${blockName}/versions/2.0.0`)
+      .reply(200, { name: `@${other}/${blockName}`, version: '2.0.0', files: [], languages: null });
+
+    await syncOrganizationBlocks([
+      { organization: organizationId, version: '1.1.0' },
+      { organization: other, version: 'latest' },
+    ]);
+
+    expect(await getLocalVersions()).toStrictEqual(['1.1.0']);
+    const otherVersions = await BlockVersion.findAll({
+      attributes: ['version'],
+      where: { OrganizationId: other },
+    });
+    expect(otherVersions.map(({ version }) => version)).toStrictEqual(['2.0.0']);
+  });
 
   it('should skip a block whose version is not found on the remote', async () => {
     mock.onGet(organizationBlocksUrl).reply(200, [
@@ -214,7 +248,7 @@ describe('syncOrganizationBlocks', () => {
     mock.onGet(`${remote}/api/blocks/@${organizationId}/removed/versions/1.0.0`).reply(404);
     mockRemoteBlock('1.0.0');
 
-    await syncOrganizationBlocks(organizationId, '1.0.0');
+    await syncOrganizationBlocks([{ organization: organizationId, version: '1.0.0' }]);
 
     expect(await getLocalVersions()).toStrictEqual(['1.0.0']);
     expect(await BlockVersion.count({ where: { name: 'removed' } })).toBe(0);
@@ -235,7 +269,7 @@ describe('syncOrganizationBlocks', () => {
       .onGet(`${remote}/api/blocks/@${id}/${blockName}/versions/1.0.0`)
       .reply(200, { name: `@${id}/${blockName}`, version: '1.0.0', files: [], languages: null });
 
-    await syncOrganizationBlocks(id, '1.0.0');
+    await syncOrganizationBlocks([{ organization: id, version: '1.0.0' }]);
 
     const organization = await Organization.findByPk(id, { include: [User] });
     expect(organization).toMatchObject({
@@ -254,7 +288,7 @@ describe('syncOrganizationBlocks', () => {
       .reply(200, [{ name: `@${organizationId}/${blockName}`, version: '1.0.0' }]);
     mockRemoteBlock('1.0.0');
 
-    await syncOrganizationBlocks(organizationId, '1.0.0');
+    await syncOrganizationBlocks([{ organization: organizationId, version: '1.0.0' }]);
 
     expect(await getLocalVersions()).toStrictEqual(['1.0.0']);
     expect(await Organization.findByPk(organizationId)).toBeNull();
@@ -263,6 +297,8 @@ describe('syncOrganizationBlocks', () => {
   it('should fail if the organization does not exist on the remote', async () => {
     mock.onGet(organizationBlocksUrl).reply(404);
 
-    await expect(syncOrganizationBlocks(organizationId, '1.0.0')).rejects.toThrow(/404/);
+    await expect(
+      syncOrganizationBlocks([{ organization: organizationId, version: '1.0.0' }]),
+    ).rejects.toThrow(/404/);
   });
 });

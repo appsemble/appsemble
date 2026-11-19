@@ -657,6 +657,22 @@ otherwise drop requests still being routed to it:
 With `replicaCount` above 1, a PodDisruptionBudget of `minAvailable: 1` is rendered as well, so a
 node drain or other voluntary disruption cannot evict every replica at once.
 
+## Synchronizing blocks
+
+`syncOrganizationBlocks` copies the blocks of organizations from `remote` after each install and
+upgrade. Each entry names an organization and the block version to copy:
+
+```yaml
+remote: https://appsemble.app
+syncOrganizationBlocks:
+  - organization: appsemble
+    version: server # The Appsemble version of the image
+  - organization: acme
+    version: latest # The latest version of each block, or an explicit version such as 1.4.2
+```
+
+A block that the remote does not have in the requested version is skipped with a warning.
+
 ## Variables
 
 | Name                                        | Default                        | Description                                                                                                                               |
@@ -757,8 +773,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `externalValkey.existingSecret`             | `null`                         | The secret from which to read the external Valkey password. Required when `valkey.enabled=false`.                                         |
 | `externalValkey.passwordKey`                | `password`                     | The key in `externalValkey.existingSecret` containing the Valkey password.                                                                |
 | `remote`                                    | `null`                         | A remote Appsemble server to connect to in order to synchronize blocks.                                                                   |
-| `syncOrganizationBlocks`                    | `[]`                           | The organizations whose blocks are synchronized from `remote` on install and upgrade.                                                     |
-| `syncOrganizationBlocksVersion`             | `null`                         | The block version to synchronize, or `latest` for the latest version of each block. Defaults to the Appsemble version of the image.       |
+| `syncOrganizationBlocks`                    | `[]`                           | The organizations whose blocks are synchronized from `remote` on install and upgrade. See [Synchronizing blocks](#synchronizing-blocks).  |
 | `securityEmail`                             | `security@appsemble.com`       | The default security contact email for reporting security vulnerabilities.                                                                |
 | `rejectBreachedPasswords`                   | `false`                        | If `true`, reject new passwords that appear in the Have I Been Pwned Pwned Passwords data set.                                            |
 | `ssrfAllowIpAddressList`                    | `[]`                           | Private IPs, CIDRs or host names apps may connect to. See [Connections to private addresses](#connections-to-private-addresses).          |
