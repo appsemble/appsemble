@@ -52,16 +52,17 @@ export const OrganizationSsoSettings: OpenAPIV3.NonArraySchemaObject = {
   },
 };
 
-export const OrganizationSsoDomain: OpenAPIV3.NonArraySchemaObject = {
+export const OrganizationSsoDomains: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
-  description: 'An email domain used to discover an organization single sign-on provider.',
+  description: 'The verified email domains that lead to an organization single sign-on provider.',
   additionalProperties: false,
-  required: ['domain', 'verified', 'managedBy', 'recordName', 'recordValue'],
+  required: ['recordValue', 'domains'],
   properties: {
-    domain: { type: 'string' },
-    verified: { type: 'boolean' },
-    managedBy: { enum: ['studio', 'deployment'] },
-    recordName: { type: 'string' },
-    recordValue: { type: 'string' },
+    recordValue: {
+      type: 'string',
+      description:
+        'The DNS TXT record value that proves an email domain belongs to the organization.',
+    },
+    domains: { type: 'array', items: { type: 'string' } },
   },
 };

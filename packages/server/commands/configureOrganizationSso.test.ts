@@ -20,6 +20,7 @@ import { decrypt } from '../utils/crypto.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 
+const staff = { id: 'staff', name: 'Staff workspace', ssoName: 'Staff sign-in' };
 let directory: string;
 let configurationPath: string;
 let clientSecretFile: string;
@@ -56,6 +57,11 @@ async function configure(configuration: Record<string, unknown>): Promise<void> 
       },
     },
   );
+}
+
+async function discover(domain: string): Promise<unknown> {
+  const { data } = await request.post('/api/auth/email/discover', { email: `user@${domain}` });
+  return data.organizations;
 }
 
 describe('deployment-managed organization single sign-on', () => {
@@ -119,7 +125,7 @@ describe('deployment-managed organization single sign-on', () => {
     expect(decrypt(sso!.clientSecret, 'organization-sso-test-key')).toBe('provider-client-secret');
   });
 
-  it('routes trusted domains and aliases without DNS proof and removes undeclared domains', async () => {
+  it('routes declared domains and aliases and removes domains no longer declared', async () => {
     const configuration = {
       issuer: 'https://identity.example.com/realms/staff',
       clientId: 'appsemble-studio',
@@ -128,33 +134,45 @@ describe('deployment-managed organization single sign-on', () => {
       policy: 'required',
       roleMappings: [],
     };
+    const discovered = (): Promise<unknown[]> =>
+      Promise.all(['staff.example.com', 'alias.example.com'].map(discover));
     await configure({
       staff: { ...configuration, domains: ['STAFF.example.com', 'alias.example.com'] },
     });
-    const result = {
-      organizations: [{ id: 'staff', name: 'Staff workspace', ssoName: 'Staff sign-in' }],
-    };
-    for (const domain of ['staff.example.com', 'alias.example.com']) {
-      const { data } = await request.post('/api/auth/email/discover', { email: `user@${domain}` });
-      expect(data).toStrictEqual(result);
-    }
-
-    await OrganizationSsoDomain.update(
-      { managedBy: 'studio', token: 'previous-owner-proof' },
-      { where: { OrganizationId: 'staff', domain: 'staff.example.com' } },
-    );
+    expect(await discovered()).toStrictEqual([[staff], [staff]]);
 
     await configure({ staff: { ...configuration, domains: ['alias.example.com'] } });
-    const { data } = await request.post('/api/auth/email/discover', {
-      email: 'user@staff.example.com',
-    });
-    expect(data).toStrictEqual({ organizations: [] });
+    expect(await discovered()).toStrictEqual([[], [staff]]);
 
-    await configure({});
-    const removed = await request.post('/api/auth/email/discover', {
-      email: 'user@alias.example.com',
-    });
-    expect(removed.data).toStrictEqual({ organizations: [] });
+    await configure({ staff: { ...configuration, domains: [] } });
+    expect(await discovered()).toStrictEqual([[], []]);
+  });
+
+  it('keeps only declared domains when the deployment takes over Studio-managed SSO', async () => {
+    const configuration = {
+      issuer: 'https://identity.example.com/realms/staff',
+      clientId: 'appsemble-studio',
+      clientSecretFile,
+      name: 'Staff sign-in',
+      policy: 'required',
+      roleMappings: [],
+    };
+    await configure({ staff: configuration });
+    await OrganizationSso.update({ managedBy: 'studio' }, { where: { OrganizationId: 'staff' } });
+    await OrganizationSsoDomain.bulkCreate(
+      ['staff.example.com', 'old.example.com'].map((domain) => ({
+        OrganizationId: 'staff',
+        domain,
+      })),
+    );
+
+    await configure({ staff: { ...configuration, domains: ['staff.example.com'] } });
+    expect(await Promise.all(['staff.example.com', 'old.example.com'].map(discover))).toStrictEqual(
+      [[staff], []],
+    );
+
+    await configure({ staff: configuration });
+    expect(await discover('staff.example.com')).toStrictEqual([]);
   });
 
   it('rejects domains which cannot identify an exact email domain', async () => {

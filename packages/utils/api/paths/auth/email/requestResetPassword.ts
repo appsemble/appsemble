@@ -19,6 +19,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
               },
               redirect: {
                 type: 'string',
+                maxLength: 2048,
                 description: 'A local Studio URL to continue to after resetting the password.',
               },
             },

@@ -17,7 +17,6 @@ export {
   createOrganizationSsoDomain,
   deleteOrganizationSsoDomain,
   getOrganizationSsoDomains,
-  verifyOrganizationSsoDomain,
 } from './ssoDomains.js';
 export {
   completeOrganizationSsoLogin,

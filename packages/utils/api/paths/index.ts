@@ -145,7 +145,6 @@ import { pathItems as organizationsOrganizationIdMembers } from './organizations
 import { pathItems as organizationsOrganizationIdSso } from './organizations/organizationId/sso.js';
 import { pathItems as organizationsOrganizationIdSsoDomains } from './organizations/organizationId/sso/domains.js';
 import { pathItems as organizationsOrganizationIdSsoDomainsDomain } from './organizations/organizationId/sso/domains/domain.js';
-import { pathItems as organizationsOrganizationIdSsoDomainsDomainVerify } from './organizations/organizationId/sso/domains/domain/verify.js';
 import { pathItems as organizationsOrganizationIdSsoLogin } from './organizations/organizationId/sso/login.js';
 import { pathItems as organizationsOrganizationIdSsoCallback } from './organizations/organizationId/sso/callback.js';
 import { pathItems as authLogout } from './auth/logout.js';
@@ -348,8 +347,6 @@ export const paths = {
   '/api/organizations/{organizationId}/sso/domains': organizationsOrganizationIdSsoDomains,
   '/api/organizations/{organizationId}/sso/domains/{domain}':
     organizationsOrganizationIdSsoDomainsDomain,
-  '/api/organizations/{organizationId}/sso/domains/{domain}/verify':
-    organizationsOrganizationIdSsoDomainsDomainVerify,
   '/api/organizations/{organizationId}/subscription':
     organizationsOrganizationIdOrganizationSubscription,
   '/api/organizations/{organizationId}/subscription/price':

@@ -1,44 +1,38 @@
-import { throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
-import { Op } from 'sequelize';
 
 import { Organization, OrganizationSso, OrganizationSsoDomain } from '../../../../models/index.js';
+import { isOrganizationSsoIssuerAllowed } from '../../../../utils/organizationOidc.js';
 import { normalizeOrganizationSsoDomain } from '../../../../utils/organizationSsoDomain.js';
 
 export async function discoverOrganizationSso(ctx: Context): Promise<void> {
-  const { email, organizationId } = ctx.request.body;
+  const { email } = ctx.request.body;
+  ctx.set('Cache-Control', 'no-store');
   let domain: string;
   try {
     domain = normalizeOrganizationSsoDomain(email.slice(email.lastIndexOf('@') + 1));
-  } catch (error) {
-    throwKoaError(ctx, 400, (error as Error).message);
+  } catch {
+    ctx.body = { organizations: [] };
+    return;
   }
-  const contextual = organizationId
-    ? await OrganizationSso.findByPk(organizationId, {
+  const claims = await OrganizationSsoDomain.findAll({
+    where: { domain },
+    include: [
+      {
+        model: OrganizationSso,
+        required: true,
         include: [{ model: Organization, required: true }],
-      })
-    : null;
-  const providers = contextual
-    ? [contextual]
-    : (
-        await OrganizationSsoDomain.findAll({
-          where: { domain, verifiedAt: { [Op.ne]: null } },
-          include: [
-            {
-              model: OrganizationSso,
-              required: true,
-              include: [{ model: Organization, required: true }],
-            },
-          ],
-          order: [['OrganizationId', 'ASC']],
-        })
-      ).map((claim) => claim.OrganizationSso!);
+      },
+    ],
+    order: [['OrganizationId', 'ASC']],
+  });
   ctx.body = {
-    organizations: providers.map((sso) => ({
-      id: sso.OrganizationId,
-      name: sso.Organization!.name || sso.OrganizationId,
-      ssoName: sso.name,
-    })),
+    organizations: claims
+      .map((claim) => claim.OrganizationSso!)
+      .filter((sso) => isOrganizationSsoIssuerAllowed(sso))
+      .map((sso) => ({
+        id: sso.OrganizationId,
+        name: sso.Organization!.name || sso.OrganizationId,
+        ssoName: sso.name,
+      })),
   };
-  ctx.set('Cache-Control', 'no-store');
 }

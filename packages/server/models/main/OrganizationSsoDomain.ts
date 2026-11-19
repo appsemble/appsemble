@@ -1,5 +1,4 @@
 import {
-  AllowNull,
   BelongsTo,
   Column,
   CreatedAt,
@@ -25,18 +24,6 @@ export class OrganizationSsoDomain extends Model {
   @Index('OrganizationSsoDomain_domain_idx')
   @Column(DataType.STRING)
   declare domain: string;
-
-  @AllowNull(true)
-  @Column(DataType.STRING)
-  declare token: string | null;
-
-  @AllowNull(true)
-  @Column(DataType.DATE)
-  declare verifiedAt: Date | null;
-
-  @AllowNull(false)
-  @Column(DataType.STRING)
-  declare managedBy: 'studio' | 'deployment';
 
   @CreatedAt
   declare created: Date;

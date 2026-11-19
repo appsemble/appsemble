@@ -85,18 +85,10 @@ export async function handler({ config }: { config: string }): Promise<void> {
           },
           transaction,
         });
-        for (const domain of domains) {
-          await OrganizationSsoDomain.upsert(
-            {
-              OrganizationId: organizationId,
-              domain,
-              managedBy: 'deployment',
-              token: null,
-              verifiedAt: new Date(),
-            },
-            { transaction },
-          );
-        }
+        await OrganizationSsoDomain.bulkCreate(
+          domains.map((domain) => ({ OrganizationId: organizationId, domain })),
+          { ignoreDuplicates: true, transaction },
+        );
       }
       const removed = await OrganizationSso.findAll({
         where: {

@@ -1,12 +1,10 @@
-import dns from 'node:dns/promises';
-
 import {
   type OrganizationSsoConfiguration,
-  type OrganizationSsoDomain as DomainClaim,
+  type OrganizationSsoDomains,
   PredefinedOrganizationRole,
 } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   Organization,
@@ -21,6 +19,15 @@ import { createServer } from '../../../utils/createServer.js';
 import { applyOrganizationSsoConfiguration } from '../../../utils/organizationSso.js';
 import { createTestUser, unauthorize } from '../../../utils/test/authorization.js';
 
+const { resolveTxt } = vi.hoisted(() => ({
+  resolveTxt: vi.fn<(hostname: string) => Promise<string[][]>>(),
+}));
+
+vi.mock('node:dns/promises', async (importOriginal) => {
+  const dns = await importOriginal<typeof import('node:dns/promises')>();
+  return { ...dns, default: { ...dns, resolveTxt }, resolveTxt };
+});
+
 const path = '/api/organizations/staff/sso/domains';
 const configuration: OrganizationSsoConfiguration = {
   issuer: 'https://identity.example.com',
@@ -33,6 +40,7 @@ const configuration: OrganizationSsoConfiguration = {
   policy: 'optional',
   allowedLoginMethods: ['password', 'oidc'],
 };
+const staff = { id: 'staff', name: 'Staff', ssoName: 'Staff SSO' };
 let user: User;
 
 function signIn(authTime?: number): void {
@@ -41,23 +49,51 @@ function signIn(authTime?: number): void {
   }`;
 }
 
-async function addClaim(domain = 'example.com'): Promise<DomainClaim> {
-  const response = await request.post<DomainClaim>(path, { domain });
-  expect(response.status).toBe(201);
+function publishTxt(records: Record<string, string>): void {
+  resolveTxt.mockImplementation((hostname) =>
+    hostname in records
+      ? Promise.resolve([
+          ['v=spf1 -all'],
+          [records[hostname].slice(0, 20), records[hostname].slice(20)],
+        ])
+      : Promise.reject(new Error(`queryTxt ENOTFOUND ${hostname}`)),
+  );
+}
+
+async function getDomains(organizationId = 'staff'): Promise<OrganizationSsoDomains> {
+  const response = await request.get<OrganizationSsoDomains>(
+    `/api/organizations/${organizationId}/sso/domains`,
+  );
+  expect(response.status).toBe(200);
   return response.data;
 }
 
-describe('organization single sign-on domain discovery', () => {
-  beforeAll(async () => {
-    setArgv({
-      host: 'http://localhost',
-      secret: 'test',
-      aesSecret: 'test-encryption',
-      organizationSsoIssuers: configuration.issuer,
-    });
-    await setTestApp(await createServer());
-  });
+async function discover(email: string): Promise<unknown> {
+  const { data } = await request.post('/api/auth/email/discover', { email });
+  return data.organizations;
+}
 
+async function addOrganization(id: string, managedBy: 'deployment' | 'studio'): Promise<void> {
+  await Organization.create({ id, name: `${id} organization` });
+  await OrganizationMember.create({
+    OrganizationId: id,
+    UserId: user.id,
+    role: PredefinedOrganizationRole.Owner,
+  });
+  await applyOrganizationSsoConfiguration(id, configuration, managedBy);
+}
+
+beforeAll(async () => {
+  setArgv({
+    host: 'http://localhost',
+    secret: 'test',
+    aesSecret: 'test-encryption',
+    organizationSsoIssuers: configuration.issuer,
+  });
+  await setTestApp(await createServer());
+});
+
+describe('organization single sign-on domains', () => {
   beforeEach(async () => {
     user = await createTestUser();
     await Organization.create({ id: 'staff', name: 'Staff' });
@@ -67,244 +103,243 @@ describe('organization single sign-on domain discovery', () => {
       role: PredefinedOrganizationRole.Owner,
     });
     await applyOrganizationSsoConfiguration('staff', configuration, 'studio');
+    publishTxt({});
     signIn();
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('allows an Owner to list domains before SSO is configured', async () => {
-    await OrganizationSso.destroy({ where: { OrganizationId: 'staff' } });
-    const response = await request.get(path);
-    expect({ status: response.status, data: response.data }).toStrictEqual({
-      status: 200,
-      data: [],
-    });
-    expect((await request.post(path, { domain: 'example.com' })).status).toBe(404);
-  });
-
-  it('creates an exact domain claim and an organization-specific ownership challenge', async () => {
-    const claim = await addClaim(' Staff.Example.COM ');
-    expect(claim).toStrictEqual({
-      domain: 'staff.example.com',
-      verified: false,
-      managedBy: 'studio',
-      recordName: '_appsemble-sso.staff.example.com',
+  it('adds a domain whose TXT record holds the organization value and makes it discoverable', async () => {
+    const { recordValue } = await getDomains();
+    publishTxt({ '_appsemble-sso.staff.example.com': recordValue });
+    const response = await request.post(path, { domain: ' Staff.Example.COM ' });
+    unauthorize();
+    expect({
+      recordValue,
+      status: response.status,
+      data: response.data,
+      discovered: await discover('new@staff.example.com'),
+    }).toStrictEqual({
       recordValue: expect.stringMatching(/^appsemble-sso=[a-f\d]{64}$/u),
+      status: 201,
+      data: { recordValue, domains: ['staff.example.com'] },
+      discovered: [staff],
     });
-    expect((await request.get(path)).data).toStrictEqual([claim]);
+  });
+
+  it('accepts the same organization value for each of its domains and lists them in order', async () => {
+    const { recordValue } = await getDomains();
+    publishTxt({
+      '_appsemble-sso.example.org': recordValue,
+      '_appsemble-sso.example.com': recordValue,
+    });
+    expect((await request.post(path, { domain: 'example.org' })).status).toBe(201);
+    const response = await request.post(path, { domain: 'example.com' });
+    expect({ status: response.status, data: response.data }).toStrictEqual({
+      status: 201,
+      data: { recordValue, domains: ['example.com', 'example.org'] },
+    });
+    expect(await getDomains()).toStrictEqual(response.data);
+  });
+
+  it.each([
+    ['a missing TXT record', () => Promise.resolve({})],
+    [
+      "another organization's TXT record",
+      async () => {
+        await addOrganization('other', 'studio');
+        return { '_appsemble-sso.example.com': (await getDomains('other')).recordValue };
+      },
+    ],
+  ])('refuses a domain proven by %s', async (description, getRecords) => {
+    publishTxt(await getRecords());
+    expect((await request.post(path, { domain: 'example.com' })).status).toBe(400);
+    expect({
+      domains: (await getDomains()).domains,
+      discovered: await discover('new@example.com'),
+    }).toStrictEqual({ domains: [], discovered: [] });
   });
 
   it.each(['https://example.com', '*.example.com', 'example.com/path', '127.0.0.1'])(
-    'rejects %s as an email discovery domain',
+    'rejects %s as an email discovery domain even when its TXT record matches',
     async (domain) => {
+      publishTxt({ [`_appsemble-sso.${domain}`]: (await getDomains()).recordValue });
       expect((await request.post(path, { domain })).status).toBe(400);
+      expect(await OrganizationSsoDomain.count()).toBe(0);
     },
   );
 
-  it('makes a domain discoverable only after its TXT ownership challenge is verified', async () => {
-    const claim = await addClaim();
-    const pending = await request.post('/api/auth/email/discover', { email: 'new@example.com' });
-    expect(pending.data).toStrictEqual({ organizations: [] });
-    vi.spyOn(dns, 'resolveTxt').mockResolvedValue([
-      [claim.recordValue.slice(0, 20), claim.recordValue.slice(20)],
-    ]);
-    const verified = await request.post(`${path}/example.com/verify`);
-    expect({ status: verified.status, data: verified.data }).toStrictEqual({
-      status: 200,
-      data: { ...claim, verified: true },
+  it('refuses a domain the organization already has, even when its record is gone', async () => {
+    publishTxt({ '_appsemble-sso.example.com': (await getDomains()).recordValue });
+    expect((await request.post(path, { domain: 'example.com' })).status).toBe(201);
+    publishTxt({});
+    expect((await request.post(path, { domain: 'example.com' })).status).toBe(409);
+  });
+
+  it('refuses a domain added by another request while its record was checked', async () => {
+    const { recordValue } = await getDomains();
+    resolveTxt.mockImplementation(async () => {
+      await OrganizationSsoDomain.create({ OrganizationId: 'staff', domain: 'example.com' });
+      return [[recordValue]];
     });
+    expect((await request.post(path, { domain: 'example.com' })).status).toBe(409);
+  });
+
+  it('refuses a domain when the deployment takes over SSO while its record was checked', async () => {
+    const { recordValue } = await getDomains();
+    resolveTxt.mockImplementation(async () => {
+      await applyOrganizationSsoConfiguration('staff', configuration, 'deployment');
+      return [[recordValue]];
+    });
+    expect((await request.post(path, { domain: 'example.com' })).status).toBe(409);
+    expect((await getDomains()).domains).toStrictEqual([]);
+  });
+
+  it('requires a recent sign-in to add or remove a domain', async () => {
+    await OrganizationSsoDomain.create({ OrganizationId: 'staff', domain: 'example.com' });
+    signIn(Date.now() / 1000 - 601);
+    expect({
+      add: (await request.post(path, { domain: 'example.org' })).status,
+      remove: (await request.delete(`${path}/example.com`)).status,
+      domains: (await getDomains()).domains,
+    }).toStrictEqual({ add: 403, remove: 403, domains: ['example.com'] });
+  });
+
+  it.each(['a non-member', 'a Member'])('refuses %s access to the domains', async (who) => {
+    await (who === 'a Member'
+      ? OrganizationMember.update(
+          { role: PredefinedOrganizationRole.Member },
+          { where: { OrganizationId: 'staff', UserId: user.id } },
+        )
+      : OrganizationMember.destroy({ where: { OrganizationId: 'staff', UserId: user.id } }));
+    expect({
+      list: (await request.get(path)).status,
+      add: (await request.post(path, { domain: 'example.com' })).status,
+      stored: await OrganizationSsoDomain.count(),
+    }).toStrictEqual({ list: 403, add: 403, stored: 0 });
+  });
+
+  it('requires authentication to manage domains', async () => {
     unauthorize();
-    const discovery = await request.post('/api/auth/email/discover', { email: 'new@example.com' });
-    expect(discovery.data).toStrictEqual({
-      organizations: [{ id: 'staff', name: 'Staff', ssoName: 'Staff SSO' }],
-    });
+    expect({
+      list: (await request.get(path)).status,
+      add: (await request.post(path, { domain: 'example.com' })).status,
+      remove: (await request.delete(`${path}/example.com`)).status,
+    }).toStrictEqual({ list: 401, add: 401, remove: 401 });
   });
 
-  it.each(['missing', 'mismatched'])('rejects a %s TXT ownership proof', async (proof) => {
-    await addClaim();
-    const resolve = vi.spyOn(dns, 'resolveTxt');
-    if (proof === 'missing') {
-      resolve.mockRejectedValue(new Error('ENOTFOUND'));
-    } else {
-      resolve.mockResolvedValue([['appsemble-sso=another-organization']]);
-    }
-    expect((await request.post(`${path}/example.com/verify`)).status).toBe(400);
-    expect(
-      (await request.post('/api/auth/email/discover', { email: 'new@example.com' })).data,
-    ).toStrictEqual({ organizations: [] });
+  it('lists no domains and refuses additions before SSO is configured', async () => {
+    await OrganizationSso.destroy({ where: { OrganizationId: 'staff' } });
+    expect((await getDomains()).domains).toStrictEqual([]);
+    expect((await request.post(path, { domain: 'example.com' })).status).toBe(404);
   });
 
-  it('requires each organization sharing a domain to prove its own challenge', async () => {
-    const original = await addClaim();
-    await Organization.create({ id: 'other' });
-    await applyOrganizationSsoConfiguration('other', configuration, 'studio');
-    await OrganizationMember.create({
-      OrganizationId: 'other',
-      UserId: user.id,
-      role: PredefinedOrganizationRole.Owner,
-    });
-    await request.post('/api/organizations/other/sso/domains', { domain: 'example.com' });
-    vi.spyOn(dns, 'resolveTxt').mockResolvedValue([[original.recordValue]]);
-    expect(
-      (await request.post('/api/organizations/other/sso/domains/example.com/verify')).status,
-    ).toBe(400);
+  it('leaves deployment-managed domains to the deployment', async () => {
+    await applyOrganizationSsoConfiguration('staff', configuration, 'deployment');
+    await OrganizationSsoDomain.create({ OrganizationId: 'staff', domain: 'example.com' });
+    expect({
+      add: (await request.post(path, { domain: 'example.org' })).status,
+      remove: (await request.delete(`${path}/example.com`)).status,
+      domains: (await getDomains()).domains,
+    }).toStrictEqual({ add: 409, remove: 409, domains: ['example.com'] });
   });
 
-  it('discovers configured aliases without treating subdomains as implicit aliases', async () => {
+  it('stops discovery when an Owner removes a domain', async () => {
+    await OrganizationSsoDomain.create({ OrganizationId: 'staff', domain: 'example.com' });
+    expect({
+      removed: (await request.delete(`${path}/Example.COM`)).status,
+      discovered: await discover('new@example.com'),
+      again: (await request.delete(`${path}/example.com`)).status,
+      invalid: (await request.delete(`${path}/under_score.example.com`)).status,
+    }).toStrictEqual({ removed: 204, discovered: [], again: 404, invalid: 400 });
+  });
+
+  it('removes domains when their SSO configuration is deleted', async () => {
+    await OrganizationSsoDomain.create({ OrganizationId: 'staff', domain: 'example.com' });
+    expect((await request.delete('/api/organizations/staff/sso')).status).toBe(204);
+    expect(await discover('new@example.com')).toStrictEqual([]);
+  });
+});
+
+describe('organization single sign-on discovery', () => {
+  beforeEach(async () => {
+    user = await createTestUser();
+    await Organization.create({ id: 'staff', name: 'Staff' });
+    await applyOrganizationSsoConfiguration('staff', configuration, 'studio');
+    unauthorize();
+  });
+
+  it('discovers exact domains and aliases without treating subdomains as aliases', async () => {
     await OrganizationSsoDomain.bulkCreate(
-      ['example.com', 'alias.example.org'].map((domain) => ({
-        OrganizationId: 'staff',
-        domain,
-        token: 'verified-token',
-        verifiedAt: new Date(),
-        managedBy: 'studio',
-      })),
+      ['example.com', 'alias.example.org'].map((domain) => ({ OrganizationId: 'staff', domain })),
     );
-    const results = await Promise.all(
-      ['new@example.com', 'new@alias.example.org', 'new@child.example.com'].map(
-        async (email) => (await request.post('/api/auth/email/discover', { email })).data,
-      ),
-    );
-    expect(results).toStrictEqual([
-      { organizations: [{ id: 'staff', name: 'Staff', ssoName: 'Staff SSO' }] },
-      { organizations: [{ id: 'staff', name: 'Staff', ssoName: 'Staff SSO' }] },
-      { organizations: [] },
-    ]);
+    expect({
+      domain: await discover('new@example.com'),
+      alias: await discover('new@alias.example.org'),
+      subdomain: await discover('new@child.example.com'),
+    }).toStrictEqual({ domain: [staff], alias: [staff], subdomain: [] });
   });
 
-  it('returns every verified organization for a shared domain in a stable order', async () => {
-    await Organization.create({ id: 'another', name: 'Another organization' });
-    await applyOrganizationSsoConfiguration('another', configuration, 'deployment');
+  it('returns every organization claiming a domain in id order', async () => {
+    await addOrganization('zeta', 'studio');
+    await addOrganization('another', 'deployment');
     await OrganizationSsoDomain.bulkCreate(
-      ['staff', 'another'].map((OrganizationId) => ({
+      ['zeta', 'staff', 'another'].map((OrganizationId) => ({
         OrganizationId,
         domain: 'example.com',
-        managedBy: 'deployment',
-        verifiedAt: new Date(),
       })),
     );
-    unauthorize();
-    const response = await request.post('/api/auth/email/discover', { email: 'new@EXAMPLE.COM' });
-    expect(response.data).toStrictEqual({
-      organizations: [
-        { id: 'another', name: 'Another organization', ssoName: 'Staff SSO' },
-        { id: 'staff', name: 'Staff', ssoName: 'Staff SSO' },
-      ],
-    });
+    expect(await discover('new@EXAMPLE.COM')).toStrictEqual([
+      { id: 'another', name: 'another organization', ssoName: 'Staff SSO' },
+      staff,
+      { id: 'zeta', name: 'zeta organization', ssoName: 'Staff SSO' },
+    ]);
   });
 
-  it.each([undefined, 'staff'])(
-    'keeps shared-domain discovery available after deleting the organization context %s',
-    async (organizationId) => {
-      await Organization.create({ id: 'active', name: 'Active organization' });
-      await applyOrganizationSsoConfiguration('active', configuration, 'studio');
-      await OrganizationSsoDomain.bulkCreate(
-        ['staff', 'active'].map((OrganizationId) => ({
-          OrganizationId,
-          domain: 'example.com',
-          managedBy: 'studio',
-          verifiedAt: new Date(),
-        })),
-      );
-      expect((await request.delete('/api/organizations/staff')).status).toBe(200);
-      unauthorize();
-      const response = await request.post('/api/auth/email/discover', {
-        email: 'new@example.com',
-        organizationId,
-      });
+  it('leaves out a deleted organization', async () => {
+    await addOrganization('active', 'studio');
+    await OrganizationSsoDomain.bulkCreate(
+      ['staff', 'active'].map((OrganizationId) => ({ OrganizationId, domain: 'example.com' })),
+    );
+    await Organization.destroy({ where: { id: 'staff' } });
+    expect(await discover('new@example.com')).toStrictEqual([
+      { id: 'active', name: 'active organization', ssoName: 'Staff SSO' },
+    ]);
+  });
+
+  it('leaves out a Studio-managed provider whose issuer is no longer allowed', async () => {
+    await addOrganization('deployed', 'deployment');
+    await OrganizationSso.update({ issuer: 'https://retired.example.com' }, { where: {} });
+    await OrganizationSsoDomain.bulkCreate(
+      ['staff', 'deployed'].map((OrganizationId) => ({ OrganizationId, domain: 'example.com' })),
+    );
+    expect(await discover('new@example.com')).toStrictEqual([
+      { id: 'deployed', name: 'deployed organization', ssoName: 'Staff SSO' },
+    ]);
+  });
+
+  it.each(['new@[127.0.0.1]', 'new@127.0.0.1'])(
+    'finds no organizations for an email domain that cannot be claimed: %s',
+    async (email) => {
+      const response = await request.post('/api/auth/email/discover', { email });
       expect({ status: response.status, data: response.data }).toStrictEqual({
         status: 200,
-        data: {
-          organizations: [{ id: 'active', name: 'Active organization', ssoName: 'Staff SSO' }],
-        },
+        data: { organizations: [] },
       });
     },
   );
-
-  it('prefers an explicit organization context even for an unclaimed guest domain', async () => {
-    unauthorize();
-    const response = await request.post('/api/auth/email/discover', {
-      email: 'guest@gmail.com',
-      organizationId: 'staff',
-    });
-    expect(response.data).toStrictEqual({
-      organizations: [{ id: 'staff', name: 'Staff', ssoName: 'Staff SSO' }],
-    });
-  });
 
   it.each(['test@example.com', 'unknown@example.com', 'guest@gmail.com'])(
     'does not disclose account existence for %s',
     async (email) => {
-      unauthorize();
-      const response = await request.post('/api/auth/email/discover', { email });
-      expect(response.data).toStrictEqual({ organizations: [] });
+      expect(await discover(email)).toStrictEqual([]);
     },
   );
 
-  it.each(['create', 'verify', 'delete'])(
-    'requires a recently authenticated Owner to %s a domain claim',
-    async (action) => {
-      await addClaim();
-      vi.spyOn(dns, 'resolveTxt').mockResolvedValue([]);
-      const methods = {
-        create: () => request.post(path, { domain: 'alias.example.com' }),
-        verify: () => request.post(`${path}/example.com/verify`),
-        delete: () => request.delete(`${path}/example.com`),
-      };
-      unauthorize();
-      expect((await methods[action as keyof typeof methods]()).status).toBe(401);
-      signIn(Date.now() / 1000 - 601);
-      expect((await methods[action as keyof typeof methods]()).status).toBe(403);
-      await OrganizationMember.update(
-        { role: PredefinedOrganizationRole.Member },
-        { where: { OrganizationId: 'staff', UserId: user.id } },
-      );
-      signIn();
-      expect((await methods[action as keyof typeof methods]()).status).toBe(403);
-    },
-  );
-
-  it('keeps deployment-managed discovery domains outside Studio control', async () => {
-    await applyOrganizationSsoConfiguration('staff', configuration, 'deployment');
-    await OrganizationSsoDomain.create({
-      OrganizationId: 'staff',
-      domain: 'example.com',
-      managedBy: 'deployment',
-      verifiedAt: new Date(),
+  it('does not accept an organization context', async () => {
+    await OrganizationSsoDomain.create({ OrganizationId: 'staff', domain: 'example.com' });
+    const response = await request.post('/api/auth/email/discover', {
+      email: 'new@example.com',
+      organizationId: 'staff',
     });
-    expect((await request.post(path, { domain: 'alias.example.com' })).status).toBe(409);
-    expect((await request.post(`${path}/example.com/verify`)).status).toBe(409);
-    expect((await request.delete(`${path}/example.com`)).status).toBe(409);
-    expect((await request.get(path)).data).toStrictEqual([
-      {
-        domain: 'example.com',
-        managedBy: 'deployment',
-        verified: true,
-        recordName: '_appsemble-sso.example.com',
-        recordValue: '',
-      },
-    ]);
-  });
-
-  it('stops discovery immediately when an Owner removes a claim', async () => {
-    await OrganizationSsoDomain.create({
-      OrganizationId: 'staff',
-      domain: 'example.com',
-      managedBy: 'studio',
-      verifiedAt: new Date(),
-      token: 'verified-token',
-    });
-    expect((await request.delete(`${path}/example.com`)).status).toBe(204);
-    expect(
-      (await request.post('/api/auth/email/discover', { email: 'new@example.com' })).data,
-    ).toStrictEqual({ organizations: [] });
-  });
-
-  it('removes discovery claims when their SSO configuration is deleted', async () => {
-    await addClaim();
-    expect((await request.delete('/api/organizations/staff/sso')).status).toBe(204);
-    expect((await request.get(path)).data).toStrictEqual([]);
+    expect(response.status).toBe(400);
   });
 });

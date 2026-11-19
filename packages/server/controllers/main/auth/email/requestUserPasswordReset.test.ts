@@ -109,6 +109,14 @@ describe('requestUserPasswordReset', () => {
     }
   });
 
+  it('rejects a continuation longer than 2048 characters', async () => {
+    const response = await request.post('/api/auth/email/request-password-reset', {
+      email: 'test@example.com',
+      redirect: `/apps?${'a'.repeat(2043)}`,
+    });
+    expect(response.status).toBe(400);
+  });
+
   it.each(['https://outside.example/', '//outside.example/', '/\\outside.example/', '//['])(
     'rejects the external or malformed continuation %s',
     async (redirect) => {

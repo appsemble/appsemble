@@ -5,18 +5,13 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   get: {
     tags: ['main', 'organization'],
     operationId: 'getOrganizationSsoDomains',
-    description: 'List the email domain claims for organization single sign-on discovery.',
+    description: 'List the verified email domains for organization single sign-on discovery.',
     security: [{ studio: [] }],
     responses: {
       200: {
-        description: 'The domain claims.',
+        description: 'The verified domains and the DNS TXT record value that proves ownership.',
         content: {
-          'application/json': {
-            schema: {
-              type: 'array',
-              items: { $ref: '#/components/schemas/OrganizationSsoDomain' },
-            },
-          },
+          'application/json': { schema: { $ref: '#/components/schemas/OrganizationSsoDomains' } },
         },
       },
     },
@@ -24,7 +19,8 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   post: {
     tags: ['main', 'organization'],
     operationId: 'createOrganizationSsoDomain',
-    description: 'Create an unverified email domain claim for single sign-on discovery.',
+    description:
+      'Add an email domain for single sign-on discovery after verifying its DNS TXT record.',
     security: [{ studio: [] }],
     requestBody: {
       required: true,
@@ -41,9 +37,9 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     },
     responses: {
       201: {
-        description: 'The domain claim and its DNS ownership challenge.',
+        description: 'The updated verified domains.',
         content: {
-          'application/json': { schema: { $ref: '#/components/schemas/OrganizationSsoDomain' } },
+          'application/json': { schema: { $ref: '#/components/schemas/OrganizationSsoDomains' } },
         },
       },
     },

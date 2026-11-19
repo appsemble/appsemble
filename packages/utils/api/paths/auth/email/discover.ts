@@ -4,7 +4,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   post: {
     tags: ['main', 'auth', 'email'],
     operationId: 'discoverOrganizationSso',
-    description: 'Discover organization single sign-on providers for an email domain or context.',
+    description: 'Discover organization single sign-on providers for an email domain.',
     requestBody: {
       required: true,
       content: {
@@ -15,7 +15,6 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             required: ['email'],
             properties: {
               email: { type: 'string', format: 'email', maxLength: 320 },
-              organizationId: { type: 'string', minLength: 1 },
             },
           },
         },
@@ -23,7 +22,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     },
     responses: {
       200: {
-        description: 'The configured providers matching the context or verified email domain.',
+        description: 'The configured providers matching the verified email domain.',
         content: {
           'application/json': {
             schema: {
