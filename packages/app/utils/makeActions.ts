@@ -104,11 +104,14 @@ function getActionBreadcrumbData(
   return { path: prefix, pathIndex: prefixIndex, type };
 }
 
-function shouldCaptureActionError(error: unknown): boolean {
+function shouldCaptureActionError(type: ActionDefinition['type'], error: unknown): boolean {
   return (
     error != null &&
     (!isAxiosError(error) ||
-      (error.code !== AxiosError.ERR_NETWORK && error.code !== AxiosError.ERR_CANCELED))
+      (error.code !== AxiosError.ERR_NETWORK &&
+        error.code !== AxiosError.ERR_CANCELED &&
+        // The token endpoint answers a wrong email or password with 400, which is user input.
+        !(type === 'app.member.login' && error.response?.status === 400)))
   );
 }
 
@@ -228,7 +231,7 @@ export function createAction<T extends ActionDefinition['type']>({
       if (isActionOwnerAbortError(error)) {
         throw error;
       }
-      if (!(error instanceof ActionError) && shouldCaptureActionError(error)) {
+      if (!(error instanceof ActionError) && shouldCaptureActionError(type, error)) {
         const appMemberInfo = getAppMemberInfo?.();
         const selectedGroup = getAppMemberSelectedGroup?.();
 
