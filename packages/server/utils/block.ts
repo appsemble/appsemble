@@ -6,6 +6,7 @@ import {
   isValidBlockAssetFilename,
   logger,
   uploadS3File,
+  version as serverVersion,
 } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
@@ -233,6 +234,62 @@ export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<Blo
   }
 
   return result;
+}
+
+export interface OrganizationBlocksVersion {
+  organization: string;
+
+  /**
+   * The block version to synchronize: `server` for the version of this server, `latest` for the
+   * latest version of each block, or an explicit version.
+   */
+  version: string;
+}
+
+/**
+ * Synchronize a version of each block of an organization from the remote.
+ *
+ * A block is synchronized if the version does not exist locally. Blocks for which the remote does
+ * not have the version are skipped.
+ *
+ * @param organizationBlocksVersion The organization and the block version to synchronize.
+ */
+async function syncBlocksOfOrganization({
+  organization,
+  version,
+}: OrganizationBlocksVersion): Promise<void> {
+  const { data: remoteBlocks } = await axios.get<BlockManifest[]>(
+    String(new URL(`/api/organizations/${organization}/blocks`, argv.remote)),
+    { timeout: remoteTimeout },
+  );
+  const localBlocks = await BlockVersion.findAll({
+    attributes: ['name', 'version'],
+    where: { OrganizationId: organization },
+  });
+  const localIds = new Set(localBlocks.map((block) => `${block.name}@${block.version}`));
+  const requestedVersion = version === 'server' ? serverVersion : version;
+
+  // Intentionally not using Promise.all here to not overload the remote with requests
+  for (const remoteBlock of remoteBlocks) {
+    const name = remoteBlock.name.slice(`@${organization}/`.length);
+    const blockVersion = requestedVersion === 'latest' ? remoteBlock.version : requestedVersion;
+    if (localIds.has(`${name}@${blockVersion}`)) {
+      logger.verbose(`Block @${organization}/${name}@${blockVersion} already exists`);
+      continue;
+    }
+    await syncBlock({ OrganizationId: organization, name, version: blockVersion });
+  }
+}
+
+export async function syncOrganizationBlocks(
+  organizationVersions: OrganizationBlocksVersion[],
+): Promise<void> {
+  for (const organizationVersion of organizationVersions) {
+    logger.info(
+      `Synchronizing blocks of organization ${organizationVersion.organization} at ${organizationVersion.version} from ${argv.remote}`,
+    );
+    await syncBlocksOfOrganization(organizationVersion);
+  }
 }
 
 export async function findBlockInApps(

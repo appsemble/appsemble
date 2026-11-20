@@ -657,6 +657,29 @@ otherwise drop requests still being routed to it:
 With `replicaCount` above 1, a PodDisruptionBudget of `minAvailable: 1` is rendered as well, so a
 node drain or other voluntary disruption cannot evict every replica at once.
 
+## Synchronizing blocks
+
+When an app uses a block version that this server lacks, the server copies it from `remote` while
+the app is published, and creates the block's organization by its id if needed. This covers every
+block version that apps use, so a release needs no manual `appsemble block publish`. Set
+`remote: null` to use only blocks published on this server.
+
+`syncOrganizationBlocks` copies blocks before any app uses them, so Studio lists them. Each entry
+names an organization and the block version to copy, because organizations release their blocks
+independently and a block does not record which Appsemble version it needs:
+
+```yaml
+syncOrganizationBlocks:
+  - organization: appsemble
+    version: server # The Appsemble version of the image
+  - organization: acme
+    version: latest # The latest version of each block, or an explicit version such as 1.4.2
+```
+
+A block that the remote does not have in the requested version is skipped with a warning, and a
+later upgrade copies it once the remote has it. The copy runs as a hook Job after each install and
+upgrade; it needs network access to `remote`, and the install or upgrade fails when it fails.
+
 ## Variables
 
 | Name                                        | Default                        | Description                                                                                                                               |
@@ -757,6 +780,7 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `externalValkey.existingSecret`             | `null`                         | The secret from which to read the external Valkey password. Required when `valkey.enabled=false`.                                         |
 | `externalValkey.passwordKey`                | `password`                     | The key in `externalValkey.existingSecret` containing the Valkey password.                                                                |
 | `remote`                                    | `https://appsemble.app`        | The server to copy a block version from when an app uses one this server lacks. `null` disables it.                                       |
+| `syncOrganizationBlocks`                    | `[]`                           | The organizations whose blocks are synchronized from `remote` on install and upgrade. See [Synchronizing blocks](#synchronizing-blocks).  |
 | `securityEmail`                             | `security@appsemble.com`       | The default security contact email for reporting security vulnerabilities.                                                                |
 | `rejectBreachedPasswords`                   | `false`                        | If `true`, reject new passwords that appear in the Have I Been Pwned Pwned Passwords data set.                                            |
 | `ssrfAllowIpAddressList`                    | `[]`                           | Private IPs, CIDRs or host names apps may connect to. See [Connections to private addresses](#connections-to-private-addresses).          |

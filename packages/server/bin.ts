@@ -24,6 +24,7 @@ import * as restoreDataFromBackup from './commands/restoreDataFromBackup.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
 import * as start from './commands/start.js';
+import * as syncOrganizationBlocks from './commands/syncOrganizationBlocks.js';
 import './types.js';
 import { setArgv } from './utils/argv.js';
 
@@ -130,6 +131,7 @@ const parser = yargs()
   .command(backupProductionData as CommandModule)
   .command(cleanupExpiredDomains as CommandModule)
   .command(restoreDataFromBackup as CommandModule)
+  .command(syncOrganizationBlocks as unknown as CommandModule)
   .fail(handleError)
   .help('help', 'Show this help message.')
   .alias('h', 'help')

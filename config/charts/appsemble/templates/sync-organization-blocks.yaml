@@ -1,0 +1,41 @@
+{{- if .Values.syncOrganizationBlocks }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "appsemble.fullname" . }}-sync-organization-blocks
+  labels:
+    {{ include "appsemble.labels" . }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: '2' # Must be after migrate so the tables exist
+spec:
+  template:
+    metadata:
+      annotations:
+        {{ include "appsemble.gitlab" . | indent 8 }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: {{ include "appsemble.fullname" . }}-sync-organization-blocks
+          image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+          resources:
+            {{- toYaml .Values.resources.jobs | nindent 12 }}
+          args:
+            - sync-organization-blocks
+            - --remote
+            - {{ required "syncOrganizationBlocks requires remote" .Values.remote | quote }}
+            {{- range .Values.syncOrganizationBlocks }}
+            - --organization
+            - {{ printf "%s:%s" (required "syncOrganizationBlocks entries require organization" .organization) (required "syncOrganizationBlocks entries require version" .version) | quote }}
+            {{- end }}
+          env:
+{{ include "appsemble.postgres" . | indent 12 }}
+{{ include "appsemble.s3" . | indent 12 }}
+{{ include "appsemble.sentry" . | indent 12 }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 12 }}
+{{ include "appsemble.trustedCaBundle.volumeMounts" . | indent 10 }}
+{{ include "appsemble.trustedCaBundle.volumes" . | indent 6 }}
+{{- end }}

@@ -855,6 +855,25 @@
       "description": "The Appsemble server to copy block versions from when an app uses a block version this server does not have. `null` disables it.",
       "format": "uri"
     },
+    "syncOrganizationBlocks": {
+      "type": "array",
+      "description": "The organizations whose blocks are synchronized from `remote` on install and upgrade.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["organization", "version"],
+        "properties": {
+          "organization": {
+            "type": "string",
+            "description": "The ID of the organization."
+          },
+          "version": {
+            "type": "string",
+            "description": "The block version to synchronize: `server` for the Appsemble version of the image, `latest` for the latest version of each block, or an explicit version."
+          }
+        }
+      }
+    },
     "securityEmail": {
       "type": "string",
       "description": "The default security contact email for reporting security vulnerabilities.",

@@ -215,6 +215,8 @@ pgbouncer:
 
 remote: https://appsemble.app
 
+syncOrganizationBlocks: []
+
 securityEmail: security@appsemble.com
 
 rejectBreachedPasswords: false
