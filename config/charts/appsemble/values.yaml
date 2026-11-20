@@ -213,7 +213,7 @@ pgbouncer:
   # The server connection budget across all replicas; each replica gets an equal share.
   maxUserConnections: 80
 
-remote: null
+remote: https://appsemble.app
 
 syncOrganizationBlocks: []
 

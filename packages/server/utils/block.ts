@@ -28,6 +28,9 @@ import {
   transactional,
 } from '../models/index.js';
 
+// Requests to the remote fail instead of hanging when it cannot be reached.
+const remoteTimeout = 30_000;
+
 interface BlockVersionToJsonOptions {
   includeFileUrls?: boolean;
 }
@@ -97,13 +100,14 @@ export async function syncBlock({
   const uploadedKeys: string[] = [];
 
   try {
-    const { data: block } = await axios.get<BlockManifest>(blockUrl);
+    const { data: block } = await axios.get<BlockManifest>(blockUrl, { timeout: remoteTimeout });
     if (block.name !== id) {
       return;
     }
     if (block.version !== version) {
       return;
     }
+    await Organization.findOrCreate({ where: { id: OrganizationId }, paranoid: false });
     await transactional(async (transaction) => {
       const blockVersion = { ...block };
       delete blockVersion.fileUrls;
@@ -128,6 +132,7 @@ export async function syncBlock({
           httpAgent,
           httpsAgent,
           responseType: 'arraybuffer',
+          timeout: remoteTimeout,
         });
         const contentType = headers['content-type'];
         if (typeof contentType !== 'string') {
@@ -166,7 +171,9 @@ export async function syncBlock({
       if (block.languages) {
         promises.push(
           ...block.languages.map((language) => async () => {
-            const { data: messages } = await axios.get(`${blockUrl}/messages/${language}`);
+            const { data: messages } = await axios.get(`${blockUrl}/messages/${language}`, {
+              timeout: remoteTimeout,
+            });
             await BlockMessages.create({ BlockVersionId, language, messages }, { transaction });
           }),
         );
