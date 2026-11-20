@@ -248,6 +248,14 @@ test.describe('App Keycloak brokered Entra OIDC login', () => {
     page,
     visitApp,
   }) => {
+    const codeExchanges: string[] = [];
+    page.on('request', (request) => {
+      if (
+        new URLSearchParams(request.postData() ?? '').get('grant_type') === 'authorization_code'
+      ) {
+        codeExchanges.push(request.url());
+      }
+    });
     const appUrl = await visitApp(app.id!);
     const verifyResponse = page.waitForResponse(
       (response) =>
@@ -267,7 +275,12 @@ test.describe('App Keycloak brokered Entra OIDC login', () => {
 
     expect((await verifyResponse).status()).toBe(403);
 
-    await expect(page.getByText('An unexpected error occurred while logging in')).toBeVisible();
+    await expect(
+      page.getByText(
+        'Your account is not in a group that gives access to this app. Ask your administrator for access.',
+      ),
+    ).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Manager content' })).toBeHidden();
+    expect(codeExchanges).toStrictEqual([]);
   });
 });

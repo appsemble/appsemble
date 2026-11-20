@@ -16,7 +16,6 @@ const { KEYCLOAK_BASE_URL, KEYCLOAK_REALM = 'appsemble-e2e' } = process.env;
 const clientId = 'appsemble-oidc';
 const clientSecret = 'appsemble-oidc-secret';
 const userEmail = 'keycloak-user@appsemble.com';
-const unmappedUserEmail = 'keycloak-unmapped-user@appsemble.com';
 const userPassword = 'password';
 
 let app: App;
@@ -71,13 +70,6 @@ async function configureRealm(): Promise<void> {
   });
   await joinGroup(token, KEYCLOAK_REALM, userId, managersGroupId);
   await joinGroup(token, KEYCLOAK_REALM, userId, editorsGroupId);
-
-  await createUser(token, KEYCLOAK_REALM, {
-    email: unmappedUserEmail,
-    firstName: 'Keycloak',
-    lastName: 'Unmapped User',
-    password: userPassword,
-  });
 }
 
 test.describe('App Keycloak OIDC login', () => {
@@ -180,32 +172,5 @@ test.describe('App Keycloak OIDC login', () => {
 
     await page.goto(`${appUrl}/Auditor%20Page`);
     await expect(page.getByRole('heading', { name: 'Auditor content' })).toBeHidden();
-  });
-
-  test('should tell a user without a mapped group to ask for access', async ({
-    page,
-    visitApp,
-  }) => {
-    const tokenRequests: string[] = [];
-    page.on('request', (request) => {
-      if (request.url().endsWith('/auth/oauth2/token')) {
-        tokenRequests.push(request.url());
-      }
-    });
-    const appUrl = await visitApp(app.id!);
-
-    await page.goto(`${appUrl}/Login`);
-    await page.getByRole('button', { name: `Login with ${secret.name}` }).click();
-
-    await page.getByRole('textbox', { name: /username or email/i }).fill(unmappedUserEmail);
-    await page.getByRole('textbox', { exact: true, name: 'Password' }).fill(userPassword);
-    await page.getByRole('button', { name: /sign in/i }).click();
-
-    await expect(
-      page.getByText(
-        'Your account is not in a group that gives access to this app. Ask your administrator for access.',
-      ),
-    ).toBeVisible();
-    expect(tokenRequests).toStrictEqual([]);
   });
 });

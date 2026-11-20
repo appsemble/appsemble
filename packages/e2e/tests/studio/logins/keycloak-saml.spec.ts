@@ -133,6 +133,9 @@ async function createSamlClient(token: string, appId: number, secretId: number):
 test.describe('App Keycloak SAML login', () => {
   test.skip(!KEYCLOAK_BASE_URL, 'Keycloak SAML login requires KEYCLOAK_BASE_URL');
 
+  // The scenarios share one fixed Keycloak realm, so their setup must not race.
+  test.describe.configure({ mode: 'serial' });
+
   test.beforeAll(async ({ createApp, createOrganization, randomTestId, request }) => {
     await configureRealm();
 
@@ -236,10 +239,12 @@ test.describe('App Keycloak SAML login', () => {
     page,
     visitApp,
   }) => {
-    const tokenRequests: string[] = [];
+    const codeExchanges: string[] = [];
     page.on('request', (request) => {
-      if (request.url().endsWith('/auth/oauth2/token')) {
-        tokenRequests.push(request.url());
+      if (
+        new URLSearchParams(request.postData() ?? '').get('grant_type') === 'authorization_code'
+      ) {
+        codeExchanges.push(request.url());
       }
     });
     const appUrl = await visitApp(app.id!);
@@ -256,6 +261,6 @@ test.describe('App Keycloak SAML login', () => {
         'Your account is not in a group that gives access to this app. Ask your administrator for access.',
       ),
     ).toBeVisible();
-    expect(tokenRequests).toStrictEqual([]);
+    expect(codeExchanges).toStrictEqual([]);
   });
 });
