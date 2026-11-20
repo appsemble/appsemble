@@ -106,19 +106,7 @@ export async function syncBlock({
     if (block.version !== version) {
       return;
     }
-    if (!(await Organization.count({ where: { id: OrganizationId }, paranoid: false }))) {
-      const {
-        data: { description, name: organizationName, website },
-      } = await axios.get<Pick<Organization, 'description' | 'name' | 'website'>>(
-        String(new URL(`/api/organizations/${OrganizationId}`, argv.remote)),
-        { timeout: remoteTimeout },
-      );
-      // Concurrent synchronizations may create the organization at the same time.
-      await Organization.bulkCreate(
-        [{ id: OrganizationId, name: organizationName, description, website }],
-        { ignoreDuplicates: true },
-      );
-    }
+    await Organization.findOrCreate({ where: { id: OrganizationId }, paranoid: false });
     await transactional(async (transaction) => {
       const blockVersion = { ...block };
       delete blockVersion.fileUrls;

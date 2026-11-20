@@ -110,14 +110,8 @@ describe('syncBlock', () => {
     await expectSynchronizedAsset();
   });
 
-  it('should create the organization of the block from the remote if it does not exist', async () => {
+  it('should create the organization of the block if it does not exist', async () => {
     await Organization.destroy({ where: { id: organizationId }, force: true });
-    mock.onGet(`${remote}/api/organizations/${organizationId}`).reply(200, {
-      id: organizationId,
-      name: 'Remote Test',
-      description: 'The organization on the remote',
-      website: 'https://test.example',
-    });
     mock.onGet(blockUrl).reply(200, createManifest());
     mock.onGet(legacyAssetUrl).reply(200, content, {
       'content-type': 'application/javascript',
@@ -125,12 +119,27 @@ describe('syncBlock', () => {
 
     await syncBlock({ OrganizationId: organizationId, name: blockName, version: blockVersion });
 
-    expect(await Organization.findByPk(organizationId)).toMatchObject({
-      name: 'Remote Test',
-      description: 'The organization on the remote',
-      website: 'https://test.example',
-    });
+    expect(await Organization.findByPk(organizationId)).not.toBeNull();
     await expectSynchronizedAsset();
+  });
+
+  it('should synchronize blocks of a missing organization concurrently', async () => {
+    await Organization.destroy({ where: { id: organizationId }, force: true });
+    const otherName = 'other';
+    const otherUrl = `${remote}/api/blocks/@${organizationId}/${otherName}/versions/${blockVersion}`;
+    mock.onGet(blockUrl).reply(200, { ...createManifest(), files: [] });
+    mock.onGet(otherUrl).reply(200, {
+      ...createManifest(),
+      name: `@${organizationId}/${otherName}`,
+      files: [],
+    });
+
+    await Promise.all([
+      syncBlock({ OrganizationId: organizationId, name: blockName, version: blockVersion }),
+      syncBlock({ OrganizationId: organizationId, name: otherName, version: blockVersion }),
+    ]);
+
+    expect(await BlockVersion.count({ where: { OrganizationId: organizationId } })).toBe(2);
   });
 
   it('should reject private file URLs without persisting a partial block', async () => {
