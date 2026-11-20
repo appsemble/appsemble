@@ -1,4 +1,5 @@
 import { expect, authenticatedTest as test } from '../../index.js';
+import pkg from '../../package.json' with { type: 'json' };
 
 let membersAppId: number | undefined;
 let membersAppPath: string | undefined;
@@ -24,7 +25,7 @@ test.describe('Studio member roles', () => {
           - name: Test Page
             blocks:
               - type: data-loader
-                version: 0.34.15
+                version: ${pkg.version}
       `,
     );
 

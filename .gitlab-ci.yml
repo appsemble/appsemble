@@ -299,7 +299,6 @@ seed database:
         SECRET: secret
         AES_SECRET: secret
         HOST: 'http://appsemble:9999'
-        REMOTE: 'https://appsemble.app'
         DATABASE_HOST: database
         DATABASE_PORT: 5432
         DATABASE_NAME: appsemble
@@ -754,7 +753,6 @@ validate snippets:
         SECRET: secret
         AES_SECRET: secret
         HOST: 'http://appsemble:9999'
-        REMOTE: 'https://appsemble.app'
         DATABASE_HOST: database
         DATABASE_PORT: 5432
         DATABASE_NAME: appsemble
@@ -846,7 +844,6 @@ validate snippets:
         SECRET: secret
         AES_SECRET: secret
         HOST: 'https://appsemble:9999'
-        REMOTE: 'https://appsemble.app'
         DATABASE_HOST: database
         DATABASE_PORT: 5432
         DATABASE_NAME: appsemble
@@ -1021,7 +1018,6 @@ e2e keycloak:
         SECRET: secret
         AES_SECRET: secret
         HOST: 'http://appsemble:9999'
-        REMOTE: 'https://appsemble.app'
         DATABASE_HOST: database
         DATABASE_PORT: 5432
         DATABASE_NAME: appsemble
