@@ -219,6 +219,8 @@ syncOrganizationBlocks: []
 
 securityEmail: security@appsemble.com
 
+verbosity: 0
+
 rejectBreachedPasswords: false
 
 ssrfAllowIpAddressList: []

@@ -34,7 +34,9 @@ spec:
                 {{- toYaml .Values.resources.cronjobs | nindent 16 }}
               args:
                 - charge-organization-subscriptions
-                - -vv
+              {{- with .Values.verbosity }}
+                - -{{ repeat (int .) "v" }}
+              {{- end }}
               env:
 {{ include "appsemble.postgres" . | indent 16 }}
 {{ include "appsemble.valkey" . | indent 16 }}

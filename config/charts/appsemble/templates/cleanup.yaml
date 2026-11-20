@@ -25,7 +25,9 @@ spec:
             {{- toYaml .Values.resources.jobs | nindent 12 }}
           args:
             - cleanup
-            - -vv
+          {{- with .Values.verbosity }}
+            - -{{ repeat (int .) "v" }}
+          {{- end }}
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
             - name: APP_DOMAIN_STRATEGY
