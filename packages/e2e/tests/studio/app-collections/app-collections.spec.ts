@@ -1,6 +1,7 @@
 import { type AppCollection } from '@appsemble/types';
 
 import { expect, authenticatedTest as test } from '../../../index.js';
+import pkg from '../../../package.json' with { type: 'json' };
 
 let organizationId: string;
 let appCollectionName: string;
@@ -192,7 +193,7 @@ test.describe('App Collections', () => {
         - name: Test Page
           blocks:
             - type: data-loader
-              version: 0.34.15
+              version: ${pkg.version}
       `,
     );
 
@@ -240,7 +241,7 @@ test.describe('App Collections', () => {
         - name: Test Page
           blocks:
             - type: data-loader
-              version: 0.34.15
+              version: ${pkg.version}
       `,
     );
 
@@ -288,7 +289,7 @@ test.describe('App Collections', () => {
         - name: Test Page
           blocks:
             - type: data-loader
-              version: 0.34.15
+              version: ${pkg.version}
       `,
     );
     const app2 = await createApp(
@@ -300,7 +301,7 @@ test.describe('App Collections', () => {
         - name: Test Page
           blocks:
             - type: data-loader
-              version: 0.34.15
+              version: ${pkg.version}
       `,
     );
 
