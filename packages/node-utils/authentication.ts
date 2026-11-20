@@ -5,7 +5,10 @@ import axios, { type AxiosHeaders } from 'axios';
 
 export const CREDENTIALS_ENV_VAR = 'APPSEMBLE_CLIENT_CREDENTIALS';
 
-const authorizedRemotes = new Set<string>();
+/**
+ * The client credentials and access token of the login to each remote URL.
+ */
+const logins = new Map<string, { credentials: string; accessToken: string }>();
 
 export function getService(remote: string): string {
   return `appsemble://${new URL(remote).host}`;
@@ -72,6 +75,9 @@ async function getClientCredentials(remote: string, inputCredentials?: string): 
 /**
  * Login to the server using OAuth2 client credentials.
  *
+ * Requests to the remote carry the access token of the latest login. A login with the same client
+ * credentials is reused, a login with other client credentials replaces it.
+ *
  * @param remote Host to fetch token from.
  * @param scope The OAuth2 scope to request. This may be space separated to request
  *   multiple scopes.
@@ -83,7 +89,8 @@ export async function authenticate(
   inputCredentials?: string,
 ): Promise<void> {
   const credentials = await getClientCredentials(remote, inputCredentials);
-  if (authorizedRemotes.has(remote)) {
+  const login = logins.get(remote);
+  if (login?.credentials === credentials) {
     logger.verbose(`Already logged in to ${remote}`);
     return;
   }
@@ -96,13 +103,20 @@ export async function authenticate(
       baseURL: remote,
     },
   );
-  authorizedRemotes.add(remote);
-  axios.interceptors.request.use((config) => {
-    if (config.baseURL === remote) {
-      (config.headers as AxiosHeaders).set('authorization', `Bearer ${data.access_token}`);
-    }
-    return config;
-  });
+  if (!login) {
+    axios.interceptors.request.use((config) => {
+      if (config.baseURL === remote) {
+        // A request that brings its own authorization, such as a login, keeps it.
+        (config.headers as AxiosHeaders).set(
+          'authorization',
+          `Bearer ${logins.get(remote)!.accessToken}`,
+          false,
+        );
+      }
+      return config;
+    });
+  }
+  logins.set(remote, { credentials, accessToken: data.access_token });
   logger.info(`Logged in to ${remote} successfully`);
   logger.verbose(`Login scope: ${scope}`);
 }
