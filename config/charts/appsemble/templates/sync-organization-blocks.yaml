@@ -7,7 +7,7 @@ metadata:
     {{ include "appsemble.labels" . }}
   annotations:
     helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-weight: '2' # Must be after migrate and provision so the organization exists
+    helm.sh/hook-weight: '2' # Must be after migrate so the tables exist
 spec:
   template:
     metadata:
@@ -35,4 +35,7 @@ spec:
 {{ include "appsemble.postgres" . | indent 12 }}
 {{ include "appsemble.s3" . | indent 12 }}
 {{ include "appsemble.sentry" . | indent 12 }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 12 }}
+{{ include "appsemble.trustedCaBundle.volumeMounts" . | indent 10 }}
+{{ include "appsemble.trustedCaBundle.volumes" . | indent 6 }}
 {{- end }}

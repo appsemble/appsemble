@@ -659,11 +659,16 @@ node drain or other voluntary disruption cannot evict every replica at once.
 
 ## Synchronizing blocks
 
-`syncOrganizationBlocks` copies the blocks of organizations from `remote` after each install and
-upgrade. Each entry names an organization and the block version to copy:
+When an app uses a block version that this server lacks, the server copies it from `remote` while
+the app is published, and creates the block's organization by its id if needed. This covers every
+block version that apps use, so a release needs no manual `appsemble block publish`. Set
+`remote: null` to use only blocks published on this server.
+
+`syncOrganizationBlocks` copies blocks before any app uses them, so Studio lists them. Each entry
+names an organization and the block version to copy, because organizations release their blocks
+independently and a block does not record which Appsemble version it needs:
 
 ```yaml
-remote: https://appsemble.app
 syncOrganizationBlocks:
   - organization: appsemble
     version: server # The Appsemble version of the image
@@ -671,7 +676,9 @@ syncOrganizationBlocks:
     version: latest # The latest version of each block, or an explicit version such as 1.4.2
 ```
 
-A block that the remote does not have in the requested version is skipped with a warning.
+A block that the remote does not have in the requested version is skipped with a warning, and a
+later upgrade copies it once the remote has it. The copy runs as a hook Job after each install and
+upgrade; it needs network access to `remote`, and the install or upgrade fails when it fails.
 
 ## Variables
 

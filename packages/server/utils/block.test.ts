@@ -286,14 +286,8 @@ describe('syncOrganizationBlocks', () => {
     expect(await BlockVersion.count({ where: { name: 'removed' } })).toBe(0);
   });
 
-  it('should create a missing organization from the remote', async () => {
+  it('should synchronize the blocks of an organization that does not exist locally', async () => {
     const id = 'remote-only';
-    mock.onGet(`${remote}/api/organizations/${id}`).reply(200, {
-      id,
-      name: 'Remote Only',
-      description: 'From the remote',
-      website: 'https://remote-only.example',
-    });
     mock
       .onGet(`${remote}/api/organizations/${id}/blocks`)
       .reply(200, [{ name: `@${id}/${blockName}`, version: '1.0.0' }]);
@@ -305,9 +299,6 @@ describe('syncOrganizationBlocks', () => {
 
     const organization = await Organization.findByPk(id, { include: [User] });
     expect(organization).toMatchObject({
-      name: 'Remote Only',
-      description: 'From the remote',
-      website: 'https://remote-only.example',
       Users: [],
     });
     expect(await BlockVersion.count({ where: { OrganizationId: id } })).toBe(1);

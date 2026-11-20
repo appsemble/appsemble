@@ -236,17 +236,6 @@ export async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<Blo
   return result;
 }
 
-/**
- * Synchronize a version of each block of an organization from the remote.
- *
- * A block is synchronized if the version does not exist locally. Blocks for which the remote does
- * not have the version are skipped. A missing local organization is created from the remote
- * organization, without members.
- *
- * @param organizationId The ID of the organization whose blocks to synchronize.
- * @param version The block version to synchronize, or `latest` for the latest version of each
- *   block on the remote.
- */
 export interface OrganizationBlocksVersion {
   organization: string;
 
@@ -257,22 +246,21 @@ export interface OrganizationBlocksVersion {
   version: string;
 }
 
+/**
+ * Synchronize a version of each block of an organization from the remote.
+ *
+ * A block is synchronized if the version does not exist locally. Blocks for which the remote does
+ * not have the version are skipped.
+ *
+ * @param organizationBlocksVersion The organization and the block version to synchronize.
+ */
 async function syncBlocksOfOrganization({
   organization,
   version,
 }: OrganizationBlocksVersion): Promise<void> {
-  if (!(await Organization.findByPk(organization, { attributes: ['id'], paranoid: false }))) {
-    const {
-      data: { description, name, website },
-    } = await axios.get<Pick<Organization, 'description' | 'name' | 'website'>>(
-      String(new URL(`/api/organizations/${organization}`, argv.remote)),
-    );
-    await Organization.create({ id: organization, name, description, website });
-    logger.info(`Created organization ${organization} from ${argv.remote}`);
-  }
-
   const { data: remoteBlocks } = await axios.get<BlockManifest[]>(
     String(new URL(`/api/organizations/${organization}/blocks`, argv.remote)),
+    { timeout: remoteTimeout },
   );
   const localBlocks = await BlockVersion.findAll({
     attributes: ['name', 'version'],
