@@ -630,7 +630,10 @@ describe('verifyAppOAuth2SecretCode', () => {
       { headers: { referer: 'http://localhost' } },
     );
 
-    expect(unmappedResponse.status).toBe(403);
+    expect(unmappedResponse).toMatchObject({
+      status: 403,
+      data: { data: { error: 'access_denied', error_description: 'noRoleMatch' } },
+    });
 
     await member?.reload();
     expect(member?.roles).toStrictEqual([]);
@@ -679,6 +682,10 @@ describe('verifyAppOAuth2SecretCode', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "data": {
+          "error": "access_denied",
+          "error_description": "noRoleMatch",
+        },
         "error": "Forbidden",
         "message": "User is not allowed to login because no external group matched an app role.",
         "statusCode": 403,

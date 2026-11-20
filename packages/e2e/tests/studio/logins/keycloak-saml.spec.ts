@@ -20,6 +20,7 @@ const samlAssertionConsumerUrlPostAttribute = 'saml_assertion_consumer_url_post'
 const samlAuthnStatementAttribute = 'saml.authnstatement';
 const samlNameIdFormatAttribute = 'saml_name_id_format';
 const userEmail = 'keycloak-saml-user@appsemble.com';
+const unmappedUserEmail = 'keycloak-saml-unmapped-user@appsemble.com';
 const userPassword = 'password';
 
 let app: App;
@@ -47,6 +48,13 @@ async function configureRealm(): Promise<void> {
 
   await joinGroup(token, KEYCLOAK_REALM, userId, managersGroupId);
   await joinGroup(token, KEYCLOAK_REALM, userId, editorsGroupId);
+
+  await createUser(token, KEYCLOAK_REALM, {
+    email: unmappedUserEmail,
+    firstName: 'Keycloak SAML',
+    lastName: 'Unmapped User',
+    password: userPassword,
+  });
 }
 
 async function createSamlClient(token: string, appId: number, secretId: number): Promise<void> {
@@ -222,5 +230,32 @@ test.describe('App Keycloak SAML login', () => {
 
     await page.getByRole('link', { name: 'Editor Page' }).click();
     await expect(page.getByRole('heading', { name: 'Editor content' })).toBeVisible();
+  });
+
+  test('should tell a user without a mapped group to ask for access', async ({
+    page,
+    visitApp,
+  }) => {
+    const tokenRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.url().endsWith('/auth/oauth2/token')) {
+        tokenRequests.push(request.url());
+      }
+    });
+    const appUrl = await visitApp(app.id!);
+
+    await page.goto(`${appUrl}/Login`);
+    await page.getByRole('button', { name: `Login with ${secret.name}` }).click();
+
+    await page.getByRole('textbox', { name: /username or email/i }).fill(unmappedUserEmail);
+    await page.getByRole('textbox', { exact: true, name: 'Password' }).fill(userPassword);
+    await page.getByRole('button', { name: /sign in/i }).click();
+
+    await expect(
+      page.getByText(
+        'Your account is not in a group that gives access to this app. Ask your administrator for access.',
+      ),
+    ).toBeVisible();
+    expect(tokenRequests).toStrictEqual([]);
   });
 });

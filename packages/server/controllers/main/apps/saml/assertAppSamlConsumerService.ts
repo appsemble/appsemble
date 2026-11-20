@@ -221,6 +221,12 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
 
   let appMember: AppMember | null = null;
   const location = new URL(loginRequest.redirectUri);
+  const denyNoRoleMatch = (): void => {
+    location.searchParams.set('error', 'access_denied');
+    location.searchParams.set('error_description', 'noRoleMatch');
+    location.searchParams.set('state', loginRequest.state);
+    ctx.redirect(String(location));
+  };
 
   switch (true) {
     case app.scimEnabled:
@@ -242,11 +248,11 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
       appMember = authorization?.AppMember ?? null;
       if (shouldSyncRoleMappings && appMember && !resolvedRoleMappings.length) {
         await syncLoginRoleMappings(AppMemberAssignedRole, appMember, []);
-        return prompt('noRoleMatch');
+        return denyNoRoleMatch();
       }
 
       if (!appMember && shouldSyncRoleMappings && !resolvedRoleMappings.length) {
-        return prompt('noRoleMatch');
+        return denyNoRoleMatch();
       }
 
       if (appMember) {
@@ -289,7 +295,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   if (appMember && shouldSyncRoleMappings) {
     if (!resolvedRoleMappings.length) {
       await syncLoginRoleMappings(AppMemberAssignedRole, appMember, []);
-      return prompt('noRoleMatch');
+      return denyNoRoleMatch();
     }
 
     await syncLoginRoleMappings(AppMemberAssignedRole, appMember, resolvedRoleMappings);

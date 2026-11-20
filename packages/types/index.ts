@@ -1156,8 +1156,7 @@ export type SAMLStatus =
   | 'invalidstatuscode'
   | 'invalidsubjectconfirmation'
   | 'missingnameid'
-  | 'missingsubject'
-  | 'noRoleMatch';
+  | 'missingsubject';
 
 export interface ProjectBuildConfig extends ProjectConfig {
   /**
