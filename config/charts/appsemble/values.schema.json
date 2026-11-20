@@ -852,7 +852,7 @@
     },
     "remote": {
       "type": ["string", "null"],
-      "description": "A remote Appsemble server to connect to in order to synchronize blocks.",
+      "description": "The Appsemble server to copy block versions from when an app uses a block version this server does not have. `null` disables it.",
       "format": "uri"
     },
     "securityEmail": {
