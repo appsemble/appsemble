@@ -42,7 +42,9 @@ spec:
           {{- if .Values.skipCustomDomains }}
             - --skip-custom-domains
           {{- end }}
-            - -vv
+          {{- with .Values.verbosity }}
+            - -{{ repeat (int .) "v" }}
+          {{- end }}
           securityContext:
             readOnlyRootFilesystem: true
           ports:

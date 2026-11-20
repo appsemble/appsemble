@@ -33,7 +33,9 @@ spec:
                 {{- toYaml .Values.resources.cronjobs | nindent 16 }}
               args:
                 - scale-containers # Command that handles scaling
-                - -vv
+              {{- with .Values.verbosity }}
+                - -{{ repeat (int .) "v" }}
+              {{- end }}
               env:
                 - name: SERVICE_NAME
                   value: {{ include "appsemble.fullname" . }}

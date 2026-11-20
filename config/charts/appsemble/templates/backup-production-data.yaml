@@ -34,7 +34,9 @@ spec:
                 {{- toYaml .Values.resources.backupCronjob | nindent 16 }}
               args:
                 - backup-production-data
-                - -vv
+              {{- with .Values.verbosity }}
+                - -{{ repeat (int .) "v" }}
+              {{- end }}
               env:
                 - name: AES_SECRET
                   valueFrom:

@@ -43,7 +43,9 @@ spec:
             {{- if .Values.skipCustomDomains }}
             - --skip-custom-domains
             {{- end }}
-            - -vv
+          {{- with .Values.verbosity }}
+            - -{{ repeat (int .) "v" }}
+          {{- end }}
           env:
             - name: DATABASE_HOST
               value: {{ .Values.postgresql.host }}

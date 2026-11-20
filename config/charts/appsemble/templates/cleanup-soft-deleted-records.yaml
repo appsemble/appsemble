@@ -30,7 +30,9 @@ spec:
                 {{- toYaml .Values.resources.cronjobs | nindent 16 }}
               args:
                 - cleanup-soft-deleted-records
-                - -vv
+              {{- with .Values.verbosity }}
+                - -{{ repeat (int .) "v" }}
+              {{- end }}
               env:
                 - name: AES_SECRET
                   valueFrom:

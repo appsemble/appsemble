@@ -28,7 +28,9 @@ spec:
           {{- if .Values.skipCustomDomains }}
             - --skip-custom-domains
           {{- end }}
-            - -vv
+          {{- with .Values.verbosity }}
+            - -{{ repeat (int .) "v" }}
+          {{- end }}
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
             - name: APP_DOMAIN_STRATEGY

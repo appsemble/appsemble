@@ -874,6 +874,13 @@
         }
       }
     },
+    "verbosity": {
+      "type": "integer",
+      "description": "How many levels above `info` the server and its jobs log: 1 for `verbose`, 2 for `silly`. From `verbose` on, the logs include sent emails with their links.",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
+    },
     "securityEmail": {
       "type": "string",
       "description": "The default security contact email for reporting security vulnerabilities.",
