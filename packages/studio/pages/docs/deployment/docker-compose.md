@@ -39,6 +39,8 @@ services:
       S3_SECURE: 'false'
       S3_ACCESS_KEY: *s3-access-key
       S3_SECRET_KEY: *s3-secret-key
+      # Copy the block versions that apps use and this server lacks from appsemble.app.
+      REMOTE: https://appsemble.app
     ports:
       # Expose Appsemble at port 8000.
       - '8000:9999'
