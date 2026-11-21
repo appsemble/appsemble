@@ -14,8 +14,9 @@ export const messages = defineMessages({
     defaultMessage: 'Login with {name}',
   },
   continue: {
-    id: 'studio.acrOoz',
+    id: 'studio.1BQcq0',
     defaultMessage: 'Continue',
+    description: 'Submits the email address to find its sign-in method',
   },
   chooseOrganization: {
     id: 'studio.EJXyGI',
