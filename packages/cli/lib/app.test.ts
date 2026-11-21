@@ -1667,7 +1667,9 @@ describe('app', () => {
       });
       vi.useFakeTimers();
 
-      expect((await Asset.findAll()).map((asset) => asset.id)).toStrictEqual([id]);
+      // Updating an app replaces its app database instance and closes the old one once idle.
+      const appDB = await getAppDB(app.id);
+      expect((await appDB.Asset.findAll()).map((asset) => asset.id)).toStrictEqual([id]);
     });
 
     it('should set the app password', async () => {
@@ -1707,9 +1709,10 @@ describe('app', () => {
           iconBackground: '#ffffff',
           force: false,
         });
-      const { Asset } = await getAppDB(app.id);
-      const findSeedAssetIds = async (): Promise<string[]> =>
-        (await Asset.findAll({ where: { seed: true } })).map(({ id }) => id);
+      const findSeedAssetIds = async (): Promise<string[]> => {
+        const { Asset } = await getAppDB(app.id);
+        return (await Asset.findAll({ where: { seed: true } })).map(({ id }) => id);
+      };
 
       await update();
       const firstIds = await findSeedAssetIds();
@@ -2665,11 +2668,12 @@ describe('app', () => {
         vi.useFakeTimers();
       }
 
+      const appDB = await getAppDB(app.id);
       expect({
-        variables: (await AppVariable.findAll()).map(({ name }) => name),
-        service: (await AppServiceSecret.findAll()).map(({ name }) => name),
-        saml: (await AppSamlSecret.findAll()).map(({ name }) => name),
-        oauth2: (await AppOAuth2Secret.findAll()).map(({ name }) => name),
+        variables: (await appDB.AppVariable.findAll()).map(({ name }) => name),
+        service: (await appDB.AppServiceSecret.findAll()).map(({ name }) => name),
+        saml: (await appDB.AppSamlSecret.findAll()).map(({ name }) => name),
+        oauth2: (await appDB.AppOAuth2Secret.findAll()).map(({ name }) => name),
       }).toStrictEqual({
         variables: ['old-variable'],
         service: ['new-service'],
