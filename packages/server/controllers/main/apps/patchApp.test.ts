@@ -433,8 +433,10 @@ describe('patchApp', () => {
       }),
     );
     expect(status).toBe(200);
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
     const resources = (
-      await Resource.findAll({
+      await appDB.Resource.findAll({
         attributes: ['id', 'Position', 'type'],
         where: {
           type: 'testResource',
@@ -450,7 +452,7 @@ describe('patchApp', () => {
     );
 
     await expect(
-      Resource.create({
+      appDB.Resource.create({
         type: 'testResource',
         data: { foo: 'duplicate position' },
         Position: 10,
@@ -514,9 +516,11 @@ describe('patchApp', () => {
       }),
     );
     expect(status).toBe(200);
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
 
     const resources = (
-      await Resource.findAll({
+      await appDB.Resource.findAll({
         attributes: ['data', 'Position'],
         where: {
           type: 'testResource',
@@ -925,9 +929,11 @@ describe('patchApp', () => {
     );
 
     expect(response.status).toBe(409);
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
 
     // The removed type's data must survive the rejected update.
-    const remaining = await Resource.count({ where: { type: 'dropResource' } });
+    const remaining = await appDB.Resource.count({ where: { type: 'dropResource' } });
     expect(remaining).toBe(1);
   });
 
@@ -1075,8 +1081,10 @@ describe('patchApp', () => {
     );
 
     expect(status).toBe(200);
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
 
-    const indexes = (await sequelize
+    const indexes = (await appDB.sequelize
       .getQueryInterface()
       .showIndex(resourcePartitionName('testResource'))) as {
       name: string;
@@ -1143,6 +1151,8 @@ describe('patchApp', () => {
     );
 
     expect(response.status).toBe(200);
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
 
     const nextResourceDefinition: ResourceDefinition = {
       schema: {
@@ -1158,11 +1168,11 @@ describe('patchApp', () => {
       nextResourceDefinition,
     );
 
-    const [afterPatch] = (await sequelize.query(
-      `SELECT indexdef AS "indexDefinition" FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ${sequelize.escape(nextIndexName)};`,
+    const [afterPatch] = (await appDB.sequelize.query(
+      `SELECT indexdef AS "indexDefinition" FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ${appDB.sequelize.escape(nextIndexName)};`,
     )) as [{ indexDefinition: string }[], unknown];
-    const [removedIndex] = (await sequelize.query(
-      `SELECT indexdef AS "indexDefinition" FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ${sequelize.escape(previousIndexName)};`,
+    const [removedIndex] = (await appDB.sequelize.query(
+      `SELECT indexdef AS "indexDefinition" FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ${appDB.sequelize.escape(previousIndexName)};`,
     )) as [{ indexDefinition: string }[], unknown];
 
     expect(beforePatch[0].indexDefinition).not.toContain('::bigint');
@@ -1226,8 +1236,10 @@ describe('patchApp', () => {
 
     expect(response.status).toBe(400);
     expect(response.data.data.code).toBe('RESOURCE_UNIQUE_CONSTRAINT_VALUE_ERROR');
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
 
-    const indexes = (await sequelize
+    const indexes = (await appDB.sequelize
       .getQueryInterface()
       .showIndex(resourcePartitionName('testResource'))) as {
       name: string;
