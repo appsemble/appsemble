@@ -459,6 +459,24 @@ describe('organization OIDC sign-in', () => {
     expect((await complete(await begin())).status).toBe(200);
   });
 
+  it('stops sign-in through the provider of a deleted organization', async () => {
+    const owner = await signInAsOwner();
+    unauthorize();
+    claims = { sub: 'new-staff-subject' };
+    userInfoClaims = { sub: 'new-staff-subject', email: 'new@example.com' };
+    const flow = await begin();
+    const deletion = await request.delete('/api/organizations/staff', {
+      headers: { authorization: `Bearer ${owner.access_token}` },
+    });
+    expect(deletion.status).toBe(200);
+
+    expect((await request.get(`${path}/login`)).status).toBe(404);
+    expect((await request.post(`${path}/login`, {}, { headers: { origin } })).status).toBe(404);
+    expect((await complete(flow)).status).toBe(404);
+    expect(await User.count({ where: { primaryEmail: 'new@example.com' } })).toBe(0);
+    expect(await OrganizationMember.count({ where: { OrganizationId: 'staff' } })).toBe(1);
+  });
+
   it('does not grant access when no group maps to an organization role', async () => {
     groups = ['/other-organization/staff'];
     const response = await complete(await begin());
