@@ -932,6 +932,22 @@ describe('organization OIDC sign-in', () => {
     expect(response.status).toBe(403);
   });
 
+  it('requires signing in again after ten minutes when the provider reports a future authentication time', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    claims = { auth_time: Math.floor(Date.now() / 1000) + 8 * 60 * 60 };
+    await signInAsOwner();
+    const propose = (): Promise<AxiosResponse> =>
+      request.post(
+        `${path}/login`,
+        { link: true, configuration: { ...configuration, name: 'Proposed provider' } },
+        { headers: { origin } },
+      );
+    expect((await propose()).status).toBe(200);
+    vi.setSystemTime(Date.now() + 601_000);
+    expect((await propose()).status).toBe(403);
+  });
+
   it('does not verify a replacement for a deployment-managed provider', async () => {
     await signInAsOwner();
     await OrganizationSso.update(

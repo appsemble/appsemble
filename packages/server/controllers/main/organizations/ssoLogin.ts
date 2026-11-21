@@ -469,7 +469,9 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
       const response = createOrganizationSsoTokenResponse(
         { id: sessionId, expires },
         user.id,
-        typeof claims.auth_time === 'number' ? claims.auth_time : 0,
+        typeof claims.auth_time === 'number'
+          ? Math.min(claims.auth_time, Math.floor(Date.now() / 1000))
+          : 0,
       );
       await OrganizationSsoSession.create(
         {
