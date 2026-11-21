@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.41.3](https://gitlab.com/appsemble/appsemble/-/releases/0.41.3)] - 2026-11-21
+
+### Added
+
+- Server: Copy block versions an app uses from https://appsemble.app by default in the Helm chart.
+- Server: Sync organization blocks from the remote with `syncOrganizationBlocks`.
+
+### Changed
+
+- Server: Log at `info` by default in the Helm chart, adjustable with the `verbosity` value.
+
+### Fixed
+
+- App: Tell users whose SSO groups match no app role to ask their administrator for access.
+- Node-utils: Log in again when the CLI authenticates to a remote with other client credentials.
+- Server: Create the organization of a block synchronized from the remote when it does not exist.
+
 ## \[[0.41.2](https://gitlab.com/appsemble/appsemble/-/releases/0.41.2)] - 2026-11-19
 
 ### Fixed

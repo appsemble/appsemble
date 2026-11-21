@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/form",
-  "version": "0.41.2",
+  "version": "0.41.3",
   "sideEffects": [
     "*.css"
   ],
@@ -20,12 +20,12 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.41.2",
-    "@appsemble/preact-components": "0.41.2",
-    "@appsemble/sdk": "0.41.2",
-    "@appsemble/utils": "0.41.2",
-    "@appsemble/types": "0.41.2",
-    "@appsemble/lang-sdk": "0.41.2",
+    "@appsemble/preact": "0.41.3",
+    "@appsemble/preact-components": "0.41.3",
+    "@appsemble/sdk": "0.41.3",
+    "@appsemble/utils": "0.41.3",
+    "@appsemble/types": "0.41.3",
+    "@appsemble/lang-sdk": "0.41.3",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@milkdown/crepe": "^7.22.2",
@@ -47,7 +47,7 @@
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
-    "@appsemble/block-interaction-tests": "0.41.2",
+    "@appsemble/block-interaction-tests": "0.41.3",
     "@testing-library/preact": "3.2.6",
     "@testing-library/user-event": "14.6.12",
     "intl-messageformat": "11.2.15",

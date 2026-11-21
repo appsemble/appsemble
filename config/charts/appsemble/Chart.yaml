@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.41.2
-appVersion: 0.41.2
+version: 0.41.3
+appVersion: 0.41.3
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -32,12 +32,24 @@ dependencies:
     condition: valkey.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "Server: Copy block versions an app uses from https://appsemble.app
+        by default in the Helm chart."
+    - kind: added
+      description: "Server: Sync organization blocks from the remote with
+        syncOrganizationBlocks."
+    - kind: changed
+      description: "Server: Log at info by default in the Helm chart, adjustable with
+        the verbosity value."
     - kind: fixed
-      description: "App: Follow redirects in separate tasks so they don't block the page."
+      description: "App: Tell users whose SSO groups match no app role to ask their
+        administrator for access."
     - kind: fixed
-      description: "App: Request the navbar logo by asset id so browsers cache it."
+      description: "Node-utils: Log in again when the CLI authenticates to a remote
+        with other client credentials."
     - kind: fixed
-      description: "Server: Reject $orderby values that are not property names."
+      description: "Server: Create the organization of a block synchronized from the
+        remote when it does not exist."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
