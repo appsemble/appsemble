@@ -446,8 +446,10 @@ describe('assertAppSamlConsumerService', () => {
 
     expect(unmappedResponse).toMatchObject({
       status: 302,
-      headers: { location: '/saml/response/noRoleMatch' },
-      data: 'Redirecting to /saml/response/noRoleMatch.',
+      headers: {
+        location:
+          'http://test-app.testorganization.localhost/?error=access_denied&error_description=noRoleMatch&state=third-state',
+      },
     });
 
     await member?.reload();
@@ -495,8 +497,10 @@ describe('assertAppSamlConsumerService', () => {
 
     expect(response).toMatchObject({
       status: 302,
-      headers: { location: '/saml/response/noRoleMatch' },
-      data: 'Redirecting to /saml/response/noRoleMatch.',
+      headers: {
+        location:
+          'http://test-app.testorganization.localhost/?error=access_denied&error_description=noRoleMatch&state=secret-state',
+      },
     });
     expect(await AppMember.count()).toBe(0);
   });

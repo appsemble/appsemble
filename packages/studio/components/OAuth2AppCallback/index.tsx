@@ -34,17 +34,12 @@ export function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactNod
       })
       .then(({ data }) => oauth2Redirect(appRequest, data))
       .catch((err) => {
-        // In case of a conflict navigate the user back to the login page to link,
-        // an existing account with any of the already associated login methods.
-        if (axios.isAxiosError(err) && err.response.status === 409) {
-          return oauth2Redirect(appRequest, { ...err.response.data.data });
+        if (!axios.isAxiosError(err) || err.response.status >= 500) {
+          return oauth2Redirect(appRequest, { error: 'server_error' });
         }
-        return oauth2Redirect(appRequest, {
-          code:
-            axios.isAxiosError(err) && err.response.status < 500
-              ? 'invalid_request'
-              : 'server_error',
-        });
+        // A rejected login may carry the parameters to send to the app: the existing account to
+        // link on a conflict, or the OAuth2 error of a login that matches no app role.
+        return oauth2Redirect(appRequest, err.response.data.data ?? { error: 'invalid_request' });
       });
   }, [qs, session]);
 

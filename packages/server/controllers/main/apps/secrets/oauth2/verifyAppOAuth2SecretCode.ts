@@ -120,20 +120,15 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   }
 
   let appMember = authorization?.AppMember;
-  if (shouldSyncRoleMappings && appMember && !resolvedRoleMappings.length) {
-    await syncLoginRoleMappings(AppMemberAssignedRole, appMember, []);
+  if (shouldSyncRoleMappings && !resolvedRoleMappings.length) {
+    if (appMember) {
+      await syncLoginRoleMappings(AppMemberAssignedRole, appMember, []);
+    }
     throwKoaError(
       ctx,
       403,
       'User is not allowed to login because no external group matched an app role.',
-    );
-  }
-
-  if (!appMember && shouldSyncRoleMappings && !resolvedRoleMappings.length) {
-    throwKoaError(
-      ctx,
-      403,
-      'User is not allowed to login because no external group matched an app role.',
+      { error: 'access_denied', error_description: 'noRoleMatch' },
     );
   }
 

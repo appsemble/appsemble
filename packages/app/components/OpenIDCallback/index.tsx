@@ -28,6 +28,7 @@ export function OpenIDCallback(): VNode {
   const query = useQuery();
   const code = query.get('code');
   const errorMessage = query.get('error');
+  const errorDescription = query.get('error_description');
   const state = query.get('state');
 
   const sub = query.get('externalId');
@@ -120,7 +121,11 @@ export function OpenIDCallback(): VNode {
       >
         <Message color="danger">
           {errorMessage === 'access_denied' ? (
-            <FormattedMessage {...messages.accessDenied} />
+            errorDescription === 'noRoleMatch' ? (
+              <FormattedMessage {...messages.noRoleMatch} />
+            ) : (
+              <FormattedMessage {...messages.accessDenied} />
+            )
           ) : (
             <FormattedMessage {...messages.error} />
           )}
