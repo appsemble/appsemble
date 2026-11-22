@@ -85,7 +85,9 @@ function assertSameOrigin(ctx: Context): void {
 }
 
 export async function getOrganizationSsoLogin(ctx: Context): Promise<void> {
-  const sso = await OrganizationSso.findByPk(ctx.pathParams.organizationId);
+  const sso = await OrganizationSso.findByPk(ctx.pathParams.organizationId, {
+    include: [{ model: Organization, attributes: [], required: true }],
+  });
   assertKoaCondition(sso != null, ctx, 404, 'Organization SSO is not configured');
   ctx.body = {
     name: sso.name,
@@ -97,7 +99,9 @@ export async function getOrganizationSsoLogin(ctx: Context): Promise<void> {
 export async function startOrganizationSsoLogin(ctx: Context): Promise<void> {
   assertSameOrigin(ctx);
   const { organizationId } = ctx.pathParams;
-  const current = await OrganizationSso.findByPk(organizationId);
+  const current = await OrganizationSso.findByPk(organizationId, {
+    include: [{ model: Organization, attributes: [], required: true }],
+  });
   const { configuration, link } = ctx.request.body;
   assertKoaCondition(
     !link || ctx.user != null,
@@ -346,7 +350,15 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
         'This SSO identity is linked to another Appsemble account',
       );
       const memberUserId = flow.linkUserId ?? linkedIdentity?.UserId;
-      await Organization.findByPk(organizationId, { transaction, lock: transaction.LOCK.UPDATE });
+      assertKoaCondition(
+        (await Organization.findByPk(organizationId, {
+          transaction,
+          lock: transaction.LOCK.UPDATE,
+        })) != null,
+        ctx,
+        404,
+        'Organization not found.',
+      );
       const saved = await OrganizationSso.findByPk(organizationId, {
         transaction,
         lock: transaction.LOCK.UPDATE,
