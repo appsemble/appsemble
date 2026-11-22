@@ -1,6 +1,35 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
+  domains: {
+    id: 'studio.LcPSSo',
+    defaultMessage: 'Email domains for sign-in discovery',
+  },
+  domainHelp: {
+    id: 'studio.65YOOQ',
+    defaultMessage:
+      'Publish a DNS TXT record named {name} with the value {value}, then verify and add the domain. Add each email domain and alias separately.',
+  },
+  domain: {
+    id: 'studio.Wrwi+e',
+    defaultMessage: 'Email domain',
+  },
+  verifyAndAddDomain: {
+    id: 'studio.+jUE3K',
+    defaultMessage: 'Verify and add domain',
+  },
+  removeDomain: {
+    id: 'studio.7tU4Fa',
+    defaultMessage: 'Remove {domain}',
+  },
+  domainManaged: {
+    id: 'studio.PKMe8/',
+    defaultMessage: 'Trusted by deployment configuration',
+  },
+  domainError: {
+    id: 'studio.kOhY6v',
+    defaultMessage: 'Unable to update email domains.',
+  },
   verify: {
     id: 'studio.r+ZN4X',
     defaultMessage: 'Verify connection and save',

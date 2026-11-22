@@ -104,6 +104,7 @@ import { Organization } from './main/Organization.js';
 import { OrganizationInvite } from './main/OrganizationInvite.js';
 import { OrganizationMember } from './main/OrganizationMember.js';
 import { OrganizationSso } from './main/OrganizationSso.js';
+import { OrganizationSsoDomain } from './main/OrganizationSsoDomain.js';
 import { OrganizationSsoIdentity } from './main/OrganizationSsoIdentity.js';
 import { OrganizationSsoSession } from './main/OrganizationSsoSession.js';
 import { OrganizationSubscription } from './main/OrganizationSubscription.js';
@@ -171,6 +172,7 @@ export {
   OrganizationInvite,
   OrganizationMember,
   OrganizationSso,
+  OrganizationSsoDomain,
   OrganizationSsoIdentity,
   OrganizationSsoSession,
   ResetPasswordToken,
@@ -237,6 +239,7 @@ export function initDB({
       OrganizationInvite,
       OrganizationMember,
       OrganizationSso,
+      OrganizationSsoDomain,
       OrganizationSsoIdentity,
       OrganizationSsoSession,
       ResetPasswordToken,

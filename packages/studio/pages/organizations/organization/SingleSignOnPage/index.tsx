@@ -13,6 +13,7 @@ import {
 } from '@appsemble/react-components';
 import {
   type OrganizationSsoConfiguration,
+  type OrganizationSsoDomains,
   type OrganizationSsoSettings,
   PredefinedOrganizationRole,
   organizationLoginMethods,
@@ -24,6 +25,7 @@ import { type FormEvent, type ReactNode, useCallback, useEffect, useState } from
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
 import { messages } from './messages.js';
 import { messages as roleMessages } from '../MemberRow/messages.js';
 
@@ -33,6 +35,15 @@ export function SingleSignOnPage(): ReactNode {
   const { formatMessage } = useIntl();
   const url = `/api/organizations/${organizationId}/sso`;
   const { data, error, loading, setData } = useData<OrganizationSsoSettings | null>(url);
+  const {
+    data: domains,
+    error: domainsError,
+    loading: domainsLoading,
+    setData: setDomains,
+  } = useData<OrganizationSsoDomains>(`${url}/domains`);
+  const [domain, setDomain] = useState('');
+  const [changingDomain, setChangingDomain] = useState(false);
+  const [domainError, setDomainError] = useState<string>();
   const [values, setValues] = useState<OrganizationSsoConfiguration>();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -143,6 +154,37 @@ export function SingleSignOnPage(): ReactNode {
       }
     },
   });
+
+  const updateDomain = useCallback(
+    async (action: 'add' | 'remove', value: string) => {
+      setChangingDomain(true);
+      setDomainError(undefined);
+      try {
+        if (action === 'add') {
+          const response = await axios.post<OrganizationSsoDomains>(`${url}/domains`, {
+            domain: value,
+          });
+          setDomains(response.data);
+          setDomain('');
+        } else {
+          await axios.delete(`${url}/domains/${encodeURIComponent(value)}`);
+          setDomains((current) => ({
+            ...current,
+            domains: current.domains.filter((entry) => entry !== value),
+          }));
+        }
+      } catch (err: unknown) {
+        setDomainError(
+          axios.isAxiosError<{ message?: string }>(err) && err.response?.data?.message
+            ? err.response.data.message
+            : formatMessage(messages.domainError),
+        );
+      } finally {
+        setChangingDomain(false);
+      }
+    },
+    [formatMessage, setDomains, url],
+  );
 
   if (loading || (!values && !error)) {
     return <Loader />;
@@ -364,6 +406,81 @@ export function SingleSignOnPage(): ReactNode {
         <Button className="mt-4" color="danger" onClick={remove}>
           <FormattedMessage {...messages.remove} />
         </Button>
+      ) : null}
+      {data ? (
+        <section className="mt-5">
+          <Title level={2} size={4}>
+            <FormattedMessage {...messages.domains} />
+          </Title>
+          {domainsError || domainError ? (
+            <Message color="danger">
+              <span role="alert">
+                {domainError || <FormattedMessage {...messages.domainError} />}
+              </span>
+            </Message>
+          ) : null}
+          {domainsLoading ? (
+            <Loader />
+          ) : domainsError ? null : (
+            <>
+              <ul>
+                {domains.domains.map((value) => (
+                  <li className="box" key={value}>
+                    <strong>{value}</strong>
+                    {managed ? (
+                      <p>
+                        <FormattedMessage {...messages.domainManaged} />
+                      </p>
+                    ) : (
+                      <Button
+                        className="ml-3"
+                        color="danger"
+                        disabled={changingDomain}
+                        onClick={() => updateDomain('remove', value)}
+                      >
+                        <FormattedMessage {...messages.removeDomain} values={{ domain: value }} />
+                      </Button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {managed ? null : (
+                <Form
+                  onSubmit={(event) => {
+                    if (event.currentTarget.reportValidity()) {
+                      updateDomain('add', domain);
+                    }
+                  }}
+                >
+                  <p className="mb-3">
+                    <FormattedMessage
+                      {...messages.domainHelp}
+                      values={{
+                        name: (
+                          <code className={styles.record}>
+                            _appsemble-sso.{domain || 'example.com'}
+                          </code>
+                        ),
+                        value: <code className={styles.record}>{domains.recordValue}</code>,
+                      }}
+                    />
+                  </p>
+                  <InputField
+                    disabled={changingDomain}
+                    label={<FormattedMessage {...messages.domain} />}
+                    name="domain"
+                    onChange={(event) => setDomain(event.currentTarget.value)}
+                    required
+                    value={domain}
+                  />
+                  <Button color="primary" loading={changingDomain} type="submit">
+                    <FormattedMessage {...messages.verifyAndAddDomain} />
+                  </Button>
+                </Form>
+              )}
+            </>
+          )}
+        </section>
       ) : null}
     </>
   );

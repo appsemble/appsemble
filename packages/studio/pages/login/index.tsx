@@ -1,29 +1,33 @@
 import {
   Content,
-  Login,
   type LoginFormValues,
-  SSOLoginButton,
+  Message,
   useMeta,
   useQuery,
   useToggle,
 } from '@appsemble/react-components';
 import { type TokenResponse } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactNode, useCallback } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate } from 'react-router-dom';
 
+import { LoginForm } from './LoginForm.js';
 import { OrganizationLogin } from './OrganizationLogin/index.js';
-import styles from './index.module.css';
 import { messages } from './messages.js';
+import { messages as organizationMessages } from './OrganizationLogin/messages.js';
 import { useUser } from '../../components/UserProvider/index.js';
-import { enableRegistration, logins } from '../../utils/settings.js';
+import { isLocalRedirect } from '../../utils/isLocalRedirect.js';
 
 export function LoginPage(): ReactNode {
   useMeta(messages.title, messages.description);
   const { login, userInfo } = useUser();
   const qs = useQuery();
   const busy = useToggle();
+  const [discoveredOrganization, setDiscoveredOrganization] = useState<string>();
+  const organizationId =
+    discoveredOrganization || (qs.get('personal') === '1' ? null : qs.get('organization'));
+  const redirect = qs.get('redirect') || '/apps';
 
   const onPasswordLogin = useCallback(
     async ({ email, password }: LoginFormValues) => {
@@ -40,12 +44,24 @@ export function LoginPage(): ReactNode {
     [busy, login],
   );
 
-  const organizationId = qs.get('organization');
+  if (!isLocalRedirect(redirect)) {
+    return (
+      <Content>
+        <Message color="danger">
+          <FormattedMessage {...organizationMessages.invalidRedirect} />
+        </Message>
+      </Content>
+    );
+  }
   if (organizationId) {
     return (
       <Content>
         <OrganizationLogin
+          autoStart={Boolean(discoveredOrganization)}
           busy={busy}
+          key={organizationId}
+          onBack={discoveredOrganization ? () => setDiscoveredOrganization(undefined) : undefined}
+          onOrganizationSelected={setDiscoveredOrganization}
           onPasswordLogin={onPasswordLogin}
           organizationId={organizationId}
         />
@@ -53,35 +69,16 @@ export function LoginPage(): ReactNode {
     );
   }
   if (userInfo) {
-    return <Navigate to={qs.get('redirect') || '/apps'} />;
+    return <Navigate to={redirect} />;
   }
 
   return (
     <Content>
-      <Login
-        enableRegistration={enableRegistration}
+      <LoginForm
+        busy={busy}
+        onOrganizationSelected={setDiscoveredOrganization}
         onPasswordLogin={onPasswordLogin}
-        registerLink="../register"
-        resetPasswordLink="../reset-password"
       />
-      <div className={`${styles.socialLogins} mt-5`}>
-        {logins.map((provider) => (
-          <SSOLoginButton
-            authorizationUrl={provider.authorizationUrl}
-            className="mr-2"
-            clientId={provider.clientId}
-            disabled={busy.enabled}
-            icon={provider.icon}
-            key={provider.authorizationUrl}
-            onClick={busy.enable}
-            redirect={qs.get('redirect')}
-            redirectUrl="/callback"
-            scope={provider.scope}
-          >
-            <FormattedMessage {...messages.loginWith} values={{ name: provider.name }} />
-          </SSOLoginButton>
-        ))}
-      </div>
     </Content>
   );
 }

@@ -5,11 +5,22 @@ import { join } from 'node:path';
 import { promisify } from 'node:util';
 
 import { PredefinedOrganizationRole } from '@appsemble/types';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { request, setTestApp } from 'axios-test-instance';
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import { getDB, Organization, OrganizationMember, OrganizationSso, User } from '../models/index.js';
+import {
+  getDB,
+  Organization,
+  OrganizationMember,
+  OrganizationSso,
+  OrganizationSsoDomain,
+  User,
+} from '../models/index.js';
 import { decrypt } from '../utils/crypto.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
 
+const staff = { id: 'staff', name: 'Staff workspace', ssoName: 'Staff sign-in' };
 let directory: string;
 let configurationPath: string;
 let clientSecretFile: string;
@@ -48,7 +59,17 @@ async function configure(configuration: Record<string, unknown>): Promise<void> 
   );
 }
 
+async function discover(domain: string): Promise<unknown> {
+  const { data } = await request.post('/api/auth/email/discover', { email: `user@${domain}` });
+  return data.organizations;
+}
+
 describe('deployment-managed organization single sign-on', () => {
+  beforeAll(async () => {
+    setArgv({ host: 'http://localhost', secret: 'test' });
+    await setTestApp(await createServer());
+  });
+
   beforeEach(async () => {
     directory = await mkdtemp(join(tmpdir(), 'appsemble-organization-sso-'));
     configurationPath = join(directory, 'configuration.yaml');
@@ -102,6 +123,73 @@ describe('deployment-managed organization single sign-on', () => {
 
     const sso = await OrganizationSso.findByPk('staff');
     expect(decrypt(sso!.clientSecret, 'organization-sso-test-key')).toBe('provider-client-secret');
+  });
+
+  it('routes declared domains and aliases and removes domains no longer declared', async () => {
+    const configuration = {
+      issuer: 'https://identity.example.com/realms/staff',
+      clientId: 'appsemble-studio',
+      clientSecretFile,
+      name: 'Staff sign-in',
+      policy: 'required',
+      roleMappings: [],
+    };
+    const discovered = (): Promise<unknown[]> =>
+      Promise.all(['staff.example.com', 'alias.example.com'].map(discover));
+    await configure({
+      staff: { ...configuration, domains: ['STAFF.example.com', 'alias.example.com'] },
+    });
+    expect(await discovered()).toStrictEqual([[staff], [staff]]);
+
+    await configure({ staff: { ...configuration, domains: ['alias.example.com'] } });
+    expect(await discovered()).toStrictEqual([[], [staff]]);
+
+    await configure({ staff: { ...configuration, domains: [] } });
+    expect(await discovered()).toStrictEqual([[], []]);
+  });
+
+  it('keeps only declared domains when the deployment takes over Studio-managed SSO', async () => {
+    const configuration = {
+      issuer: 'https://identity.example.com/realms/staff',
+      clientId: 'appsemble-studio',
+      clientSecretFile,
+      name: 'Staff sign-in',
+      policy: 'required',
+      roleMappings: [],
+    };
+    await configure({ staff: configuration });
+    await OrganizationSso.update({ managedBy: 'studio' }, { where: { OrganizationId: 'staff' } });
+    await OrganizationSsoDomain.bulkCreate(
+      ['staff.example.com', 'old.example.com'].map((domain) => ({
+        OrganizationId: 'staff',
+        domain,
+      })),
+    );
+
+    await configure({ staff: { ...configuration, domains: ['staff.example.com'] } });
+    expect(await Promise.all(['staff.example.com', 'old.example.com'].map(discover))).toStrictEqual(
+      [[staff], []],
+    );
+
+    await configure({ staff: configuration });
+    expect(await discover('staff.example.com')).toStrictEqual([]);
+  });
+
+  it('rejects domains which cannot identify an exact email domain', async () => {
+    await expect(
+      configure({
+        staff: {
+          issuer: 'https://identity.example.com/realms/staff',
+          clientId: 'appsemble-studio',
+          clientSecretFile,
+          name: 'Staff sign-in',
+          policy: 'required',
+          roleMappings: [],
+          domains: ['*.example.com'],
+        },
+      }),
+    ).rejects.toMatchObject({ code: 1 });
+    expect(await OrganizationSso.count()).toBe(0);
   });
 
   it.each([

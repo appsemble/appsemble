@@ -22,9 +22,9 @@ const clientSecret = 'studio-e2e-secret';
 const password = 'studio-e2e-password';
 
 async function signInWithPassword(page: Page, email: string): Promise<string> {
-  await page.goto('/en/login');
+  await page.goto('/en/login?personal=1');
   await page.getByRole('textbox', { name: 'Email', exact: true }).fill(email);
-  await page.getByLabel('Password').fill(password);
+  await page.getByLabel('Password', { exact: true }).fill(password);
   const response = page.waitForResponse('**/api/auth/email/login');
   await page.getByRole('button', { name: 'Login', exact: true }).click();
   const login = await response;
@@ -35,7 +35,7 @@ async function signInWithPassword(page: Page, email: string): Promise<string> {
 
 async function submitKeycloakPassword(page: Page, organizationId: string): Promise<string> {
   const callback = page.waitForResponse(`**/api/organizations/${organizationId}/sso/callback`);
-  await page.getByRole('textbox', { name: 'Password', exact: true }).fill(password);
+  await page.getByLabel('Password', { exact: true }).fill(password);
   await page.getByRole('button', { name: /sign in/i }).click();
   const response = await callback;
   expect(response.status()).toBe(200);
@@ -165,9 +165,7 @@ test.describe('Studio organization Keycloak OIDC', () => {
       });
       try {
         await firstStaffPage.goto(`/en/login?organization=${organization.id}`);
-        await expect(
-          firstStaffPage.getByRole('textbox', { name: 'Password', exact: true }),
-        ).toBeHidden();
+        await expect(firstStaffPage.getByLabel('Password', { exact: true })).toBeHidden();
         await firstStaffPage
           .getByRole('button', { name: 'Login with Staff Keycloak', exact: true })
           .click();

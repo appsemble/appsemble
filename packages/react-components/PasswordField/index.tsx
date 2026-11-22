@@ -30,10 +30,15 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>((p
   return (
     <InputField
       {...props}
-      aria-label={
-        visible ? formatMessage(messages.hidePassword) : formatMessage(messages.showPassword)
+      control={
+        <IconButton
+          aria-label={
+            visible ? formatMessage(messages.hidePassword) : formatMessage(messages.showPassword)
+          }
+          icon={visible ? 'eye-slash' : 'eye'}
+          onClick={toggle}
+        />
       }
-      control={<IconButton icon={visible ? 'eye-slash' : 'eye'} onClick={toggle} />}
       icon="unlock"
       ref={combinedRef}
       type={visible ? 'text' : 'password'}

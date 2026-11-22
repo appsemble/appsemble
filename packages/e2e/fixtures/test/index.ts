@@ -61,11 +61,11 @@ export const authenticatedTest = baseTest.extend<
       }
 
       const page = await browser.newPage({ ignoreHTTPSErrors: true, storageState: undefined });
-      await page.goto(`${testInfo.project.use.baseURL}/en/login`);
+      await page.goto(`${testInfo.project.use.baseURL}/en/login?personal=1`);
 
-      await page.getByTestId('email').fill(email);
-      await page.getByTestId('password').fill(password);
-      await page.getByTestId('login').click();
+      await page.getByRole('textbox', { name: 'Email', exact: true }).fill(email);
+      await page.getByLabel('Password', { exact: true }).fill(password);
+      await page.getByRole('button', { name: 'Login', exact: true }).click();
 
       // Wait until auth state is saved in browser storage
       await expect(page.getByText('My apps')).toBeVisible();

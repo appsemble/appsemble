@@ -122,6 +122,7 @@ export function OrganizationInvitePage(): ReactNode {
   if (!userInfo) {
     const search = new URLSearchParams(qs);
     search.set('redirect', redirect);
+    search.set('organization', organization.id);
 
     return (
       <Content className="has-text-centered">

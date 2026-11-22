@@ -28,3 +28,15 @@ export interface OrganizationSsoSettings extends Omit<
   managedBy: 'studio' | 'deployment';
   hasClientSecret: boolean;
 }
+
+export interface OrganizationSsoDomains {
+  /**
+   * The DNS TXT record value that proves an email domain belongs to the organization.
+   */
+  recordValue: string;
+
+  /**
+   * The verified email domains and aliases that lead to the organization's single sign-on.
+   */
+  domains: string[];
+}

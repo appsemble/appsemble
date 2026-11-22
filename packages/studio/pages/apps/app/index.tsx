@@ -78,7 +78,7 @@ export function AppRoutes(): ReactNode {
     lang,
     path,
   } = useParams<{ id: string; lang: string; path?: string; '*': string }>();
-  const { organizations } = useUser();
+  const { organizations, userInfo } = useUser();
   const [warningsKey, setWarningsKey] = useState(0);
   const refreshWarnings = useCallback(() => setWarningsKey((key) => key + 1), []);
 
@@ -331,6 +331,9 @@ export function AppRoutes(): ReactNode {
   );
 
   if (error) {
+    if (!userInfo && (error.response?.status === 401 || error.response?.status === 404)) {
+      return <ProtectedRoute />;
+    }
     return (
       <Message color="danger">
         {error.response?.status === 404 ? (
@@ -372,6 +375,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.UpdateApps]}
             />
           }
@@ -398,6 +402,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.QueryAppAssets]}
             />
           }
@@ -409,6 +414,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.QueryAppResources]}
             />
           }
@@ -420,6 +426,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.QueryAppMessages]}
             />
           }
@@ -431,6 +438,7 @@ export function AppRoutes(): ReactNode {
             element={
               <ProtectedRoute
                 organization={organization}
+                organizationId={app.OrganizationId}
                 permissions={[OrganizationPermission.QueryAppResources]}
               />
             }
@@ -445,6 +453,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.PushAppNotifications]}
             />
           }
@@ -458,6 +467,7 @@ export function AppRoutes(): ReactNode {
               element={
                 <ProtectedRoute
                   organization={organization}
+                  organizationId={app.OrganizationId}
                   permissions={[OrganizationPermission.QueryAppMembers]}
                 />
               }
@@ -469,6 +479,7 @@ export function AppRoutes(): ReactNode {
               element={
                 <ProtectedRoute
                   organization={organization}
+                  organizationId={app.OrganizationId}
                   permissions={[OrganizationPermission.QueryGroups]}
                 />
               }
@@ -482,6 +493,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.ReadAppSettings]}
             />
           }
@@ -494,6 +506,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.UpdateAppSettings]}
             />
           }
@@ -505,6 +518,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.QueryAppVariables]}
             />
           }
@@ -516,6 +530,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.QueryAppSecrets]}
             />
           }
