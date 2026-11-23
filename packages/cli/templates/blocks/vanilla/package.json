@@ -5,6 +5,6 @@
     "*.css"
   ],
   "dependencies": {
-    "@appsemble/sdk": "0.41.3"
+    "@appsemble/sdk": "0.41.4"
   }
 }
