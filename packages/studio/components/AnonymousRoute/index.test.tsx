@@ -9,10 +9,8 @@ import { UserProvider } from '../UserProvider/index.js';
 const transport = axios.defaults.adapter;
 
 beforeEach(() => {
-  localStorage.tokens = JSON.stringify({
-    access_token: `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`,
-    refresh_token: 'refresh',
-  });
+  localStorage.access_token = `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`;
+  localStorage.refresh_token = 'refresh';
   axios.defaults.adapter = (config) =>
     Promise.resolve({
       data: config.url === '/api/users/current' ? { sub: 'staff', email: 'staff@example.com' } : [],

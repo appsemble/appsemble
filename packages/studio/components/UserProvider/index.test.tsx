@@ -62,10 +62,8 @@ function Draft(): ReactNode {
 
 beforeEach(() => {
   localStorage.clear();
-  localStorage.tokens = JSON.stringify({
-    access_token: token(Math.floor(Date.now() / 1000) - 10),
-    refresh_token: 'initial-refresh',
-  });
+  localStorage.access_token = token(Math.floor(Date.now() / 1000) - 10);
+  localStorage.refresh_token = 'initial-refresh';
   let queue: Promise<unknown> = Promise.resolve();
   Object.defineProperty(navigator, 'locks', {
     configurable: true,

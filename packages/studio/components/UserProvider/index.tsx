@@ -64,18 +64,17 @@ const Context = createContext<UserContext>(null);
 // plenty of time for the refresh token request to finish.
 const REFRESH_BUFFER = 60e3;
 
-function readTokens(): Partial<TokenResponse> {
-  return JSON.parse(localStorage.tokens ?? '{}');
-}
-
 export function UserProvider({ children }: UserProviderProps): ReactNode {
   const [userInfo, setUserInfo] = useState<UserInfo>();
   const [organizations, setOrganizations] = useState<UserOrganization[]>();
   const [initialized, setInitialized] = useState(false);
   const [hasNoLoginMethods, setHasNoLoginMethods] = useState(false);
 
-  const [tokenResponse, setTokenResponse] = useState<Partial<TokenResponse>>(readTokens);
-  const accessTokenRef = useRef<string | null>(tokenResponse.access_token);
+  const [tokenResponse, setTokenResponse] = useState<Partial<TokenResponse>>({
+    access_token: localStorage.access_token,
+    refresh_token: localStorage.refresh_token,
+  });
+  const accessTokenRef = useRef<string | null>(localStorage.access_token);
 
   const refreshUserInfo = useCallback(async () => {
     const { data } = await axios.get<UserInfo>('/api/users/current');
@@ -84,11 +83,8 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   }, []);
 
   const storeTokens = useCallback((response: TokenResponse) => {
-    // Other tabs receive one storage event per key, so the pair shares a key to arrive together.
-    localStorage.tokens = JSON.stringify({
-      access_token: response.access_token,
-      refresh_token: response.refresh_token,
-    });
+    localStorage.access_token = response.access_token;
+    localStorage.refresh_token = response.refresh_token;
     accessTokenRef.current = response.access_token;
     setTokenResponse(response);
   }, []);
@@ -113,6 +109,13 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     setUserInfo(user);
   }, []);
 
+  const clearSession = useCallback(() => {
+    setSentryUser(null);
+    setUserInfo(null);
+    setOrganizations([]);
+    accessTokenRef.current = null;
+  }, []);
+
   const logout = useCallback(() => {
     const accessToken = accessTokenRef.current;
     if (accessToken) {
@@ -122,13 +125,11 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
         })
         .catch(() => false);
     }
-    setSentryUser(null);
-    setUserInfo(null);
-    setOrganizations([]);
-    accessTokenRef.current = null;
-    delete localStorage.tokens;
+    clearSession();
+    delete localStorage.access_token;
+    delete localStorage.refresh_token;
     setTokenResponse((current) => (current.access_token || current.refresh_token ? {} : current));
-  }, []);
+  }, [clearSession]);
 
   const value = useMemo(
     () => ({
@@ -146,10 +147,16 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
 
   useEffect(() => {
     const synchronize = (event: StorageEvent): void => {
-      if (event.storageArea !== localStorage || (event.key !== 'tokens' && event.key != null)) {
+      if (
+        event.storageArea !== localStorage ||
+        (event.key !== 'access_token' && event.key !== 'refresh_token' && event.key != null)
+      ) {
         return;
       }
-      const response = readTokens();
+      const response = {
+        access_token: localStorage.access_token,
+        refresh_token: localStorage.refresh_token,
+      };
       accessTokenRef.current = response.access_token;
       setTokenResponse((current) =>
         current.access_token === response.access_token &&
@@ -181,7 +188,9 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
 
   useEffect(() => {
     if (!tokenResponse.access_token || !tokenResponse.refresh_token) {
-      logout();
+      // The tokens mirror the shared storage, where another tab may be halfway through storing a
+      // new pair, so only this tab signs out.
+      clearSession();
       setInitialized(true);
       return;
     }
@@ -192,7 +201,8 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
     const refresh = async (): Promise<void> => {
       const refreshStoredTokens = async (): Promise<void> => {
-        const { access_token: accessToken, refresh_token: refreshToken } = readTokens();
+        const accessToken = localStorage.access_token;
+        const refreshToken = localStorage.refresh_token;
         if (!accessToken || !refreshToken) {
           logout();
           return;
@@ -207,11 +217,11 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
           const { data } = await axios.post<TokenResponse>('/api/auth/refresh-token', {
             refresh_token: refreshToken,
           });
-          if (readTokens().refresh_token === refreshToken) {
+          if (localStorage.refresh_token === refreshToken) {
             storeTokens(data);
           }
         } catch {
-          if (readTokens().refresh_token === refreshToken) {
+          if (localStorage.refresh_token === refreshToken) {
             logout();
           }
         }
@@ -236,7 +246,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [fetchUser, logout, storeTokens, tokenResponse]);
+  }, [clearSession, fetchUser, logout, storeTokens, tokenResponse]);
 
   if (!initialized) {
     return <Loader />;
