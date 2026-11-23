@@ -1,7 +1,7 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { EmailAuthorization, getAppDB, User } from '../../../../models/index.js';
+import { EmailAuthorization, getAppDB, User, UserAppAccount } from '../../../../models/index.js';
 
 export async function linkCurrentAppMember(ctx: Context): Promise<void> {
   const {
@@ -63,6 +63,7 @@ export async function linkCurrentAppMember(ctx: Context): Promise<void> {
       assertNotNull(user, 'User');
       assert(user.EmailAuthorizations[0].verified);
       await AppMember.update({ userId: externalId }, { where: { id: AppMemberId } });
+      await UserAppAccount.upsert({ UserId: externalId, AppId: appId });
       break;
     }
     default:
