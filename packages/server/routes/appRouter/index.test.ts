@@ -245,6 +245,19 @@ describe('appRouter', () => {
     expect([lastDay.status, expired.status]).toStrictEqual([200, 401]);
   });
 
+  it('should keep visitors on the app host after the password is entered', async () => {
+    const { baseURL } = request.defaults;
+    // Axios would read this path as a URL of another host, fetch sends it as it is.
+    const response = await fetch(`${baseURL}//example.com/page`, {
+      method: 'POST',
+      body: new URLSearchParams({ password: 'open sesame' }),
+      redirect: 'manual',
+    });
+
+    expect(response.status).toBe(302);
+    expect(new URL(response.headers.get('location')!, baseURL).host).toBe(new URL(baseURL!).host);
+  });
+
   it('should ask for the password again after the password changes', async () => {
     const cookie = await enterPassword('open sesame');
     await app.update({ password: await hash('new secret', 10) });

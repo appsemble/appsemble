@@ -66,7 +66,9 @@ export const appRouter: Middleware = async (ctx, next) => {
           secure: true,
           signed: true,
         });
-        ctx.redirect(ctx.url);
+        // The origin keeps a path such as //example.com from redirecting to another host.
+        // nosemgrep: nodejs_scan.javascript-redirect-rule-express_open_redirect
+        ctx.redirect(`${ctx.origin}${ctx.url}`);
         return;
       }
       error = 'incorrectPassword';
