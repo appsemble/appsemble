@@ -2,12 +2,12 @@ import { getAppAssetLocation, uploadS3File } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App, getAppDB, Organization, OrganizationMember } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { authorizeStudio, createTestUser, unauthorize } from '../utils/test/authorization.js';
 
 let app: App;
 
@@ -55,10 +55,6 @@ describe('appPasswordProtection', () => {
     });
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   it.each(['', '/messages/en', '/resources/note', '/assets/logo'])(
     'should refuse %s of a password protected app to anonymous visitors',
     async (path) => {
@@ -99,11 +95,13 @@ describe('appPasswordProtection', () => {
   });
 
   it('should refuse a password token with a changed issue time', async () => {
+    vi.useFakeTimers({ now: new Date('2026-01-01T12:00:00Z'), toFake: ['Date'] });
     const { passwordToken } = await getPasswordTokenFromAppPage();
     const [, signature] = passwordToken.split('.');
+    vi.setSystemTime(new Date('2026-01-02T12:00:00Z'));
 
     const response = await request.get(`/api/apps/${app.id}`, {
-      headers: { 'X-Appsemble-Password-Token': `${Date.now() + 1000}.${signature}` },
+      headers: { 'X-Appsemble-Password-Token': `${Date.now()}.${signature}` },
     });
 
     expect(response.status).toBe(401);
@@ -229,7 +227,7 @@ describe('appPasswordProtection', () => {
     },
   );
 
-  it('should serve the app content to organization members', async () => {
+  it('should give organization members a password token for the app content', async () => {
     const user = await createTestUser();
     await OrganizationMember.create({
       OrganizationId: 'org',
@@ -237,8 +235,12 @@ describe('appPasswordProtection', () => {
       role: PredefinedOrganizationRole.Member,
     });
     authorizeStudio();
+    const { data } = await request.get<{ passwordToken: string }>(`/api/apps/${app.id}`);
+    unauthorize();
 
-    const response = await request.get(`/api/apps/${app.id}`);
+    const response = await request.get(`/api/apps/${app.id}`, {
+      headers: { 'X-Appsemble-Password-Token': data.passwordToken },
+    });
 
     expect(response.status).toBe(200);
   });

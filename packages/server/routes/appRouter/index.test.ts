@@ -57,10 +57,7 @@ describe('appRouter', () => {
     });
   });
 
-  afterEach(() => {
-    vi.unstubAllEnvs();
-    vi.useRealTimers();
-  });
+  afterEach(() => vi.unstubAllEnvs());
 
   it('should show the password page with the message instead of the app', async () => {
     const response = await request.get('/en/home');
