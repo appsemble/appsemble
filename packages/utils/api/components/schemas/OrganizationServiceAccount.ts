@@ -10,6 +10,7 @@ export const OrganizationServiceAccount: OpenAPIV3.NonArraySchemaObject = {
   required: ['description', 'role', 'scopes'],
   properties: {
     ...OAuth2ClientCredentials.properties,
+    scopes: { ...OAuth2ClientCredentials.properties!.scopes, minItems: 1 },
     role: {
       description: 'The organization role of the service account.',
       enum: predefinedOrganizationRoles.filter((role) => role !== PredefinedOrganizationRole.Owner),

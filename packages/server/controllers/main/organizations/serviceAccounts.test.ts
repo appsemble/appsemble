@@ -137,6 +137,54 @@ describe('organization service accounts', () => {
     }).toStrictEqual({ created: 400, promoted: 400, role: PredefinedOrganizationRole.AppManager });
   });
 
+  it('requires at least one scope', async () => {
+    authorizeStudio(owner);
+    const created = await request.post('/api/organizations/staff/service-accounts', {
+      description: 'Deployments',
+      role: PredefinedOrganizationRole.Member,
+      scopes: [],
+    });
+
+    expect({
+      created: created.status,
+      serviceAccounts: (await request.get('/api/organizations/staff/service-accounts')).data,
+    }).toStrictEqual({ created: 400, serviceAccounts: [] });
+  });
+
+  it('does not remove a service account through the member endpoint', async () => {
+    const serviceAccount = await createServiceAccount();
+    const member = await OrganizationMember.findOne({ where: { serviceAccount: true } });
+    const removed = await request.delete(`/api/organizations/staff/members/${member!.UserId}`);
+    const serviceAccounts = await request.get('/api/organizations/staff/service-accounts');
+
+    expect({
+      removed: removed.status,
+      serviceAccounts: serviceAccounts.data.map(({ id }: { id: string }) => id),
+      token: (await requestToken(serviceAccount)).status,
+    }).toStrictEqual({ removed: 404, serviceAccounts: [serviceAccount.id], token: 200 });
+  });
+
+  it('revokes the service accounts of a deleted organization for good', async () => {
+    const serviceAccount = await createServiceAccount();
+    const token = await requestToken(serviceAccount);
+    const deleted = await request.delete('/api/organizations/staff');
+    const afterDeletion = (await requestToken(serviceAccount)).data;
+    // Provisioning restores a deleted organization with the same id.
+    await (await Organization.findByPk('staff', { paranoid: false }))!.restore();
+
+    expect({
+      deleted: deleted.status,
+      afterDeletion,
+      afterRestore: (await requestToken(serviceAccount)).data,
+      members: (await getMembers(token.data.access_token!)).status,
+    }).toStrictEqual({
+      deleted: 200,
+      afterDeletion: { error: 'invalid_client' },
+      afterRestore: { error: 'invalid_client' },
+      members: 401,
+    });
+  });
+
   it('gives a service account no Studio session and no organization of its own', async () => {
     const token = await requestToken(await createServiceAccount());
     const headers = { authorization: `Bearer ${token.data.access_token}` };
@@ -211,7 +259,7 @@ describe('organization service accounts', () => {
     const created = await request.post('/api/organizations/staff/service-accounts', {
       description: 'Deployments',
       role: PredefinedOrganizationRole.Member,
-      scopes: [],
+      scopes: ['apps:write'],
     });
     const revoked = await request.delete(
       `/api/organizations/staff/service-accounts/${serviceAccount.id}`,

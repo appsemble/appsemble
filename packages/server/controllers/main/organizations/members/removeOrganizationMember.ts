@@ -47,7 +47,7 @@ export async function removeOrganizationMember(ctx: Context): Promise<void> {
       transaction,
     });
     const target = await OrganizationMember.findOne({
-      where: { OrganizationId: organizationId, UserId: targetUser.id },
+      where: { OrganizationId: organizationId, UserId: targetUser.id, serviceAccount: false },
       transaction,
     });
     assertKoaCondition(target != null, ctx, 404, 'This member is not part of this organization.');

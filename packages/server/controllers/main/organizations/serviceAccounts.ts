@@ -13,6 +13,7 @@ import {
   User,
 } from '../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import { revokeServiceAccounts } from '../../../utils/serviceAccounts.js';
 
 function formatServiceAccount(
   { created, description, expires, id, scopes }: OAuth2ClientCredentials,
@@ -94,11 +95,9 @@ export async function deleteOrganizationServiceAccount(ctx: Context): Promise<vo
       where: { OrganizationId: organizationId, UserId: credentials.UserId, serviceAccount: true },
     }));
   assertKoaCondition(member != null, ctx, 404, 'Service account not found.');
-  await transactional(async (transaction) => {
-    await credentials!.destroy({ transaction });
-    await member.destroy({ transaction });
-    await User.destroy({ where: { id: member.UserId }, transaction });
-  });
+  await transactional((transaction) =>
+    revokeServiceAccounts({ OrganizationId: organizationId, UserId: member.UserId }, transaction),
+  );
   logger.info(
     `User ${ctx.user!.id} revoked service account ${clientId} of organization ${organizationId}`,
   );
