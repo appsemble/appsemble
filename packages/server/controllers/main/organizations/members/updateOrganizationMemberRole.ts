@@ -59,7 +59,11 @@ export async function updateOrganizationMemberRole(ctx: Context): Promise<void> 
       transaction,
     });
     const target = await OrganizationMember.findOne({
-      where: { OrganizationId: organizationId, UserId: organizationMemberId },
+      where: {
+        OrganizationId: organizationId,
+        UserId: organizationMemberId,
+        serviceAccount: false,
+      },
       transaction,
     });
     assertKoaCondition(target != null, ctx, 400, 'This member is not part of this organization.');

@@ -31,6 +31,11 @@ export class OrganizationMember extends Model {
   @Column(DataType.BOOLEAN)
   declare guest: boolean;
 
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  declare serviceAccount: boolean;
+
   @CreatedAt
   declare created: Date;
 

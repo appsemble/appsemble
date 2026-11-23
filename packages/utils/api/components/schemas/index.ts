@@ -14,6 +14,7 @@ export * from './BlockVersion.js';
 export * from './Error.js';
 export * from './Health.js';
 export * from './OrganizationMember.js';
+export * from './OrganizationServiceAccount.js';
 export * from './OrganizationSso.js';
 export * from './OAuth2AuthorizationCode.js';
 export * from './OAuth2ClientCredentials.js';
