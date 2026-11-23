@@ -1,7 +1,12 @@
 import makeServiceWorkerEnv from 'service-worker-mock';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { appStylesheetFirst, cacheFirstIfImmutable } from './utils.js';
+import {
+  appStylesheetFirst,
+  assetFirst,
+  cacheFirstIfImmutable,
+  finishCacheWrites,
+} from './utils.js';
 
 const assetUrl = 'http://localhost/api/apps/1/assets/logo';
 
@@ -181,5 +186,27 @@ describe('cacheFirstIfImmutable', () => {
       const stored = await cacheFirstIfImmutable(new Request(url));
       expect(await stored.text()).toBe('stored');
     }
+  });
+});
+
+describe('assetFirst', () => {
+  beforeEach(() => {
+    Object.assign(global, makeServiceWorkerEnv());
+  });
+
+  it('should serve an asset stored with an earlier password token', async () => {
+    vi.spyOn(global, 'fetch').mockImplementation((request) =>
+      Promise.resolve(
+        new URL((request as Request).url).searchParams.get('passwordToken') === 'first'
+          ? new Response('stored', { headers: { 'Cache-Control': 'max-age=31536000,immutable' } })
+          : new Response('Unauthorized', { status: 401 }),
+      ),
+    );
+    await assetFirst(new Request(`${assetUrl}?passwordToken=first`));
+    await finishCacheWrites();
+
+    const response = await assetFirst(new Request(`${assetUrl}?passwordToken=second`));
+
+    expect(await response.text()).toBe('stored');
   });
 });
