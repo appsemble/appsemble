@@ -1,7 +1,7 @@
 import { type AppRole, getRouteSegment } from '@appsemble/lang-sdk';
 import { type AppMemberGroup, type AppMemberInfo } from '@appsemble/types';
 import { setUser as setSentryUser } from '@sentry/browser';
-import axios from 'axios';
+import axios, { type InternalAxiosRequestConfig } from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { type ComponentChildren, createContext, type VNode } from 'preact';
 import { type MutableRefObject } from 'preact/compat';
@@ -25,8 +25,6 @@ import { getGrantTotpChallenge } from '../../utils/totp.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 
-axios.defaults.withCredentials = true;
-
 interface JwtPayload {
   exp: number;
   scopes: string;
@@ -41,6 +39,20 @@ const initialState: LoginState = {
   totpPending: null,
 };
 const apiOrigin = new URL(apiUrl).origin;
+
+function isApiRequest(config: InternalAxiosRequestConfig): boolean {
+  try {
+    return new URL(axios.getUri(config)).origin === apiOrigin;
+  } catch {
+    return false;
+  }
+}
+
+// The session cookies belong to the Appsemble API. Other origins may reject credentialed requests,
+// for example when they allow any origin.
+axios.interceptors.request.use((config) =>
+  isApiRequest(config) ? { ...config, withCredentials: true } : config,
+);
 
 interface PasswordLoginParams {
   username: string;
@@ -531,14 +543,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
 
     const interceptor = axios.interceptors.request.use((config) => {
       // Only assign the authorization header to requests made to the Appsemble API.
-      let url: URL;
-      try {
-        url = new URL(axios.getUri(config));
-      } catch {
-        return config;
-      }
-
-      if (url.origin === apiOrigin) {
+      if (isApiRequest(config)) {
         Object.assign(config.headers, { authorization });
       }
       return config;
