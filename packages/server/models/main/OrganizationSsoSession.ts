@@ -42,6 +42,9 @@ export class OrganizationSsoSession extends Model {
   @Column(DataType.STRING(64))
   declare refreshTokenHash: string;
 
+  @Column(DataType.BLOB)
+  declare idToken?: Buffer;
+
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)

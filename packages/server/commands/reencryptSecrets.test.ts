@@ -48,6 +48,7 @@ describe('reencryptSecrets', () => {
       OrganizationSsoIdentityId: identity.id,
       refreshToken: encrypt('provider-refresh-token', OLD_AES_SECRET),
       refreshTokenHash: 'refresh-hash',
+      idToken: encrypt('provider-id-token', OLD_AES_SECRET),
       accessTokenExpires: new Date(Date.now() + 300_000),
       expires: new Date(Date.now() + 28_800_000),
       configurationUpdated: provider.configurationUpdated,
@@ -60,7 +61,8 @@ describe('reencryptSecrets', () => {
     expect([
       decrypt(provider.clientSecret, NEW_AES_SECRET),
       decrypt(session.refreshToken!, NEW_AES_SECRET),
-    ]).toStrictEqual(['provider-secret', 'provider-refresh-token']);
+      decrypt(session.idToken!, NEW_AES_SECRET),
+    ]).toStrictEqual(['provider-secret', 'provider-refresh-token', 'provider-id-token']);
   });
 
   it('should re-encrypt app dbPassword with the new AES secret', async () => {
