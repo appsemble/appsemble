@@ -1,4 +1,4 @@
-import { createHmac, randomBytes } from 'node:crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 import {
   assertKoaCondition,
@@ -155,9 +155,13 @@ export function isAppPasswordTokenValid(
     return false;
   }
   const [issued] = token.split('.', 1);
+  const actual = Buffer.from(token);
+  const expected = Buffer.from(signAppPasswordToken(app, issued));
+  // The response time must not reveal how much of a guessed signature is correct.
   return (
     Date.now() - Number(issued) < APP_PASSWORD_TOKEN_MAX_AGE &&
-    token === signAppPasswordToken(app, issued)
+    actual.length === expected.length &&
+    timingSafeEqual(actual, expected)
   );
 }
 
