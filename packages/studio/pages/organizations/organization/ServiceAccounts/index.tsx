@@ -14,6 +14,7 @@ import {
   Table,
   useConfirmation,
   useData,
+  useSimpleForm,
   useToggle,
 } from '@appsemble/react-components';
 import {
@@ -36,6 +37,24 @@ import { messages as roleMessages } from '../MemberRow/messages.js';
 
 type FormValues = Record<(typeof scopes)[number], boolean> &
   Pick<OrganizationServiceAccount, 'description' | 'expires' | 'role'>;
+
+/**
+ * The footer of the create form, which requires at least one scope.
+ *
+ * @param props The callback to close the form.
+ * @returns The form footer.
+ */
+function CreateFooter({ onClose }: { readonly onClose: () => void }): ReactNode {
+  const { values } = useSimpleForm();
+  return (
+    <SimpleModalFooter
+      cancelLabel={<FormattedMessage {...credentialMessages.cancel} />}
+      disabled={!scopes.some((scope) => values[scope])}
+      onClose={onClose}
+      submitLabel={<FormattedMessage {...credentialMessages.submit} />}
+    />
+  );
+}
 
 /**
  * The service accounts of an organization, which Owners create and revoke.
@@ -180,11 +199,7 @@ export function ServiceAccounts(): ReactNode {
               <FormattedMessage {...credentialMessages.close} />
             </CardFooterButton>
           ) : (
-            <SimpleModalFooter
-              cancelLabel={<FormattedMessage {...credentialMessages.cancel} />}
-              onClose={closeModal}
-              submitLabel={<FormattedMessage {...credentialMessages.submit} />}
-            />
+            <CreateFooter onClose={closeModal} />
           )
         }
         isActive={modal.enabled}

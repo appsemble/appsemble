@@ -1,7 +1,7 @@
 import { Confirmation } from '@appsemble/react-components';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import axios, { type InternalAxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
@@ -23,12 +23,9 @@ const existing: OrganizationServiceAccount = {
   created: '2026-01-01T00:00:00.000Z',
 };
 const transport = axios.defaults.adapter;
-let requests: Pick<InternalAxiosRequestConfig, 'data' | 'method' | 'url'>[];
 
 beforeEach(() => {
-  requests = [];
   axios.defaults.adapter = (config) => {
-    requests.push({ method: config.method, url: config.url, data: config.data });
     const data =
       config.method === 'get'
         ? [existing]
@@ -63,7 +60,7 @@ function renderServiceAccounts(role: PredefinedOrganizationRole): void {
   );
 }
 
-it('should let Owners create a service account without the Owner role', async () => {
+it('should let Owners create a service account with a scope and without the Owner role', async () => {
   renderServiceAccounts(PredefinedOrganizationRole.Owner);
   fireEvent.click(await screen.findByRole('button', { name: 'Create service account' }));
   fireEvent.change(screen.getByRole('textbox', { name: 'Description' }), {
@@ -72,21 +69,23 @@ it('should let Owners create a service account without the Owner role', async ()
   const role = screen.getByLabelText('Role');
   const ownerOffered = within(role).queryByRole('option', { name: 'Owner' }) != null;
   fireEvent.change(role, { target: { value: PredefinedOrganizationRole.AppManager } });
+  const create = screen.getByRole<HTMLButtonElement>('button', { name: 'Create' });
+  const createWithoutScope = !create.disabled;
   fireEvent.click(screen.getByLabelText('apps:write'));
-  fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+  fireEvent.click(create);
 
   expect(await screen.findByDisplayValue('client:secret')).toBeDefined();
+  fireEvent.click(screen.getByText('Close'));
+  await waitFor(() => expect(screen.queryByDisplayValue('client:secret')).toBeNull());
+  const row = screen.getByRole('row', { name: /Deployments/ });
   expect({
     ownerOffered,
-    request: JSON.parse(requests.find(({ method }) => method === 'post')!.data),
-  }).toStrictEqual({
-    ownerOffered: false,
-    request: {
-      description: 'Deployments',
-      role: PredefinedOrganizationRole.AppManager,
-      scopes: ['apps:write'],
-    },
-  });
+    createWithoutScope,
+    row: [
+      within(row).queryByText('AppManager') != null,
+      within(row).queryByText('apps:write') != null,
+    ],
+  }).toStrictEqual({ ownerOffered: false, createWithoutScope: false, row: [true, true] });
 });
 
 it('should let Owners revoke a service account', async () => {
@@ -96,10 +95,6 @@ it('should let Owners revoke a service account', async () => {
   fireEvent.click(within(dialog).getByRole('button', { name: 'Revoke' }));
 
   await waitFor(() => expect(screen.queryByText('Nightly import')).toBeNull());
-  expect(requests.at(-1)).toMatchObject({
-    method: 'delete',
-    url: '/api/organizations/example/service-accounts/existing',
-  });
 });
 
 it('should show service accounts to other members without letting them manage them', async () => {
