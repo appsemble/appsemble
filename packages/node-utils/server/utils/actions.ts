@@ -238,6 +238,8 @@ async function handleRequestProxy(
 
   logger.verbose(`Forwarding request to ${proxyUrl.origin}${proxyUrl.pathname}`);
   try {
+    // Not SSRF: the agents or the companion container check above restrict where this goes.
+    // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
     response = await axios(axiosConfig);
     logger.verbose(`Received status ${response.status}`);
   } catch (err: unknown) {
@@ -259,6 +261,8 @@ async function handleRequestProxy(
         const deadline = Date.now() + (Number(process.env.POD_READINESS_TIMEOUT) || 30_000);
         for (;;) {
           try {
+            // Not SSRF: only the app's own companion container gets here.
+            // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
             response = await axios(axiosConfig);
             break;
           } catch (error: unknown) {

@@ -457,9 +457,9 @@ async function createSSLSecretFunction(): Promise<
       }
       logger.warn(`Conflict registering secret ${name}`);
       logger.info(`Updating TLS secret ${name}`);
-      // Not SSRF: baseURL is from server config (argv), namespace from K8s service account, name is normalized domain
-      // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
       await requestKubernetes(`update TLS secret ${name}`, () =>
+        // Not SSRF: baseURL is from server config (argv), namespace from K8s service account, name is normalized domain
+        // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
         axios.put(`${url}/${name}`, secret, config),
       );
     }

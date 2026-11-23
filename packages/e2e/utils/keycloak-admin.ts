@@ -26,6 +26,8 @@ export async function requestKc(
     token: string;
   },
 ): Promise<Response> {
+  // Not SSRF: the base URL comes from the test environment and the path from the tests.
+  // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
   const response = await fetch(`${KEYCLOAK_BASE_URL}${path}`, {
     body,
     headers: {
