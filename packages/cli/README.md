@@ -53,8 +53,10 @@ To logout, run the following command and select the client credentials to remove
 apsemble logout
 ```
 
-The Appsemble CLI also supports authentication using the `APPSEMBLE_CLIENT_CREDENTIALS` environment
-variable. This is mostly useful for automation.
+The Appsemble CLI also supports authentication using the `--client-credentials` option or the
+`APPSEMBLE_CLIENT_CREDENTIALS` environment variable. This is mostly useful for automation. For CI
+pipelines, use the client credentials of an organization
+[service account](https://appsemble.app/docs/studio/service-accounts).
 
 ### Organizations
 
