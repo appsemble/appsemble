@@ -138,6 +138,8 @@ export async function cacheFirstIfImmutable(
   }
   let response: Response;
   try {
+    // Not SSRF: a service worker fetches from the visitor's browser.
+    // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
     const fetching = fetch(request);
     response = await (cached
       ? Promise.race([
