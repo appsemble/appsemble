@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 
-export const key = '0.41.6';
+export const key = '0.41.5';
 
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   logger.info('Add organization service accounts');
