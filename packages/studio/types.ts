@@ -17,6 +17,16 @@ export interface OrganizationMember {
   guest: boolean;
 }
 
+export interface OrganizationServiceAccount {
+  id: string;
+  secret?: string;
+  description: string;
+  role: PredefinedOrganizationRole;
+  scopes: string[];
+  expires?: string;
+  created: string;
+}
+
 export interface Organization {
   id: string;
   name: string;
