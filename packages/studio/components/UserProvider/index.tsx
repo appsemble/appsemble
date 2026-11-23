@@ -76,12 +76,6 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   });
   const accessTokenRef = useRef<string | null>(localStorage.access_token);
 
-  const refreshUserInfo = useCallback(async () => {
-    const { data } = await axios.get<UserInfo>('/api/users/current');
-    setSentryUser({ id: data.sub });
-    setUserInfo(data);
-  }, []);
-
   const storeTokens = useCallback((response: TokenResponse) => {
     localStorage.access_token = response.access_token;
     localStorage.refresh_token = response.refresh_token;
@@ -99,11 +93,17 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
 
   // The user info and organizations are published together, because pages behind a
   // `ProtectedRoute` render as soon as the user info is set and may depend on the organizations.
+  // Responses for an access token that is no longer current are dropped: the session ended or was
+  // replaced while they were in flight, and a new token fetches the user again.
   const fetchUser = useCallback(async () => {
+    const accessToken = accessTokenRef.current;
     const [{ data: user }, { data: userOrganizations }] = await Promise.all([
       axios.get<UserInfo>('/api/users/current'),
       axios.get<UserOrganization[]>('/api/users/current/organizations'),
     ]);
+    if (accessTokenRef.current !== accessToken) {
+      return;
+    }
     setOrganizations(userOrganizations);
     setSentryUser({ id: user.sub });
     setUserInfo(user);
@@ -136,13 +136,13 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
       login,
       logout,
       userInfo,
-      refreshUserInfo,
+      refreshUserInfo: fetchUser,
       organizations,
       hasNoLoginMethods,
       setHasNoLoginMethods,
       setOrganizations,
     }),
-    [login, logout, userInfo, refreshUserInfo, organizations, hasNoLoginMethods],
+    [login, logout, userInfo, fetchUser, organizations, hasNoLoginMethods],
   );
 
   useEffect(() => {

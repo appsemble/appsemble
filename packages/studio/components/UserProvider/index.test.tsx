@@ -15,8 +15,47 @@ let refreshStarted: Promise<void>;
 let startRefresh: () => void;
 let requests: string[];
 
-function token(expires: number): string {
-  return `e30.${btoa(JSON.stringify({ exp: expires }))}.signature`;
+function token(expires: number, sub = 'staff'): string {
+  return `e30.${btoa(JSON.stringify({ exp: expires, sub }))}.signature`;
+}
+
+// Holds each request until the test answers it as the user of the request's access token.
+function holdRequests(): (() => void)[] {
+  const pending: (() => void)[] = [];
+  axios.defaults.adapter = (config) =>
+    new Promise((resolve) => {
+      const { sub } = JSON.parse(atob(String(config.headers.authorization).split('.')[1]));
+      pending.push(() =>
+        resolve({
+          data:
+            config.url === '/api/users/current'
+              ? { sub, email: `${sub}@example.com` }
+              : [{ id: sub }],
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config,
+        }),
+      );
+    });
+  return pending;
+}
+
+async function respond(pending: (() => void)[]): Promise<void> {
+  await act(async () => {
+    for (const answer of pending) {
+      answer();
+    }
+    // Let the Studio handle the responses before the test looks at the result.
+    await new Promise((resolve) => {
+      setTimeout(resolve);
+    });
+  });
+}
+
+function signOutInAnotherTab(): void {
+  localStorage.clear();
+  window.dispatchEvent(new StorageEvent('storage', { key: null, storageArea: localStorage }));
 }
 
 function Account({ name }: { readonly name: string }): ReactNode {
@@ -29,9 +68,12 @@ function Account({ name }: { readonly name: string }): ReactNode {
 }
 
 function Profile(): ReactNode {
-  const { login, organizations, userInfo } = useUser();
+  const { login, organizations, refreshUserInfo, userInfo } = useUser();
   return (
     <>
+      <button onClick={() => refreshUserInfo()} type="button">
+        Reload profile
+      </button>
       <button
         onClick={() =>
           login({
@@ -292,4 +334,65 @@ it('preserves an unsent form value during a background token refresh', async () 
     'value',
     'Keep this draft',
   );
+});
+
+it('should stay signed out when another tab signs out while a login loads the user', async () => {
+  localStorage.clear();
+  const pending = holdRequests();
+  render(
+    <UserProvider>
+      <Profile />
+    </UserProvider>,
+  );
+  fireEvent.click(await screen.findByRole('button', { name: 'Login' }));
+  await waitFor(() => expect(pending).toHaveLength(2));
+  act(signOutInAnotherTab);
+  await respond(pending);
+
+  expect(screen.getByRole('status').textContent).toBe('Signed out');
+});
+
+it('should stay signed out when another tab signs out while the user reloads', async () => {
+  localStorage.access_token = token(Math.floor(Date.now() / 1000) + 3600);
+  localStorage.refresh_token = 'refresh';
+  const pending = holdRequests();
+  render(
+    <UserProvider>
+      <Profile />
+    </UserProvider>,
+  );
+  await waitFor(() => expect(pending).toHaveLength(2));
+  await respond(pending.splice(0));
+  fireEvent.click(screen.getByRole('button', { name: 'Reload profile' }));
+  await waitFor(() => expect(pending).not.toHaveLength(0));
+  act(signOutInAnotherTab);
+  await respond(pending);
+
+  expect(screen.getByRole('status').textContent).toBe('Signed out');
+});
+
+it('should only show the newest user when another tab signs in while a user loads', async () => {
+  const expires = Math.floor(Date.now() / 1000) + 3600;
+  localStorage.access_token = token(expires, 'old');
+  localStorage.refresh_token = 'old';
+  const pending = holdRequests();
+  render(
+    <UserProvider>
+      <Account name="Tab" />
+    </UserProvider>,
+  );
+  await waitFor(() => expect(pending).toHaveLength(2));
+  act(() => {
+    localStorage.access_token = token(expires, 'new');
+    localStorage.refresh_token = 'new';
+    window.dispatchEvent(
+      new StorageEvent('storage', { key: 'access_token', storageArea: localStorage }),
+    );
+  });
+  await waitFor(() => expect(pending).toHaveLength(4));
+  // The responses for the older session arrive last.
+  await respond(pending.slice(2));
+  await respond(pending.slice(0, 2));
+
+  expect(screen.getByText(/^Tab:/).textContent).toBe('Tab: new@example.com');
 });
