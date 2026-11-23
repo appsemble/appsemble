@@ -20,22 +20,30 @@ function token(expires: number, sub = 'staff'): string {
 }
 
 // Holds each request until the test answers it as the user of the request's access token.
-function holdRequests(): (() => void)[] {
+function holdRequests(revokedUser?: string): (() => void)[] {
   const pending: (() => void)[] = [];
   axios.defaults.adapter = (config) =>
-    new Promise((resolve) => {
+    new Promise((resolve, reject) => {
       const { sub } = JSON.parse(atob(String(config.headers.authorization).split('.')[1]));
+      const response = {
+        data:
+          config.url === '/api/users/current'
+            ? { sub, email: `${sub}@example.com` }
+            : [{ id: sub }],
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config,
+      };
       pending.push(() =>
-        resolve({
-          data:
-            config.url === '/api/users/current'
-              ? { sub, email: `${sub}@example.com` }
-              : [{ id: sub }],
-          status: 200,
-          statusText: 'OK',
-          headers: {},
-          config,
-        }),
+        sub === revokedUser
+          ? reject(
+              new AxiosError('Session revoked', 'ERR_BAD_REQUEST', config, undefined, {
+                ...response,
+                status: 401,
+              }),
+            )
+          : resolve(response),
       );
     });
   return pending;
@@ -371,28 +379,34 @@ it('should stay signed out when another tab signs out while the user reloads', a
   expect(screen.getByRole('status').textContent).toBe('Signed out');
 });
 
-it('should only show the newest user when another tab signs in while a user loads', async () => {
-  const expires = Math.floor(Date.now() / 1000) + 3600;
-  localStorage.access_token = token(expires, 'old');
-  localStorage.refresh_token = 'old';
-  const pending = holdRequests();
-  render(
-    <UserProvider>
-      <Account name="Tab" />
-    </UserProvider>,
-  );
-  await waitFor(() => expect(pending).toHaveLength(2));
-  act(() => {
-    localStorage.access_token = token(expires, 'new');
-    localStorage.refresh_token = 'new';
-    window.dispatchEvent(
-      new StorageEvent('storage', { key: 'access_token', storageArea: localStorage }),
+it.each([
+  { outcome: 'succeed', revokedUser: undefined },
+  { outcome: 'fail', revokedUser: 'old' },
+])(
+  'should only show the newest user when the requests of an older session $outcome late',
+  async ({ revokedUser }) => {
+    const expires = Math.floor(Date.now() / 1000) + 3600;
+    localStorage.access_token = token(expires, 'old');
+    localStorage.refresh_token = 'old';
+    const pending = holdRequests(revokedUser);
+    render(
+      <UserProvider>
+        <Account name="Tab" />
+      </UserProvider>,
     );
-  });
-  await waitFor(() => expect(pending).toHaveLength(4));
-  // The responses for the older session arrive last.
-  await respond(pending.slice(2));
-  await respond(pending.slice(0, 2));
+    await waitFor(() => expect(pending).toHaveLength(2));
+    act(() => {
+      localStorage.access_token = token(expires, 'new');
+      localStorage.refresh_token = 'new';
+      window.dispatchEvent(
+        new StorageEvent('storage', { key: 'access_token', storageArea: localStorage }),
+      );
+    });
+    await waitFor(() => expect(pending).toHaveLength(4));
+    // The responses for the older session arrive last.
+    await respond(pending.slice(2));
+    await respond(pending.slice(0, 2));
 
-  expect(screen.getByText(/^Tab:/).textContent).toBe('Tab: new@example.com');
-});
+    expect(screen.getByText(/^Tab:/).textContent).toBe('Tab: new@example.com');
+  },
+);

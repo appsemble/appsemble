@@ -93,17 +93,20 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
 
   // The user info and organizations are published together, because pages behind a
   // `ProtectedRoute` render as soon as the user info is set and may depend on the organizations.
-  // Responses for an access token that is no longer current are dropped: the session ended or was
-  // replaced while they were in flight, and a new token fetches the user again.
+  // Responses for an access token that is no longer current are dropped, whether they succeed or
+  // fail: the session ended or was replaced while they were in flight, and a new token fetches the
+  // user again.
   const fetchUser = useCallback(async () => {
     const accessToken = accessTokenRef.current;
-    const [{ data: user }, { data: userOrganizations }] = await Promise.all([
+    const responses = Promise.all([
       axios.get<UserInfo>('/api/users/current'),
       axios.get<UserOrganization[]>('/api/users/current/organizations'),
     ]);
+    await responses.catch(() => false);
     if (accessTokenRef.current !== accessToken) {
       return;
     }
+    const [{ data: user }, { data: userOrganizations }] = await responses;
     setOrganizations(userOrganizations);
     setSentryUser({ id: user.sub });
     setUserInfo(user);
