@@ -109,6 +109,13 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     setUserInfo(user);
   }, []);
 
+  const clearSession = useCallback(() => {
+    setSentryUser(null);
+    setUserInfo(null);
+    setOrganizations([]);
+    accessTokenRef.current = null;
+  }, []);
+
   const logout = useCallback(() => {
     const accessToken = accessTokenRef.current;
     if (accessToken) {
@@ -118,14 +125,11 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
         })
         .catch(() => false);
     }
-    setSentryUser(null);
-    setUserInfo(null);
-    setOrganizations([]);
-    accessTokenRef.current = null;
+    clearSession();
     delete localStorage.access_token;
     delete localStorage.refresh_token;
     setTokenResponse((current) => (current.access_token || current.refresh_token ? {} : current));
-  }, []);
+  }, [clearSession]);
 
   const value = useMemo(
     () => ({
@@ -184,7 +188,9 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
 
   useEffect(() => {
     if (!tokenResponse.access_token || !tokenResponse.refresh_token) {
-      logout();
+      // The tokens mirror the shared storage, where another tab may be halfway through storing a
+      // new pair, so only this tab signs out.
+      clearSession();
       setInitialized(true);
       return;
     }
@@ -240,7 +246,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [fetchUser, logout, storeTokens, tokenResponse]);
+  }, [clearSession, fetchUser, logout, storeTokens, tokenResponse]);
 
   if (!initialized) {
     return <Loader />;
