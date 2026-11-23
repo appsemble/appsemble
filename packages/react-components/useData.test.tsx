@@ -44,7 +44,7 @@ describe('useData', () => {
   });
 
   it('should add the studio access token to internal requests', async () => {
-    localStorage.setItem('access_token', 'studio-token');
+    localStorage.setItem('tokens', JSON.stringify({ access_token: 'studio-token' }));
 
     render(<TestComponent url="/api/apps/1/members" />);
 
@@ -59,7 +59,7 @@ describe('useData', () => {
   });
 
   it('should not add the studio access token to external requests', async () => {
-    localStorage.setItem('access_token', 'studio-token');
+    localStorage.setItem('tokens', JSON.stringify({ access_token: 'studio-token' }));
 
     render(<TestComponent url="http://localhost:9999/api/apps/1/members" />);
 

@@ -13,6 +13,7 @@ let refreshResponse: Promise<TokenResponse> | undefined;
 let finishRefresh: ((response: TokenResponse) => void) | undefined;
 let refreshStarted: Promise<void>;
 let startRefresh: () => void;
+let requests: string[];
 
 function token(expires: number): string {
   return `e30.${btoa(JSON.stringify({ exp: expires }))}.signature`;
@@ -61,8 +62,10 @@ function Draft(): ReactNode {
 
 beforeEach(() => {
   localStorage.clear();
-  localStorage.access_token = token(Math.floor(Date.now() / 1000) - 10);
-  localStorage.refresh_token = 'initial-refresh';
+  localStorage.tokens = JSON.stringify({
+    access_token: token(Math.floor(Date.now() / 1000) - 10),
+    refresh_token: 'initial-refresh',
+  });
   let queue: Promise<unknown> = Promise.resolve();
   Object.defineProperty(navigator, 'locks', {
     configurable: true,
@@ -81,7 +84,9 @@ beforeEach(() => {
   refreshStarted = new Promise((resolve) => {
     startRefresh = resolve;
   });
+  requests = [];
   axios.defaults.adapter = async (config) => {
+    requests.push(`${config.method} ${config.url}`);
     const response = {
       data: undefined as unknown,
       status: 200,
@@ -188,6 +193,44 @@ it('should preserve a logout from another tab while a refresh request is in flig
   });
 
   expect(screen.getByText('First tab: Signed out')).toBeDefined();
+});
+
+it('should keep the session of a login in another tab', async () => {
+  localStorage.clear();
+  render(
+    <>
+      <UserProvider>
+        <Account name="Second tab" />
+      </UserProvider>
+      <UserProvider>
+        <Account name="Third tab" />
+      </UserProvider>
+    </>,
+  );
+  const loginTab = render(
+    <UserProvider>
+      <Profile />
+    </UserProvider>,
+  );
+  fireEvent.click(await screen.findByRole('button', { name: 'Login' }));
+  await screen.findByText('Organizations: 0');
+  const signedIn = { ...localStorage };
+  loginTab.unmount();
+  localStorage.clear();
+
+  // A browser delivers each storage write to the other tabs as a separate storage event.
+  for (const [key, newValue] of Object.entries(signedIn)) {
+    await act(() => {
+      localStorage.setItem(key, newValue);
+      window.dispatchEvent(
+        new StorageEvent('storage', { key, newValue, storageArea: localStorage }),
+      );
+    });
+  }
+
+  expect(await screen.findAllByText(/: staff@example.com/)).toHaveLength(2);
+  expect(requests).not.toContain('post /api/auth/logout');
+  expect({ ...localStorage }).toStrictEqual(signedIn);
 });
 
 it('should not expose the logged in user before their organizations have loaded', async () => {

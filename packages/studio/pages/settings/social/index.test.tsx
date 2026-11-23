@@ -35,8 +35,10 @@ let errorStatus: number;
 
 beforeEach(() => {
   localStorage.clear();
-  localStorage.access_token = `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`;
-  localStorage.refresh_token = 'refresh';
+  localStorage.tokens = JSON.stringify({
+    access_token: `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`,
+    refresh_token: 'refresh',
+  });
   sessionRevoked = false;
   errorMessage = undefined;
   errorStatus = 403;

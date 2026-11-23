@@ -64,17 +64,18 @@ const Context = createContext<UserContext>(null);
 // plenty of time for the refresh token request to finish.
 const REFRESH_BUFFER = 60e3;
 
+function readTokens(): Partial<TokenResponse> {
+  return JSON.parse(localStorage.tokens ?? '{}');
+}
+
 export function UserProvider({ children }: UserProviderProps): ReactNode {
   const [userInfo, setUserInfo] = useState<UserInfo>();
   const [organizations, setOrganizations] = useState<UserOrganization[]>();
   const [initialized, setInitialized] = useState(false);
   const [hasNoLoginMethods, setHasNoLoginMethods] = useState(false);
 
-  const [tokenResponse, setTokenResponse] = useState<Partial<TokenResponse>>({
-    access_token: localStorage.access_token,
-    refresh_token: localStorage.refresh_token,
-  });
-  const accessTokenRef = useRef<string | null>(localStorage.access_token);
+  const [tokenResponse, setTokenResponse] = useState<Partial<TokenResponse>>(readTokens);
+  const accessTokenRef = useRef<string | null>(tokenResponse.access_token);
 
   const refreshUserInfo = useCallback(async () => {
     const { data } = await axios.get<UserInfo>('/api/users/current');
@@ -83,8 +84,11 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   }, []);
 
   const storeTokens = useCallback((response: TokenResponse) => {
-    localStorage.access_token = response.access_token;
-    localStorage.refresh_token = response.refresh_token;
+    // Other tabs receive one storage event per key, so the pair shares a key to arrive together.
+    localStorage.tokens = JSON.stringify({
+      access_token: response.access_token,
+      refresh_token: response.refresh_token,
+    });
     accessTokenRef.current = response.access_token;
     setTokenResponse(response);
   }, []);
@@ -122,8 +126,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     setUserInfo(null);
     setOrganizations([]);
     accessTokenRef.current = null;
-    delete localStorage.access_token;
-    delete localStorage.refresh_token;
+    delete localStorage.tokens;
     setTokenResponse((current) => (current.access_token || current.refresh_token ? {} : current));
   }, []);
 
@@ -143,16 +146,10 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
 
   useEffect(() => {
     const synchronize = (event: StorageEvent): void => {
-      if (
-        event.storageArea !== localStorage ||
-        (event.key !== 'access_token' && event.key !== 'refresh_token' && event.key != null)
-      ) {
+      if (event.storageArea !== localStorage || (event.key !== 'tokens' && event.key != null)) {
         return;
       }
-      const response = {
-        access_token: localStorage.access_token,
-        refresh_token: localStorage.refresh_token,
-      };
+      const response = readTokens();
       accessTokenRef.current = response.access_token;
       setTokenResponse((current) =>
         current.access_token === response.access_token &&
@@ -195,8 +192,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
     const refresh = async (): Promise<void> => {
       const refreshStoredTokens = async (): Promise<void> => {
-        const accessToken = localStorage.access_token;
-        const refreshToken = localStorage.refresh_token;
+        const { access_token: accessToken, refresh_token: refreshToken } = readTokens();
         if (!accessToken || !refreshToken) {
           logout();
           return;
@@ -211,11 +207,11 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
           const { data } = await axios.post<TokenResponse>('/api/auth/refresh-token', {
             refresh_token: refreshToken,
           });
-          if (localStorage.refresh_token === refreshToken) {
+          if (readTokens().refresh_token === refreshToken) {
             storeTokens(data);
           }
         } catch {
-          if (localStorage.refresh_token === refreshToken) {
+          if (readTokens().refresh_token === refreshToken) {
             logout();
           }
         }

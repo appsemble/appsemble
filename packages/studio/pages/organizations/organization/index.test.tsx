@@ -171,8 +171,10 @@ it('keeps an anonymous private organization profile unavailable', async () => {
 });
 
 it('opens an organization collection at its global collection URL', async () => {
-  localStorage.access_token = `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`;
-  localStorage.refresh_token = 'refresh';
+  localStorage.tokens = JSON.stringify({
+    access_token: `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`,
+    refresh_token: 'refresh',
+  });
   const member = { ...organization, roles: [PredefinedOrganizationRole.Owner] };
   const responses: Record<string, unknown> = {
     '/api/users/current': { sub: 'owner', email: 'owner@example.com' },
@@ -206,8 +208,10 @@ it('opens an organization collection at its global collection URL', async () => 
 });
 
 it('keeps the organization loaded when a member opens its settings from its profile', async () => {
-  localStorage.access_token = `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`;
-  localStorage.refresh_token = 'refresh';
+  localStorage.tokens = JSON.stringify({
+    access_token: `e30.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }))}.signature`,
+    refresh_token: 'refresh',
+  });
   const owner = { ...organization, roles: [PredefinedOrganizationRole.Owner] };
   const responses: Record<string, unknown> = {
     '/api/users/current': { sub: 'owner', email: 'owner@example.com' },
