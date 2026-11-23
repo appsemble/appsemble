@@ -543,11 +543,10 @@ describe('kubernetes', () => {
       app.domain = '';
       await app.save();
 
-      expect(configs).toHaveLength(1);
-      expect(configs[0].method).toBe('delete');
-      expect(configs[0].url).toBe(
-        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com',
-      );
+      expect(configs.map(({ method, url }) => [method, url])).toStrictEqual([
+        ['delete', '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com'],
+        ['delete', '/api/v1/namespaces/test/secrets/example-com-tls'],
+      ]);
     });
 
     it("should delete the app's ingress when an app is deleted", async () => {
@@ -570,11 +569,10 @@ describe('kubernetes', () => {
 
       await app.destroy();
 
-      expect(configs).toHaveLength(1);
-      expect(configs[0].method).toBe('delete');
-      expect(configs[0].url).toBe(
-        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com',
-      );
+      expect(configs.map(({ method, url }) => [method, url])).toStrictEqual([
+        ['delete', '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com'],
+        ['delete', '/api/v1/namespaces/test/secrets/example-com-tls'],
+      ]);
     });
 
     it('should not delete any ingresses if the app does not have a custom domain', async () => {
@@ -599,7 +597,7 @@ describe('kubernetes', () => {
       expect(configs).toHaveLength(0);
     });
 
-    it("should delete the organization's ingress when an organization is deleted", async () => {
+    it("should delete the organization's ingress and TLS secret when an organization is deleted", async () => {
       setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
       await kubernetes.configureDNS();
 
@@ -613,11 +611,27 @@ describe('kubernetes', () => {
 
       await org.destroy();
 
-      expect(configs).toHaveLength(1);
-      expect(configs[0].method).toBe('delete');
-      expect(configs[0].url).toBe(
-        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/test-org-host-example',
-      );
+      expect(configs.map(({ method, url }) => [method, url])).toStrictEqual([
+        ['delete', '/apis/networking.k8s.io/v1/namespaces/test/ingresses/test-org-host-example'],
+        ['delete', '/api/v1/namespaces/test/secrets/test-org-host-example-tls-wilcard'],
+      ]);
+    });
+
+    it('should delete an organization whose TLS secret was never created', async () => {
+      setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
+      await kubernetes.configureDNS();
+
+      mock.reset();
+      mock.onPost(/.*/).reply((request) => [201, request.data]);
+      mock
+        .onDelete('/apis/networking.k8s.io/v1/namespaces/test/ingresses/test-org-host-example')
+        .reply(200);
+      mock.onDelete('/api/v1/namespaces/test/secrets/test-org-host-example-tls-wilcard').reply(404);
+
+      const org = await Organization.create({ id: 'test-org' });
+      await org.destroy();
+
+      expect(await Organization.findByPk('test-org')).toBeNull();
     });
 
     it('should delete the DNS records of an organization when it is deleted', async () => {
@@ -682,15 +696,12 @@ describe('kubernetes', () => {
 
       await collection.destroy();
 
-      expect(configs).toHaveLength(2);
-      expect(configs[0].method).toBe('delete');
-      expect(configs[0].url).toBe(
-        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com',
-      );
-      expect(configs[1].method).toBe('delete');
-      expect(configs[1].url).toBe(
-        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/www-example-com',
-      );
+      expect(configs.map(({ method, url }) => [method, url])).toStrictEqual([
+        ['delete', '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com'],
+        ['delete', '/api/v1/namespaces/test/secrets/example-com-tls'],
+        ['delete', '/apis/networking.k8s.io/v1/namespaces/test/ingresses/www-example-com'],
+        ['delete', '/api/v1/namespaces/test/secrets/www-example-com-tls'],
+      ]);
 
       const collection2 = await AppCollection.create({
         name: 'Test Collection 2',
@@ -709,11 +720,10 @@ describe('kubernetes', () => {
 
       await collection2.destroy();
 
-      expect(configs).toHaveLength(1);
-      expect(configs[0].method).toBe('delete');
-      expect(configs[0].url).toBe(
-        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/www-example-com',
-      );
+      expect(configs.map(({ method, url }) => [method, url])).toStrictEqual([
+        ['delete', '/apis/networking.k8s.io/v1/namespaces/test/ingresses/www-example-com'],
+        ['delete', '/api/v1/namespaces/test/secrets/www-example-com-tls'],
+      ]);
 
       const collection3 = await AppCollection.create({
         name: 'Test Collection 3',
@@ -763,14 +773,14 @@ describe('kubernetes', () => {
       app.domain = 'new.example.com';
       await app.save();
 
-      expect(configs).toHaveLength(2);
+      expect(configs).toHaveLength(3);
       expect(configs[0].method).toBe('post');
       expect(configs[0].url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
       expect(JSON.parse(configs[0].data).spec.rules[0].host).toBe('new.example.com');
-      expect(configs[1].method).toBe('delete');
-      expect(configs[1].url).toBe(
-        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com',
-      );
+      expect(configs.slice(1).map(({ method, url }) => [method, url])).toStrictEqual([
+        ['delete', '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com'],
+        ['delete', '/api/v1/namespaces/test/secrets/example-com-tls'],
+      ]);
     });
 
     // Needed?
@@ -808,17 +818,17 @@ describe('kubernetes', () => {
       collection.domain = 'new.example.com';
       await collection.save();
 
-      expect(configs).toHaveLength(3);
+      expect(configs).toHaveLength(4);
       expect(configs[0].method).toBe('post');
       expect(configs[0].url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
       expect(JSON.parse(configs[0].data).spec.rules[0].host).toBe('new.example.com');
       expect(configs[1].method).toBe('post');
       expect(configs[1].url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
       expect(JSON.parse(configs[1].data).spec.rules[0].host).toBe('www.new.example.com');
-      expect(configs[2].method).toBe('delete');
-      expect(configs[2].url).toBe(
-        '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com',
-      );
+      expect(configs.slice(2).map(({ method, url }) => [method, url])).toStrictEqual([
+        ['delete', '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com'],
+        ['delete', '/api/v1/namespaces/test/secrets/example-com-tls'],
+      ]);
     });
   });
 
@@ -1284,12 +1294,15 @@ describe('kubernetes', () => {
       expect(patches).toHaveLength(0);
     });
 
-    it('should delete ingresses for apps, orgs, and app collections that no longer exist', async () => {
+    it('should delete the ingresses and TLS secrets of apps, orgs, and app collections that no longer exist', async () => {
       await kubernetes.reconcileDNS({ dryRun: false });
 
       const deletes = configs.filter(({ method }) => method === 'delete');
-      expect(deletes).toHaveLength(4);
       expect(deletes.map(({ url }) => url).sort()).toStrictEqual([
+        '/api/v1/namespaces/test/secrets/app4-example-com-tls',
+        '/api/v1/namespaces/test/secrets/collection4-example-com-tls',
+        '/api/v1/namespaces/test/secrets/org4-host-example-tls-wilcard',
+        '/api/v1/namespaces/test/secrets/www-collection4-example-com-tls',
         '/apis/networking.k8s.io/v1/namespaces/test/ingresses/app4-example-com',
         '/apis/networking.k8s.io/v1/namespaces/test/ingresses/collection4-example-com',
         '/apis/networking.k8s.io/v1/namespaces/test/ingresses/org4-host-example',

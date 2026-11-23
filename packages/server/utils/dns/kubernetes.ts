@@ -469,11 +469,22 @@ async function createSSLSecretFunction(): Promise<
 
 async function deleteIngress(domain: string): Promise<void> {
   const name = normalize(domain);
+  const secretName = generateSSLSecretName(domain);
   const config = await getAxiosConfig();
   const namespace = await readK8sSecret('namespace');
   await requestKubernetes(`delete ingress ${name}`, () =>
     axios.delete(`/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses/${name}`, config),
   );
+  // Deleting an ingress makes cert-manager delete its certificate, but not its secret.
+  try {
+    await requestKubernetes(`delete TLS secret ${secretName}`, () =>
+      axios.delete(`/api/v1/namespaces/${namespace}/secrets/${secretName}`, config),
+    );
+  } catch (error) {
+    if (!axios.isAxiosError(error) || error.response?.status !== 404) {
+      throw error;
+    }
+  }
 }
 
 /**
@@ -701,7 +712,7 @@ export async function reconcileDNS({
     if (dryRun) {
       continue;
     }
-    await deleteIngress(name);
+    await deleteIngress(hosts[0]);
     await deleteDNSRecords([
       ...new Set(
         hosts
