@@ -20,7 +20,7 @@ import {
   OrganizationSubscription,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
-import { getAppPasswordToken } from '../../../utils/app.js';
+import { createAppPasswordToken } from '../../../utils/app.js';
 import { createServer } from '../../../utils/createServer.js';
 import { resourcePartitionName } from '../../../utils/resourcePartition.js';
 import { getResourceUniqueIndexName } from '../../../utils/resourceUniqueIndexes.js';
@@ -242,7 +242,7 @@ describe('createAppFromTemplate', () => {
         {
           headers:
             access === 'password'
-              ? { 'X-Appsemble-Password-Token': getAppPasswordToken(source) }
+              ? { 'X-Appsemble-Password-Token': createAppPasswordToken(source) }
               : {},
         },
       );

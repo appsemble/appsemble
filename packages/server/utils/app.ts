@@ -1,4 +1,4 @@
-import { createHmac, randomBytes } from 'node:crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 import {
   assertKoaCondition,
@@ -116,21 +116,74 @@ export async function getApp(
   return value;
 }
 
+export const APP_PASSWORD_TOKEN_MAX_AGE = 3 * 24 * 60 * 60 * 1000;
+
+function signAppPasswordToken(
+  { id, password }: Pick<App, 'id' | 'password'>,
+  issued: string,
+): string {
+  const signature = createHmac('sha256', argv.secret)
+    .update(`${id}:${password}:${issued}`)
+    .digest('base64url');
+  return `${issued}.${signature}`;
+}
+
 /**
- * Get the token which grants the visitors of a password protected app access to its API.
+ * Create a token which grants access to a password protected app for 3 days.
  *
- * The token is derived from the password hash, so changing the password revokes it.
+ * The token is signed with the password hash, so changing the password revokes it.
  *
+ * @param app The password protected app to create the token for.
+ * @returns The token.
+ */
+export function createAppPasswordToken(app: Pick<App, 'id' | 'password'>): string {
+  return signAppPasswordToken(app, String(Date.now()));
+}
+
+/**
+ * Check whether a token grants access to a password protected app.
+ *
+ * @param app The password protected app to check the token for.
+ * @param token The token to check.
+ * @returns Whether the token belongs to the current password and has not expired.
+ */
+export function isAppPasswordTokenValid(
+  app: Pick<App, 'id' | 'password'>,
+  token: unknown,
+): token is string {
+  if (typeof token !== 'string') {
+    return false;
+  }
+  const [issued] = token.split('.', 1);
+  const actual = Buffer.from(token);
+  const expected = Buffer.from(signAppPasswordToken(app, issued));
+  // The response time must not reveal how much of a guessed signature is correct.
+  return (
+    Date.now() - Number(issued) < APP_PASSWORD_TOKEN_MAX_AGE &&
+    actual.length === expected.length &&
+    timingSafeEqual(actual, expected)
+  );
+}
+
+/**
+ * Get the token to hand to the client of a request for a password protected app.
+ *
+ * The token that admitted the request is handed back unchanged, even when it expires or the
+ * password changes while the request is handled, so passing it on never extends access. Requests
+ * admitted without a token, from someone who may see the app without the password, get a new one.
+ *
+ * @param ctx The Koa context of the request.
  * @param app The app to get the token for.
  * @returns The token, or `undefined` if the app is not password protected.
  */
-export function getAppPasswordToken({
-  id,
-  password,
-}: Pick<App, 'id' | 'password'>): string | undefined {
-  return password
-    ? createHmac('sha256', argv.secret).update(`${id}:${password}`).digest('base64url')
-    : undefined;
+export function getAppPasswordToken(
+  ctx: Context,
+  app: Pick<App, 'id' | 'password'>,
+): string | undefined {
+  if (!app.password) {
+    return undefined;
+  }
+  return ctx.state.appPasswordToken ?? createAppPasswordToken(app);
 }
 
 /**
@@ -172,14 +225,19 @@ export function getAppStoreListing(app: App): Omit<AppType, 'definition'> & {
 }
 
 /**
- * Add the current app password token to asset URLs in a served stylesheet.
+ * Add the app password token of the request to asset URLs in a served stylesheet.
  *
+ * @param ctx The Koa context of the request for the stylesheet.
  * @param app The app whose stylesheet is served.
  * @param style The stored stylesheet.
  * @returns The stylesheet with authorized asset URLs.
  */
-export function getAppStyle(app: Pick<App, 'id' | 'password'>, style?: string | null): string {
-  const passwordToken = getAppPasswordToken(app);
+export function getAppStyle(
+  ctx: Context,
+  app: Pick<App, 'id' | 'password'>,
+  style?: string | null,
+): string {
+  const passwordToken = getAppPasswordToken(ctx, app);
   return passwordToken && style
     ? replaceAssetFunctions(style, app.id, argv.host, passwordToken)
     : style || '';

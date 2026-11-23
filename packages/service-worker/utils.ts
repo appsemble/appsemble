@@ -6,6 +6,7 @@ async function put(
   request: Request,
   response: Response,
   fallback: () => Promisable<Response>,
+  cacheRequest: Request = request,
 ): Promise<Response> {
   if (response.status === 401 || response.status === 403) {
     return response;
@@ -15,7 +16,7 @@ async function put(
     const cache = await caches.open('appsemble');
     // The response streams to the page while it is stored. A failed write, for example when the
     // storage quota is exceeded, keeps the response usable.
-    const write = cache.put(request, response.clone()).catch((): null => null);
+    const write = cache.put(cacheRequest, response.clone()).catch((): null => null);
     cacheWrites.add(write);
     write.finally(() => cacheWrites.delete(write));
     return response;
@@ -93,6 +94,24 @@ export async function requestFirst(
 }
 
 /**
+ * Serve a stored stylesheet of an app first, unless the server marked it `no-store`.
+ *
+ * Stylesheets of a password protected app hold the password token of the visitor, which changes
+ * when the visitor enters the password again. Those are only served from the cache when the
+ * network is unreachable.
+ *
+ * @param request The request for which to get a response.
+ * @returns The fetch response object.
+ */
+export async function appStylesheetFirst(request: Request): Promise<Response> {
+  const cached = await caches.match(request);
+  if (!cached) {
+    return cacheFirst(request);
+  }
+  return cached.headers.get('Cache-Control')?.includes('no-store') ? requestFirst(request) : cached;
+}
+
+/**
  * Serve a cached response only if it is marked immutable, and request a fresh one otherwise.
  *
  * App asset URLs carry either an asset id or an asset name in their last segment. An id addresses
@@ -104,10 +123,14 @@ export async function requestFirst(
  * than 3 seconds to respond, so a stalled connection does not hold up an asset that is available.
  *
  * @param request The request for which to get a response.
+ * @param cacheRequest The request used to identify the cached response.
  * @returns The fetch response object.
  */
-export async function cacheFirstIfImmutable(request: Request): Promise<Response> {
-  const cached = await caches.match(request);
+export async function cacheFirstIfImmutable(
+  request: Request,
+  cacheRequest: Request = request,
+): Promise<Response> {
+  const cached = await caches.match(cacheRequest);
   if (cached?.headers.get('Cache-Control')?.includes('immutable')) {
     return cached;
   }
@@ -123,7 +146,7 @@ export async function cacheFirstIfImmutable(request: Request): Promise<Response>
         ])
       : fetching);
   } catch (error: unknown) {
-    return tryCached(request, () => {
+    return tryCached(cacheRequest, () => {
       throw error;
     });
   }
@@ -132,35 +155,39 @@ export async function cacheFirstIfImmutable(request: Request): Promise<Response>
     const cache = await caches.open('appsemble');
     const { origin, pathname } = new URL(request.url);
     const cacheKeys = await cache.keys();
-    for (const cacheRequest of cacheKeys) {
-      const cachedUrl = new URL(cacheRequest.url);
+    for (const key of cacheKeys) {
+      const cachedUrl = new URL(key.url);
       if (cachedUrl.origin === origin && cachedUrl.pathname === pathname) {
-        await cache.delete(cacheRequest);
+        await cache.delete(key);
       }
     }
     return response;
   }
 
-  return put(request, response, () => tryCached(request, () => response));
+  return put(request, response, () => tryCached(cacheRequest, () => response), cacheRequest);
 }
 
 /**
- * Serve an app asset, matching SVG images independently of raster resize parameters.
+ * Serve an app asset, matching SVG images independently of raster resize parameters and stored
+ * assets independently of the password token.
  *
  * @param request The asset request.
  * @returns The requested asset response.
  */
 export async function assetFirst(request: Request): Promise<Response> {
+  // The password token of a protected app changes with every password entry, while the asset is
+  // the same for everyone who may see it.
+  const url = new URL(request.url);
+  url.searchParams.delete('passwordToken');
   try {
-    return await cacheFirstIfImmutable(request);
+    return await cacheFirstIfImmutable(request, new Request(url));
   } catch (error) {
-    const original = new URL(request.url);
-    if (!original.searchParams.has('width') && !original.searchParams.has('height')) {
+    if (!url.searchParams.has('width') && !url.searchParams.has('height')) {
       throw error;
     }
-    original.searchParams.delete('width');
-    original.searchParams.delete('height');
-    const cached = await caches.match(new Request(original));
+    url.searchParams.delete('width');
+    url.searchParams.delete('height');
+    const cached = await caches.match(new Request(url));
     if (cached?.headers.get('content-type')?.split(';', 1)[0].trim() === 'image/svg+xml') {
       return cached;
     }

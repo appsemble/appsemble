@@ -13,7 +13,7 @@ export async function getAppCoreStyle(ctx: Context): Promise<void> {
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  ctx.body = getAppStyle(app, app.coreStyle);
+  ctx.body = getAppStyle(ctx, app, app.coreStyle);
   ctx.type = 'css';
   ctx.status = 200;
 }
