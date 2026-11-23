@@ -9,11 +9,15 @@ import { UserProvider, useUser } from './index.js';
 
 const transport = axios.defaults.adapter;
 const initialLocks = navigator.locks;
+const initialLocation = window.location;
 let refreshResponse: Promise<TokenResponse> | undefined;
 let finishRefresh: ((response: TokenResponse) => void) | undefined;
 let refreshStarted: Promise<void>;
 let startRefresh: () => void;
 let requests: string[];
+let endSessionUrl: string | undefined;
+let userUnavailable: boolean;
+let visitedUrls: string[];
 
 function token(expires: number, sub = 'staff'): string {
   return `e30.${btoa(JSON.stringify({ exp: expires, sub }))}.signature`;
@@ -61,6 +65,15 @@ async function respond(pending: (() => void)[]): Promise<void> {
   });
 }
 
+async function settle(): Promise<void> {
+  await act(
+    () =>
+      new Promise((resolve) => {
+        setTimeout(resolve);
+      }),
+  );
+}
+
 function signOutInAnotherTab(): void {
   localStorage.clear();
   window.dispatchEvent(new StorageEvent('storage', { key: null, storageArea: localStorage }));
@@ -76,11 +89,14 @@ function Account({ name }: { readonly name: string }): ReactNode {
 }
 
 function Profile(): ReactNode {
-  const { login, organizations, refreshUserInfo, userInfo } = useUser();
+  const { login, organizations, refreshUserInfo, signOut, userInfo } = useUser();
   return (
     <>
       <button onClick={() => refreshUserInfo()} type="button">
         Reload profile
+      </button>
+      <button onClick={signOut} type="button">
+        Sign out
       </button>
       <button
         onClick={() =>
@@ -133,6 +149,13 @@ beforeEach(() => {
     startRefresh = resolve;
   });
   requests = [];
+  endSessionUrl = undefined;
+  userUnavailable = false;
+  visitedUrls = [];
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    value: { assign: (url: string) => visitedUrls.push(url) },
+  });
   axios.defaults.adapter = async (config) => {
     requests.push(`${config.method} ${config.url}`);
     const response = {
@@ -162,7 +185,15 @@ beforeEach(() => {
         token_type: 'bearer',
         expires_in: 3600,
       };
+    } else if (config.url === '/api/auth/logout') {
+      response.data = endSessionUrl ? { endSessionUrl } : {};
     } else if (config.url === '/api/users/current') {
+      if (userUnavailable) {
+        throw new AxiosError('Service unavailable', 'ERR_BAD_RESPONSE', config, undefined, {
+          ...response,
+          status: 503,
+        });
+      }
       if (revoked) {
         throw new AxiosError('Session revoked', 'ERR_BAD_REQUEST', config, undefined, {
           ...response,
@@ -181,6 +212,7 @@ afterEach(() => {
   vi.useRealTimers();
   axios.defaults.adapter = transport;
   Object.defineProperty(navigator, 'locks', { configurable: true, value: initialLocks });
+  Object.defineProperty(window, 'location', { configurable: true, value: initialLocation });
   localStorage.clear();
 });
 
@@ -410,3 +442,68 @@ it.each([
     expect(screen.getByText(/^Tab:/).textContent).toBe('Tab: new@example.com');
   },
 );
+
+it('should continue at the identity provider when the user signs out', async () => {
+  localStorage.access_token = token(Math.floor(Date.now() / 1000) + 3600);
+  endSessionUrl = 'https://idp.example/logout?client_id=studio';
+  render(
+    <UserProvider>
+      <Profile />
+    </UserProvider>,
+  );
+  fireEvent.click(await screen.findByRole('button', { name: 'Sign out' }));
+  await waitFor(() => expect(visitedUrls).toStrictEqual([endSessionUrl]));
+
+  expect({
+    status: screen.getByRole('status').textContent,
+    stored: { ...localStorage },
+  }).toStrictEqual({ status: 'Signed out', stored: {} });
+});
+
+it('should stay in the Studio when the user signs out of a session without a provider session', async () => {
+  localStorage.access_token = token(Math.floor(Date.now() / 1000) + 3600);
+  render(
+    <UserProvider>
+      <Profile />
+    </UserProvider>,
+  );
+  fireEvent.click(await screen.findByRole('button', { name: 'Sign out' }));
+  await waitFor(() => expect(requests).toContain('post /api/auth/logout'));
+  await settle();
+
+  expect({
+    visitedUrls,
+    status: screen.getByRole('status').textContent,
+  }).toStrictEqual({ visitedUrls: [], status: 'Signed out' });
+});
+
+it.each([
+  {
+    failure: 'refreshing the session',
+    fail() {
+      localStorage.refresh_token = 'replayed-refresh';
+    },
+  },
+  {
+    failure: 'loading the user',
+    fail() {
+      localStorage.access_token = token(Math.floor(Date.now() / 1000) + 3600);
+      userUnavailable = true;
+    },
+  },
+])('should stay in the Studio when $failure fails', async ({ fail }) => {
+  endSessionUrl = 'https://idp.example/logout?client_id=studio';
+  fail();
+  render(
+    <UserProvider>
+      <Profile />
+    </UserProvider>,
+  );
+  await waitFor(() => expect(requests).toContain('post /api/auth/logout'));
+  await settle();
+
+  expect({
+    visitedUrls,
+    status: screen.getByRole('status').textContent,
+  }).toStrictEqual({ visitedUrls: [], status: 'Signed out' });
+});

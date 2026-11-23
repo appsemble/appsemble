@@ -26,7 +26,7 @@ export function OrganizationInvitePage(): ReactNode {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const qs = useQuery();
-  const { logout, organizations, setOrganizations, userInfo } = useUser();
+  const { organizations, setOrganizations, signOut, userInfo } = useUser();
   const redirect = useLocationString();
 
   const [success, setSuccess] = useState(false);
@@ -181,7 +181,7 @@ export function OrganizationInvitePage(): ReactNode {
           <FormattedMessage {...messages.alreadyJoined} />
         </p>
         <div className="py-4">
-          <Button className="mr-3" color="primary" icon="sign-out-alt" onClick={logout}>
+          <Button className="mr-3" color="primary" icon="sign-out-alt" onClick={signOut}>
             <FormattedMessage {...messages.logout} />
           </Button>
         </div>
