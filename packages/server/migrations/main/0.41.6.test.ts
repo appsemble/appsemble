@@ -1,7 +1,7 @@
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { describe, expect, it } from 'vitest';
 
-import { down, up } from './0.41.5.js';
+import { down, up } from './0.41.6.js';
 import {
   getDB,
   OAuth2ClientCredentials,
@@ -10,7 +10,7 @@ import {
   User,
 } from '../../models/index.js';
 
-describe('migration 0.41.5', () => {
+describe('migration 0.41.6', () => {
   it('revokes service accounts and keeps people when rolled back', async () => {
     const db = getDB();
     const transaction = await db.transaction();
