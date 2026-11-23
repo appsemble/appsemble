@@ -204,7 +204,12 @@ test.describe('Studio organization Keycloak OIDC', () => {
         await expect(firstStaffRow).not.toContainText('AppContentsManager');
 
         const returnedFromProvider = firstStaffPage.waitForResponse(new URL('/', baseURL).href);
-        await firstStaffPage.getByRole('button', { name: 'Profile picture', exact: true }).click();
+        await firstStaffPage
+          .getByRole('button')
+          .filter({
+            has: firstStaffPage.getByRole('img', { name: 'Profile picture', exact: true }),
+          })
+          .click();
         await firstStaffPage.getByRole('button', { name: 'Logout', exact: true }).click();
         await returnedFromProvider;
         await firstStaffPage.goto(`/en/login?organization=${organization.id}`);
