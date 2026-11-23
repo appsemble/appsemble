@@ -152,7 +152,8 @@ export function createIndexHandler(options: Options): Middleware {
     const nonce = randomBytes(16).toString('base64');
 
     const [{ settingsHash, settings }, settingsCacheStatus] = await getCachedValue<CachedSettings>(
-      appServingCache,
+      // The settings of a password protected app hold the password token of the visitor.
+      app.passwordProtected ? undefined : appServingCache,
       getSettingsCacheKey({ app, host, hostname, identifiableBlocks, languages }),
       async () => {
         const [digest, script] = await createSettings({

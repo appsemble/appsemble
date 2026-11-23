@@ -557,7 +557,7 @@ WHERE resource.id = positions.id`,
       }
     });
 
-    ctx.body = { ...dbApp.toJSON(), passwordToken: getAppPasswordToken(dbApp) };
+    ctx.body = { ...dbApp.toJSON(), passwordToken: getAppPasswordToken(ctx, dbApp) };
   } catch (error: unknown) {
     handleAppValidationError(ctx, error as Error, result);
   }

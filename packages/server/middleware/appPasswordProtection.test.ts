@@ -2,7 +2,7 @@ import { getAppAssetLocation, uploadS3File } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App, getAppDB, Organization, OrganizationMember } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
@@ -10,6 +10,10 @@ import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 
 let app: App;
+
+function parseSettings(settings: string): { passwordToken: string } {
+  return JSON.parse(settings.slice('<script>window.settings='.length, -'</script>'.length));
+}
 
 async function getPasswordTokenFromAppPage(
   password = 'open sesame',
@@ -27,9 +31,7 @@ async function getPasswordTokenFromAppPage(
   });
   return {
     cookie,
-    passwordToken: JSON.parse(
-      data.data.settings.slice('<script>window.settings='.length, -'</script>'.length),
-    ).passwordToken,
+    passwordToken: parseSettings(data.data.settings).passwordToken,
   };
 }
 
@@ -51,6 +53,10 @@ describe('appPasswordProtection', () => {
       vapidPublicKey: '',
       password: await hash('open sesame', 10),
     });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it.each(['', '/messages/en', '/resources/note', '/assets/logo'])(
@@ -91,6 +97,78 @@ describe('appPasswordProtection', () => {
 
     expect(response.status).toBe(401);
   });
+
+  it('should refuse a password token with a changed issue time', async () => {
+    const { passwordToken } = await getPasswordTokenFromAppPage();
+    const [, signature] = passwordToken.split('.');
+
+    const response = await request.get(`/api/apps/${app.id}`, {
+      headers: { 'X-Appsemble-Password-Token': `${Date.now() + 1000}.${signature}` },
+    });
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should give each visitor 3 days from their own password entry', async () => {
+    vi.useFakeTimers({ now: new Date('2026-01-01T12:00:00Z'), toFake: ['Date'] });
+    await getPasswordTokenFromAppPage();
+    vi.setSystemTime(new Date('2026-01-02T12:00:00Z'));
+    const { passwordToken } = await getPasswordTokenFromAppPage();
+
+    vi.setSystemTime(new Date('2026-01-04T12:00:00Z'));
+    const response = await request.get(`/api/apps/${app.id}`, {
+      headers: { 'X-Appsemble-Password-Token': passwordToken },
+    });
+
+    expect(response.status).toBe(200);
+  });
+
+  it.each([
+    ['app', '/'],
+    ['app', '/core.css'],
+    ['api', ''],
+    ['api', '/style/core'],
+  ])(
+    'should not extend access beyond 3 days with a token the %s host returns for %s',
+    async (host, path) => {
+      await app.update({
+        coreStyle: `body{background:url('http://localhost/api/apps/${app.id}/assets/background')}`,
+      });
+      vi.useFakeTimers({ now: new Date('2026-01-01T12:00:00Z'), toFake: ['Date'] });
+      const { cookie, passwordToken } = await getPasswordTokenFromAppPage();
+
+      vi.setSystemTime(new Date('2026-01-03T12:00:00Z'));
+      const response = await request.get<{ data: { settings: string } } | string>(
+        host === 'app' ? path : `/api/apps/${app.id}${path}`,
+        {
+          headers:
+            host === 'app'
+              ? { host: 'app.org.localhost', cookie }
+              : { 'X-Appsemble-Password-Token': passwordToken },
+        },
+      );
+      const { data } = response;
+      let returnedToken: string;
+      if (typeof data === 'string') {
+        const [, reference] = data.match(/url\(\s*["']?([^\s"')]+)["']?\s*\)/)!;
+        returnedToken = new URL(reference).searchParams.get('passwordToken')!;
+      } else if ('data' in data) {
+        returnedToken = parseSettings(data.data.settings).passwordToken;
+      } else {
+        returnedToken = (data as { passwordToken: string }).passwordToken;
+      }
+      vi.setSystemTime(new Date('2026-01-04T11:59:59Z'));
+      const lastDay = await request.get(`/api/apps/${app.id}`, {
+        headers: { 'X-Appsemble-Password-Token': returnedToken },
+      });
+      vi.setSystemTime(new Date('2026-01-04T12:00:00Z'));
+      const expired = await request.get(`/api/apps/${app.id}`, {
+        headers: { 'X-Appsemble-Password-Token': returnedToken },
+      });
+
+      expect([response.status, lastDay.status, expired.status]).toStrictEqual([200, 200, 401]);
+    },
+  );
 
   it.each([
     ['core', 'app'],

@@ -9,8 +9,8 @@ export async function getAppStyles({ context, query }: GetAppParams): Promise<Ap
   });
   if (app) {
     return {
-      coreStyle: getAppStyle(app, app.coreStyle),
-      sharedStyle: getAppStyle(app, app.sharedStyle),
+      coreStyle: getAppStyle(context, app, app.coreStyle),
+      sharedStyle: getAppStyle(context, app, app.sharedStyle),
     };
   }
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)

@@ -12,7 +12,12 @@ import { col, fn, Op, where } from 'sequelize';
 
 import { App, AppMessages } from '../../models/index.js';
 import { options } from '../../options/options.js';
-import { getApp, getAppPasswordToken } from '../../utils/app.js';
+import {
+  APP_PASSWORD_TOKEN_MAX_AGE,
+  createAppPasswordToken,
+  getApp,
+  isAppPasswordTokenValid,
+} from '../../utils/app.js';
 import { setCookie } from '../../utils/appCookies.js';
 import {
   isSlidingWindowRateLimited,
@@ -24,12 +29,14 @@ const supportedLanguages = getSupportedLanguages();
 
 export const appRouter: Middleware = async (ctx, next) => {
   const { app } = await getApp(ctx, { attributes: ['id', 'password'] });
-  const passwordToken = app && getAppPasswordToken(app);
-  if (passwordToken) {
-    ctx.set('Cache-Control', 'private,no-store');
-    ctx.vary('Cookie');
+  if (!app?.password) {
+    return router(ctx, next);
   }
-  if (!passwordToken || ctx.cookies.get('app_password', { signed: true }) === passwordToken) {
+  ctx.set('Cache-Control', 'private,no-store');
+  ctx.vary('Cookie');
+  const passwordToken = ctx.cookies.get('app_password', { signed: true });
+  if (isAppPasswordTokenValid(app, passwordToken)) {
+    ctx.state.appPasswordToken = passwordToken;
     return router(ctx, next);
   }
 
@@ -52,8 +59,9 @@ export const appRouter: Middleware = async (ctx, next) => {
       if (await compare(password, app.password!)) {
         // Testers behind one IP address all enter the correct password, so only guesses add up.
         await resetSlidingWindowRateLimit(ctx, rateLimitKey);
-        setCookie(ctx, 'app_password', passwordToken, {
+        setCookie(ctx, 'app_password', createAppPasswordToken(app), {
           httpOnly: true,
+          maxAge: APP_PASSWORD_TOKEN_MAX_AGE,
           sameSite: 'lax',
           secure: true,
           signed: true,

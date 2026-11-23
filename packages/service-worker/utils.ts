@@ -93,6 +93,24 @@ export async function requestFirst(
 }
 
 /**
+ * Serve a stored stylesheet of an app first, unless the server marked it `no-store`.
+ *
+ * Stylesheets of a password protected app hold the password token of the visitor, which changes
+ * when the visitor enters the password again. Those are only served from the cache when the
+ * network is unreachable.
+ *
+ * @param request The request for which to get a response.
+ * @returns The fetch response object.
+ */
+export async function appStylesheetFirst(request: Request): Promise<Response> {
+  const cached = await caches.match(request);
+  if (!cached) {
+    return cacheFirst(request);
+  }
+  return cached.headers.get('Cache-Control')?.includes('no-store') ? requestFirst(request) : cached;
+}
+
+/**
  * Serve a cached response only if it is marked immutable, and request a fresh one otherwise.
  *
  * App asset URLs carry either an asset id or an asset name in their last segment. An id addresses

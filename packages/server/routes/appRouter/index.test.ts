@@ -57,7 +57,10 @@ describe('appRouter', () => {
     });
   });
 
-  afterEach(() => vi.unstubAllEnvs());
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.useRealTimers();
+  });
 
   it('should show the password page with the message instead of the app', async () => {
     const response = await request.get('/en/home');
@@ -220,15 +223,29 @@ describe('appRouter', () => {
     });
   });
 
-  it('should remember the password in a cookie that scripts and other sites cannot use', async () => {
+  it('should remember the password for 3 days in a cookie that scripts and other sites cannot use', async () => {
+    vi.useFakeTimers({ now: new Date('2026-01-01T12:00:00Z'), toFake: ['Date'] });
+
     const response = await request.post('/', new URLSearchParams({ password: 'open sesame' }), {
       maxRedirects: 0,
     });
 
     expect(response.status).toBe(302);
     expect(response.headers['set-cookie']?.[0]).toMatch(
-      /^app_password=[\w-]+; path=\/; samesite=lax; secure; httponly$/,
+      /^app_password=[\w.-]+; path=\/; expires=Sun, 04 Jan 2026 12:00:00 GMT; samesite=lax; secure; httponly$/,
     );
+  });
+
+  it('should ask for the password again 3 days after it was entered', async () => {
+    vi.useFakeTimers({ now: new Date('2026-01-01T12:00:00Z'), toFake: ['Date'] });
+    const cookie = await enterPassword('open sesame');
+
+    vi.setSystemTime(new Date('2026-01-04T11:59:59Z'));
+    const lastDay = await request.get('/robots.txt', { headers: { cookie } });
+    vi.setSystemTime(new Date('2026-01-04T12:00:00Z'));
+    const expired = await request.get('/robots.txt', { headers: { cookie } });
+
+    expect([lastDay.status, expired.status]).toStrictEqual([200, 401]);
   });
 
   it('should ask for the password again after the password changes', async () => {

@@ -40,8 +40,8 @@ the app.
 ## Sharing the password
 
 Send the testers the link to the app and the password. When they open the app, they see the password
-page with the message. After they enter the password, they can use the app until they close the
-browser.
+page with the message. After they enter the password, they can use the app for 3 days. After that,
+they enter the password again the next time they open the app.
 
 After 10 wrong passwords within 15 minutes, the password page refuses every attempt from the same
 network, including the correct password, until the oldest of those attempts is 15 minutes old.

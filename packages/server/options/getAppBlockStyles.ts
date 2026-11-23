@@ -8,6 +8,7 @@ import { getAppStyle } from '../utils/app.js';
 
 export async function getAppBlockStyles({
   app,
+  context,
   name,
 }: GetAppBlockStylesParams): Promise<AppBlockStyleInterface[]> {
   const { AppBlockStyle } = await getAppDB(app.id!);
@@ -18,6 +19,6 @@ export async function getAppBlockStyles({
   });
 
   return appBlockStyles.map((appBlockStyle) => ({
-    style: getAppStyle(persistedApp, appBlockStyle.style),
+    style: getAppStyle(context, persistedApp, appBlockStyle.style),
   }));
 }

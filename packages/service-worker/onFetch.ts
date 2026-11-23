@@ -1,6 +1,7 @@
 import { partialNormalized } from '@appsemble/utils';
 
 import {
+  appStylesheetFirst,
   assetFirst,
   cacheFirst,
   handleModifyAndInvalidateCache,
@@ -91,13 +92,13 @@ export function onFetch(event: FetchEvent): void {
 
   // Cache block styles
   if (/^\/@appsemble\/[^/?]+\.css/.test(pathname)) {
-    event.respondWith(cacheFirst(request));
+    event.respondWith(appStylesheetFirst(request));
     return;
   }
 
   // Cache shared styles
   if (/^\/shared.css/.test(pathname)) {
-    event.respondWith(cacheFirst(request));
+    event.respondWith(appStylesheetFirst(request));
     return;
   }
 

@@ -17,7 +17,7 @@ import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { Op, type Transaction } from 'sequelize';
 
-import { getAppPasswordToken } from './app.js';
+import { isAppPasswordTokenValid } from './app.js';
 import {
   getOrganizationMemberAccess,
   getOrganizationMemberRoles,
@@ -286,20 +286,22 @@ export async function checkOrganizationOwnerRemoval(
 /**
  * Require the app password token or permission to query the app's organization.
  *
- * @param context The request context.
+ * @param ctx The request context.
  * @param app The app whose content is requested.
  */
 export async function checkAppPassword(
-  context: Context,
+  ctx: Context,
   app: Pick<App, 'id' | 'password' | 'OrganizationId'>,
 ): Promise<void> {
-  if (
-    app.password &&
-    (context.get('x-appsemble-password-token') || context.query.passwordToken) !==
-      getAppPasswordToken(app)
-  ) {
+  if (!app.password) {
+    return;
+  }
+  const passwordToken = ctx.get('x-appsemble-password-token') || ctx.query.passwordToken;
+  if (isAppPasswordTokenValid(app, passwordToken)) {
+    ctx.state.appPasswordToken = passwordToken;
+  } else {
     await checkUserOrganizationPermissions({
-      context,
+      context: ctx,
       organizationId: app.OrganizationId,
       requiredPermissions: [OrganizationPermission.QueryApps],
     });

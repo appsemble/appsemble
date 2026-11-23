@@ -1,7 +1,7 @@
 import makeServiceWorkerEnv from 'service-worker-mock';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { cacheFirstIfImmutable } from './utils.js';
+import { appStylesheetFirst, cacheFirstIfImmutable } from './utils.js';
 
 const assetUrl = 'http://localhost/api/apps/1/assets/logo';
 
@@ -12,6 +12,39 @@ async function cacheResponse(cacheControl: string, body: string): Promise<void> 
     new Response(body, { status: 200, headers: { 'Cache-Control': cacheControl } }),
   );
 }
+
+describe('appStylesheetFirst', () => {
+  beforeEach(() => {
+    Object.assign(global, makeServiceWorkerEnv());
+  });
+
+  it('should serve a stored stylesheet before a fresh one', async () => {
+    await cacheResponse('max-age=3600', 'stored');
+    vi.spyOn(global, 'fetch').mockResolvedValue(new Response('fresh', { status: 200 }));
+
+    const response = await appStylesheetFirst(new Request(assetUrl));
+
+    expect(await response.text()).toBe('stored');
+  });
+
+  it('should request a fresh response when the stored one may not be reused', async () => {
+    await cacheResponse('private,no-store', 'stored');
+    vi.spyOn(global, 'fetch').mockResolvedValue(new Response('fresh', { status: 200 }));
+
+    const response = await appStylesheetFirst(new Request(assetUrl));
+
+    expect(await response.text()).toBe('fresh');
+  });
+
+  it('should serve a stored response that may not be reused when the network is unreachable', async () => {
+    await cacheResponse('private,no-store', 'stored');
+    vi.spyOn(global, 'fetch').mockRejectedValue(new Error('offline'));
+
+    const response = await appStylesheetFirst(new Request(assetUrl));
+
+    expect(await response.text()).toBe('stored');
+  });
+});
 
 describe('cacheFirstIfImmutable', () => {
   beforeEach(() => {

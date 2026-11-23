@@ -104,6 +104,7 @@ function sanitizeAppDefinitionForPublicSettings(
 
 export async function createSettings({
   app,
+  context,
   host,
   hostname,
   identifiableBlocks,
@@ -288,7 +289,7 @@ export async function createSettings({
       enableSelfRegistration: persistedApp.enableSelfRegistration ?? true,
       showDemoLogin: persistedApp.demoMode ?? false,
       totp: persistedApp.totp ?? 'disabled',
-      passwordToken: getAppPasswordToken(persistedApp),
+      passwordToken: getAppPasswordToken(context, persistedApp),
       sentryDsn,
       sentryEnvironment,
       appUpdated: persistedApp.updated.toISOString(),

@@ -13,7 +13,7 @@ export async function getAppBlockStyle(ctx: Context): Promise<void> {
     where: { block: `@${organizationId}/${blockId}` },
   });
 
-  ctx.body = getAppStyle(app, blockStyle?.style);
+  ctx.body = getAppStyle(ctx, app, blockStyle?.style);
   ctx.type = 'css';
   ctx.status = 200;
 }

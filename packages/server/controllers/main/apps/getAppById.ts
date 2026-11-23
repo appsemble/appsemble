@@ -186,7 +186,7 @@ export async function getAppById(ctx: Context): Promise<void> {
   applyAppMessages(app, language, baseLanguage);
 
   // Requests for a password protected app only get here if they may see its content.
-  const passwordToken = getAppPasswordToken(app);
+  const passwordToken = getAppPasswordToken(ctx, app);
 
   ctx.status = 200;
   if (propertyFilters.includes('definition')) {
