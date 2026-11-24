@@ -446,9 +446,17 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
           );
         }
       }
-      if (!linkedIdentity) {
+      const username =
+        typeof info.email === 'string'
+          ? info.email
+          : typeof info.preferred_username === 'string'
+            ? info.preferred_username
+            : null;
+      if (linkedIdentity) {
+        await linkedIdentity.update({ username }, { transaction });
+      } else {
         linkedIdentity = await OrganizationSsoIdentity.create(
-          { issuer: sso.issuer, subject: claims.sub, UserId: user.id },
+          { issuer: sso.issuer, subject: claims.sub, UserId: user.id, username },
           { transaction },
         );
       }
