@@ -1,5 +1,5 @@
 import { Button, Loader, Message, useQuery } from '@appsemble/react-components';
-import { type TokenResponse } from '@appsemble/types';
+import { type OAuth2ClientCredentials, type TokenResponse } from '@appsemble/types';
 import { clearOAuth2State, timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ReactNode, useEffect, useState } from 'react';
@@ -33,7 +33,7 @@ export function OrganizationSsoCallback({ session }: OrganizationSsoCallbackProp
       return;
     }
     axios
-      .post<TokenResponse>(
+      .post<OAuth2ClientCredentials | TokenResponse>(
         `/api/organizations/${encodeURIComponent(session.organizationId)}/sso/callback`,
         {
           code,
@@ -43,6 +43,11 @@ export function OrganizationSsoCallback({ session }: OrganizationSsoCallbackProp
         },
       )
       .then(({ data }) => {
+        if (!('access_token' in data)) {
+          clearOAuth2State();
+          navigate(session.redirect, { replace: true, state: { clientCredentials: data } });
+          return;
+        }
         login(data);
         clearOAuth2State();
         navigate(session.redirect || `/organizations/${session.organizationId}`, { replace: true });
