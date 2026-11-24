@@ -143,11 +143,14 @@ this organization. Signing out of the Studio also signs out at a provider which 
 `end_session_endpoint` and then returns to the Studio, so the next sign-in asks for credentials
 again.
 
-Manage linked organization identities under **Settings > Social login**. **Unlink single sign-on**
-requires recent authentication and a verified recovery email or personal social login. Unlinking
-ends that identity's sessions and revokes its personal CLI credentials while keeping other linked
-identities, manual memberships and guest grants. An organization must retain an Owner. To link the
-identity again, sign in to the existing Appsemble account and use the organization's sign-in page.
+Manage linked organization identities under **Settings > Social login**, which shows each identity's
+organizations, their provider names and the provider account: the email address from the last
+sign-in through the provider, or its preferred username without one. Owners see the provider
+accounts of linked members on the **Members** page. **Unlink single sign-on** requires recent
+authentication and a verified recovery email or personal social login. Unlinking ends that
+identity's sessions and revokes its personal CLI credentials while keeping other linked identities,
+manual memberships and guest grants. An organization must retain an Owner. To link the identity
+again, sign in to the existing Appsemble account and use the organization's sign-in page.
 
 Provider groups are refreshed when the provider access token expires, at most one hour after the
 previous refresh, and a Studio session ends after eight hours. Removing a group therefore takes

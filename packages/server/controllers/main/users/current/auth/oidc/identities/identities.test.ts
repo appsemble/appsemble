@@ -123,6 +123,8 @@ describe('current account organization OIDC identities', () => {
   it('lists only the account identities in private responses that cannot be cached', async () => {
     const otherUser = await createTestUser('other@example.com');
     await OrganizationSsoIdentity.create({ UserId: otherUser.id, issuer, subject: 'other' });
+    await Organization.create({ id: 'other', name: 'Other' });
+    await OrganizationSso.create({ ...sso.get({ plain: true }), OrganizationId: 'other' });
     const response = await request.get(path);
     expect({
       status: response.status,
@@ -131,8 +133,43 @@ describe('current account organization OIDC identities', () => {
     }).toStrictEqual({
       status: 200,
       cache: 'private, no-store',
-      data: [{ id: identity.id, issuer, subject: 'staff' }],
+      data: [
+        {
+          id: identity.id,
+          issuer,
+          subject: 'staff',
+          username: null,
+          organizations: [{ id: 'staff', name: 'Staff', provider: 'Staff' }],
+        },
+      ],
     });
+  });
+
+  it('omits deleted organizations from the listed identities', async () => {
+    await Organization.create({ id: 'deleted', name: 'Deleted' });
+    await OrganizationSso.create({ ...sso.get({ plain: true }), OrganizationId: 'deleted' });
+    await OrganizationMember.create({
+      OrganizationId: 'deleted',
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+    const deleted = await request.delete('/api/organizations/deleted');
+    const response = await request.get(path);
+    expect({ deleted: deleted.status, status: response.status, data: response.data }).toStrictEqual(
+      {
+        deleted: 200,
+        status: 200,
+        data: [
+          {
+            id: identity.id,
+            issuer,
+            subject: 'staff',
+            username: null,
+            organizations: [{ id: 'staff', name: 'Staff', provider: 'Staff' }],
+          },
+        ],
+      },
+    );
   });
 
   it('requires an interactive account session for listing and unlinking', async () => {
@@ -156,7 +193,7 @@ describe('current account organization OIDC identities', () => {
     const list = await request.get(path);
     expect({ status: deleted.status, identities: list.data }).toStrictEqual({
       status: 404,
-      identities: [{ id: other.id, issuer, subject: 'other' }],
+      identities: [{ id: other.id, issuer, subject: 'other', username: null, organizations: [] }],
     });
   });
 
@@ -247,7 +284,15 @@ describe('current account organization OIDC identities', () => {
       refresh: 401,
       cli: 401,
       retained: 200,
-      identities: [{ id: other.id, issuer, subject: 'second' }],
+      identities: [
+        {
+          id: other.id,
+          issuer,
+          subject: 'second',
+          username: null,
+          organizations: [{ id: 'staff', name: 'Staff', provider: 'Staff' }],
+        },
+      ],
       credentials: [retainedCredentials.id],
     });
   });

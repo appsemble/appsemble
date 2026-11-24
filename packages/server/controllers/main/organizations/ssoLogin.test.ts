@@ -520,6 +520,57 @@ describe('organization OIDC sign-in', () => {
     },
   );
 
+  it('shows the provider account of the latest sign-in to the account and to Owners', async () => {
+    async function getProviderAccounts(): Promise<unknown> {
+      const members = await request.get('/api/organizations/staff/members');
+      const identities = await request.get('/api/users/current/auth/oidc/identities');
+      return {
+        members: members.data.map(({ ssoUsernames }: { ssoUsernames: string[] }) => ssoUsernames),
+        identities: identities.data.map(
+          ({ organizations, username }: { organizations: unknown; username: string }) => ({
+            username,
+            organizations,
+          }),
+        ),
+      };
+    }
+    const organizations = [{ id: 'staff', name: 'Staff', provider: 'Staff SSO' }];
+
+    await signInAsOwner();
+    const first = await getProviderAccounts();
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    userInfoClaims = { email: undefined, preferred_username: 'staff.member' };
+    await signIn();
+    const second = await getProviderAccounts();
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    userInfoClaims = { email: '', preferred_username: 'staff.blank-email' };
+    await signIn();
+
+    expect({ first, second, third: await getProviderAccounts() }).toStrictEqual({
+      first: {
+        members: [['staff@example.com']],
+        identities: [{ username: 'staff@example.com', organizations }],
+      },
+      second: {
+        members: [['staff.member']],
+        identities: [{ username: 'staff.member', organizations }],
+      },
+      third: {
+        members: [['staff.blank-email']],
+        identities: [{ username: 'staff.blank-email', organizations }],
+      },
+    });
+  });
+
+  it('does not show provider accounts to members who do not manage members', async () => {
+    await signIn();
+    const response = await request.get('/api/organizations/staff/members');
+    expect({
+      status: response.status,
+      usernames: response.data.map(({ ssoUsernames }: { ssoUsernames?: string[] }) => ssoUsernames),
+    }).toStrictEqual({ status: 200, usernames: [undefined] });
+  });
+
   it('requires explicit authenticated linking when the email already belongs to an account', async () => {
     const user = await createTestUser('staff@example.com');
     const collision = await complete(await begin());

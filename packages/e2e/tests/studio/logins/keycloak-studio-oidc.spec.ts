@@ -178,6 +178,10 @@ test.describe('Studio organization Keycloak OIDC', () => {
         const firstStaffRow = firstStaffPage.getByRole('row', { name: /Studio Staff/ });
         await expect(firstStaffRow).toContainText('AppTranslator');
         await expect(firstStaffRow).toContainText('AppContentsManager');
+        await page.goto(`/en/organizations/${organization.id}/members`);
+        await expect(page.getByRole('row', { name: /Studio Staff/ })).toContainText(
+          `Single sign-on account: ${staffEmail}`,
+        );
 
         await requestKc(
           `/admin/realms/${KEYCLOAK_REALM}/users/${staff}/groups/${contentManagers}`,

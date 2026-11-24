@@ -64,6 +64,7 @@ import * as m0_41_3 from './0.41.3.js';
 import * as m0_41_5 from './0.41.5.js';
 import * as m0_41_7 from './0.41.7.js';
 import * as m0_41_8 from './0.41.8.js';
+import * as m0_41_9 from './0.41.9.js';
 import { type Migration } from '../../utils/migrate.js';
 
 export const migrations: Migration[] = [
@@ -133,4 +134,5 @@ export const migrations: Migration[] = [
   m0_41_5,
   m0_41_7,
   m0_41_8,
+  m0_41_9,
 ];

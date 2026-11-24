@@ -37,6 +37,12 @@ export class OrganizationSsoIdentity extends Model {
   @Column(DataType.STRING)
   declare subject: string;
 
+  /**
+   * The provider account: its email address, or its `preferred_username` without one.
+   */
+  @Column(DataType.TEXT)
+  declare username?: string | null;
+
   @CreatedAt
   declare created: Date;
 

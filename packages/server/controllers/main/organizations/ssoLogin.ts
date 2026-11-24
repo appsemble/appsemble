@@ -452,9 +452,15 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
           );
         }
       }
-      if (!linkedIdentity) {
+      const username =
+        [info.email, info.preferred_username].find(
+          (claim): claim is string => typeof claim === 'string' && claim !== '',
+        ) ?? null;
+      if (linkedIdentity) {
+        await linkedIdentity.update({ username }, { transaction });
+      } else {
         linkedIdentity = await OrganizationSsoIdentity.create(
-          { issuer: sso.issuer, subject: claims.sub, UserId: user.id },
+          { issuer: sso.issuer, subject: claims.sub, UserId: user.id, username },
           { transaction },
         );
       }
