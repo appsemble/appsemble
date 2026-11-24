@@ -139,6 +139,23 @@ test.describe('Studio organization Keycloak OIDC', () => {
       ownerAccessToken = await signInAtKeycloak(page, ownerEmail, organization.id);
       await expect(page).toHaveURL(new RegExp(`/organizations/${organization.id}(?:/|$)`));
       await page.goto(`/en/organizations/${organization.id}/sso`);
+      const settings = `**/api/organizations/${organization.id}/sso`;
+      // The Owner signed in moments ago, so the refusal of an old sign-in is simulated.
+      await page.route(settings, (route) =>
+        route.request().method() === 'PUT'
+          ? route.fulfill({
+              status: 403,
+              json: { message: 'Sign in again before changing single sign-on settings.' },
+            })
+          : route.fallback(),
+      );
+      await page.getByRole('button', { name: 'Save single sign-on settings', exact: true }).click();
+      await page
+        .getByRole('button', { name: 'Sign in again with Staff Keycloak', exact: true })
+        .click();
+      await page.unroute(settings);
+      await submitKeycloakPassword(page, organization.id);
+      await expect(page).toHaveURL(new RegExp(`/organizations/${organization.id}/sso$`));
       await page
         .getByRole('combobox', { name: 'Organization sign-in policy', exact: true })
         .selectOption('required');
