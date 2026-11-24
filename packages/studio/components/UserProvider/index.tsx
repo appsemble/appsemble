@@ -49,7 +49,19 @@ export interface UserApp extends App {
 
 interface UserContext {
   login: (tokenResponse: TokenResponse) => void;
+
+  /**
+   * End the Studio session in this browser.
+   */
   logout: () => void;
+
+  /**
+   * Sign out on the user's request.
+   *
+   * A session from organization single sign-on also ends at the identity provider, which then
+   * returns to the Studio.
+   */
+  signOut: () => Promise<void>;
   userInfo: UserInfo;
   refreshUserInfo: () => Promise<void>;
   organizations: UserOrganization[];
@@ -119,25 +131,36 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     accessTokenRef.current = null;
   }, []);
 
+  // Resolves with the identity provider URL which ends an organization single sign-on session.
   const logout = useCallback(() => {
     const accessToken = accessTokenRef.current;
-    if (accessToken) {
-      axios
-        .post('/api/auth/logout', undefined, {
-          headers: { authorization: `Bearer ${accessToken}` },
-        })
-        .catch(() => false);
-    }
+    const endSessionUrl = accessToken
+      ? axios
+          .post<{ endSessionUrl?: string }>('/api/auth/logout', undefined, {
+            headers: { authorization: `Bearer ${accessToken}` },
+          })
+          .then(({ data }) => data.endSessionUrl)
+          .catch((): null => null)
+      : Promise.resolve(null);
     clearSession();
     delete localStorage.access_token;
     delete localStorage.refresh_token;
     setTokenResponse((current) => (current.access_token || current.refresh_token ? {} : current));
+    return endSessionUrl;
   }, [clearSession]);
+
+  const signOut = useCallback(async () => {
+    const endSessionUrl = await logout();
+    if (endSessionUrl) {
+      window.location.assign(endSessionUrl);
+    }
+  }, [logout]);
 
   const value = useMemo(
     () => ({
       login,
       logout,
+      signOut,
       userInfo,
       refreshUserInfo: fetchUser,
       organizations,
@@ -145,7 +168,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
       setHasNoLoginMethods,
       setOrganizations,
     }),
-    [login, logout, userInfo, fetchUser, organizations, hasNoLoginMethods],
+    [login, logout, signOut, userInfo, fetchUser, organizations, hasNoLoginMethods],
   );
 
   useEffect(() => {

@@ -23,6 +23,7 @@ import {
   User,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
+import { createJWTResponse } from '../../../utils/createJWTResponse.js';
 import { createServer } from '../../../utils/createServer.js';
 import { decrypt, encrypt } from '../../../utils/crypto.js';
 import { applyOrganizationSsoConfiguration } from '../../../utils/organizationSso.js';
@@ -46,11 +47,12 @@ let acceptedClientSecret: string;
 let configuration: OrganizationSsoConfiguration;
 let userInfoClaims: Record<string, unknown>;
 let includeIdToken: boolean;
+let providerEndsSessions: boolean;
 let beforeTokenResponse: (() => Promise<void>) | undefined;
 
 function mockProvider(expiredRefreshToken?: string): void {
   const headers = { 'content-type': 'application/json' };
-  mock.onGet(`${issuer}/.well-known/openid-configuration`).reply(
+  mock.onGet(`${issuer}/.well-known/openid-configuration`).reply(() => [
     200,
     JSON.stringify({
       issuer,
@@ -68,9 +70,11 @@ function mockProvider(expiredRefreshToken?: string): void {
       id_token_signing_alg_values_supported: ['RS256'],
       // eslint-disable-next-line @typescript-eslint/naming-convention
       authorization_response_iss_parameter_supported: true,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      ...(providerEndsSessions ? { end_session_endpoint: `${issuer}/logout` } : {}),
     }),
     headers,
-  );
+  ]);
   mock
     .onGet(`${issuer}/jwks`)
     .reply(
@@ -276,6 +280,7 @@ describe('organization OIDC sign-in', () => {
     acceptedClientSecret = 'provider-secret';
     userInfoClaims = {};
     includeIdToken = true;
+    providerEndsSessions = false;
     beforeTokenResponse = undefined;
     mockProvider();
   });
@@ -687,15 +692,69 @@ describe('organization OIDC sign-in', () => {
     expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
   });
 
-  it('revokes existing access and refresh tokens when the user signs out', async () => {
+  it('only revokes the Appsemble tokens when the provider cannot end its session', async () => {
     const tokens = await signIn();
-    expect((await request.post('/api/auth/logout')).status).toBe(204);
+    expect((await request.post('/api/auth/logout')).data).toStrictEqual({});
     expect((await request.get('/api/users/current')).status).toBe(401);
     expect(
       (await request.post('/api/auth/refresh-token', { refresh_token: tokens.refresh_token }))
         .status,
     ).toBe(401);
   });
+
+  it('ends the provider session with the sign-in ID token when the user signs out', async () => {
+    providerEndsSessions = true;
+    const tokens = await signIn();
+    const response = await request.post('/api/auth/logout');
+    const url = new URL(response.data.endSessionUrl);
+    const { id_token_hint: idTokenHint, ...parameters } = Object.fromEntries(url.searchParams);
+    expect({
+      status: response.status,
+      endpoint: `${url.origin}${url.pathname}`,
+      parameters,
+      hint: jwt.verify(idTokenHint, publicKey, { issuer, audience: 'studio-client' }),
+    }).toStrictEqual({
+      status: 200,
+      endpoint: `${issuer}/logout`,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      parameters: { client_id: 'studio-client', post_logout_redirect_uri: `${origin}/` },
+      hint: expect.objectContaining({ sub: 'staff-subject', nonce }),
+    });
+    expect((await request.get('/api/users/current')).status).toBe(401);
+    expect(
+      (await request.post('/api/auth/refresh-token', { refresh_token: tokens.refresh_token }))
+        .status,
+    ).toBe(401);
+  });
+
+  it('returns to the Studio after the provider sign-out whatever the caller requests', async () => {
+    providerEndsSessions = true;
+    await signIn();
+    const attacker = 'https://attacker.example/';
+    const choice = new URLSearchParams([
+      ['post_logout_redirect_uri', attacker],
+      ['redirect', attacker],
+    ]);
+    const response = await request.post(`/api/auth/logout?${choice}`, Object.fromEntries(choice), {
+      headers: { origin: 'https://attacker.example', referer: attacker },
+    });
+    expect(
+      new URL(response.data.endSessionUrl).searchParams.getAll('post_logout_redirect_uri'),
+    ).toStrictEqual([`${origin}/`]);
+  });
+
+  it.each(['password', 'github'] as const)(
+    'only ends the Appsemble session of a %s sign-in to an account linked to the provider',
+    async (loginMethod) => {
+      providerEndsSessions = true;
+      const user = await createTestUser('staff@example.com');
+      authorizeStudio(user);
+      await complete(await begin(true));
+      const tokens = createJWTResponse(user.id, { loginMethod });
+      request.defaults.headers.common.authorization = `Bearer ${tokens.access_token}`;
+      expect((await request.post('/api/auth/logout')).data).toStrictEqual({});
+    },
+  );
 
   it('ends the Studio session eight hours after signing in', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });
@@ -731,7 +790,7 @@ describe('organization OIDC sign-in', () => {
   it('keeps personal credentials independent of Studio logout while checking current provider groups', async () => {
     await signIn();
     const credentials = await createPersonalCredentials();
-    expect((await request.post('/api/auth/logout')).status).toBe(204);
+    expect((await request.post('/api/auth/logout')).status).toBe(200);
     request.defaults.headers.common.authorization = `Bearer ${credentials.accessToken}`;
     expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
     await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });

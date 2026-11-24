@@ -76,6 +76,7 @@ test.describe('Studio organization Keycloak OIDC', () => {
     await createUpstreamOidcClient(token, KEYCLOAK_REALM, {
       clientId,
       clientSecret,
+      postLogoutRedirectUris: [new URL('/', baseURL).href],
       redirectUris: [new URL('/callback', baseURL).href],
       requirePkce: true,
     });
@@ -201,6 +202,22 @@ test.describe('Studio organization Keycloak OIDC', () => {
         await expect(returningStaffRow).not.toContainText('AppContentsManager');
         await firstStaffPage.reload();
         await expect(firstStaffRow).not.toContainText('AppContentsManager');
+
+        await firstStaffPage
+          .getByRole('button')
+          .filter({
+            has: firstStaffPage.getByRole('img', { name: 'Profile picture', exact: true }),
+          })
+          .click();
+        await firstStaffPage.getByRole('button', { name: 'Logout', exact: true }).click();
+        await firstStaffPage.waitForURL(new URL('/', baseURL).href);
+        await firstStaffPage.goto(`/en/login?organization=${organization.id}`);
+        await firstStaffPage
+          .getByRole('button', { name: 'Login with Staff Keycloak', exact: true })
+          .click();
+        await expect(
+          firstStaffPage.getByRole('textbox', { name: /username or email/i }),
+        ).toBeVisible();
 
         const personalPage = await personalContext.newPage();
         const personalToken = await signInWithPassword(personalPage, unlinkEmail);
