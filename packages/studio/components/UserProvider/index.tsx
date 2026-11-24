@@ -49,7 +49,19 @@ export interface UserApp extends App {
 
 interface UserContext {
   login: (tokenResponse: TokenResponse) => void;
+
+  /**
+   * End the Studio session in this browser.
+   */
   logout: () => void;
+
+  /**
+   * Sign out on the user's request.
+   *
+   * A session from organization single sign-on also ends at the identity provider, which then
+   * returns to the Studio.
+   */
+  signOut: () => Promise<void>;
   userInfo: UserInfo;
   refreshUserInfo: () => Promise<void>;
   organizations: UserOrganization[];
@@ -76,12 +88,6 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   });
   const accessTokenRef = useRef<string | null>(localStorage.access_token);
 
-  const refreshUserInfo = useCallback(async () => {
-    const { data } = await axios.get<UserInfo>('/api/users/current');
-    setSentryUser({ id: data.sub });
-    setUserInfo(data);
-  }, []);
-
   const storeTokens = useCallback((response: TokenResponse) => {
     localStorage.access_token = response.access_token;
     localStorage.refresh_token = response.refresh_token;
@@ -99,46 +105,70 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
 
   // The user info and organizations are published together, because pages behind a
   // `ProtectedRoute` render as soon as the user info is set and may depend on the organizations.
+  // Responses for an access token that is no longer current are dropped, whether they succeed or
+  // fail: the session ended or was replaced while they were in flight, and a new token fetches the
+  // user again.
   const fetchUser = useCallback(async () => {
-    const [{ data: user }, { data: userOrganizations }] = await Promise.all([
+    const accessToken = accessTokenRef.current;
+    const responses = Promise.all([
       axios.get<UserInfo>('/api/users/current'),
       axios.get<UserOrganization[]>('/api/users/current/organizations'),
     ]);
+    await responses.catch(() => false);
+    if (accessTokenRef.current !== accessToken) {
+      return;
+    }
+    const [{ data: user }, { data: userOrganizations }] = await responses;
     setOrganizations(userOrganizations);
     setSentryUser({ id: user.sub });
     setUserInfo(user);
   }, []);
 
-  const logout = useCallback(() => {
-    const accessToken = accessTokenRef.current;
-    if (accessToken) {
-      axios
-        .post('/api/auth/logout', undefined, {
-          headers: { authorization: `Bearer ${accessToken}` },
-        })
-        .catch(() => false);
-    }
+  const clearSession = useCallback(() => {
     setSentryUser(null);
     setUserInfo(null);
     setOrganizations([]);
     accessTokenRef.current = null;
+  }, []);
+
+  // Resolves with the identity provider URL which ends an organization single sign-on session.
+  const logout = useCallback(() => {
+    const accessToken = accessTokenRef.current;
+    const endSessionUrl = accessToken
+      ? axios
+          .post<{ endSessionUrl?: string }>('/api/auth/logout', undefined, {
+            headers: { authorization: `Bearer ${accessToken}` },
+          })
+          .then(({ data }) => data.endSessionUrl)
+          .catch((): null => null)
+      : Promise.resolve(null);
+    clearSession();
     delete localStorage.access_token;
     delete localStorage.refresh_token;
     setTokenResponse((current) => (current.access_token || current.refresh_token ? {} : current));
-  }, []);
+    return endSessionUrl;
+  }, [clearSession]);
+
+  const signOut = useCallback(async () => {
+    const endSessionUrl = await logout();
+    if (endSessionUrl) {
+      window.location.assign(endSessionUrl);
+    }
+  }, [logout]);
 
   const value = useMemo(
     () => ({
       login,
       logout,
+      signOut,
       userInfo,
-      refreshUserInfo,
+      refreshUserInfo: fetchUser,
       organizations,
       hasNoLoginMethods,
       setHasNoLoginMethods,
       setOrganizations,
     }),
-    [login, logout, userInfo, refreshUserInfo, organizations, hasNoLoginMethods],
+    [login, logout, signOut, userInfo, fetchUser, organizations, hasNoLoginMethods],
   );
 
   useEffect(() => {
@@ -184,7 +214,9 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
 
   useEffect(() => {
     if (!tokenResponse.access_token || !tokenResponse.refresh_token) {
-      logout();
+      // The tokens mirror the shared storage, where another tab may be halfway through storing a
+      // new pair, so only this tab signs out.
+      clearSession();
       setInitialized(true);
       return;
     }
@@ -240,7 +272,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [fetchUser, logout, storeTokens, tokenResponse]);
+  }, [clearSession, fetchUser, logout, storeTokens, tokenResponse]);
 
   if (!initialized) {
     return <Loader />;

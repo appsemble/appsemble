@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.41.3/config/assets/logo.svg) Appsemble CLI
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.41.4/config/assets/logo.svg) Appsemble CLI
 
 > Manage apps and blocks from the command line.
 
 [![npm](https://img.shields.io/npm/v/@appsemble/cli)](https://www.npmjs.com/package/@appsemble/cli)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.41.3/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.41.3)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.41.4/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.41.4)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -53,8 +53,10 @@ To logout, run the following command and select the client credentials to remove
 apsemble logout
 ```
 
-The Appsemble CLI also supports authentication using the `APPSEMBLE_CLIENT_CREDENTIALS` environment
-variable. This is mostly useful for automation.
+The Appsemble CLI also supports authentication using the `--client-credentials` option or the
+`APPSEMBLE_CLIENT_CREDENTIALS` environment variable. This is mostly useful for automation. For CI
+pipelines, use the client credentials of an organization
+[service account](https://appsemble.app/docs/studio/service-accounts).
 
 ### Organizations
 
@@ -271,5 +273,5 @@ appsemble run-cronjobs --interval 30
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.41.3/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.41.4/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

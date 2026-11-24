@@ -143,6 +143,8 @@ import { pathItems as organizationsOrganizationIdInvites } from './organizations
 import { pathItems as organizationsOrganizationIdMembersMemberIdRole } from './organizations/organizationId/members/memberId/role.js';
 import { pathItems as organizationsOrganizationIdMembersMemberId } from './organizations/organizationId/members/memberId.js';
 import { pathItems as organizationsOrganizationIdMembers } from './organizations/organizationId/members.js';
+import { pathItems as organizationsOrganizationIdServiceAccountsClientId } from './organizations/organizationId/serviceAccounts/clientId.js';
+import { pathItems as organizationsOrganizationIdServiceAccounts } from './organizations/organizationId/serviceAccounts.js';
 import { pathItems as organizationsOrganizationIdSso } from './organizations/organizationId/sso.js';
 import { pathItems as organizationsOrganizationIdSsoDomains } from './organizations/organizationId/sso/domains.js';
 import { pathItems as organizationsOrganizationIdSsoDomainsDomain } from './organizations/organizationId/sso/domains/domain.js';
@@ -343,6 +345,10 @@ export const paths = {
   '/api/organizations/{organizationId}/members/{organizationMemberId}':
     organizationsOrganizationIdMembersMemberId,
   '/api/organizations/{organizationId}/members': organizationsOrganizationIdMembers,
+  '/api/organizations/{organizationId}/service-accounts/{clientId}':
+    organizationsOrganizationIdServiceAccountsClientId,
+  '/api/organizations/{organizationId}/service-accounts':
+    organizationsOrganizationIdServiceAccounts,
   '/api/organizations/{organizationId}/sso/login': organizationsOrganizationIdSsoLogin,
   '/api/organizations/{organizationId}/sso/callback': organizationsOrganizationIdSsoCallback,
   '/api/organizations/{organizationId}/sso': organizationsOrganizationIdSso,

@@ -7,6 +7,7 @@
   - [Platform Guests](#platform-guests)
   - [Platform Users](#platform-users)
   - [Organization Members](#organization-members)
+  - [Service Accounts](#service-accounts)
 - [Apps](#apps)
   - [App Guests](#app-guests)
   - [App Members](#app-members)
@@ -38,6 +39,12 @@ registered OAuth2 client credentials in the platform, they can also use the Apps
 To be able to perform any actions on the platform that require authorization, platform users must be
 a part of an Appsemble organization. For more information, check out
 [the organizations docs](../studio/organizations.mdx)
+
+### Service Accounts
+
+A service account is a non-interactive account of one organization. CI pipelines and other
+automation use it through the API with client credentials. For more information, check out
+[the service accounts docs](../studio/service-accounts.md).
 
 ## Apps
 

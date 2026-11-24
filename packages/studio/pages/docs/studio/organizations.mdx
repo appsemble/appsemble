@@ -95,14 +95,20 @@ to. These roles are the following:
   </table>
 </div>
 
+## Service accounts
+
+Owners create [service accounts](service-accounts.md) on the **Members** page for CI pipelines and
+other automation that uses the API on behalf of the organization.
+
 ## Single sign-on
 
 Owners configure OpenID Connect on the organization's **Single sign-on** page. Register a
 confidential client with the identity provider and use `https://<studio-host>/callback` as its
-redirect URI. Enter the issuer URL, client ID and client secret. The issuer must use HTTPS and be
-one the installation operator allows. The scope includes `openid`; the default scope is
-`openid email profile` and the default group claim is `groups`. The provider sends the email
-address, `email_verified` and the group claim, with Keycloak groups as full paths.
+redirect URI and `https://<studio-host>/` as its post-logout redirect URI. Enter the issuer URL,
+client ID and client secret. The issuer must use HTTPS and be one the installation operator allows.
+The scope includes `openid`; the default scope is `openid email profile` and the default group claim
+is `groups`. The provider sends the email address, `email_verified` and the group claim, with
+Keycloak groups as full paths.
 
 Map provider groups to the organization roles listed above. Group values match exactly, including
 paths such as `/appsemble/maintainers`. A staff member receives the combined permissions of all
@@ -120,6 +126,9 @@ The organization selects a sign-in policy:
   use the selected other sign-in methods. Only Owners invite guests, and losing a staff group does
   not create a guest exception.
 
+The policy does not apply to [service accounts](service-accounts.md), which only use the API with
+client credentials.
+
 Select **Verify connection and save** and sign in with a provider account whose groups grant Owner
 access. The connection is saved after successful verification, and unsuccessful verification keeps
 the active connection intact.
@@ -128,7 +137,9 @@ Staff sign in at `https://<studio-host>/login?organization=<organization id>`. L
 Appsemble account requires signing in to that account first; a matching email address alone does not
 link accounts. Password recovery and other linked sign-in methods cannot bypass an organization's
 required single sign-on, and a sign-in through another organization's provider does not count for
-this organization.
+this organization. Signing out of the Studio also signs out at a provider which offers an
+`end_session_endpoint` and then returns to the Studio, so the next sign-in asks for credentials
+again.
 
 Manage linked organization identities under **Settings > Social login**. **Unlink single sign-on**
 requires recent authentication and a verified recovery email or personal social login. Unlinking

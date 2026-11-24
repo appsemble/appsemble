@@ -15,6 +15,7 @@ export async function getOrganizationMembers(ctx: Context): Promise<void> {
     include: [
       {
         model: User,
+        through: { where: { serviceAccount: false } },
       },
     ],
   });

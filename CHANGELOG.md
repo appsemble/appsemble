@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.41.4](https://gitlab.com/appsemble/appsemble/-/releases/0.41.4)] - 2026-11-23
+
+### Added
+
+- Server: Add verified domains and operator declarations for Studio SSO discovery.
+
+### Changed
+
+- Studio: Discover organization single sign-on from email before password sign-in.
+
+### Fixed
+
+- App: Stop sending session cookies with requests to other origins.
+- React-components: Label password visibility controls for assistive technology.
+- Server: Delete the TLS secret of a domain when its ingress is deleted.
+- Server: Disable organization single sign-on when the organization is deleted.
+- Server: Do not accept an organization SSO authentication time later than the current time.
+- Service-worker: Refresh stored stylesheets of password protected apps when online.
+- Studio: Keep the new session when signing in with other Studio tabs open.
+- Studio: Send signed-in users to the apps page when a register or password page link points outside
+  Studio.
+
+### Security
+
+- Server: Expire access to password protected apps 3 days after the password is entered.
+- Server: Keep visitors on the app after they enter the app password.
+
 ## \[[0.41.3](https://gitlab.com/appsemble/appsemble/-/releases/0.41.3)] - 2026-11-21
 
 ### Added

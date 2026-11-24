@@ -23,7 +23,7 @@ interface LanguageDropdownProps {
 
 export function ProfileDropdown({ className }: LanguageDropdownProps): ReactNode {
   const { formatMessage } = useIntl();
-  const { logout, userInfo } = useUser();
+  const { signOut, userInfo } = useUser();
   const location = useLocation();
   const redirect = useLocationString();
   const qs = useQuery();
@@ -78,7 +78,7 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactNode
       ) : null}
       {userInfo || (!userInfo && sentryDsn) ? <hr className="navbar-divider" /> : null}
       {userInfo ? (
-        <NavbarItem icon="sign-out-alt" onClick={logout}>
+        <NavbarItem icon="sign-out-alt" onClick={signOut}>
           <FormattedMessage {...messages.logoutButton} />
         </NavbarItem>
       ) : (

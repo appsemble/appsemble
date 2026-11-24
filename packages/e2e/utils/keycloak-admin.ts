@@ -241,15 +241,27 @@ export async function createUpstreamOidcClient(
   {
     clientId,
     clientSecret,
+    postLogoutRedirectUris,
     redirectUris,
     requirePkce,
-  }: { clientId: string; clientSecret: string; redirectUris: string[]; requirePkce?: boolean },
+  }: {
+    clientId: string;
+    clientSecret: string;
+    postLogoutRedirectUris?: string[];
+    redirectUris: string[];
+    requirePkce?: boolean;
+  },
 ): Promise<void> {
   await requestKc(`/admin/realms/${realm}/clients`, {
     body: JSON.stringify({
+      attributes: {
+        ...(postLogoutRedirectUris
+          ? { 'post.logout.redirect.uris': postLogoutRedirectUris.join('##') }
+          : {}),
+        ...(requirePkce ? { 'pkce.code.challenge.method': 'S256' } : {}),
+      },
       clientAuthenticatorType: 'client-secret',
       clientId,
-      ...(requirePkce ? { attributes: { 'pkce.code.challenge.method': 'S256' } } : {}),
       directAccessGrantsEnabled: true,
       enabled: true,
       protocol: 'openid-connect',
