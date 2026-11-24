@@ -1,8 +1,8 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.41.4/config/assets/logo.svg) Appsemble React Components
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.42.0/config/assets/logo.svg) Appsemble React Components
 
 > Reusable React components
 
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.41.4/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.41.4)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.42.0/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.42.0)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -17,5 +17,5 @@ repository.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.41.4/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.42.0/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

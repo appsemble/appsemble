@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.41.4
-appVersion: 0.41.4
+version: 0.42.0
+appVersion: 0.42.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,37 +33,59 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Server: Add verified domains and operator declarations for Studio
-        SSO discovery."
+      description: "Server: Add organization service accounts for CI and other
+        non-interactive clients."
+    - kind: added
+      description: "Server: Record the provider account of organization single sign-on
+        identities at each sign-in."
+    - kind: added
+      description: "Server: Return the identity provider end session URL when logging
+        out of organization single sign-on."
+    - kind: added
+      description: "Studio: Create and revoke organization service accounts on the
+        members page."
+    - kind: added
+      description: "Studio: Show the provider account of linked organization single
+        sign-on identities."
+    - kind: added
+      description: "Studio: Sign out at the identity provider when signing out of
+        organization single sign-on."
     - kind: changed
-      description: "Studio: Discover organization single sign-on from email before
-        password sign-in."
+      description: "Server: Provision a service account with credentials from the
+        provision.existingSecret Secret."
     - kind: fixed
-      description: "App: Stop sending session cookies with requests to other origins."
+      description: "E2e: Wait for the OAuth2 callback in loginAppAppsembleOAuth
+        without a redirect."
     - kind: fixed
-      description: "React-components: Label password visibility controls for assistive
-        technology."
+      description: "Server: Do not create a second account when the email typed at
+        sign-in belongs to an existing account."
     - kind: fixed
-      description: "Server: Delete the TLS secret of a domain when its ingress is deleted."
+      description: "Server: Generate invoice PDFs faster and 20 times smaller."
     - kind: fixed
-      description: "Server: Disable organization single sign-on when the organization
-        is deleted."
+      description: "Server: Keep personal client credentials from organization SSO
+        working after signing out."
     - kind: fixed
-      description: "Server: Do not accept an organization SSO authentication time
-        later than the current time."
+      description: "Server: Keep the apps of an organization when deleting the
+        organization fails."
     - kind: fixed
-      description: "Service-worker: Refresh stored stylesheets of password protected
-        apps when online."
+      description: "Server: List the connected apps of a user without opening the
+        database of every app."
     - kind: fixed
-      description: "Studio: Keep the new session when signing in with other Studio tabs open."
+      description: "Server: Serve app requests without serializing the app definition to YAML."
     - kind: fixed
-      description: "Studio: Send signed-in users to the apps page when a register or
-        password page link points outside Studio."
-    - kind: security
-      description: "Server: Expire access to password protected apps 3 days after the
-        password is entered."
-    - kind: security
-      description: "Server: Keep visitors on the app after they enter the app password."
+      description: "Studio: Authorize personal client credentials of an organization
+        SSO account at the identity provider."
+    - kind: fixed
+      description: "Studio: Let Owners sign in again at the provider to change single
+        sign-on settings."
+    - kind: fixed
+      description: "Studio: Show email verification success to signed-out users."
+    - kind: fixed
+      description: "Studio: Show the connected apps in the user settings again."
+    - kind: fixed
+      description: "Studio: Show the creation date of personal client credentials."
+    - kind: fixed
+      description: "Studio: Stay signed out when the session ends while Studio loads the user."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/vscode-extension",
-  "version": "0.41.4",
+  "version": "0.42.0",
   "private": true,
   "displayName": "Appsemble",
   "description": "Visual Studio Code extension for the Appsemble language server.",

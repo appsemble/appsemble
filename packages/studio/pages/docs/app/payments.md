@@ -67,14 +67,14 @@ pages:
   - name: CheckoutUrl
     blocks:
       - type: image
-        version: 0.41.4
+        version: 0.42.0
         parameters:
           url: banana
           alt: Image of a banana
           rounded: false
           alignment: center
       - type: button-list
-        version: 0.41.4
+        version: 0.42.0
         parameters:
           buttons:
             - label: Purchase

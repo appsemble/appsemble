@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.42.0](https://gitlab.com/appsemble/appsemble/-/releases/0.42.0)] - 2026-11-24
+
+### Added
+
+- Server: Add organization service accounts for CI and other non-interactive clients.
+- Server: Record the provider account of organization single sign-on identities at each sign-in.
+- Server: Return the identity provider end session URL when logging out of organization single
+  sign-on.
+- Studio: Create and revoke organization service accounts on the members page.
+- Studio: Show the provider account of linked organization single sign-on identities.
+- Studio: Sign out at the identity provider when signing out of organization single sign-on.
+
+### Changed
+
+- Server: Provision a service account with credentials from the `provision.existingSecret` Secret.
+
+### Fixed
+
+- E2e: Wait for the OAuth2 callback in `loginAppAppsembleOAuth` without a redirect.
+- Server: Do not create a second account when the email typed at sign-in belongs to an existing
+  account.
+- Server: Generate invoice PDFs faster and 20 times smaller.
+- Server: Keep personal client credentials from organization SSO working after signing out.
+- Server: Keep the apps of an organization when deleting the organization fails.
+- Server: List the connected apps of a user without opening the database of every app.
+- Server: Serve app requests without serializing the app definition to YAML.
+- Studio: Authorize personal client credentials of an organization SSO account at the identity
+  provider.
+- Studio: Let Owners sign in again at the provider to change single sign-on settings.
+- Studio: Show email verification success to signed-out users.
+- Studio: Show the connected apps in the user settings again.
+- Studio: Show the creation date of personal client credentials.
+- Studio: Stay signed out when the session ends while Studio loads the user.
+
 ## \[[0.41.4](https://gitlab.com/appsemble/appsemble/-/releases/0.41.4)] - 2026-11-23
 
 ### Added
