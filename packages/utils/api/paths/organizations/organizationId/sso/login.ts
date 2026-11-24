@@ -38,6 +38,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             type: 'object',
             properties: {
               redirect: { type: 'string' },
+              email: { type: 'string', format: 'email', maxLength: 320 },
               link: { type: 'boolean' },
               configuration: { $ref: '#/components/schemas/OrganizationSsoConfiguration' },
             },
