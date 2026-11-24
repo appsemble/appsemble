@@ -24,6 +24,11 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
-    responses: { 200: { description: 'The authenticated Studio token response.' } },
+    responses: {
+      200: {
+        description:
+          'The authenticated Studio token response, or the personal client credentials which the sign-in authorized.',
+      },
+    },
   },
 };

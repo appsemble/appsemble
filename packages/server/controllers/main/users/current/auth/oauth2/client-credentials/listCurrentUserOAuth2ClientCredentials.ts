@@ -7,7 +7,15 @@ export async function listCurrentUserOAuth2ClientCredentials(ctx: Context): Prom
   const user = ctx.user!;
 
   const credentials = await OAuth2ClientCredentials.findAll({
-    attributes: ['created', 'description', 'id', 'expires', 'scopes'],
+    attributes: [
+      'created',
+      'description',
+      'id',
+      'expires',
+      'scopes',
+      'loginMethod',
+      'OrganizationSsoSessionId',
+    ],
     raw: true,
     where: {
       expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
@@ -15,8 +23,9 @@ export async function listCurrentUserOAuth2ClientCredentials(ctx: Context): Prom
     },
   });
 
-  ctx.body = credentials.map(({ scopes, ...cred }) => ({
+  ctx.body = credentials.map(({ loginMethod, OrganizationSsoSessionId, scopes, ...cred }) => ({
     ...cred,
     scopes: scopes.split(' '),
+    authorizationEnded: loginMethod === 'oidc' && !OrganizationSsoSessionId,
   }));
 }

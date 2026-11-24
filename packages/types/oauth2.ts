@@ -33,4 +33,9 @@ export interface OAuth2ClientCredentials {
    * The OAuth2 scopes these client credentials have been granted.
    */
   scopes: string[];
+
+  /**
+   * Whether the organization identity provider no longer authorizes these client credentials.
+   */
+  authorizationEnded?: boolean;
 }

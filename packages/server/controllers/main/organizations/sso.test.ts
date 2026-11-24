@@ -21,6 +21,7 @@ import {
 import { setArgv } from '../../../utils/argv.js';
 import { createJWTResponse } from '../../../utils/createJWTResponse.js';
 import { createServer } from '../../../utils/createServer.js';
+import { createOAuth2ClientCredentials } from '../../../utils/oauth2.js';
 import { applyOrganizationSsoConfiguration } from '../../../utils/organizationSso.js';
 import { createTestUser } from '../../../utils/test/authorization.js';
 
@@ -52,7 +53,7 @@ function signIn(options: Parameters<typeof createJWTResponse>[1] = {}): void {
 async function signInWithSso(
   groups = ['/editors', '/members'],
   providerConfiguration = configuration,
-): Promise<void> {
+): Promise<OrganizationSsoSession> {
   const sso = await applyOrganizationSsoConfiguration('staff', providerConfiguration, 'deployment');
   const identity = await OrganizationSsoIdentity.create({
     issuer: sso.issuer,
@@ -69,13 +70,24 @@ async function signInWithSso(
     groups,
   });
   signIn({ loginMethod: 'oidc', organizationSsoSessionId: session.id });
+  return session;
 }
 
-async function authorizePersonalCli(): Promise<void> {
-  const credentials = await request.post('/api/users/current/auth/oauth2/client-credentials', {
-    description: 'Staff CLI',
-    scopes: ['organizations:write'],
-  });
+async function authorizePersonalCli(session?: OrganizationSsoSession): Promise<void> {
+  const credentials = session
+    ? {
+        data: await createOAuth2ClientCredentials({
+          description: 'Staff CLI',
+          scopes: 'organizations:write',
+          UserId: user.id,
+          loginMethod: 'oidc',
+          OrganizationSsoSessionId: session.id,
+        }),
+      }
+    : await request.post('/api/users/current/auth/oauth2/client-credentials', {
+        description: 'Staff CLI',
+        scopes: ['organizations:write'],
+      });
   const response = await request.post(
     '/auth/oauth2/token',
     new URLSearchParams({
@@ -507,8 +519,7 @@ describe('organization single sign-on', () => {
   });
 
   it('revokes personal CLI organization access when membership is removed', async () => {
-    await signInWithSso();
-    await authorizePersonalCli();
+    await authorizePersonalCli(await signInWithSso());
     const before = await request.get('/api/organizations/staff/members');
     await OrganizationMember.destroy({ where: { OrganizationId: 'staff', UserId: user.id } });
     const after = await request.get('/api/organizations/staff/members');

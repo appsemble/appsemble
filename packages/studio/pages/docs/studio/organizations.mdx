@@ -154,8 +154,13 @@ again, sign in to the existing Appsemble account and use the organization's sign
 
 Provider groups are refreshed when the provider access token expires, at most one hour after the
 previous refresh, and a Studio session ends after eight hours. Removing a group therefore takes
-effect at the next refresh, including for personal CLI credentials, which keep working beyond the
-Studio session while the provider grant remains valid.
+effect at the next refresh, including for personal CLI credentials.
+
+Registering personal client credentials in a session from the organization's provider asks the
+provider for offline access, so the client must allow the `offline_access` scope. The credentials
+use that grant of their own: they keep working after signing out, and stop when the provider ends
+the grant, disables the account or removes its groups. The client credentials settings show
+credentials whose grant has ended; register new ones to replace them.
 
 Removing the single sign-on configuration deletes group-managed memberships and keeps manual and
 guest memberships; the removing Owner keeps the Owner role. It ends all sessions through the

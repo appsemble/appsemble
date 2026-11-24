@@ -191,19 +191,67 @@ test.describe('Studio organization Keycloak OIDC', () => {
             token: await getAdminToken(),
           },
         );
-        const returningPage = await returningContext.newPage();
-        await returningPage.goto(`/en/login?organization=${organization.id}`);
-        await returningPage
-          .getByRole('button', { name: 'Login with Staff Keycloak', exact: true })
-          .click();
-        await signInAtKeycloak(returningPage, staffEmail, organization.id);
-        await expect(returningPage).toHaveURL(
-          new RegExp(`/organizations/${organization.id}(?:/|$)`),
-        );
-        await returningPage.goto(`/en/organizations/${organization.id}/members`);
-        const returningStaffRow = returningPage.getByRole('row', { name: /Studio Staff/ });
-        await expect(returningStaffRow).toContainText('AppTranslator');
-        await expect(returningStaffRow).not.toContainText('AppContentsManager');
+        const realm = await requestKc(`/admin/realms/${KEYCLOAK_REALM}`, {
+          expectedStatuses: [200],
+          method: 'GET',
+          token: await getAdminToken(),
+        });
+        const { accessTokenLifespan } = (await realm.json()) as { accessTokenLifespan: number };
+        // Provider grants from here on need renewing within seconds, so the CLI token request below
+        // depends on a grant that is still valid at Keycloak.
+        await requestKc(`/admin/realms/${KEYCLOAK_REALM}`, {
+          body: JSON.stringify({ accessTokenLifespan: 10 }),
+          expectedStatuses: [204],
+          method: 'PUT',
+          token: await getAdminToken(),
+        });
+        try {
+          const returningPage = await returningContext.newPage();
+          await returningPage.goto(`/en/login?organization=${organization.id}`);
+          await returningPage
+            .getByRole('button', { name: 'Login with Staff Keycloak', exact: true })
+            .click();
+          await signInAtKeycloak(returningPage, staffEmail, organization.id);
+          await expect(returningPage).toHaveURL(
+            new RegExp(`/organizations/${organization.id}(?:/|$)`),
+          );
+          await returningPage.goto(`/en/organizations/${organization.id}/members`);
+          const returningStaffRow = returningPage.getByRole('row', { name: /Studio Staff/ });
+          await expect(returningStaffRow).toContainText('AppTranslator');
+          await expect(returningStaffRow).not.toContainText('AppContentsManager');
+
+          await returningPage.goto('/en/settings/client-credentials');
+          await returningPage.getByRole('button', { name: 'Register', exact: true }).click();
+          await returningPage.getByRole('textbox', { name: /^Description/ }).fill('Staff CLI');
+          await returningPage.getByText('Create and manage organizations', { exact: true }).click();
+          await returningPage.getByRole('button', { name: 'Create', exact: true }).click();
+          const cliCredentials = await returningPage
+            .getByRole('textbox', { name: /^Client credentials/ })
+            .inputValue();
+          const authorized = Date.now();
+          await returningPage.goto(
+            `${KEYCLOAK_BASE_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/logout?client_id=${clientId}`,
+          );
+          await returningPage.getByRole('button', { name: 'Logout', exact: true }).click();
+          await expect(
+            returningPage.getByRole('heading', { name: 'You are logged out' }),
+          ).toBeVisible();
+          await new Promise((resolve) => {
+            setTimeout(resolve, authorized + 11_000 - Date.now());
+          });
+          const cliToken = await request.post('/auth/oauth2/token', {
+            form: { grant_type: 'client_credentials', scope: 'organizations:write' },
+            headers: { authorization: `Basic ${Buffer.from(cliCredentials).toString('base64')}` },
+          });
+          expect(cliToken.status()).toBe(200);
+        } finally {
+          await requestKc(`/admin/realms/${KEYCLOAK_REALM}`, {
+            body: JSON.stringify({ accessTokenLifespan }),
+            expectedStatuses: [204],
+            method: 'PUT',
+            token: await getAdminToken(),
+          });
+        }
         await firstStaffPage.reload();
         await expect(firstStaffRow).not.toContainText('AppContentsManager');
 

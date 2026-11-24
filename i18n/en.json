@@ -1115,6 +1115,7 @@
   "studio.XAnhya": "Default language",
   "studio.XAw0Lo": "Update an existing {resourceName} resource",
   "studio.XD8sl2": "Sentry environment",
+  "studio.XR05UA": "Authorization ended; register new client credentials",
   "studio.XTIljc": "App is already in collection",
   "studio.XULd/v": "{count, plural, one {This secret needs a value before the app can use it:} other {These secrets need a value before the app can use them:}}",
   "studio.XVpEX+": "Cookie authentication",

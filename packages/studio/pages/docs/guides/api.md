@@ -19,6 +19,11 @@ Personal client credentials act as the user who registered them. For CI pipeline
 automation on behalf of an organization, use the client credentials of a
 [service account](../studio/service-accounts.md).
 
+When you sign in through your organization's [single sign-on](../studio/organizations.mdx), the
+identity provider authorizes new personal client credentials for offline access. They keep working
+after you sign out, until the provider ends that authorization; the client credentials settings then
+show that you need to register new ones.
+
 The client credentials may be used to request an access token. They need to be joined using a colon
 (`:`) and encoded as base64.
 
