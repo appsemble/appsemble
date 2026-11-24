@@ -24,9 +24,9 @@ export function LoginPage(): ReactNode {
   const { login, userInfo } = useUser();
   const qs = useQuery();
   const busy = useToggle();
-  const [discoveredOrganization, setDiscoveredOrganization] = useState<string>();
+  const [discovered, setDiscovered] = useState<{ organizationId: string; email: string }>();
   const organizationId =
-    discoveredOrganization || (qs.get('personal') === '1' ? null : qs.get('organization'));
+    discovered?.organizationId || (qs.get('personal') === '1' ? null : qs.get('organization'));
   const redirect = qs.get('redirect') || '/apps';
 
   const onPasswordLogin = useCallback(
@@ -44,6 +44,9 @@ export function LoginPage(): ReactNode {
     [busy, login],
   );
 
+  const onOrganizationSelected = (id: string, email: string): void =>
+    setDiscovered({ organizationId: id, email });
+
   if (!isLocalRedirect(redirect)) {
     return (
       <Content>
@@ -57,11 +60,12 @@ export function LoginPage(): ReactNode {
     return (
       <Content>
         <OrganizationLogin
-          autoStart={Boolean(discoveredOrganization)}
+          autoStart={Boolean(discovered)}
           busy={busy}
+          email={discovered?.email}
           key={organizationId}
-          onBack={discoveredOrganization ? () => setDiscoveredOrganization(undefined) : undefined}
-          onOrganizationSelected={setDiscoveredOrganization}
+          onBack={discovered ? () => setDiscovered(undefined) : undefined}
+          onOrganizationSelected={onOrganizationSelected}
           onPasswordLogin={onPasswordLogin}
           organizationId={organizationId}
         />
@@ -76,7 +80,7 @@ export function LoginPage(): ReactNode {
     <Content>
       <LoginForm
         busy={busy}
-        onOrganizationSelected={setDiscoveredOrganization}
+        onOrganizationSelected={onOrganizationSelected}
         onPasswordLogin={onPasswordLogin}
       />
     </Content>

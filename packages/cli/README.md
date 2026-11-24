@@ -47,6 +47,11 @@ To login, run the following command and follow the instructions in the output:
 appsemble login
 ```
 
+If you sign in to Appsemble through your organization's single sign-on, the organization's identity
+provider authorizes the new client credentials for offline access. They keep working after you sign
+out of Appsemble Studio, until the provider ends that authorization; then run `appsemble login`
+again.
+
 To logout, run the following command and select the client credentials to remove:
 
 ```sh

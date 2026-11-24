@@ -239,7 +239,7 @@ export async function checkUserOrganizationPermissions({
   context,
   organizationId,
   requiredPermissions,
-}: CheckOrganizationPermissionsParams): Promise<void> {
+}: CheckOrganizationPermissionsParams): Promise<OrganizationMember> {
   const { user: authSubject } = context;
 
   assertKoaCondition(authSubject != null, context, 401);
@@ -266,6 +266,7 @@ export async function checkUserOrganizationPermissions({
     403,
     'User does not have sufficient organization permissions.',
   );
+  return organizationMember;
 }
 
 export async function checkOrganizationOwnerRemoval(

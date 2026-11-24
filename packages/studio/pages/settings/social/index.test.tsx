@@ -28,7 +28,13 @@ vi.hoisted(() => {
 
 const transport = axios.defaults.adapter;
 const issuer = 'https://identity.example.com/realms/staff';
-let identities: { id: string; issuer: string; subject: string }[];
+let identities: {
+  id: string;
+  issuer: string;
+  subject: string;
+  username: string | null;
+  organizations: { id: string; name: string | null; provider: string }[];
+}[];
 let sessionRevoked: boolean;
 let errorMessage: string | undefined;
 let errorStatus: number;
@@ -41,8 +47,14 @@ beforeEach(() => {
   errorMessage = undefined;
   errorStatus = 403;
   identities = [
-    { id: 'first', issuer, subject: 'staff-1' },
-    { id: 'second', issuer, subject: 'staff-2' },
+    {
+      id: 'first',
+      issuer,
+      subject: 'staff-1',
+      username: 'staff@identity.example.com',
+      organizations: [{ id: 'staff', name: 'Staff', provider: 'Staff Keycloak' }],
+    },
+    { id: 'second', issuer, subject: 'staff-2', username: null, organizations: [] },
   ];
   axios.defaults.adapter = (config) => {
     const response = {
@@ -131,6 +143,27 @@ async function confirmUnlink(subject = 'staff-1'): Promise<void> {
   ).toBeDefined();
   fireEvent.click(within(dialog).getByRole('button', { name: 'Unlink single sign-on' }));
 }
+
+it('shows the organization, provider and account of a linked identity', async () => {
+  renderAccounts();
+  const identity = await screen.findByRole('region', { name: `${issuer} (staff-1)` });
+
+  expect(
+    within(identity).getByRole('heading', { name: 'staff@identity.example.com' }),
+  ).toBeDefined();
+  expect(within(identity).getByText('Organization: Staff (Staff Keycloak)')).toBeDefined();
+  expect(within(identity).getByText(`Issuer: ${issuer}`)).toBeDefined();
+  expect(within(identity).getByText('Account ID: staff-1')).toBeDefined();
+});
+
+it('heads an identity with its account ID before the provider account is known', async () => {
+  renderAccounts();
+  const identity = await screen.findByRole('region', { name: `${issuer} (staff-2)` });
+
+  expect(within(identity).getByRole('heading', { name: 'staff-2' })).toBeDefined();
+  expect(within(identity).getByText(`Issuer: ${issuer}`)).toBeDefined();
+  expect(within(identity).queryByText('Account ID: staff-2')).toBeNull();
+});
 
 it('unlinks the selected SSO account and preserves other identities and an unrelated session', async () => {
   const page = renderAccounts();

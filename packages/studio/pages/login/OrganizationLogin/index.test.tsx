@@ -38,6 +38,7 @@ let discoveryFailure: boolean;
 let startFailure: boolean;
 let configuredSso: boolean;
 let discoveryPending: Promise<void> | undefined;
+let ssoStarts: { url: string; email?: string }[];
 
 beforeEach(() => {
   localStorage.clear();
@@ -47,6 +48,7 @@ beforeEach(() => {
   startFailure = false;
   configuredSso = true;
   discoveryPending = undefined;
+  ssoStarts = [];
   axios.defaults.adapter = async (config) => {
     const body = config.data ? (JSON.parse(config.data) as Record<string, string>) : {};
     const response = { data: {} as unknown, status: 200, statusText: 'OK', headers: {}, config };
@@ -75,6 +77,7 @@ beforeEach(() => {
     } else if (config.url === '/api/users/current/organizations') {
       response.data = [];
     } else if (config.method === 'post' && config.url.endsWith('/sso/login')) {
+      ssoStarts.push({ url: config.url, email: body.email });
       if (startFailure) {
         throw new AxiosError('Unavailable', 'ERR_BAD_RESPONSE', config, undefined, {
           ...response,
@@ -177,6 +180,20 @@ it('starts the matched organization SSO without another sign-in click and preser
   });
 });
 
+it.each(['/login', '/login?organization=staff', '/login?organization=example'])(
+  'sends the email typed at %s to the organization single sign-on it discovers',
+  async (entry) => {
+    policy = 'optional';
+    renderLogin(entry);
+    await continueWithEmail('staff@staff.example');
+    await vi.waitFor(() => {
+      expect(ssoStarts).toStrictEqual([
+        { url: '/api/organizations/staff/sso/login', email: 'staff@staff.example' },
+      ]);
+    });
+  },
+);
+
 it('asks the user to choose between shared-domain matches', async () => {
   renderLogin();
   await continueWithEmail('person@shared.example');
@@ -189,6 +206,9 @@ it('asks the user to choose between shared-domain matches', async () => {
       organizationId: 'partners',
     });
   });
+  expect(ssoStarts).toStrictEqual([
+    { url: '/api/organizations/partners/sso/login', email: 'person@shared.example' },
+  ]);
 });
 
 it('returns keyboard focus to email when leaving the organization chooser', async () => {
@@ -210,6 +230,16 @@ it('starts organization single sign-on with one click in organization context', 
       organizationId: 'example',
       redirect: '/destination',
     });
+  });
+});
+
+it('sends no email when organization single sign-on starts without a typed email', async () => {
+  renderLogin('/login?organization=example');
+  fireEvent.click(await screen.findByRole('button', { name: 'Login with Staff SSO' }));
+  await vi.waitFor(() => {
+    expect(ssoStarts).toStrictEqual([
+      { url: '/api/organizations/example/sso/login', email: undefined },
+    ]);
   });
 });
 

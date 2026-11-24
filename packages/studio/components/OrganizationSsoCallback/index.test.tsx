@@ -66,10 +66,10 @@ function Account(): ReactNode {
   );
 }
 
-function renderCallback(): void {
+function renderCallback(query = 'code=code&state=state'): void {
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/nl/callback?code=code&state=state']}>
+      <MemoryRouter initialEntries={[`/nl/callback?${query}`]}>
         <UserProvider>
           <Routes>
             <Route
@@ -152,4 +152,19 @@ it('should reject a continuation destination outside Studio', async () => {
   expect(
     await screen.findByText('The state parameter is invalid. Please try again.'),
   ).toBeDefined();
+});
+
+it('should show the provider error and return to the preserved destination', async () => {
+  redirect = '/en/settings/client-credentials';
+  renderCallback(
+    'error=invalid_scope&error_description=Invalid+scopes%3A+openid+email+profile+offline_access&state=state',
+  );
+
+  expect(
+    await screen.findByText('Invalid scopes: openid email profile offline_access'),
+  ).toBeDefined();
+  expect(screen.getByRole('link', { name: 'Return' })).toHaveProperty(
+    'href',
+    'http://localhost/en/settings/client-credentials',
+  );
 });
