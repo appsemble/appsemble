@@ -1,14 +1,18 @@
 import { Agent } from 'node:https';
 
 import { version } from '@appsemble/node-utils';
+import { PredefinedOrganizationRole } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { request as apiRequest, setTestApp } from 'axios-test-instance';
 import { fs, vol } from 'memfs';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, AppCollection, Organization } from '../../models/index.js';
+import { App, AppCollection, Organization, OrganizationMember } from '../../models/index.js';
 import { setArgv, updateArgv } from '../argv.js';
+import { createServer } from '../createServer.js';
+import { authorizeStudio, createTestUser } from '../test/authorization.js';
 
 let kubernetes: typeof import('./kubernetes.js');
 const mock = new MockAdapter(axios as ConstructorParameters<typeof MockAdapter>[0]);
@@ -573,6 +577,50 @@ describe('kubernetes', () => {
         ['delete', '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com'],
         ['delete', '/api/v1/namespaces/test/secrets/example-com-tls'],
       ]);
+    });
+
+    it('should remove the app domain after deleting its organization commits', async () => {
+      const user = await createTestUser();
+      const org = await Organization.create({ id: 'org' });
+      await OrganizationMember.create({
+        OrganizationId: org.id,
+        role: PredefinedOrganizationRole.Owner,
+        UserId: user.id,
+      });
+      const app = await App.create({
+        domain: 'example.com',
+        definition: '',
+        OrganizationId: org.id,
+        vapidPublicKey: '',
+        vapidPrivateKey: '',
+      });
+      setArgv({
+        host: 'http://localhost',
+        secret: 'test',
+        serviceName: 'review-service',
+        servicePort: 'http',
+      });
+      await setTestApp(await createServer());
+      await kubernetes.configureDNS();
+      authorizeStudio();
+
+      const ingress = '/apis/networking.k8s.io/v1/namespaces/test/ingresses/example-com';
+      const secret = '/api/v1/namespaces/test/secrets/example-com-tls';
+      const domainResources = new Set([ingress, secret]);
+      const appsWhenIngressIsDeleted: number[] = [];
+      mock.reset();
+      mock.onPost(/.*/).reply((request) => [201, request.data]);
+      mock.onDelete(/.*/).reply(async ({ url }) => {
+        if (url === ingress) {
+          appsWhenIngressIsDeleted.push(await App.count({ where: { id: app.id } }));
+        }
+        domainResources.delete(url!);
+        return [204];
+      });
+
+      expect((await apiRequest.delete(`/api/organizations/${org.id}`)).status).toBe(200);
+      expect(appsWhenIngressIsDeleted).toStrictEqual([0]);
+      expect([...domainResources]).toStrictEqual([]);
     });
 
     it('should not delete any ingresses if the app does not have a custom domain', async () => {

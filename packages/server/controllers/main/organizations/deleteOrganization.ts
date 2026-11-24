@@ -31,7 +31,7 @@ export async function deleteOrganization(ctx: Context): Promise<void> {
   assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
 
   await organization.reload({
-    include: [BlockVersion, AppCollection, App],
+    include: [BlockVersion, AppCollection],
   });
 
   assertKoaCondition(
@@ -48,11 +48,12 @@ export async function deleteOrganization(ctx: Context): Promise<void> {
     'Cannot delete an organization with associated app collections.',
   );
 
-  organization.Apps.map(async (app) => {
-    await app.destroy();
-  });
-
   await transactional(async (transaction) => {
+    await App.destroy({
+      individualHooks: true,
+      where: { OrganizationId: organizationId },
+      transaction,
+    });
     await revokeServiceAccounts({ OrganizationId: organizationId }, transaction);
     await organization.destroy({ transaction });
   });
