@@ -133,9 +133,11 @@ Select **Verify connection and save** and sign in with a provider account whose 
 access. The connection is saved after successful verification, and unsuccessful verification keeps
 the active connection intact.
 
-Staff sign in at `https://<studio-host>/login?organization=<organization id>`. Linking an existing
-Appsemble account requires signing in to that account first; a matching email address alone does not
-link accounts. Password recovery and other linked sign-in methods cannot bypass an organization's
+Staff sign in at `https://<studio-host>/login?organization=<organization id>` or by entering their
+email address on the Studio sign-in page. An email address that belongs to an existing Appsemble
+account, whether entered on the sign-in page or sent by the provider, must be linked first: sign in
+to that account, then link organization single sign-on. A matching email address alone does not link
+accounts. Password recovery and other linked sign-in methods cannot bypass an organization's
 required single sign-on, and a sign-in through another organization's provider does not count for
 this organization. Signing out of the Studio also signs out at a provider which offers an
 `end_session_endpoint` and then returns to the Studio, so the next sign-in asks for credentials

@@ -1,7 +1,7 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, getAppDB } from '../../../../../../../models/index.js';
+import { App, getAppDB, UserAppAccount } from '../../../../../../../models/index.js';
 import { checkAppSecurityPolicy } from '../../../../../../../utils/auth.js';
 import { createAppOAuth2AuthorizationCode } from '../../../../../../../utils/oauth2.js';
 
@@ -44,6 +44,8 @@ export async function verifyCurrentUserOAuth2AppConsent(ctx: Context): Promise<v
       appName: app.definition.name,
     },
   );
+  // Recording the account on every sign-in restores it if it was ever missed.
+  await UserAppAccount.upsert({ UserId: authSubject!.id, AppId: app.id });
 
   const appOauth2AuthorizationCode = await createAppOAuth2AuthorizationCode(
     app,

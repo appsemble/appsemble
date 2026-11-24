@@ -30,6 +30,7 @@ export interface OrganizationSsoFlow {
   nonce: string;
   codeVerifier: string;
   expires: number;
+  email?: string;
   linkUserId?: string;
   candidateId?: string;
 
@@ -140,7 +141,7 @@ export function getOrganizationOidcConfiguration(sso: OrganizationSso): Promise<
 export async function startOrganizationSsoAuthorization(
   ctx: Context,
   sso: OrganizationSso,
-  purpose: Pick<OrganizationSsoFlow, 'candidateId' | 'credentials' | 'linkUserId'>,
+  purpose: Pick<OrganizationSsoFlow, 'candidateId' | 'credentials' | 'email' | 'linkUserId'>,
   scope = sso.scope,
 ): Promise<string> {
   const config = await getOrganizationOidcConfiguration(sso);

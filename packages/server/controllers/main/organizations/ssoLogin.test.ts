@@ -15,6 +15,7 @@ import { QueryTypes } from 'sequelize';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  EmailAuthorization,
   getDB,
   OAuth2ClientCredentials,
   Organization,
@@ -189,10 +190,11 @@ function authorizeAtProvider(response: AxiosResponse): { state: string; cookie: 
 async function begin(
   link = false,
   candidate?: OrganizationSsoConfiguration,
+  email?: string,
 ): Promise<{ state: string; cookie: string }> {
   const response = await request.post(
     `${path}/login`,
-    { link, ...(candidate ? { configuration: candidate } : {}) },
+    { link, email, ...(candidate ? { configuration: candidate } : {}) },
     { headers: { origin } },
   );
   expect(response.status).toBe(200);
@@ -564,6 +566,30 @@ describe('organization OIDC sign-in', () => {
     request.defaults.headers.common.authorization = `Bearer ${linked.data.access_token}`;
     const current = await request.get('/api/users/current');
     expect(current.data.sub).toBe(user.id);
+  });
+
+  it.each([
+    ['primary email', 'Nikolay@Appsemble.example'],
+    ['unverified secondary email', 'nikolay@personal.example'],
+  ])(
+    'requires explicit linking when the email typed to sign in is the %s of an account',
+    async (description, typedEmail) => {
+      const user = await createTestUser('nikolay@appsemble.example');
+      await EmailAuthorization.create({
+        UserId: user.id,
+        email: 'nikolay@personal.example',
+        verified: false,
+      });
+      const response = await complete(await begin(false, undefined, typedEmail));
+      expect(response.status).toBe(409);
+      expect(await User.count()).toBe(1);
+    },
+  );
+
+  it('creates an account when the email typed to sign in belongs to no account', async () => {
+    const response = await complete(await begin(false, undefined, 'newcomer@appsemble.example'));
+    expect(response.status).toBe(200);
+    expect(await User.count({ where: { primaryEmail: 'staff@example.com' } })).toBe(1);
   });
 
   it('does not restore an account connection unlinked while sign-in is completing', async () => {

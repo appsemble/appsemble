@@ -22,8 +22,9 @@ import { useUser } from '../../../components/UserProvider/index.js';
 
 interface OrganizationLoginProps {
   readonly autoStart?: boolean;
+  readonly email?: string;
   readonly onBack?: () => void;
-  readonly onOrganizationSelected: (organizationId: string) => void;
+  readonly onOrganizationSelected: (organizationId: string, email: string) => void;
   readonly organizationId: string;
   readonly onPasswordLogin: (values: LoginFormValues) => Promise<void>;
   readonly busy: Toggle;
@@ -31,6 +32,7 @@ interface OrganizationLoginProps {
 
 export function OrganizationLogin({
   autoStart,
+  email,
   onBack,
   onOrganizationSelected,
   organizationId,
@@ -47,33 +49,37 @@ export function OrganizationLogin({
   const started = useRef(false);
   const redirect = qs.get('redirect') || `/organizations/${encodeURIComponent(organizationId)}`;
 
-  const start = useCallback(async () => {
-    busy.enable();
-    setStartError(false);
-    try {
-      const response = await axios.post<{ authorizationUrl: string }>(url, {
-        redirect,
-        link: Boolean(userInfo),
-      });
-      const { authorizationUrl } = response.data;
-      const state = new URL(authorizationUrl).searchParams.get('state');
-      sessionStorage.setItem(
-        storageKey,
-        JSON.stringify({ organizationId, authorizationUrl, state, redirect }),
-      );
-      window.location.href = authorizationUrl;
-    } catch {
-      setStartError(true);
-      busy.disable();
-    }
-  }, [busy, organizationId, redirect, url, userInfo]);
+  const start = useCallback(
+    async (typedEmail?: string) => {
+      busy.enable();
+      setStartError(false);
+      try {
+        const response = await axios.post<{ authorizationUrl: string }>(url, {
+          redirect,
+          link: Boolean(userInfo),
+          email: typedEmail,
+        });
+        const { authorizationUrl } = response.data;
+        const state = new URL(authorizationUrl).searchParams.get('state');
+        sessionStorage.setItem(
+          storageKey,
+          JSON.stringify({ organizationId, authorizationUrl, state, redirect }),
+        );
+        window.location.href = authorizationUrl;
+      } catch {
+        setStartError(true);
+        busy.disable();
+      }
+    },
+    [busy, organizationId, redirect, url, userInfo],
+  );
 
   useEffect(() => {
     if (autoStart && data && !userInfo && !started.current) {
       started.current = true;
-      start();
+      start(email);
     }
-  }, [autoStart, data, redirect, start, userInfo]);
+  }, [autoStart, data, email, redirect, start, userInfo]);
 
   if (loading) {
     return <Loader />;
@@ -108,7 +114,7 @@ export function OrganizationLogin({
           <FormattedMessage {...messages.error} />
         </Message>
       ) : null}
-      <Button color="primary" disabled={busy.enabled} onClick={start}>
+      <Button color="primary" disabled={busy.enabled} onClick={() => start(email)}>
         {userInfo ? (
           <FormattedMessage {...messages.link} />
         ) : (
@@ -133,8 +139,8 @@ export function OrganizationLogin({
         <LoginForm
           allowedLoginMethods={data.allowedLoginMethods}
           busy={busy}
-          onOrganizationSelected={(id) =>
-            id === organizationId ? start() : onOrganizationSelected(id)
+          onOrganizationSelected={(id, typedEmail) =>
+            id === organizationId ? start(typedEmail) : onOrganizationSelected(id, typedEmail)
           }
           onPasswordLogin={onPasswordLogin}
           organizationId={organizationId}

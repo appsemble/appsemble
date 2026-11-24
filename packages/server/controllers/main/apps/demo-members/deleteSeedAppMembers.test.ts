@@ -87,7 +87,7 @@ describe('deleteDemoAppMembers', () => {
   });
 
   it('should throw if the app is not in demo mode', async () => {
-    authorizeClientCredentials('apps:write');
+    await authorizeClientCredentials('apps:write');
     await app.update({ demoMode: false });
     const response = await request.delete(`/api/apps/${app.id}/demo-members`);
     expect(response).toMatchInlineSnapshot(`
