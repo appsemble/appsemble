@@ -1,7 +1,7 @@
 import { hash } from 'bcrypt';
 import { logger } from '@appsemble/node-utils';
 import {
-  type PredefinedOrganizationRole,
+  PredefinedOrganizationRole,
   predefinedOrganizationRoles,
   SubscriptionPlanType,
 } from '@appsemble/types';
@@ -20,9 +20,10 @@ import {
 } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { reconcileDNS } from '../utils/dns/index.js';
+import { createServiceAccount } from '../utils/serviceAccounts.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
-const provisionDescription = 'Used for provisioning the review environment';
+const provisionDescription = 'Provisioned service account';
 const provisionScopes =
   'apps:write resources:write assets:write blocks:write organizations:write groups:write';
 
@@ -31,17 +32,18 @@ export interface ProvisionOptions {
   clientCredentials: string;
   host?: string;
   organizationId: string;
-  organizationRole: PredefinedOrganizationRole;
+  organizationRole?: PredefinedOrganizationRole;
   organizationSubscription: SubscriptionPlanType;
   skipCustomDomains: boolean;
-  userEmail: string;
-  userName: string;
-  userPassword: string;
-  userTimezone: string;
+  userEmail?: string;
+  userName?: string;
+  userPassword?: string;
+  userTimezone?: string;
 }
 
 export const command = 'provision';
-export const description = 'Provision the default organization, bootstrap user, and DNS state';
+export const description =
+  'Provision the default organization, its service account, a bootstrap user, and DNS state';
 
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs)
@@ -61,18 +63,16 @@ export function builder(yargs: Argv): Argv {
       desc: 'The subscription plan to set on the organization.',
     })
     .option('user-email', {
-      desc: 'The bootstrap user email address.',
-      required: true,
+      desc: 'The bootstrap user email address. Without it, no bootstrap user is provisioned.',
+      implies: ['user-name', 'user-password'],
       type: 'string',
     })
     .option('user-name', {
       desc: 'The bootstrap user name.',
-      required: true,
       type: 'string',
     })
     .option('user-password', {
       desc: 'The bootstrap user password.',
-      required: true,
       type: 'string',
     })
     .option('user-timezone', {
@@ -81,7 +81,7 @@ export function builder(yargs: Argv): Argv {
       type: 'string',
     })
     .option('client-credentials', {
-      desc: 'Client credentials to create or update for the bootstrap user.',
+      desc: 'The <id>:<secret> client credentials of the Maintainer service account to create or update.',
       required: true,
       type: 'string',
     })
@@ -142,63 +142,9 @@ export async function provision({
     throw new Error('The --client-credentials value must be formatted as <id>:<secret>.');
   }
 
-  const passwordHash = await hash(userPassword, 10);
   const clientSecretHash = await hash(clientSecret, 10);
 
   await getDB().transaction(async (transaction) => {
-    let user = await User.findOne({
-      paranoid: false,
-      transaction,
-      where: { primaryEmail: userEmail },
-    });
-
-    if (user) {
-      if (user.deleted) {
-        await user.restore({ transaction });
-      }
-      await user.update(
-        {
-          name: userName,
-          password: passwordHash,
-          primaryEmail: userEmail,
-          timezone: userTimezone,
-        },
-        { transaction },
-      );
-      logger.info(`Updated bootstrap user ${userEmail}`);
-    } else {
-      user = await User.create(
-        {
-          name: userName,
-          password: passwordHash,
-          primaryEmail: userEmail,
-          timezone: userTimezone,
-        },
-        { transaction },
-      );
-      logger.info(`Created bootstrap user ${userEmail}`);
-    }
-
-    const emailAuthorization = await EmailAuthorization.findByPk(userEmail, { transaction });
-    await (emailAuthorization
-      ? emailAuthorization.update(
-          {
-            UserId: user.id,
-            disabled: null,
-            key: null,
-            verified: true,
-          },
-          { transaction },
-        )
-      : EmailAuthorization.create(
-          {
-            email: userEmail,
-            UserId: user.id,
-            verified: true,
-          },
-          { transaction },
-        ));
-
     let organization = await Organization.findByPk(organizationId, {
       paranoid: false,
       transaction,
@@ -226,27 +172,83 @@ export async function provision({
       logger.info(`Created organization ${organizationId}`);
     }
 
-    const membership = await OrganizationMember.findOne({
-      transaction,
-      where: {
-        OrganizationId: organizationId,
-        UserId: user.id,
-      },
-    });
+    if (userEmail) {
+      const passwordHash = await hash(userPassword!, 10);
+      let user = await User.findOne({
+        paranoid: false,
+        transaction,
+        where: { primaryEmail: userEmail },
+      });
 
-    if (membership) {
-      if (membership.role !== organizationRole) {
-        await membership.update({ role: organizationRole }, { transaction });
+      if (user) {
+        if (user.deleted) {
+          await user.restore({ transaction });
+        }
+        await user.update(
+          {
+            name: userName,
+            password: passwordHash,
+            primaryEmail: userEmail,
+            timezone: userTimezone,
+          },
+          { transaction },
+        );
+        logger.info(`Updated bootstrap user ${userEmail}`);
+      } else {
+        user = await User.create(
+          {
+            name: userName,
+            password: passwordHash,
+            primaryEmail: userEmail,
+            timezone: userTimezone,
+          },
+          { transaction },
+        );
+        logger.info(`Created bootstrap user ${userEmail}`);
       }
-    } else {
-      await OrganizationMember.create(
-        {
+
+      const emailAuthorization = await EmailAuthorization.findByPk(userEmail, { transaction });
+      await (emailAuthorization
+        ? emailAuthorization.update(
+            {
+              UserId: user.id,
+              disabled: null,
+              key: null,
+              verified: true,
+            },
+            { transaction },
+          )
+        : EmailAuthorization.create(
+            {
+              email: userEmail,
+              UserId: user.id,
+              verified: true,
+            },
+            { transaction },
+          ));
+
+      const membership = await OrganizationMember.findOne({
+        transaction,
+        where: {
           OrganizationId: organizationId,
           UserId: user.id,
-          role: organizationRole,
         },
-        { transaction },
-      );
+      });
+
+      if (membership) {
+        if (membership.role !== organizationRole) {
+          await membership.update({ role: organizationRole }, { transaction });
+        }
+      } else {
+        await OrganizationMember.create(
+          {
+            OrganizationId: organizationId,
+            UserId: user.id,
+            role: organizationRole,
+          },
+          { transaction },
+        );
+      }
     }
 
     const subscription = await OrganizationSubscription.findOne({
@@ -277,30 +279,33 @@ export async function provision({
           { transaction },
         ));
 
-    const credentials = await OAuth2ClientCredentials.findByPk(clientId, {
-      transaction,
-    });
-
-    await (credentials
-      ? credentials.update(
-          {
-            description: provisionDescription,
-            scopes: provisionScopes,
-            secret: clientSecretHash,
-            UserId: user.id,
-          },
-          { transaction },
-        )
-      : OAuth2ClientCredentials.create(
-          {
-            description: provisionDescription,
-            id: clientId,
-            scopes: provisionScopes,
-            secret: clientSecretHash,
-            UserId: user.id,
-          },
-          { transaction },
-        ));
+    const credentials = await OAuth2ClientCredentials.findByPk(clientId, { transaction });
+    if (
+      credentials &&
+      (await OrganizationMember.findOne({
+        transaction,
+        where: { OrganizationId: organizationId, UserId: credentials.UserId, serviceAccount: true },
+      }))
+    ) {
+      await credentials.update(
+        { description: provisionDescription, scopes: provisionScopes, secret: clientSecretHash },
+        { transaction },
+      );
+    } else {
+      // The client id identifies the provisioned service account, whichever account held it before.
+      await credentials?.destroy({ transaction });
+      await createServiceAccount(
+        {
+          description: provisionDescription,
+          id: clientId,
+          OrganizationId: organizationId,
+          role: PredefinedOrganizationRole.Maintainer,
+          scopes: provisionScopes,
+          secret: clientSecretHash,
+        },
+        transaction,
+      );
+    }
   });
 
   if (appDomainStrategy) {

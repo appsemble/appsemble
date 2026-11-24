@@ -34,6 +34,9 @@ Owners create service accounts on the organization's **Members** page:
 The Studio shows the client credentials as `client_id:client_secret` once. Store them in a secret
 variable of the client that uses them; the Studio cannot show the secret again.
 
+A [Helm installation](../deployment/helm.md#provisioning) can also provision a `Maintainer` service
+account for its organization from client credentials in a Kubernetes secret.
+
 ## Using a service account
 
 The [Appsemble CLI](/docs/packages/cli) reads client credentials from the `--client-credentials`

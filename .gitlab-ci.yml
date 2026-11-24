@@ -1477,6 +1477,9 @@ update dependencies:
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-valkey --from-literal "password=$(openssl rand -base64 30)"
+    - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-provision
+      --from-literal "client-credentials=$APPSEMBLE_CLIENT_CREDENTIALS"
+      --from-literal "user-password=$BOT_ACCOUNT_PASSWORD"
     # Stripe webhook setup
     - |
       STRIPE_RELEASE_URL=$(curl -fsSL -H 'User-Agent: appsemble-ci' \
@@ -1535,13 +1538,12 @@ update dependencies:
       --set "postgresql.auth.existingSecret=review-$CI_MERGE_REQUEST_IID-postgresql-app"
       --set "resources.deployment.requests.cpu=250m"
       --set "resources.deployment.requests.memory=1Gi"
+      --set "provision.existingSecret=review-$CI_MERGE_REQUEST_IID-provision"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
-      --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.user.name=$BOT_ACCOUNT_NAME"
-      --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.user.timezone=Europe/Amsterdam"
       --set "proxy=true"
       --set "sentry.allowedDomains={*.appsemble.review}"
@@ -1630,6 +1632,10 @@ staging:
     - '[ -n "$STAGING_BACKUPS_HOST" ] || { echo "Please set STAGING_BACKUPS_HOST for staging backup destination" >&2; exit 1; }'
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
+    - kubectl create secret generic staging-provision
+      --from-literal "client-credentials=$APPSEMBLE_CLIENT_CREDENTIALS"
+      --from-literal "user-password=$BOT_ACCOUNT_PASSWORD"
+      --dry-run=client -o yaml | kubectl apply -f -
     # The CloudNativePG cluster lives outside the release (appsemble/infra), so the data survives a redeploy.
     - kubectl wait --for=condition=Ready cluster.postgresql.cnpg.io/staging-postgresql --timeout=1m
     # Reserve memory for workload peaks rather than average use, leaving capacity for monitoring.
@@ -1667,13 +1673,12 @@ staging:
       --set 'resources.deployment.requests.memory=1536Mi'
       --set 'seaweedfs.allInOne.data.size=40Gi'
       --set "seaweedfs.allInOne.data.annotations.helm\\.sh/resource-policy=keep"
+      --set "provision.existingSecret=staging-provision"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
-      --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.user.name=$BOT_ACCOUNT_NAME"
-      --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.user.timezone=Europe/Amsterdam"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"

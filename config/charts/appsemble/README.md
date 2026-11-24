@@ -96,6 +96,35 @@ helm repo update
 helm install my-appsemble appsemble/appsemble --set 'ingress.host=my-appsemble.example.com'
 ```
 
+### Provisioning
+
+`provision` creates or updates an organization with a Maintainer service account, for example to
+deploy apps from CI, after each install and upgrade. `user` adds a password account to the
+organization, such as its first Owner; leave it out when people sign in through
+[organization single sign-on](#organization-single-sign-on).
+
+```yaml
+provision:
+  existingSecret: appsemble-provision
+  organization:
+    id: example
+    subscription: enterprise
+  user:
+    email: owner@example.com
+    name: Owner
+    organizationRole: Owner
+    timezone: Europe/Amsterdam
+```
+
+The secret holds the service account's client credentials as `<id>:<secret>`, and the password of
+the user. Change them in the secret to rotate them on the next upgrade.
+
+```sh
+kubectl create secret generic appsemble-provision \
+  --from-literal "client-credentials=$(openssl rand -hex 16):$(openssl rand -hex 32)" \
+  --from-literal "user-password=$(openssl rand -base64 30)"
+```
+
 ### Organization single sign-on
 
 Organization Owners manage Studio single sign-on in their organization's settings, using an issuer
@@ -736,6 +765,7 @@ upgrade; it needs network access to `remote`, and the install or upgrade fails w
 | `oauthSecret`                               | `nil`                          | The secret which holds client ids and client secrets for OAuth2 providers.                                                                |
 | `organizationSso`                           | `{}`                           | Deployment-managed organization SSO settings and Kubernetes client-secret references.                                                     |
 | `organizationSsoIssuers`                    | `[]`                           | OpenID Connect issuers which organization Owners may configure for single sign-on in Studio.                                              |
+| `provision`                                 | `nil`                          | The organization, service account and user to provision. See [Provisioning](#provisioning).                                               |
 | `sentry.allowedDomains`                     | `[]`                           | A list of domains on which Sentry integration will be enabled. Wildcards are supported.                                                   |
 | `sentry.secret`                             | `nil`                          | The secret from which to read the [Sentry] DSN.                                                                                           |
 | `sentry.environment`                        | `nil`                          | The environment to send with Sentry error reports.                                                                                        |

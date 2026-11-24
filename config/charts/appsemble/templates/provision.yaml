@@ -26,20 +26,18 @@ spec:
             - provision
             - --organization-id
             - {{ .Values.provision.organization.id | quote }}
-            - --organization-role
-            - {{ .Values.provision.user.organizationRole | quote }}
             - --organization-subscription
             - {{ .Values.provision.organization.subscription | quote }}
+            {{- if .Values.provision.user }}
+            - --organization-role
+            - {{ .Values.provision.user.organizationRole | quote }}
             - --user-email
             - {{ .Values.provision.user.email | quote }}
             - --user-name
             - {{ .Values.provision.user.name | quote }}
-            - --user-password
-            - {{ .Values.provision.user.password | quote }}
             - --user-timezone
             - {{ .Values.provision.user.timezone | quote }}
-            - --client-credentials
-            - {{ .Values.provision.user.clientCredentials | quote }}
+            {{- end }}
             {{- if .Values.skipCustomDomains }}
             - --skip-custom-domains
             {{- end }}
@@ -47,6 +45,18 @@ spec:
             - -{{ repeat (int .) "v" }}
           {{- end }}
           env:
+            - name: CLIENT_CREDENTIALS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.provision.existingSecret | quote }}
+                  key: client-credentials
+            {{- if .Values.provision.user }}
+            - name: USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.provision.existingSecret | quote }}
+                  key: user-password
+            {{- end }}
             - name: DATABASE_HOST
               value: {{ .Values.postgresql.host }}
             - name: DATABASE_PORT

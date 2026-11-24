@@ -53,6 +53,13 @@ must contain the external service's password. See the
 [chart's Valkey setup](https://gitlab.com/appsemble/appsemble/-/tree/main/config/charts/appsemble#valkey)
 for both secret contracts and an external service example.
 
+## Provisioning
+
+The chart can create an organization with a [service account](../studio/service-accounts.md) for CI
+deployments, and optionally a first user, after each install and upgrade. It reads their credentials
+from a Kubernetes secret, so the Helm values hold none. See the
+[chart's provisioning settings](https://gitlab.com/appsemble/appsemble/-/tree/main/config/charts/appsemble#provisioning).
+
 ## Cert-manager
 
 Cert-manager is manages TLS certificates in Kubernetes. It can be used to automatically provision

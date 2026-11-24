@@ -10,10 +10,9 @@ import {
   OAuth2ClientCredentials,
   OrganizationMember,
   transactional,
-  User,
 } from '../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
-import { revokeServiceAccounts } from '../../../utils/serviceAccounts.js';
+import { createServiceAccount, revokeServiceAccounts } from '../../../utils/serviceAccounts.js';
 
 function formatServiceAccount(
   { created, description, expires, id, scopes }: OAuth2ClientCredentials,
@@ -56,24 +55,20 @@ export async function createOrganizationServiceAccount(ctx: Context): Promise<vo
   );
   const secret = randomBytes(32).toString('hex');
   const hashedSecret = await hash(secret, 10);
-  const credentials = await transactional(async (transaction) => {
-    const user = await User.create({ name: description, timezone: 'UTC' }, { transaction });
-    await OrganizationMember.create(
-      { OrganizationId: organizationId, UserId: user.id, role, serviceAccount: true },
-      { transaction },
-    );
-    return OAuth2ClientCredentials.create(
+  const credentials = await transactional((transaction) =>
+    createServiceAccount(
       {
-        id: randomBytes(16).toString('hex'),
         description,
         expires,
+        id: randomBytes(16).toString('hex'),
+        OrganizationId: organizationId,
+        role,
         scopes: scopes.sort().join(' '),
         secret: hashedSecret,
-        UserId: user.id,
       },
-      { transaction },
-    );
-  });
+      transaction,
+    ),
+  );
   logger.info(
     `User ${ctx.user!.id} created service account ${credentials.id} for organization ${organizationId}`,
   );

@@ -1,6 +1,38 @@
 import { type Transaction } from 'sequelize';
 
-import { OAuth2ClientCredentials, OrganizationMember } from '../models/index.js';
+import { OAuth2ClientCredentials, OrganizationMember, User } from '../models/index.js';
+
+/**
+ * Create a service account with client credentials in an organization.
+ *
+ * @param serviceAccount The organization, role and client credentials of the service account. The
+ *   secret must already be hashed.
+ * @param transaction The transaction in which to create it.
+ * @returns The client credentials of the service account.
+ */
+export async function createServiceAccount(
+  {
+    description,
+    expires,
+    id,
+    OrganizationId,
+    role,
+    scopes,
+    secret,
+  }: Pick<OAuth2ClientCredentials, 'description' | 'expires' | 'id' | 'scopes' | 'secret'> &
+    Pick<OrganizationMember, 'OrganizationId' | 'role'>,
+  transaction: Transaction,
+): Promise<OAuth2ClientCredentials> {
+  const user = await User.create({ name: description, timezone: 'UTC' }, { transaction });
+  await OrganizationMember.create(
+    { OrganizationId, UserId: user.id, role, serviceAccount: true },
+    { transaction },
+  );
+  return OAuth2ClientCredentials.create(
+    { id, description, expires, scopes, secret, UserId: user.id },
+    { transaction },
+  );
+}
 
 /**
  * Revoke service accounts by deleting their client credentials and memberships.
