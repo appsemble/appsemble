@@ -154,6 +154,7 @@ test.describe('Studio organization Keycloak OIDC', () => {
         .getByRole('button', { name: 'Sign in again with Staff Keycloak', exact: true })
         .click();
       await page.unroute(settings);
+      await page.waitForURL(`${KEYCLOAK_BASE_URL}/**`);
       await submitKeycloakPassword(page, organization.id);
       await expect(page).toHaveURL(new RegExp(`/organizations/${organization.id}/sso$`));
       await page
