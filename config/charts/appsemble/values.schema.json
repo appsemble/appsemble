@@ -930,21 +930,21 @@
       "default": false
     },
     "provision": {
-      "type": "object",
-      "description": "Provision the database with a pre-configured account and client credentials. This is for development purposes only.",
+      "type": ["object", "null"],
+      "description": "Provision an organization with a Maintainer service account, and optionally a user account.",
       "additionalProperties": false,
-      "required": ["user"],
+      "required": ["existingSecret", "organization"],
       "properties": {
+        "existingSecret": {
+          "type": "string",
+          "description": "The secret which holds the `<id>:<secret>` client credentials of the service account under the key `client-credentials`, and the password of the user account under the key `user-password`."
+        },
         "user": {
           "type": "object",
           "description": "The user account to provision.",
           "additionalProperties": false,
-          "required": ["clientCredentials", "email", "name", "password", "timezone"],
+          "required": ["email", "name", "organizationRole", "timezone"],
           "properties": {
-            "clientCredentials": {
-              "type": "string",
-              "description": "Client credentials that can be used to authenticate the user."
-            },
             "email": {
               "type": "string",
               "description": "The email address of the user account.",
@@ -953,10 +953,6 @@
             "name": {
               "type": "string",
               "description": "The display name of the user account."
-            },
-            "password": {
-              "type": "string",
-              "description": "The password of the user account."
             },
             "timezone": {
               "type": "string",

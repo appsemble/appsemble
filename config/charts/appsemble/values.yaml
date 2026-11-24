@@ -113,6 +113,8 @@ organizationSso: {}
 
 organizationSsoIssuers: []
 
+provision: null
+
 secretSecret: appsemble
 
 stripeApiSecretKey: stripe-api-secret-key
