@@ -383,7 +383,8 @@ export async function getOrganizationMemberAccess(
     return null;
   }
   const sso = await OrganizationSso.findByPk(organizationId);
-  if (!sso) {
+  // The sign-in policy governs people; service accounts only authenticate with client credentials.
+  if (!sso || member.serviceAccount) {
     return member.role ? member : null;
   }
   const session = await validateOrganizationSsoSession(ctx, sso);
