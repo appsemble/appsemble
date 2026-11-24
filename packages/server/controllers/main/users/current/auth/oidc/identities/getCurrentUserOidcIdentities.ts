@@ -27,7 +27,7 @@ export async function getCurrentUserOidcIdentities(ctx: Context): Promise<void> 
       issuer: identities.map(({ issuer }) => issuer),
       OrganizationId: members.map(({ OrganizationId }) => OrganizationId),
     },
-    include: [{ model: Organization, attributes: ['name'] }],
+    include: [{ model: Organization, attributes: ['name'], required: true }],
     order: [['OrganizationId', 'ASC']],
   });
   ctx.body = identities.map(({ id, issuer, subject, username }) => ({

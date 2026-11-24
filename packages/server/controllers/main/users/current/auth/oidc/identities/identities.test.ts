@@ -145,6 +145,33 @@ describe('current account organization OIDC identities', () => {
     });
   });
 
+  it('omits deleted organizations from the listed identities', async () => {
+    await Organization.create({ id: 'deleted', name: 'Deleted' });
+    await OrganizationSso.create({ ...sso.get({ plain: true }), OrganizationId: 'deleted' });
+    await OrganizationMember.create({
+      OrganizationId: 'deleted',
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+    const deleted = await request.delete('/api/organizations/deleted');
+    const response = await request.get(path);
+    expect({ deleted: deleted.status, status: response.status, data: response.data }).toStrictEqual(
+      {
+        deleted: 200,
+        status: 200,
+        data: [
+          {
+            id: identity.id,
+            issuer,
+            subject: 'staff',
+            username: null,
+            organizations: [{ id: 'staff', name: 'Staff', provider: 'Staff' }],
+          },
+        ],
+      },
+    );
+  });
+
   it('requires an interactive account session for listing and unlinking', async () => {
     unauthorize();
     const anonymous = await request.get(path);
