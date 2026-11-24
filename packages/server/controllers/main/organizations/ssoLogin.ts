@@ -447,11 +447,9 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
         }
       }
       const username =
-        typeof info.email === 'string'
-          ? info.email
-          : typeof info.preferred_username === 'string'
-            ? info.preferred_username
-            : null;
+        [info.email, info.preferred_username].find(
+          (claim): claim is string => typeof claim === 'string' && claim !== '',
+        ) ?? null;
       if (linkedIdentity) {
         await linkedIdentity.update({ username }, { transaction });
       } else {

@@ -539,8 +539,12 @@ describe('organization OIDC sign-in', () => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     userInfoClaims = { email: undefined, preferred_username: 'staff.member' };
     await signIn();
+    const second = await getProviderAccounts();
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    userInfoClaims = { email: '', preferred_username: 'staff.blank-email' };
+    await signIn();
 
-    expect({ first, second: await getProviderAccounts() }).toStrictEqual({
+    expect({ first, second, third: await getProviderAccounts() }).toStrictEqual({
       first: {
         members: [['staff@example.com']],
         identities: [{ username: 'staff@example.com', organizations }],
@@ -548,6 +552,10 @@ describe('organization OIDC sign-in', () => {
       second: {
         members: [['staff.member']],
         identities: [{ username: 'staff.member', organizations }],
+      },
+      third: {
+        members: [['staff.blank-email']],
+        identities: [{ username: 'staff.blank-email', organizations }],
       },
     });
   });
