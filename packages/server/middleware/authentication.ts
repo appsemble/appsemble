@@ -44,7 +44,7 @@ async function authenticateAppAccessToken(
   if (!persistedApp) {
     return null;
   }
-  const app = persistedApp.toJSON();
+  const app = persistedApp.toJSON(['yaml']);
 
   const { AppMember } = await getAppDB(app.id!);
   const appMember = await AppMember.findByPk(sub, {
