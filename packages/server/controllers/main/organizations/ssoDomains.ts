@@ -2,7 +2,11 @@ import { createHmac } from 'node:crypto';
 import dns from 'node:dns/promises';
 
 import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
-import { OrganizationPermission, type OrganizationSsoDomains } from '@appsemble/types';
+import {
+  ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED,
+  OrganizationPermission,
+  type OrganizationSsoDomains,
+} from '@appsemble/types';
 import { type Context } from 'koa';
 import { type Transaction } from 'sequelize';
 
@@ -31,6 +35,7 @@ async function assertMutableDomains(ctx: Context, transaction: Transaction): Pro
     ctx,
     403,
     'Sign in again before changing single sign-on domains.',
+    { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED },
   );
   const { organizationId } = ctx.pathParams;
   await Organization.findByPk(organizationId, { transaction, lock: transaction.LOCK.UPDATE });

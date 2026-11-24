@@ -156,6 +156,10 @@ export const messages = defineMessages({
     id: 'studio.a0/ndS',
     defaultMessage: 'Unable to save single sign-on settings.',
   },
+  signInAgain: {
+    id: 'studio.757xLA',
+    defaultMessage: 'Sign in again with {name}',
+  },
   remove: {
     id: 'studio.V5HfT6',
     defaultMessage: 'Remove single sign-on configuration',

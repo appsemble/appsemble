@@ -1,4 +1,5 @@
 import {
+  ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED,
   type OrganizationSsoConfiguration,
   type OrganizationSsoDomains,
   type OrganizationSsoSettings,
@@ -25,18 +26,38 @@ const settings: OrganizationSsoSettings = {
   hasClientSecret: true,
 };
 const transport = axios.defaults.adapter;
+const ownerLockoutMessage =
+  'Keep an accessible Owner login or verify an Owner group before changing single sign-on policy.';
 let configuration: OrganizationSsoSettings | null;
 let stored: OrganizationSsoConfiguration | null;
 let domains: OrganizationSsoDomains;
 let publishedRecords: string[];
+let recentSignIn: boolean;
+let keepsOwnerAccess: boolean;
 
 beforeEach(() => {
   configuration = { ...settings };
   stored = { ...settings, clientSecret: 'existing-secret' };
   domains = { recordValue: 'appsemble-sso=ownership-proof', domains: [] };
   publishedRecords = [];
+  recentSignIn = true;
+  keepsOwnerAccess = true;
   axios.defaults.adapter = (config) => {
     if (config.url.includes('/sso/domains')) {
+      if (config.method !== 'get' && !recentSignIn) {
+        return Promise.reject(
+          new AxiosError('Forbidden', 'ERR_BAD_REQUEST', config, undefined, {
+            data: {
+              data: { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED },
+              message: 'Sign in again before changing single sign-on domains.',
+            },
+            status: 403,
+            statusText: 'Forbidden',
+            headers: {},
+            config,
+          }),
+        );
+      }
       if (config.method === 'post') {
         const { domain } = JSON.parse(config.data) as { domain: string };
         if (!publishedRecords.includes(`_appsemble-sso.${domain}`)) {
@@ -65,6 +86,22 @@ beforeEach(() => {
           data: { message: 'Provider verification failed' },
           status: 401,
           statusText: 'Unauthorized',
+          headers: {},
+          config,
+        }),
+      );
+    }
+    if (config.method === 'put' && (!recentSignIn || !keepsOwnerAccess)) {
+      return Promise.reject(
+        new AxiosError('Forbidden', 'ERR_BAD_REQUEST', config, undefined, {
+          data: recentSignIn
+            ? { message: ownerLockoutMessage }
+            : {
+                data: { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED },
+                message: 'Sign in again before changing single sign-on settings.',
+              },
+          status: 403,
+          statusText: 'Forbidden',
           headers: {},
           config,
         }),
@@ -134,6 +171,36 @@ it('should allow mapping multiple groups to organization roles', async () => {
       { group: '/content-editors', role: PredefinedOrganizationRole.AppContentsManager },
     ]),
   );
+});
+
+it('should offer signing in again at the provider when saving needs a recent sign-in', async () => {
+  recentSignIn = false;
+  renderSettings();
+  const save = await screen.findByRole('button', { name: 'Save single sign-on settings' });
+  expect(screen.queryByRole('button', { name: 'Sign in again with Staff SSO' })).toBeNull();
+  fireEvent.click(save);
+
+  expect(await screen.findByRole('button', { name: 'Sign in again with Staff SSO' })).toBeDefined();
+});
+
+it('should leave the Owner lockout error visible without offering another sign-in', async () => {
+  keepsOwnerAccess = false;
+  renderSettings();
+  fireEvent.click(await screen.findByRole('button', { name: 'Save single sign-on settings' }));
+
+  expect(await screen.findByText(ownerLockoutMessage)).toBeDefined();
+  expect(screen.queryByRole('button', { name: 'Sign in again with Staff SSO' })).toBeNull();
+});
+
+it('should offer signing in again at the provider when a domain change needs a recent sign-in', async () => {
+  recentSignIn = false;
+  renderSettings();
+  fireEvent.change(await screen.findByRole('textbox', { name: 'Email domain' }), {
+    target: { value: 'staff.example.com' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Verify and add domain' }));
+
+  expect(await screen.findByRole('button', { name: 'Sign in again with Staff SSO' })).toBeDefined();
 });
 
 it('should prevent editing deployment-managed single sign-on settings', async () => {

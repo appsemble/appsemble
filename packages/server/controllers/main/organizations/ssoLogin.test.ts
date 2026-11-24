@@ -3,6 +3,7 @@ import { setTimeout } from 'node:timers/promises';
 
 import {
   type OAuth2ClientCredentials as OAuth2ClientCredentialsType,
+  ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED,
   type OrganizationSsoConfiguration,
   PredefinedOrganizationRole,
   type TokenResponse,
@@ -1195,7 +1196,10 @@ describe('organization OIDC sign-in', () => {
       { link: true, configuration: { ...configuration, name: 'Proposed provider' } },
       { headers: { origin } },
     );
-    expect(response.status).toBe(403);
+    expect(response).toMatchObject({
+      status: 403,
+      data: { data: { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED } },
+    });
   });
 
   it('requires signing in again after ten minutes when the provider reports a future authentication time', async () => {
@@ -1212,6 +1216,29 @@ describe('organization OIDC sign-in', () => {
     expect((await propose()).status).toBe(200);
     vi.setSystemTime(Date.now() + 601_000);
     expect((await propose()).status).toBe(403);
+  });
+
+  it('lets an Owner sign in again at the provider to change settings after ten minutes', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    const signedIn = Math.floor(Date.now() / 1000);
+    await signInAsOwner();
+    vi.setSystemTime(Date.now() + 601_000);
+    const rename = (): Promise<AxiosResponse> =>
+      request.put(path, { ...configuration, name: 'Renamed provider' });
+    expect(await rename()).toMatchObject({
+      status: 403,
+      data: { data: { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED } },
+    });
+    const started = await request.post(`${path}/login`, { link: true }, { headers: { origin } });
+    expect(new URL(started.data.authorizationUrl).searchParams.get('max_age')).toBe('0');
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    claims = { auth_time: signedIn };
+    expect((await complete(await begin(true))).status).toBe(401);
+    claims = {};
+    const response = await complete(await begin(true));
+    expect(response.status).toBe(200);
+    request.defaults.headers.common.authorization = `Bearer ${response.data.access_token}`;
+    expect((await rename()).status).toBe(200);
   });
 
   it('does not verify a replacement for a deployment-managed provider', async () => {

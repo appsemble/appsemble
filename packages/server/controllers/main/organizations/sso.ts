@@ -1,5 +1,6 @@
 import { assertKoaCondition, logger, throwKoaError } from '@appsemble/node-utils';
 import {
+  ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED,
   OrganizationPermission,
   type OrganizationSsoConfiguration,
   PredefinedOrganizationRole,
@@ -49,6 +50,7 @@ export async function putOrganizationSso(ctx: Context): Promise<void> {
     ctx,
     403,
     'Sign in again before changing single sign-on settings.',
+    { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED },
   );
   let configuration: OrganizationSsoConfiguration;
   try {
@@ -124,6 +126,7 @@ export async function deleteOrganizationSso(ctx: Context): Promise<void> {
     ctx,
     403,
     'Sign in again before changing single sign-on settings.',
+    { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED },
   );
   await getDB().transaction(async (transaction) => {
     await Organization.findByPk(organizationId, { transaction, lock: transaction.LOCK.UPDATE });
