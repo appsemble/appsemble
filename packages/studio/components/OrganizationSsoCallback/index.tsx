@@ -26,8 +26,15 @@ export function OrganizationSsoCallback({ session }: OrganizationSsoCallbackProp
   const code = qs.get('code');
   const state = qs.get('state');
   const issuer = qs.get('iss');
+  const providerError = qs.get('error_description') || qs.get('error');
 
   useEffect(() => {
+    if (providerError) {
+      setError('error');
+      setFailureMessage(providerError);
+      clearOAuth2State();
+      return;
+    }
     if (!code || !state || state !== session.state || !isLocalRedirect(session.redirect)) {
       setError('invalidState');
       return;
@@ -59,7 +66,7 @@ export function OrganizationSsoCallback({ session }: OrganizationSsoCallbackProp
         );
         clearOAuth2State();
       });
-  }, [code, issuer, login, navigate, session, state]);
+  }, [code, issuer, login, navigate, providerError, session, state]);
 
   if (!error) {
     return <Loader />;
