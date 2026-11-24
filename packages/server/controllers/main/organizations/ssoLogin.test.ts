@@ -2,6 +2,7 @@ import { createHash, generateKeyPairSync, randomUUID } from 'node:crypto';
 import { setTimeout } from 'node:timers/promises';
 
 import {
+  type OAuth2ClientCredentials as OAuth2ClientCredentialsType,
   type OrganizationSsoConfiguration,
   PredefinedOrganizationRole,
   type TokenResponse,
@@ -14,7 +15,9 @@ import { QueryTypes } from 'sequelize';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  EmailAuthorization,
   getDB,
+  OAuth2ClientCredentials,
   Organization,
   OrganizationMember,
   OrganizationSso,
@@ -38,11 +41,15 @@ let nonce: string;
 let groups: string[];
 let claims: Record<string, unknown>;
 let challenges: Map<string, string>;
+let requestedScopes: Map<string, string>;
 let redeemed: Set<string>;
-let providerGrants: Map<string, { current: string; revoked: boolean }>;
+let providerGrants: Map<string, { current: string; revoked: boolean; offline: boolean }>;
 let providerLifetime: number | undefined;
 let providerUnavailable: boolean;
 let providerGrantRevoked: boolean;
+let providerGrantsOfflineAccess: boolean;
+let providerListsOfflineAccess: boolean;
+let browserSessionEnded: boolean;
 let acceptedClientSecret: string;
 let configuration: OrganizationSsoConfiguration;
 let userInfoClaims: Record<string, unknown>;
@@ -105,10 +112,16 @@ function mockProvider(expiredRefreshToken?: string): void {
       redeemed.add(code);
     }
     const previousRefreshToken = parameters.get('refresh_token');
+    const scope = previousRefreshToken
+      ? undefined
+      : requestedScopes
+          .get(parameters.get('code')!)
+          ?.split(' ')
+          .filter((value) => providerGrantsOfflineAccess || value !== 'offline_access');
     const grant = previousRefreshToken
       ? providerGrants.get(previousRefreshToken)
-      : { current: '', revoked: false };
-    if (!grant || grant.revoked) {
+      : { current: '', revoked: false, offline: Boolean(scope?.includes('offline_access')) };
+    if (!grant || grant.revoked || (browserSessionEnded && !grant.offline)) {
       return [400, JSON.stringify({ error: 'invalid_grant' }), headers];
     }
     if (previousRefreshToken && grant.current !== previousRefreshToken) {
@@ -121,7 +134,10 @@ function mockProvider(expiredRefreshToken?: string): void {
       200,
       JSON.stringify({
         access_token: 'provider-access-token',
-        refresh_token: grant.current,
+        refresh_token: providerGrantsOfflineAccess ? grant.current : undefined,
+        scope: scope
+          ?.filter((value) => providerListsOfflineAccess || value !== 'offline_access')
+          .join(' '),
         token_type: 'Bearer',
         expires_in: providerLifetime,
         id_token: includeIdToken
@@ -159,23 +175,30 @@ function mockProvider(expiredRefreshToken?: string): void {
   ]);
 }
 
+function authorizeAtProvider(response: AxiosResponse): { state: string; cookie: string } {
+  const url = new URL(response.data.authorizationUrl);
+  const state = url.searchParams.get('state')!;
+  nonce = url.searchParams.get('nonce')!;
+  challenges.set(state, url.searchParams.get('code_challenge')!);
+  requestedScopes.set(state, url.searchParams.get('scope')!);
+  return {
+    state,
+    cookie: response.headers['set-cookie']!.map((value: string) => value.split(';')[0]).join('; '),
+  };
+}
+
 async function begin(
   link = false,
   candidate?: OrganizationSsoConfiguration,
+  email?: string,
 ): Promise<{ state: string; cookie: string }> {
   const response = await request.post(
     `${path}/login`,
-    { link, ...(candidate ? { configuration: candidate } : {}) },
+    { link, email, ...(candidate ? { configuration: candidate } : {}) },
     { headers: { origin } },
   );
   expect(response.status).toBe(200);
-  const url = new URL(response.data.authorizationUrl);
-  nonce = url.searchParams.get('nonce')!;
-  challenges.set(url.searchParams.get('state')!, url.searchParams.get('code_challenge')!);
-  return {
-    state: url.searchParams.get('state')!,
-    cookie: response.headers['set-cookie']!.map((value: string) => value.split(';')[0]).join('; '),
-  };
+  return authorizeAtProvider(response);
 }
 
 function complete(flow: { state: string; cookie: string }): Promise<AxiosResponse> {
@@ -209,24 +232,35 @@ async function signInAsOwner(): Promise<TokenResponse> {
   return signIn();
 }
 
+function registerPersonalCredentials(): Promise<AxiosResponse> {
+  return request.post('/api/users/current/auth/oauth2/client-credentials', {
+    description: 'Personal publishing credentials',
+    scopes: ['organizations:write'],
+  });
+}
+
+function requestCredentialsToken(credentials: {
+  id: string;
+  secret: string;
+}): Promise<AxiosResponse> {
+  return request.post(
+    '/auth/oauth2/token',
+    'grant_type=client_credentials&scope=organizations%3Awrite',
+    {
+      auth: { username: credentials.id, password: credentials.secret },
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    },
+  );
+}
+
 async function createPersonalCredentials(): Promise<{
   id: string;
   secret: string;
   accessToken: string;
 }> {
-  const credentials = await request.post('/api/users/current/auth/oauth2/client-credentials', {
-    description: 'Personal publishing credentials',
-    scopes: ['organizations:write'],
-  });
-  expect(credentials.status).toBe(201);
-  const token = await request.post(
-    '/auth/oauth2/token',
-    'grant_type=client_credentials&scope=organizations%3Awrite',
-    {
-      auth: { username: credentials.data.id, password: credentials.data.secret },
-      headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    },
-  );
+  const credentials = await complete(authorizeAtProvider(await registerPersonalCredentials()));
+  expect(credentials.status).toBe(200);
+  const token = await requestCredentialsToken(credentials.data);
   expect(token).toMatchObject({
     status: 200,
     headers: { 'cache-control': 'no-store', pragma: 'no-cache' },
@@ -272,11 +306,15 @@ describe('organization OIDC sign-in', () => {
     groups = ['/staff/translators', '/staff/content'];
     claims = {};
     challenges = new Map();
+    requestedScopes = new Map();
     redeemed = new Set();
     providerGrants = new Map();
     providerLifetime = 300;
     providerUnavailable = false;
     providerGrantRevoked = false;
+    providerGrantsOfflineAccess = true;
+    providerListsOfflineAccess = true;
+    browserSessionEnded = false;
     acceptedClientSecret = 'provider-secret';
     userInfoClaims = {};
     includeIdToken = true;
@@ -518,6 +556,57 @@ describe('organization OIDC sign-in', () => {
     },
   );
 
+  it('shows the provider account of the latest sign-in to the account and to Owners', async () => {
+    async function getProviderAccounts(): Promise<unknown> {
+      const members = await request.get('/api/organizations/staff/members');
+      const identities = await request.get('/api/users/current/auth/oidc/identities');
+      return {
+        members: members.data.map(({ ssoUsernames }: { ssoUsernames: string[] }) => ssoUsernames),
+        identities: identities.data.map(
+          ({ organizations, username }: { organizations: unknown; username: string }) => ({
+            username,
+            organizations,
+          }),
+        ),
+      };
+    }
+    const organizations = [{ id: 'staff', name: 'Staff', provider: 'Staff SSO' }];
+
+    await signInAsOwner();
+    const first = await getProviderAccounts();
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    userInfoClaims = { email: undefined, preferred_username: 'staff.member' };
+    await signIn();
+    const second = await getProviderAccounts();
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    userInfoClaims = { email: '', preferred_username: 'staff.blank-email' };
+    await signIn();
+
+    expect({ first, second, third: await getProviderAccounts() }).toStrictEqual({
+      first: {
+        members: [['staff@example.com']],
+        identities: [{ username: 'staff@example.com', organizations }],
+      },
+      second: {
+        members: [['staff.member']],
+        identities: [{ username: 'staff.member', organizations }],
+      },
+      third: {
+        members: [['staff.blank-email']],
+        identities: [{ username: 'staff.blank-email', organizations }],
+      },
+    });
+  });
+
+  it('does not show provider accounts to members who do not manage members', async () => {
+    await signIn();
+    const response = await request.get('/api/organizations/staff/members');
+    expect({
+      status: response.status,
+      usernames: response.data.map(({ ssoUsernames }: { ssoUsernames?: string[] }) => ssoUsernames),
+    }).toStrictEqual({ status: 200, usernames: [undefined] });
+  });
+
   it('requires explicit authenticated linking when the email already belongs to an account', async () => {
     const user = await createTestUser('staff@example.com');
     const collision = await complete(await begin());
@@ -528,6 +617,30 @@ describe('organization OIDC sign-in', () => {
     request.defaults.headers.common.authorization = `Bearer ${linked.data.access_token}`;
     const current = await request.get('/api/users/current');
     expect(current.data.sub).toBe(user.id);
+  });
+
+  it.each([
+    ['primary email', 'Nikolay@Appsemble.example'],
+    ['unverified secondary email', 'nikolay@personal.example'],
+  ])(
+    'requires explicit linking when the email typed to sign in is the %s of an account',
+    async (description, typedEmail) => {
+      const user = await createTestUser('nikolay@appsemble.example');
+      await EmailAuthorization.create({
+        UserId: user.id,
+        email: 'nikolay@personal.example',
+        verified: false,
+      });
+      const response = await complete(await begin(false, undefined, typedEmail));
+      expect(response.status).toBe(409);
+      expect(await User.count()).toBe(1);
+    },
+  );
+
+  it('creates an account when the email typed to sign in belongs to no account', async () => {
+    const response = await complete(await begin(false, undefined, 'newcomer@appsemble.example'));
+    expect(response.status).toBe(200);
+    expect(await User.count({ where: { primaryEmail: 'staff@example.com' } })).toBe(1);
   });
 
   it('does not restore an account connection unlinked while sign-in is completing', async () => {
@@ -671,7 +784,7 @@ describe('organization OIDC sign-in', () => {
     expect((await request.get('/api/users/current')).status).toBe(401);
   });
 
-  it('revokes credentials from a replayed session while preserving independent sessions', async () => {
+  it('ends a replayed Studio session while preserving independent sessions and credentials', async () => {
     const independent = await signIn();
     unauthorize();
     const compromised = await signIn();
@@ -687,7 +800,9 @@ describe('organization OIDC sign-in', () => {
       refresh_token: compromised.refresh_token,
     });
     expect(replay.status).toBe(401);
-    expect((await request.get('/api/organizations/staff/members')).status).toBe(401);
+    expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
+    request.defaults.headers.common.authorization = `Bearer ${refreshed.data.access_token}`;
+    expect((await request.get('/api/users/current')).status).toBe(401);
     request.defaults.headers.common.authorization = `Bearer ${independent.access_token}`;
     expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
   });
@@ -792,10 +907,84 @@ describe('organization OIDC sign-in', () => {
     const credentials = await createPersonalCredentials();
     expect((await request.post('/api/auth/logout')).status).toBe(200);
     request.defaults.headers.common.authorization = `Bearer ${credentials.accessToken}`;
+    browserSessionEnded = true;
+    await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
     expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
     await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
     groups = [];
     expect((await request.get('/api/organizations/staff/members')).status).toBe(403);
+  });
+
+  it('ends personal credentials whose offline grant the provider rejects', async () => {
+    await signIn();
+    const credentials = await createPersonalCredentials();
+    const { OrganizationSsoSessionId } = (await OAuth2ClientCredentials.findByPk(credentials.id))!;
+    await OrganizationSsoSession.update(
+      { accessTokenExpires: new Date(0) },
+      { where: { id: OrganizationSsoSessionId } },
+    );
+    providerGrantRevoked = true;
+    const token = await requestCredentialsToken(credentials);
+    const listed = await request.get('/api/users/current/auth/oauth2/client-credentials');
+    expect({
+      token: token.data,
+      listed: listed.data.map(({ authorizationEnded }: OAuth2ClientCredentialsType) => ({
+        authorizationEnded,
+      })),
+    }).toStrictEqual({ token: { error: 'invalid_grant' }, listed: [{ authorizationEnded: true }] });
+  });
+
+  it('refuses personal credentials when the provider does not grant offline access', async () => {
+    providerGrantsOfflineAccess = false;
+    await signIn();
+    const response = await complete(authorizeAtProvider(await registerPersonalCredentials()));
+    expect({
+      status: response.status,
+      message: response.data.message,
+      credentials: await OAuth2ClientCredentials.count(),
+    }).toStrictEqual({
+      status: 503,
+      message: 'The identity provider did not grant offline access',
+      credentials: 0,
+    });
+  });
+
+  it('creates personal credentials when the provider omits offline_access from the granted scope', async () => {
+    providerListsOfflineAccess = false;
+    await signIn();
+    const response = await complete(authorizeAtProvider(await registerPersonalCredentials()));
+    expect({
+      status: response.status,
+      credentials: await OAuth2ClientCredentials.count(),
+    }).toStrictEqual({ status: 200, credentials: 1 });
+  });
+
+  it('does not back personal credentials with another provider account', async () => {
+    await signIn();
+    const registration = await registerPersonalCredentials();
+    await OrganizationSsoIdentity.create({
+      issuer,
+      subject: 'other-subject',
+      UserId: (await createTestUser('other@example.com')).id,
+    });
+    claims = { sub: 'other-subject' };
+    userInfoClaims = { sub: 'other-subject' };
+    const response = await complete(authorizeAtProvider(registration));
+    expect({
+      status: response.status,
+      credentials: await OAuth2ClientCredentials.count(),
+    }).toStrictEqual({ status: 403, credentials: 0 });
+  });
+
+  it('creates personal credentials only for the account which requested them', async () => {
+    await signIn();
+    const registration = await registerPersonalCredentials();
+    authorizeStudio(await createTestUser('other@example.com'));
+    const response = await complete(authorizeAtProvider(registration));
+    expect({
+      status: response.status,
+      credentials: await OAuth2ClientCredentials.count(),
+    }).toStrictEqual({ status: 401, credentials: 0 });
   });
 
   it('rejects an already-issued CLI token after its personal credentials are deleted', async () => {

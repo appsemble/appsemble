@@ -1,5 +1,5 @@
 import { Button, Loader, Message, useQuery } from '@appsemble/react-components';
-import { type TokenResponse } from '@appsemble/types';
+import { type OAuth2ClientCredentials, type TokenResponse } from '@appsemble/types';
 import { clearOAuth2State, timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ReactNode, useEffect, useState } from 'react';
@@ -26,14 +26,21 @@ export function OrganizationSsoCallback({ session }: OrganizationSsoCallbackProp
   const code = qs.get('code');
   const state = qs.get('state');
   const issuer = qs.get('iss');
+  const providerError = qs.get('error_description') || qs.get('error');
 
   useEffect(() => {
+    if (providerError) {
+      setError('error');
+      setFailureMessage(providerError);
+      clearOAuth2State();
+      return;
+    }
     if (!code || !state || state !== session.state || !isLocalRedirect(session.redirect)) {
       setError('invalidState');
       return;
     }
     axios
-      .post<TokenResponse>(
+      .post<OAuth2ClientCredentials | TokenResponse>(
         `/api/organizations/${encodeURIComponent(session.organizationId)}/sso/callback`,
         {
           code,
@@ -43,6 +50,11 @@ export function OrganizationSsoCallback({ session }: OrganizationSsoCallbackProp
         },
       )
       .then(({ data }) => {
+        if (!('access_token' in data)) {
+          clearOAuth2State();
+          navigate(session.redirect, { replace: true, state: { clientCredentials: data } });
+          return;
+        }
         login(data);
         clearOAuth2State();
         navigate(session.redirect || `/organizations/${session.organizationId}`, { replace: true });
@@ -54,7 +66,7 @@ export function OrganizationSsoCallback({ session }: OrganizationSsoCallbackProp
         );
         clearOAuth2State();
       });
-  }, [code, issuer, login, navigate, session, state]);
+  }, [code, issuer, login, navigate, providerError, session, state]);
 
   if (!error) {
     return <Loader />;

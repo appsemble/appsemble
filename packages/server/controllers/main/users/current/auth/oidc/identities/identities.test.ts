@@ -22,6 +22,7 @@ import { setArgv } from '../../../../../../../utils/argv.js';
 import { createJWTResponse } from '../../../../../../../utils/createJWTResponse.js';
 import { createServer } from '../../../../../../../utils/createServer.js';
 import { encrypt } from '../../../../../../../utils/crypto.js';
+import { createOAuth2ClientCredentials } from '../../../../../../../utils/oauth2.js';
 import {
   authorizeClientCredentials,
   createTestUser,
@@ -65,10 +66,15 @@ async function createSession(
   return { session, tokens };
 }
 
-async function createPersonalCredentials(): Promise<{ id: string; tokens: TokenResponse }> {
-  const { data } = await request.post('/api/users/current/auth/oauth2/client-credentials', {
+async function createPersonalCredentials(
+  session: OrganizationSsoSession,
+): Promise<{ id: string; tokens: TokenResponse }> {
+  const data = await createOAuth2ClientCredentials({
     description: 'Personal publishing credentials',
-    scopes: ['organizations:write'],
+    scopes: 'organizations:write',
+    UserId: user.id,
+    loginMethod: 'oidc',
+    OrganizationSsoSessionId: session.id,
   });
   const token = await request.post(
     '/auth/oauth2/token',
@@ -123,6 +129,8 @@ describe('current account organization OIDC identities', () => {
   it('lists only the account identities in private responses that cannot be cached', async () => {
     const otherUser = await createTestUser('other@example.com');
     await OrganizationSsoIdentity.create({ UserId: otherUser.id, issuer, subject: 'other' });
+    await Organization.create({ id: 'other', name: 'Other' });
+    await OrganizationSso.create({ ...sso.get({ plain: true }), OrganizationId: 'other' });
     const response = await request.get(path);
     expect({
       status: response.status,
@@ -131,8 +139,43 @@ describe('current account organization OIDC identities', () => {
     }).toStrictEqual({
       status: 200,
       cache: 'private, no-store',
-      data: [{ id: identity.id, issuer, subject: 'staff' }],
+      data: [
+        {
+          id: identity.id,
+          issuer,
+          subject: 'staff',
+          username: null,
+          organizations: [{ id: 'staff', name: 'Staff', provider: 'Staff' }],
+        },
+      ],
     });
+  });
+
+  it('omits deleted organizations from the listed identities', async () => {
+    await Organization.create({ id: 'deleted', name: 'Deleted' });
+    await OrganizationSso.create({ ...sso.get({ plain: true }), OrganizationId: 'deleted' });
+    await OrganizationMember.create({
+      OrganizationId: 'deleted',
+      UserId: user.id,
+      role: PredefinedOrganizationRole.Owner,
+    });
+    const deleted = await request.delete('/api/organizations/deleted');
+    const response = await request.get(path);
+    expect({ deleted: deleted.status, status: response.status, data: response.data }).toStrictEqual(
+      {
+        deleted: 200,
+        status: 200,
+        data: [
+          {
+            id: identity.id,
+            issuer,
+            subject: 'staff',
+            username: null,
+            organizations: [{ id: 'staff', name: 'Staff', provider: 'Staff' }],
+          },
+        ],
+      },
+    );
   });
 
   it('requires an interactive account session for listing and unlinking', async () => {
@@ -156,7 +199,7 @@ describe('current account organization OIDC identities', () => {
     const list = await request.get(path);
     expect({ status: deleted.status, identities: list.data }).toStrictEqual({
       status: 404,
-      identities: [{ id: other.id, issuer, subject: 'other' }],
+      identities: [{ id: other.id, issuer, subject: 'other', username: null, organizations: [] }],
     });
   });
 
@@ -209,7 +252,7 @@ describe('current account organization OIDC identities', () => {
 
   it('revokes the selected connection sessions and derived credentials while retaining other connections', async () => {
     useTokens(source.tokens);
-    const revokedCredentials = await createPersonalCredentials();
+    const revokedCredentials = await createPersonalCredentials(source.session);
     const other = await OrganizationSsoIdentity.create({
       UserId: user.id,
       issuer,
@@ -217,7 +260,7 @@ describe('current account organization OIDC identities', () => {
     });
     const retained = await createSession(other);
     useTokens(retained.tokens);
-    const retainedCredentials = await createPersonalCredentials();
+    const retainedCredentials = await createPersonalCredentials(retained.session);
     useTokens(source.tokens);
     const before = await request.get('/api/users/current');
     const deleted = await request.delete(`${path}/${identity.id}`);
@@ -247,7 +290,15 @@ describe('current account organization OIDC identities', () => {
       refresh: 401,
       cli: 401,
       retained: 200,
-      identities: [{ id: other.id, issuer, subject: 'second' }],
+      identities: [
+        {
+          id: other.id,
+          issuer,
+          subject: 'second',
+          username: null,
+          organizations: [{ id: 'staff', name: 'Staff', provider: 'Staff' }],
+        },
+      ],
       credentials: [retainedCredentials.id],
     });
   });
@@ -482,7 +533,7 @@ describe('current account organization OIDC identities', () => {
     });
     const retained = await createSession(other, ['/owners']);
     useTokens(retained.tokens);
-    const credentials = await createPersonalCredentials();
+    const credentials = await createPersonalCredentials(retained.session);
     await retained.session.update({
       interactiveRevoked: true,
       expires: new Date(0),

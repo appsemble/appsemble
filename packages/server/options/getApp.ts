@@ -14,5 +14,5 @@ export async function getApp({ context, query }: GetAppParams): Promise<AppInter
     ],
   } as FindOptions);
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-  return app ? app.toJSON() : null;
+  return app ? app.toJSON(['yaml']) : null;
 }

@@ -6,16 +6,12 @@ import {
   type OrganizationSsoConfiguration,
   PredefinedOrganizationRole,
 } from '@appsemble/types';
+import { parseISO } from 'date-fns';
 import { type Context } from 'koa';
 import {
   authorizationCodeGrant,
-  buildAuthorizationUrl,
-  calculatePKCECodeChallenge,
   fetchUserInfo,
   type IDToken,
-  randomNonce,
-  randomPKCECodeVerifier,
-  randomState,
   type TokenEndpointResponse,
   type TokenEndpointResponseHelpers,
 } from 'openid-client';
@@ -35,7 +31,13 @@ import { argv } from '../../../utils/argv.js';
 import { processEmailAuthorization } from '../../../utils/auth.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
 import { decrypt, encrypt } from '../../../utils/crypto.js';
-import { getOrganizationOidcConfiguration } from '../../../utils/organizationOidc.js';
+import { createOAuth2ClientCredentials } from '../../../utils/oauth2.js';
+import {
+  getOrganizationOidcConfiguration,
+  type OrganizationSsoFlow,
+  organizationSsoFlowCookie,
+  startOrganizationSsoAuthorization,
+} from '../../../utils/organizationOidc.js';
 import {
   applyOrganizationSsoConfiguration,
   getOrganizationMemberRoles,
@@ -46,19 +48,6 @@ import {
 } from '../../../utils/organizationSso.js';
 import { createOrganizationSsoTokenResponse } from '../../../utils/organizationSsoSession.js';
 import { getValkeyClient } from '../../../utils/valkey.js';
-
-const flowCookie = 'organization-oidc';
-
-interface LoginFlow {
-  organizationId: string;
-  configurationUpdated: number;
-  state: string;
-  nonce: string;
-  codeVerifier: string;
-  expires: number;
-  linkUserId?: string;
-  candidateId?: string;
-}
 
 interface CandidateConfiguration {
   configuration: OrganizationSsoConfiguration;
@@ -102,7 +91,7 @@ export async function startOrganizationSsoLogin(ctx: Context): Promise<void> {
   const current = await OrganizationSso.findByPk(organizationId, {
     include: [{ model: Organization, attributes: [], required: true }],
   });
-  const { configuration, link } = ctx.request.body;
+  const { configuration, email, link } = ctx.request.body;
   assertKoaCondition(
     !link || ctx.user != null,
     ctx,
@@ -178,54 +167,29 @@ export async function startOrganizationSsoLogin(ctx: Context): Promise<void> {
     });
   }
   assertKoaCondition(sso != null, ctx, 404, 'Organization SSO is not configured');
-  const config = await getOrganizationOidcConfiguration(sso);
-  const codeVerifier = randomPKCECodeVerifier();
-  const flow: LoginFlow = {
-    organizationId: sso.OrganizationId,
-    configurationUpdated: sso.configurationUpdated.getTime(),
-    state: randomState(),
-    nonce: randomNonce(),
-    codeVerifier,
-    expires: Date.now() + 10 * 60 * 1000,
-    ...(link ? { linkUserId: ctx.user!.id } : {}),
-    ...(candidateId ? { candidateId } : {}),
+  ctx.body = {
+    authorizationUrl: await startOrganizationSsoAuthorization(ctx, sso, {
+      ...(email ? { email: email.toLowerCase() } : {}),
+      ...(link ? { linkUserId: ctx.user!.id } : {}),
+      ...(candidateId ? { candidateId } : {}),
+    }),
   };
-  const authorizationUrl = buildAuthorizationUrl(config, {
-    redirect_uri: String(new URL('/callback', argv.host)),
-    scope: sso.scope,
-    state: flow.state,
-    nonce: flow.nonce,
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    code_challenge: await calculatePKCECodeChallenge(codeVerifier),
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    code_challenge_method: 'S256',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    ...(link ? { max_age: '0' } : {}),
-  });
-  ctx.cookies.set(flowCookie, encrypt(JSON.stringify(flow), argv.aesSecret).toString('base64url'), {
-    httpOnly: true,
-    secure: new URL(argv.host).protocol === 'https:',
-    sameSite: 'lax',
-    signed: false,
-    path: `/api/organizations/${sso.OrganizationId}/sso`,
-    maxAge: 10 * 60 * 1000,
-    overwrite: true,
-  });
-  ctx.body = { authorizationUrl: String(authorizationUrl) };
 }
 
 export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> {
   assertSameOrigin(ctx);
   const { organizationId } = ctx.pathParams;
-  const cookie = ctx.cookies.get(flowCookie, { signed: false });
-  ctx.cookies.set(flowCookie, null, {
+  const cookie = ctx.cookies.get(organizationSsoFlowCookie, { signed: false });
+  ctx.cookies.set(organizationSsoFlowCookie, null, {
     signed: false,
     path: `/api/organizations/${organizationId}/sso`,
     overwrite: true,
   });
-  let flow: LoginFlow;
+  let flow: OrganizationSsoFlow;
   try {
-    flow = JSON.parse(decrypt(Buffer.from(cookie!, 'base64url'), argv.aesSecret)) as LoginFlow;
+    flow = JSON.parse(
+      decrypt(Buffer.from(cookie!, 'base64url'), argv.aesSecret),
+    ) as OrganizationSsoFlow;
   } catch {
     throwKoaError(ctx, 401, 'The organization SSO login has expired');
   }
@@ -242,6 +206,12 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
     ctx,
     401,
     'Sign in to the account which initiated SSO linking',
+  );
+  assertKoaCondition(
+    !flow.credentials || flow.credentials.userId === ctx.user?.id,
+    ctx,
+    401,
+    'Sign in to the account which requested the client credentials',
   );
   let candidate: CandidateConfiguration | undefined;
   let selectedSso = await OrganizationSso.findByPk(organizationId);
@@ -320,6 +290,50 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
   const identity = await OrganizationSsoIdentity.findOne({
     where: { issuer: sso.issuer, subject: claims.sub },
   });
+  if (flow.credentials) {
+    const { description, expires, scopes, userId } = flow.credentials;
+    assertKoaCondition(
+      identity?.UserId === userId,
+      ctx,
+      403,
+      'Authorize with the provider account linked to your Appsemble account',
+    );
+    assertKoaCondition(
+      tokens.refresh_token != null,
+      ctx,
+      503,
+      'The identity provider did not grant offline access',
+    );
+    ctx.body = await getDB().transaction(async (transaction) => {
+      const session = await OrganizationSsoSession.create(
+        {
+          OrganizationId: organizationId,
+          OrganizationSsoIdentityId: identity.id,
+          refreshToken: encrypt(tokens.refresh_token!, argv.aesSecret),
+          // No Studio session uses this grant.
+          refreshTokenHash: '',
+          interactiveRevoked: true,
+          accessTokenExpires: new Date(Date.now() + Math.min(tokens.expires_in!, 3600) * 1000),
+          expires: new Date(),
+          configurationUpdated: sso.configurationUpdated,
+          groups,
+        },
+        { transaction },
+      );
+      return createOAuth2ClientCredentials(
+        {
+          description,
+          expires: expires ? parseISO(expires) : undefined,
+          scopes,
+          UserId: userId,
+          loginMethod: 'oidc',
+          OrganizationSsoSessionId: session.id,
+        },
+        transaction,
+      );
+    });
+    return;
+  }
   if (candidate) {
     assertKoaCondition(
       resolveOrganizationSsoRoles(groups, sso.roleMappings).includes(
@@ -417,9 +431,13 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
       if (!user) {
         assertKoaCondition(!memberUserId, ctx, 401, 'The linked Appsemble account is unavailable');
         const email = typeof info.email === 'string' ? info.email.toLowerCase() : undefined;
-        if (email) {
-          const existingEmail = await EmailAuthorization.findByPk(email, { transaction });
-          const existingUser = await User.findOne({ where: { primaryEmail: email }, transaction });
+        const emails = [email, flow.email].filter((address) => address !== undefined);
+        if (emails.length) {
+          const existingEmail = await EmailAuthorization.findOne({
+            where: { email: emails },
+            transaction,
+          });
+          const existingUser = await User.findOne({ where: { primaryEmail: emails }, transaction });
           assertKoaCondition(
             !existingEmail && !existingUser,
             ctx,
@@ -446,9 +464,15 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
           );
         }
       }
-      if (!linkedIdentity) {
+      const username =
+        [info.email, info.preferred_username].find(
+          (claim): claim is string => typeof claim === 'string' && claim !== '',
+        ) ?? null;
+      if (linkedIdentity) {
+        await linkedIdentity.update({ username }, { transaction });
+      } else {
         linkedIdentity = await OrganizationSsoIdentity.create(
-          { issuer: sso.issuer, subject: claims.sub, UserId: user.id },
+          { issuer: sso.issuer, subject: claims.sub, UserId: user.id, username },
           { transaction },
         );
       }
