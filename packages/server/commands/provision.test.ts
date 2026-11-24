@@ -65,17 +65,27 @@ describe('provision', () => {
     });
   });
 
-  it('rotates the secret of the provisioned service account when it runs again', async () => {
+  it('restores the provisioned service account with a rotated secret when it runs again', async () => {
     await provision(options);
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Member },
+      { where: { serviceAccount: true } },
+    );
+    await OAuth2ClientCredentials.update({ expires: new Date(0) }, { where: { id: 'client' } });
     await provision({ ...options, clientCredentials: 'client:rotated' });
+    const serviceAccounts = await OrganizationMember.findAll({
+      where: { OrganizationId: 'example', serviceAccount: true },
+    });
 
     expect({
       previous: (await requestToken('secret')).status,
       rotated: (await requestToken('rotated')).status,
-      serviceAccounts: await OrganizationMember.count({
-        where: { OrganizationId: 'example', serviceAccount: true },
-      }),
-    }).toStrictEqual({ previous: 400, rotated: 200, serviceAccounts: 1 });
+      roles: serviceAccounts.map(({ role }) => role),
+    }).toStrictEqual({
+      previous: 400,
+      rotated: 200,
+      roles: [PredefinedOrganizationRole.Maintainer],
+    });
   });
 
   it('turns client credentials of another account into the service account', async () => {

@@ -280,15 +280,21 @@ export async function provision({
         ));
 
     const credentials = await OAuth2ClientCredentials.findByPk(clientId, { transaction });
-    if (
+    const serviceAccount =
       credentials &&
       (await OrganizationMember.findOne({
         transaction,
         where: { OrganizationId: organizationId, UserId: credentials.UserId, serviceAccount: true },
-      }))
-    ) {
+      }));
+    if (credentials && serviceAccount) {
+      await serviceAccount.update({ role: PredefinedOrganizationRole.Maintainer }, { transaction });
       await credentials.update(
-        { description: provisionDescription, scopes: provisionScopes, secret: clientSecretHash },
+        {
+          description: provisionDescription,
+          expires: null,
+          scopes: provisionScopes,
+          secret: clientSecretHash,
+        },
         { transaction },
       );
     } else {
