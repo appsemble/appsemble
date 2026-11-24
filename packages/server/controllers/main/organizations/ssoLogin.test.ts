@@ -906,6 +906,11 @@ describe('organization OIDC sign-in', () => {
   it('does not back personal credentials with another provider account', async () => {
     await signIn();
     const registration = await registerPersonalCredentials();
+    await OrganizationSsoIdentity.create({
+      issuer,
+      subject: 'other-subject',
+      UserId: (await createTestUser('other@example.com')).id,
+    });
     claims = { sub: 'other-subject' };
     userInfoClaims = { sub: 'other-subject' };
     const response = await complete(authorizeAtProvider(registration));
@@ -913,6 +918,17 @@ describe('organization OIDC sign-in', () => {
       status: response.status,
       credentials: await OAuth2ClientCredentials.count(),
     }).toStrictEqual({ status: 403, credentials: 0 });
+  });
+
+  it('creates personal credentials only for the account which requested them', async () => {
+    await signIn();
+    const registration = await registerPersonalCredentials();
+    authorizeStudio(await createTestUser('other@example.com'));
+    const response = await complete(authorizeAtProvider(registration));
+    expect({
+      status: response.status,
+      credentials: await OAuth2ClientCredentials.count(),
+    }).toStrictEqual({ status: 401, credentials: 0 });
   });
 
   it('rejects an already-issued CLI token after its personal credentials are deleted', async () => {
