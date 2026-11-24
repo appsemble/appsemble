@@ -39,6 +39,17 @@ beforeEach(() => {
   recentSignIn = true;
   axios.defaults.adapter = (config) => {
     if (config.url.includes('/sso/domains')) {
+      if (config.method !== 'get' && !recentSignIn) {
+        return Promise.reject(
+          new AxiosError('Forbidden', 'ERR_BAD_REQUEST', config, undefined, {
+            data: { message: 'Sign in again before changing single sign-on domains.' },
+            status: 403,
+            statusText: 'Forbidden',
+            headers: {},
+            config,
+          }),
+        );
+      }
       if (config.method === 'post') {
         const { domain } = JSON.parse(config.data) as { domain: string };
         if (!publishedRecords.includes(`_appsemble-sso.${domain}`)) {
@@ -155,6 +166,17 @@ it('should offer signing in again at the provider when saving needs a recent sig
   const save = await screen.findByRole('button', { name: 'Save single sign-on settings' });
   expect(screen.queryByRole('button', { name: 'Sign in again with Staff SSO' })).toBeNull();
   fireEvent.click(save);
+
+  expect(await screen.findByRole('button', { name: 'Sign in again with Staff SSO' })).toBeDefined();
+});
+
+it('should offer signing in again at the provider when a domain change needs a recent sign-in', async () => {
+  recentSignIn = false;
+  renderSettings();
+  fireEvent.change(await screen.findByRole('textbox', { name: 'Email domain' }), {
+    target: { value: 'staff.example.com' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Verify and add domain' }));
 
   expect(await screen.findByRole('button', { name: 'Sign in again with Staff SSO' })).toBeDefined();
 });
