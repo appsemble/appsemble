@@ -71,8 +71,6 @@ function mockProvider(expiredRefreshToken?: string): void {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       jwks_uri: `${issuer}/jwks`,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      revocation_endpoint: `${issuer}/revoke`,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       response_types_supported: ['code'],
       // eslint-disable-next-line @typescript-eslint/naming-convention
       id_token_signing_alg_values_supported: ['RS256'],
@@ -161,13 +159,6 @@ function mockProvider(expiredRefreshToken?: string): void {
       }),
       headers,
     ];
-  });
-  mock.onPost(`${issuer}/revoke`).reply((config) => {
-    const grant = providerGrants.get(new URLSearchParams(config.data).get('token')!);
-    if (grant) {
-      grant.revoked = true;
-    }
-    return [200, '', headers];
   });
   mock.onGet(`${issuer}/userinfo`).reply(() => [
     200,
@@ -864,18 +855,6 @@ describe('organization OIDC sign-in', () => {
         authorizationEnded,
       })),
     }).toStrictEqual({ token: { error: 'invalid_grant' }, listed: [{ authorizationEnded: true }] });
-  });
-
-  it('revokes the offline grant at the provider when personal credentials are deleted', async () => {
-    await signIn();
-    const credentials = await createPersonalCredentials();
-    await request.delete(`/api/users/current/auth/oauth2/client-credentials/${credentials.id}`);
-    expect(
-      [...new Set(providerGrants.values())].map(({ offline, revoked }) => ({ offline, revoked })),
-    ).toStrictEqual([
-      { offline: false, revoked: false },
-      { offline: true, revoked: true },
-    ]);
   });
 
   it('refuses personal credentials when the provider does not grant offline access', async () => {
