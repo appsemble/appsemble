@@ -6,3 +6,9 @@
  * array describing each validation error.
  */
 export const APP_VALIDATION_FAILED = 'APP_VALIDATION_FAILED';
+
+/**
+ * The operation requires a recent sign-in to manage organization SSO.
+ */
+export const ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED =
+  'ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED';

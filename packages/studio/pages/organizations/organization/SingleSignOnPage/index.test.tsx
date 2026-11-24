@@ -1,4 +1,5 @@
 import {
+  ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
   type OrganizationSsoConfiguration,
   type OrganizationSsoDomains,
   type OrganizationSsoSettings,
@@ -25,11 +26,14 @@ const settings: OrganizationSsoSettings = {
   hasClientSecret: true,
 };
 const transport = axios.defaults.adapter;
+const ownerLockoutMessage =
+  'Keep an accessible Owner login or verify an Owner group before changing single sign-on policy.';
 let configuration: OrganizationSsoSettings | null;
 let stored: OrganizationSsoConfiguration | null;
 let domains: OrganizationSsoDomains;
 let publishedRecords: string[];
 let recentSignIn: boolean;
+let keepsOwnerAccess: boolean;
 
 beforeEach(() => {
   configuration = { ...settings };
@@ -37,12 +41,16 @@ beforeEach(() => {
   domains = { recordValue: 'appsemble-sso=ownership-proof', domains: [] };
   publishedRecords = [];
   recentSignIn = true;
+  keepsOwnerAccess = true;
   axios.defaults.adapter = (config) => {
     if (config.url.includes('/sso/domains')) {
       if (config.method !== 'get' && !recentSignIn) {
         return Promise.reject(
           new AxiosError('Forbidden', 'ERR_BAD_REQUEST', config, undefined, {
-            data: { message: 'Sign in again before changing single sign-on domains.' },
+            data: {
+              data: { code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED },
+              message: 'Sign in again before changing single sign-on domains.',
+            },
             status: 403,
             statusText: 'Forbidden',
             headers: {},
@@ -83,10 +91,15 @@ beforeEach(() => {
         }),
       );
     }
-    if (config.method === 'put' && !recentSignIn) {
+    if (config.method === 'put' && (!recentSignIn || !keepsOwnerAccess)) {
       return Promise.reject(
         new AxiosError('Forbidden', 'ERR_BAD_REQUEST', config, undefined, {
-          data: { message: 'Sign in again before changing single sign-on settings.' },
+          data: recentSignIn
+            ? { message: ownerLockoutMessage }
+            : {
+                data: { code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED },
+                message: 'Sign in again before changing single sign-on settings.',
+              },
           status: 403,
           statusText: 'Forbidden',
           headers: {},
@@ -168,6 +181,15 @@ it('should offer signing in again at the provider when saving needs a recent sig
   fireEvent.click(save);
 
   expect(await screen.findByRole('button', { name: 'Sign in again with Staff SSO' })).toBeDefined();
+});
+
+it('should leave the Owner lockout error visible without offering another sign-in', async () => {
+  keepsOwnerAccess = false;
+  renderSettings();
+  fireEvent.click(await screen.findByRole('button', { name: 'Save single sign-on settings' }));
+
+  expect(await screen.findByText(ownerLockoutMessage)).toBeDefined();
+  expect(screen.queryByRole('button', { name: 'Sign in again with Staff SSO' })).toBeNull();
 });
 
 it('should offer signing in again at the provider when a domain change needs a recent sign-in', async () => {

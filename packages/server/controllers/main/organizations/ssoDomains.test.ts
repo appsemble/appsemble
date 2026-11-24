@@ -1,4 +1,5 @@
 import {
+  ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
   type OrganizationSsoConfiguration,
   type OrganizationSsoDomains,
   PredefinedOrganizationRole,
@@ -196,11 +197,17 @@ describe('organization single sign-on domains', () => {
   it('requires a recent sign-in to add or remove a domain', async () => {
     await OrganizationSsoDomain.create({ OrganizationId: 'staff', domain: 'example.com' });
     signIn(Date.now() / 1000 - 601);
+    const add = await request.post(path, { domain: 'example.org' });
+    const remove = await request.delete(`${path}/example.com`);
     expect({
-      add: (await request.post(path, { domain: 'example.org' })).status,
-      remove: (await request.delete(`${path}/example.com`)).status,
+      add: { status: add.status, code: add.data.data?.code },
+      remove: { status: remove.status, code: remove.data.data?.code },
       domains: (await getDomains()).domains,
-    }).toStrictEqual({ add: 403, remove: 403, domains: ['example.com'] });
+    }).toStrictEqual({
+      add: { status: 403, code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED },
+      remove: { status: 403, code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED },
+      domains: ['example.com'],
+    });
   });
 
   it.each(['a non-member', 'a Member'])('refuses %s access to the domains', async (who) => {

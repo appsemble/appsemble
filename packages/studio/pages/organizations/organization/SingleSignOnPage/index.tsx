@@ -12,6 +12,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import {
+  ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
   type OrganizationSsoConfiguration,
   type OrganizationSsoDomains,
   type OrganizationSsoSettings,
@@ -29,6 +30,11 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { messages as roleMessages } from '../MemberRow/messages.js';
 
+interface OperationError {
+  message: string;
+  requiresRecentSignIn: boolean;
+}
+
 export function SingleSignOnPage(): ReactNode {
   useMeta(messages.title);
   const { organizationId } = useParams<{ organizationId: string }>();
@@ -43,12 +49,11 @@ export function SingleSignOnPage(): ReactNode {
   } = useData<OrganizationSsoDomains>(`${url}/domains`);
   const [domain, setDomain] = useState('');
   const [changingDomain, setChangingDomain] = useState(false);
-  const [domainError, setDomainError] = useState<string>();
+  const [domainError, setDomainError] = useState<OperationError>();
   const [values, setValues] = useState<OrganizationSsoConfiguration>();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [saveError, setSaveError] = useState<string>();
-  const [reauthenticate, setReauthenticate] = useState(false);
+  const [saveError, setSaveError] = useState<OperationError>();
   const requiresVerification =
     values != null &&
     (!data ||
@@ -89,15 +94,15 @@ export function SingleSignOnPage(): ReactNode {
   }, [data, error, loading]);
 
   const showError = useCallback(
-    (err: unknown, setError: (message: string) => void, fallback: MessageDescriptor) => {
-      if (axios.isAxiosError(err) && err.response?.status === 403) {
-        setReauthenticate(true);
-      }
-      setError(
-        axios.isAxiosError<{ message?: string }>(err) && err.response?.data?.message
-          ? err.response.data.message
-          : formatMessage(fallback),
-      );
+    (err: unknown, setError: (error: OperationError) => void, fallback: MessageDescriptor) => {
+      const response = axios.isAxiosError<{ data?: { code?: string }; message?: string }>(err)
+        ? err.response
+        : undefined;
+      setError({
+        message: response?.data?.message || formatMessage(fallback),
+        requiresRecentSignIn:
+          response?.data?.data?.code === ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
+      });
     },
     [formatMessage],
   );
@@ -212,14 +217,13 @@ export function SingleSignOnPage(): ReactNode {
   }
 
   const managed = data?.managedBy === 'deployment';
-  const signInAgain =
-    reauthenticate && data ? (
-      <div className="mt-3">
-        <Button color="primary" onClick={() => signInAtProvider()}>
-          <FormattedMessage {...messages.signInAgain} values={{ name: data.name }} />
-        </Button>
-      </div>
-    ) : null;
+  const signInAgain = data ? (
+    <div className="mt-3">
+      <Button color="primary" onClick={() => signInAtProvider()}>
+        <FormattedMessage {...messages.signInAgain} values={{ name: data.name }} />
+      </Button>
+    </div>
+  ) : null;
 
   return (
     <>
@@ -233,8 +237,8 @@ export function SingleSignOnPage(): ReactNode {
       ) : null}
       {saveError ? (
         <Message color="danger">
-          {saveError}
-          {signInAgain}
+          {saveError.message}
+          {saveError.requiresRecentSignIn ? signInAgain : null}
         </Message>
       ) : null}
       {saved ? (
@@ -442,9 +446,9 @@ export function SingleSignOnPage(): ReactNode {
           {domainsError || domainError ? (
             <Message color="danger">
               <span role="alert">
-                {domainError || <FormattedMessage {...messages.domainError} />}
+                {domainError?.message || <FormattedMessage {...messages.domainError} />}
               </span>
-              {signInAgain}
+              {domainError?.requiresRecentSignIn ? signInAgain : null}
             </Message>
           ) : null}
           {domainsLoading ? (

@@ -3,6 +3,7 @@ import { setTimeout } from 'node:timers/promises';
 
 import {
   type OAuth2ClientCredentials as OAuth2ClientCredentialsType,
+  ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
   type OrganizationSsoConfiguration,
   PredefinedOrganizationRole,
   type TokenResponse,
@@ -1195,7 +1196,10 @@ describe('organization OIDC sign-in', () => {
       { link: true, configuration: { ...configuration, name: 'Proposed provider' } },
       { headers: { origin } },
     );
-    expect(response.status).toBe(403);
+    expect(response).toMatchObject({
+      status: 403,
+      data: { data: { code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED } },
+    });
   });
 
   it('requires signing in again after ten minutes when the provider reports a future authentication time', async () => {
@@ -1221,7 +1225,10 @@ describe('organization OIDC sign-in', () => {
     vi.setSystemTime(Date.now() + 601_000);
     const rename = (): Promise<AxiosResponse> =>
       request.put(path, { ...configuration, name: 'Renamed provider' });
-    expect((await rename()).status).toBe(403);
+    expect(await rename()).toMatchObject({
+      status: 403,
+      data: { data: { code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED } },
+    });
     const started = await request.post(`${path}/login`, { link: true }, { headers: { origin } });
     expect(new URL(started.data.authorizationUrl).searchParams.get('max_age')).toBe('0');
     // eslint-disable-next-line @typescript-eslint/naming-convention

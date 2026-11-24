@@ -2,7 +2,10 @@ import {
   createUser as createStudioUser,
   deleteUser as deleteStudioUser,
 } from '@appsemble/node-utils';
-import { PredefinedOrganizationRole } from '@appsemble/types';
+import {
+  ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
+  PredefinedOrganizationRole,
+} from '@appsemble/types';
 import { type Page } from '@playwright/test';
 
 import { authenticatedTest as test, expect } from '../../../index.js';
@@ -145,7 +148,10 @@ test.describe('Studio organization Keycloak OIDC', () => {
         route.request().method() === 'PUT'
           ? route.fulfill({
               status: 403,
-              json: { message: 'Sign in again before changing single sign-on settings.' },
+              json: {
+                data: { code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED },
+                message: 'Sign in again before changing single sign-on settings.',
+              },
             })
           : route.fallback(),
       );

@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 
 import { assertKoaCondition, logger, throwKoaError } from '@appsemble/node-utils';
 import {
+  ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
   OrganizationPermission,
   type OrganizationSsoConfiguration,
   PredefinedOrganizationRole,
@@ -112,6 +113,7 @@ export async function startOrganizationSsoLogin(ctx: Context): Promise<void> {
       ctx,
       403,
       'Sign in again before changing single sign-on settings',
+      { code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED },
     );
     assertKoaCondition(
       current?.managedBy !== 'deployment',
