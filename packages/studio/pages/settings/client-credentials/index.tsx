@@ -323,8 +323,8 @@ export function ClientCredentialsPage(): ReactNode {
               <tr key={client.id}>
                 <td>{client.description}</td>
                 <td>
-                  <time dateTime={client.$created}>
-                    <FormattedDate value={client.$created} />
+                  <time dateTime={client.created}>
+                    <FormattedDate value={client.created} />
                   </time>
                 </td>
                 <td>
