@@ -704,6 +704,24 @@ describe('app', () => {
       expect(app.domain).toBe('app.example.com');
     });
 
+    it('should publish an app on the domain passed as a flag', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+      await publishApp({
+        path: resolveFixture('apps/test'),
+        organization: organization.id,
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        domain: 'app.example.com',
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+      });
+      vi.useFakeTimers();
+      const app = (await App.findOne())!;
+      expect(app.domain).toBe('app.example.com');
+    });
+
     it('should publish seed app members with an app', async () => {
       vi.useRealTimers();
       const clientCredentials = await authorizeCLI('apps:write', testApp);
@@ -1721,6 +1739,27 @@ describe('app', () => {
         context: 'production',
         remote: testApp.defaults.baseURL!,
         clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+        force: false,
+      });
+      vi.useFakeTimers();
+
+      await app.reload();
+      expect(app.domain).toBe('app.example.com');
+    });
+
+    it('should set the domain passed as a flag', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+
+      await updateApp({
+        id: app.id,
+        path: resolveFixture('apps/test'),
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        domain: 'app.example.com',
         // Required defaults
         visibility: 'unlisted',
         iconBackground: '#ffffff',
