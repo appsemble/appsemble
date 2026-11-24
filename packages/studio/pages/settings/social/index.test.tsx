@@ -148,8 +148,21 @@ it('shows the organization, provider and account of a linked identity', async ()
   renderAccounts();
   const identity = await screen.findByRole('region', { name: `${issuer} (staff-1)` });
 
+  expect(
+    within(identity).getByRole('heading', { name: 'staff@identity.example.com' }),
+  ).toBeDefined();
   expect(within(identity).getByText('Organization: Staff (Staff Keycloak)')).toBeDefined();
-  expect(within(identity).getByText('Account: staff@identity.example.com')).toBeDefined();
+  expect(within(identity).getByText(`Issuer: ${issuer}`)).toBeDefined();
+  expect(within(identity).getByText('Account ID: staff-1')).toBeDefined();
+});
+
+it('heads an identity with its account ID before the provider account is known', async () => {
+  renderAccounts();
+  const identity = await screen.findByRole('region', { name: `${issuer} (staff-2)` });
+
+  expect(within(identity).getByRole('heading', { name: 'staff-2' })).toBeDefined();
+  expect(within(identity).getByText(`Issuer: ${issuer}`)).toBeDefined();
+  expect(within(identity).queryByText('Account ID: staff-2')).toBeNull();
 });
 
 it('unlinks the selected SSO account and preserves other identities and an unrelated session', async () => {

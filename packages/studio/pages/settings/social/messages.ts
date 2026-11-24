@@ -9,9 +9,9 @@ export const messages = defineMessages({
     defaultMessage: 'Organization: {organization} ({provider})',
     id: 'studio.KANIBl',
   },
-  account: {
-    defaultMessage: 'Account: {username}',
-    id: 'studio.QVstl+',
+  issuer: {
+    defaultMessage: 'Issuer: {issuer}',
+    id: 'studio.1TWviW',
   },
   accountId: {
     defaultMessage: 'Account ID: {subject}',
