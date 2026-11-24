@@ -1,5 +1,5 @@
 import {
-  ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
+  ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED,
   type OrganizationSsoConfiguration,
   type OrganizationSsoDomains,
   PredefinedOrganizationRole,
@@ -204,8 +204,8 @@ describe('organization single sign-on domains', () => {
       remove: { status: remove.status, code: remove.data.data?.code },
       domains: (await getDomains()).domains,
     }).toStrictEqual({
-      add: { status: 403, code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED },
-      remove: { status: 403, code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED },
+      add: { status: 403, code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED },
+      remove: { status: 403, code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED },
       domains: ['example.com'],
     });
   });

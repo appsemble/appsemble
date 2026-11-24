@@ -12,7 +12,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import {
-  ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
+  ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED,
   type OrganizationSsoConfiguration,
   type OrganizationSsoDomains,
   type OrganizationSsoSettings,
@@ -101,7 +101,7 @@ export function SingleSignOnPage(): ReactNode {
       setError({
         message: response?.data?.message || formatMessage(fallback),
         requiresRecentSignIn:
-          response?.data?.data?.code === ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
+          response?.data?.data?.code === ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED,
       });
     },
     [formatMessage],

@@ -1,5 +1,5 @@
 import {
-  ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
+  ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED,
   type OrganizationSsoConfiguration,
   type OrganizationSsoDomains,
   type OrganizationSsoSettings,
@@ -48,7 +48,7 @@ beforeEach(() => {
         return Promise.reject(
           new AxiosError('Forbidden', 'ERR_BAD_REQUEST', config, undefined, {
             data: {
-              data: { code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED },
+              data: { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED },
               message: 'Sign in again before changing single sign-on domains.',
             },
             status: 403,
@@ -97,7 +97,7 @@ beforeEach(() => {
           data: recentSignIn
             ? { message: ownerLockoutMessage }
             : {
-                data: { code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED },
+                data: { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED },
                 message: 'Sign in again before changing single sign-on settings.',
               },
           status: 403,

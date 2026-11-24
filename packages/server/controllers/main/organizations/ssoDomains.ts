@@ -3,7 +3,7 @@ import dns from 'node:dns/promises';
 
 import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import {
-  ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
+  ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED,
   OrganizationPermission,
   type OrganizationSsoDomains,
 } from '@appsemble/types';
@@ -35,7 +35,7 @@ async function assertMutableDomains(ctx: Context, transaction: Transaction): Pro
     ctx,
     403,
     'Sign in again before changing single sign-on domains.',
-    { code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED },
+    { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED },
   );
   const { organizationId } = ctx.pathParams;
   await Organization.findByPk(organizationId, { transaction, lock: transaction.LOCK.UPDATE });

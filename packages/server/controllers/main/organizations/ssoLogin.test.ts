@@ -3,7 +3,7 @@ import { setTimeout } from 'node:timers/promises';
 
 import {
   type OAuth2ClientCredentials as OAuth2ClientCredentialsType,
-  ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED,
+  ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED,
   type OrganizationSsoConfiguration,
   PredefinedOrganizationRole,
   type TokenResponse,
@@ -1198,7 +1198,7 @@ describe('organization OIDC sign-in', () => {
     );
     expect(response).toMatchObject({
       status: 403,
-      data: { data: { code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED } },
+      data: { data: { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED } },
     });
   });
 
@@ -1227,7 +1227,7 @@ describe('organization OIDC sign-in', () => {
       request.put(path, { ...configuration, name: 'Renamed provider' });
     expect(await rename()).toMatchObject({
       status: 403,
-      data: { data: { code: ORGANIZATION_SSO_REAUTHENTICATION_REQUIRED } },
+      data: { data: { code: ORGANIZATION_SSO_RECENT_SIGN_IN_REQUIRED } },
     });
     const started = await request.post(`${path}/login`, { link: true }, { headers: { origin } });
     expect(new URL(started.data.authorizationUrl).searchParams.get('max_age')).toBe('0');
