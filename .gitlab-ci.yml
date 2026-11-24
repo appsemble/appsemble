@@ -1189,9 +1189,10 @@ e2e SLA apps(private):
       echo "Triggered pipeline $PIPELINE_ID"
 
       while true; do
-        RESPONSE=$(curl -s --header "PRIVATE-TOKEN: $DC_GITLAB_TOKEN" \
-          "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/pipelines/$PIPELINE_ID")
-        STATUS=$(echo "$RESPONSE" | jq -r '.status')
+        curl -s --retry 3 --retry-delay 10 --output pipeline.json \
+          --header "PRIVATE-TOKEN: $DC_GITLAB_TOKEN" \
+          "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/pipelines/$PIPELINE_ID"
+        STATUS=$(jq -r '.status' pipeline.json)
         echo "Pipeline $PIPELINE_ID status: $STATUS"
         case "$STATUS" in
           success) exit 0 ;;
