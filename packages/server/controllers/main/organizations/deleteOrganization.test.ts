@@ -80,28 +80,31 @@ describe('deleteOrganization', () => {
     expect(await App.count({ where: { OrganizationId: organization2.id } })).toBe(0);
   });
 
-  it('should keep the organization and its apps when deleting an app fails', async () => {
-    await createApp(organization.id);
-    const failing = await createApp(organization.id);
-    await getDB().query(`
-      CREATE FUNCTION "failAppDeletion"() RETURNS trigger LANGUAGE plpgsql AS $$
-        BEGIN RAISE EXCEPTION 'App deletion failed'; END
-      $$;
-      CREATE TRIGGER "failAppDeletion" BEFORE UPDATE ON "App" FOR EACH ROW
-        WHEN (NEW.id = ${failing.id} AND NEW.deleted IS NOT NULL)
-        EXECUTE FUNCTION "failAppDeletion"();
-    `);
-    onTestFinished(async () => {
-      await getDB().query('DROP FUNCTION "failAppDeletion" CASCADE');
-    });
-    authorizeStudio();
+  it.each(['App', 'Organization'])(
+    'should keep the organization and its apps when deleting a row in %s fails',
+    async (table) => {
+      await createApp(organization.id);
+      await createApp(organization.id);
+      await getDB().query(`
+        CREATE FUNCTION "failDeletion"() RETURNS trigger LANGUAGE plpgsql AS $$
+          BEGIN RAISE EXCEPTION 'Deletion failed'; END
+        $$;
+        CREATE TRIGGER "failDeletion" BEFORE UPDATE ON "${table}" FOR EACH ROW
+          WHEN (NEW.deleted IS NOT NULL)
+          EXECUTE FUNCTION "failDeletion"();
+      `);
+      onTestFinished(async () => {
+        await getDB().query('DROP FUNCTION "failDeletion" CASCADE');
+      });
+      authorizeStudio();
 
-    const response = await request.delete(`/api/organizations/${organization.id}`);
+      const response = await request.delete(`/api/organizations/${organization.id}`);
 
-    expect(response.status).toBe(500);
-    expect(await Organization.findByPk(organization.id)).not.toBeNull();
-    expect(await App.count({ where: { OrganizationId: organization.id } })).toBe(2);
-  });
+      expect(response.status).toBe(500);
+      expect(await Organization.findByPk(organization.id)).not.toBeNull();
+      expect(await App.count({ where: { OrganizationId: organization.id } })).toBe(2);
+    },
+  );
 
   it('should delete the organization with client credentials', async () => {
     const organization2 = await Organization.create({

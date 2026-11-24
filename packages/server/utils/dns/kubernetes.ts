@@ -541,9 +541,19 @@ export async function configureDNS(): Promise<void> {
     await deleteIngress(oldDomain);
   });
 
-  App.afterDestroy('dns', async (app) => {
+  App.afterDestroy('dns', async (app, { transaction }) => {
     const { domain } = app;
     if (!domain) {
+      return;
+    }
+    if (transaction) {
+      transaction.afterCommit(async () => {
+        try {
+          await deleteIngress(domain);
+        } catch (error) {
+          logger.error(`Failed to clean up ingress and TLS secret for ${domain}: ${String(error)}`);
+        }
+      });
       return;
     }
     await deleteIngress(domain);

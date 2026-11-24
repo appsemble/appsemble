@@ -49,7 +49,11 @@ export async function deleteOrganization(ctx: Context): Promise<void> {
   );
 
   await transactional(async (transaction) => {
-    await App.destroy({ where: { OrganizationId: organizationId }, transaction });
+    await App.destroy({
+      individualHooks: true,
+      where: { OrganizationId: organizationId },
+      transaction,
+    });
     await revokeServiceAccounts({ OrganizationId: organizationId }, transaction);
     await organization.destroy({ transaction });
   });
