@@ -25,7 +25,7 @@ import { enableRegistration, logins } from '../../utils/settings.js';
 interface LoginFormProps {
   readonly allowedLoginMethods?: OrganizationLoginMethod[];
   readonly busy: Toggle;
-  readonly onOrganizationSelected: (organizationId: string) => void | Promise<void>;
+  readonly onOrganizationSelected: (organizationId: string, email: string) => void | Promise<void>;
   readonly onPasswordLogin: (values: LoginFormValues) => Promise<void>;
   readonly organizationId?: string;
 }
@@ -85,7 +85,7 @@ export function LoginForm({
       busy.disable();
     }
     if (data.organizations.length === 1) {
-      await onOrganizationSelected(data.organizations[0].id);
+      await onOrganizationSelected(data.organizations[0].id, values.email);
     } else if (data.organizations.length) {
       setOrganizations(data.organizations);
     } else {
@@ -110,7 +110,7 @@ export function LoginForm({
               className="is-block mb-3"
               disabled={busy.enabled}
               key={organization.id}
-              onClick={() => onOrganizationSelected(organization.id)}
+              onClick={() => onOrganizationSelected(organization.id, email)}
             >
               {organization.name} ({organization.ssoName})
             </Button>

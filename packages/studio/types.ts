@@ -14,6 +14,7 @@ export interface OrganizationMember {
   role: PredefinedOrganizationRole | null;
   roles: PredefinedOrganizationRole[];
   ssoRoles: PredefinedOrganizationRole[];
+  ssoUsernames?: string[];
   guest: boolean;
 }
 

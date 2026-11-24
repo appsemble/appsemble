@@ -21,10 +21,11 @@ import {
 } from '@appsemble/react-components';
 import { type OAuth2ClientCredentials } from '@appsemble/types';
 import { has, scopes as knownScopes } from '@appsemble/utils';
+import { storageKey } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ReactNode, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -48,6 +49,10 @@ interface FormValues {
 export function ClientCredentialsPage(): ReactNode {
   useMeta(messages.title);
   const location = useLocation();
+  const navigate = useNavigate();
+  // Credentials of an organization SSO session return here after the provider authorized them.
+  const authorized = (location.state as { clientCredentials?: OAuth2ClientCredentials } | null)
+    ?.clientCredentials;
   const search = new URLSearchParams(location.search);
   const callback = search.get('callback');
   const suggestedDescription = search.get('description');
@@ -61,7 +66,7 @@ export function ClientCredentialsPage(): ReactNode {
     setData: setClients,
   } = useData<OAuth2ClientCredentials[]>('/api/users/current/auth/oauth2/client-credentials');
   const [newClientCredentials, setNewClientCredentials] = useState<string>(null);
-  const modal = useToggle(Boolean(callback));
+  const modal = useToggle(Boolean(callback) || Boolean(authorized));
 
   const resetModal = useCallback(() => {
     modal.disable();
@@ -69,19 +74,8 @@ export function ClientCredentialsPage(): ReactNode {
     setTimeout(() => setNewClientCredentials(null), 300);
   }, [modal]);
 
-  const registerClient = useCallback(
-    async ({ description, expires, ...values }: FormValues) => {
-      const scopes = Object.entries(values)
-        .filter(([key, value]) => value && (knownScopes as readonly string[]).includes(key))
-        .map(([key]) => key);
-      const { data } = await axios.post<OAuth2ClientCredentials>(
-        '/api/users/current/auth/oauth2/client-credentials',
-        {
-          description,
-          expires: expires ? new Date(expires) : undefined,
-          scopes,
-        },
-      );
+  const showClientCredentials = useCallback(
+    async (data: OAuth2ClientCredentials) => {
       const newCredentials = `${data.id}:${data.secret}`;
       if (/^\d{4,5}$/.test(callback)) {
         try {
@@ -93,9 +87,46 @@ export function ClientCredentialsPage(): ReactNode {
         }
       }
       setNewClientCredentials(newCredentials);
+    },
+    [callback],
+  );
+
+  useEffect(() => {
+    if (authorized) {
+      // The secret is shown once, so it does not stay in the browser history.
+      navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+      showClientCredentials(authorized);
+    }
+  }, [authorized, location.pathname, location.search, navigate, showClientCredentials]);
+
+  const registerClient = useCallback(
+    async ({ description, expires, ...values }: FormValues) => {
+      const scopes = Object.entries(values)
+        .filter(([key, value]) => value && (knownScopes as readonly string[]).includes(key))
+        .map(([key]) => key);
+      const { data } = await axios.post<
+        OAuth2ClientCredentials | { authorizationUrl: string; organizationId: string }
+      >('/api/users/current/auth/oauth2/client-credentials', {
+        description,
+        expires: expires ? new Date(expires) : undefined,
+        scopes,
+      });
+      if ('authorizationUrl' in data) {
+        sessionStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            organizationId: data.organizationId,
+            state: new URL(data.authorizationUrl).searchParams.get('state'),
+            redirect: `${location.pathname}${location.search}`,
+          }),
+        );
+        window.location.href = data.authorizationUrl;
+        return;
+      }
+      await showClientCredentials(data);
       setClients((oldClients) => [...oldClients, data]);
     },
-    [callback, setClients],
+    [location.pathname, location.search, setClients, showClientCredentials],
   );
 
   const onDelete = useConfirmation({
@@ -297,7 +328,11 @@ export function ClientCredentialsPage(): ReactNode {
                   </time>
                 </td>
                 <td>
-                  {client.expires ? (
+                  {client.authorizationEnded ? (
+                    <span className="has-text-danger">
+                      <FormattedMessage {...messages.authorizationEnded} />
+                    </span>
+                  ) : client.expires ? (
                     <time dateTime={client.expires}>
                       <FormattedDate value={client.expires} />
                     </time>

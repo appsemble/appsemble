@@ -2,12 +2,12 @@ import { type CheckUserOrganizationPermissionsParams } from '@appsemble/node-uti
 
 import { checkUserOrganizationPermissions as checkUserOrganizationPermissionsServer } from '../utils/authorization.js';
 
-export function checkUserOrganizationPermissions({
+export async function checkUserOrganizationPermissions({
   app,
   context,
   permissions,
 }: CheckUserOrganizationPermissionsParams): Promise<void> {
-  return checkUserOrganizationPermissionsServer({
+  await checkUserOrganizationPermissionsServer({
     context,
     organizationId: app.OrganizationId,
     requiredPermissions: permissions,

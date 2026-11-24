@@ -1,16 +1,44 @@
 import { getSSRFProtectedAgents } from '@appsemble/node-utils';
 import axios from 'axios';
+import { type Context } from 'koa';
 import {
   allowInsecureRequests,
+  buildAuthorizationUrl,
+  calculatePKCECodeChallenge,
   type Configuration,
   customFetch,
   discovery,
   enableNonRepudiationChecks,
+  randomNonce,
+  randomPKCECodeVerifier,
+  randomState,
 } from 'openid-client';
 
 import { type OrganizationSso } from '../models/main/OrganizationSso.js';
 import { argv } from './argv.js';
-import { decrypt } from './crypto.js';
+import { decrypt, encrypt } from './crypto.js';
+
+export const organizationSsoFlowCookie = 'organization-oidc';
+
+/**
+ * An authorization at an organization's provider which the Studio callback completes.
+ */
+export interface OrganizationSsoFlow {
+  organizationId: string;
+  configurationUpdated: number;
+  state: string;
+  nonce: string;
+  codeVerifier: string;
+  expires: number;
+  email?: string;
+  linkUserId?: string;
+  candidateId?: string;
+
+  /**
+   * Personal client credentials which the provider's offline grant backs.
+   */
+  credentials?: { userId: string; description: string; expires?: string; scopes: string };
+}
 
 const configurations = new Map<
   string,
@@ -96,4 +124,61 @@ export function getOrganizationOidcConfiguration(sso: OrganizationSso): Promise<
     }
   });
   return configuration;
+}
+
+/**
+ * Start an authorization at an organization's provider.
+ *
+ * The flow is kept in an encrypted cookie for the callback, which completes it within ten
+ * minutes.
+ *
+ * @param ctx The request which starts the authorization.
+ * @param sso The organization's provider configuration.
+ * @param purpose What the callback does besides signing in.
+ * @param scope The scope to request from the provider.
+ * @returns The provider authorization URL.
+ */
+export async function startOrganizationSsoAuthorization(
+  ctx: Context,
+  sso: OrganizationSso,
+  purpose: Pick<OrganizationSsoFlow, 'candidateId' | 'credentials' | 'email' | 'linkUserId'>,
+  scope = sso.scope,
+): Promise<string> {
+  const config = await getOrganizationOidcConfiguration(sso);
+  const codeVerifier = randomPKCECodeVerifier();
+  const flow: OrganizationSsoFlow = {
+    organizationId: sso.OrganizationId,
+    configurationUpdated: sso.configurationUpdated.getTime(),
+    state: randomState(),
+    nonce: randomNonce(),
+    codeVerifier,
+    expires: Date.now() + 10 * 60 * 1000,
+    ...purpose,
+  };
+  const authorizationUrl = buildAuthorizationUrl(config, {
+    redirect_uri: String(new URL('/callback', argv.host)),
+    scope,
+    state: flow.state,
+    nonce: flow.nonce,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    code_challenge: await calculatePKCECodeChallenge(codeVerifier),
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    code_challenge_method: 'S256',
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    ...(purpose.linkUserId ? { max_age: '0' } : {}),
+  });
+  ctx.cookies.set(
+    organizationSsoFlowCookie,
+    encrypt(JSON.stringify(flow), argv.aesSecret).toString('base64url'),
+    {
+      httpOnly: true,
+      secure: new URL(argv.host).protocol === 'https:',
+      sameSite: 'lax',
+      signed: false,
+      path: `/api/organizations/${sso.OrganizationId}/sso`,
+      maxAge: 10 * 60 * 1000,
+      overwrite: true,
+    },
+  );
+  return String(authorizationUrl);
 }

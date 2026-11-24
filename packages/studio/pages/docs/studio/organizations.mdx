@@ -133,24 +133,34 @@ Select **Verify connection and save** and sign in with a provider account whose 
 access. The connection is saved after successful verification, and unsuccessful verification keeps
 the active connection intact.
 
-Staff sign in at `https://<studio-host>/login?organization=<organization id>`. Linking an existing
-Appsemble account requires signing in to that account first; a matching email address alone does not
-link accounts. Password recovery and other linked sign-in methods cannot bypass an organization's
+Staff sign in at `https://<studio-host>/login?organization=<organization id>` or by entering their
+email address on the Studio sign-in page. An email address that belongs to an existing Appsemble
+account, whether entered on the sign-in page or sent by the provider, must be linked first: sign in
+to that account, then link organization single sign-on. A matching email address alone does not link
+accounts. Password recovery and other linked sign-in methods cannot bypass an organization's
 required single sign-on, and a sign-in through another organization's provider does not count for
 this organization. Signing out of the Studio also signs out at a provider which offers an
 `end_session_endpoint` and then returns to the Studio, so the next sign-in asks for credentials
 again.
 
-Manage linked organization identities under **Settings > Social login**. **Unlink single sign-on**
-requires recent authentication and a verified recovery email or personal social login. Unlinking
-ends that identity's sessions and revokes its personal CLI credentials while keeping other linked
-identities, manual memberships and guest grants. An organization must retain an Owner. To link the
-identity again, sign in to the existing Appsemble account and use the organization's sign-in page.
+Manage linked organization identities under **Settings > Social login**, which shows each identity's
+organizations, their provider names and the provider account: the email address from the last
+sign-in through the provider, or its preferred username without one. Owners see the provider
+accounts of linked members on the **Members** page. **Unlink single sign-on** requires recent
+authentication and a verified recovery email or personal social login. Unlinking ends that
+identity's sessions and revokes its personal CLI credentials while keeping other linked identities,
+manual memberships and guest grants. An organization must retain an Owner. To link the identity
+again, sign in to the existing Appsemble account and use the organization's sign-in page.
 
 Provider groups are refreshed when the provider access token expires, at most one hour after the
 previous refresh, and a Studio session ends after eight hours. Removing a group therefore takes
-effect at the next refresh, including for personal CLI credentials, which keep working beyond the
-Studio session while the provider grant remains valid.
+effect at the next refresh, including for personal CLI credentials.
+
+Registering personal client credentials in a session from the organization's provider asks the
+provider for offline access, so the client must allow the `offline_access` scope. The credentials
+use that grant of their own: they keep working after signing out, and stop when the provider ends
+the grant, disables the account or removes its groups. The client credentials settings show
+credentials whose grant has ended; register new ones to replace them.
 
 Removing the single sign-on configuration deletes group-managed memberships and keeps manual and
 guest memberships; the removing Owner keeps the Owner role. It ends all sessions through the

@@ -9,6 +9,10 @@ export const messages = defineMessages({
     id: 'studio.Tmgs0I',
     defaultMessage: 'Managed by single sign-on:',
   },
+  ssoUsernames: {
+    id: 'studio.g/fbsx',
+    defaultMessage: 'Single sign-on account: {usernames}',
+  },
   Member: {
     id: 'studio.7L86Z5',
     defaultMessage: 'Member',

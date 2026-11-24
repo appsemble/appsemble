@@ -33,6 +33,12 @@ export const OrganizationMember: OpenAPIV3.NonArraySchemaObject = {
       type: 'array',
       items: { enum: predefinedOrganizationRoles },
     },
+    ssoUsernames: {
+      description:
+        'The identity provider accounts linked through organization single sign-on, shown to members who manage members.',
+      type: 'array',
+      items: { type: 'string' },
+    },
     guest: { type: 'boolean' },
     properties: {
       type: 'object',

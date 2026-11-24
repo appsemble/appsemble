@@ -32,6 +32,8 @@ interface OrganizationSsoIdentity {
   id: string;
   issuer: string;
   subject: string;
+  username: string | null;
+  organizations: { id: string; name: string | null; provider: string }[];
 }
 
 interface OrganizationSsoIdentityRowProps {
@@ -57,11 +59,34 @@ function OrganizationSsoIdentityRow({
   });
 
   return (
-    <section aria-label={`${identity.issuer} (${identity.subject})`} className="box">
-      <Title level={3}>{identity.issuer}</Title>
-      <p className="mb-3">
-        <FormattedMessage {...messages.accountId} values={{ subject: identity.subject }} />
-      </p>
+    <section
+      aria-label={`${identity.issuer} (${identity.subject})`}
+      className={`box ${styles.identity}`}
+    >
+      <Title level={3} size={5}>
+        {identity.username ?? identity.subject}
+      </Title>
+      {identity.organizations.map((organization) => (
+        <p key={organization.id}>
+          <FormattedMessage
+            {...messages.organization}
+            values={{
+              organization: organization.name || organization.id,
+              provider: organization.provider,
+            }}
+          />
+        </p>
+      ))}
+      <div className="is-size-7 has-text-grey mb-3">
+        <p>
+          <FormattedMessage {...messages.issuer} values={{ issuer: identity.issuer }} />
+        </p>
+        {identity.username ? (
+          <p>
+            <FormattedMessage {...messages.accountId} values={{ subject: identity.subject }} />
+          </p>
+        ) : null}
+      </div>
       <AsyncButton onClick={() => unlink().catch(noop)}>
         <FormattedMessage {...messages.unlink} />
       </AsyncButton>

@@ -110,6 +110,9 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   // user again.
   const fetchUser = useCallback(async () => {
     const accessToken = accessTokenRef.current;
+    if (!accessToken) {
+      return;
+    }
     const responses = Promise.all([
       axios.get<UserInfo>('/api/users/current'),
       axios.get<UserOrganization[]>('/api/users/current/organizations'),
@@ -263,7 +266,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     // refresh it before loading children.
     const waitForAccessToken = exp * 1e3 < Date.now() ? refresh : Promise.resolve.bind(Promise);
     waitForAccessToken()
-      .then(() => (accessTokenRef.current ? fetchUser() : undefined))
+      .then(fetchUser)
       .catch(logout)
       .finally(() => {
         setInitialized(true);
