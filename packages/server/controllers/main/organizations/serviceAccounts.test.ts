@@ -3,7 +3,13 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { Organization, OrganizationMember, type User } from '../../../models/index.js';
+import {
+  App,
+  AppSnapshot,
+  Organization,
+  OrganizationMember,
+  type User,
+} from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { applyOrganizationSsoConfiguration } from '../../../utils/organizationSso.js';
@@ -137,18 +143,24 @@ describe('organization service accounts', () => {
     }).toStrictEqual({ created: 400, promoted: 400, role: PredefinedOrganizationRole.AppManager });
   });
 
-  it('requires at least one scope', async () => {
+  it('requires at least one scope and an expiry in the future', async () => {
     authorizeStudio(owner);
-    const created = await request.post('/api/organizations/staff/service-accounts', {
-      description: 'Deployments',
-      role: PredefinedOrganizationRole.Member,
+    const body = { description: 'Deployments', role: PredefinedOrganizationRole.Member };
+    const withoutScope = await request.post('/api/organizations/staff/service-accounts', {
+      ...body,
       scopes: [],
+    });
+    const expired = await request.post('/api/organizations/staff/service-accounts', {
+      ...body,
+      scopes: ['apps:write'],
+      expires: '2026-01-01T11:00:00.000Z',
     });
 
     expect({
-      created: created.status,
+      withoutScope: withoutScope.status,
+      expired: expired.status,
       serviceAccounts: (await request.get('/api/organizations/staff/service-accounts')).data,
-    }).toStrictEqual({ created: 400, serviceAccounts: [] });
+    }).toStrictEqual({ withoutScope: 400, expired: 400, serviceAccounts: [] });
   });
 
   it('does not remove a service account through the member endpoint', async () => {
@@ -162,6 +174,21 @@ describe('organization service accounts', () => {
       serviceAccounts: serviceAccounts.data.map(({ id }: { id: string }) => id),
       token: (await requestToken(serviceAccount)).status,
     }).toStrictEqual({ removed: 404, serviceAccounts: [serviceAccount.id], token: 200 });
+  });
+
+  it('keeps the last person from leaving an organization with only service accounts', async () => {
+    await createServiceAccount();
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Maintainer },
+      { where: { UserId: owner.id } },
+    );
+    const left = await request.delete(`/api/organizations/staff/members/${owner.id}`);
+    const members = await request.get('/api/organizations/staff/members');
+
+    expect({ left: left.status, members: members.status }).toStrictEqual({
+      left: 406,
+      members: 200,
+    });
   });
 
   it('revokes the service accounts of a deleted organization for good', async () => {
@@ -217,13 +244,34 @@ describe('organization service accounts', () => {
       after: (await getMembers(token.data.access_token!)).status,
       token: (await requestToken(serviceAccount)).data,
       serviceAccounts: (await request.get('/api/organizations/staff/service-accounts')).data,
+      memberships: await OrganizationMember.count({ where: { serviceAccount: true } }),
     }).toStrictEqual({
       before: 200,
       revoked: 204,
       after: 401,
       token: { error: 'invalid_client' },
       serviceAccounts: [],
+      memberships: 0,
     });
+  });
+
+  it('keeps the author of the app versions a revoked service account deployed', async () => {
+    const serviceAccount = await createServiceAccount();
+    const member = await OrganizationMember.findOne({ where: { serviceAccount: true } });
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'staff',
+    });
+    await AppSnapshot.create({ AppId: app.id, UserId: member!.UserId, yaml: 'name: Test App' });
+    await request.delete(`/api/organizations/staff/service-accounts/${serviceAccount.id}`);
+    const { data } = await request.get(`/api/apps/${app.id}/snapshots`);
+
+    expect(data.map(({ $author }: { $author: { name: string } }) => $author.name)).toStrictEqual([
+      'Deployments',
+    ]);
   });
 
   it('cuts access when a service account expires', async () => {
