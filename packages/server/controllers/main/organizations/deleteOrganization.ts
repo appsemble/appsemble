@@ -2,8 +2,15 @@ import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { App, AppCollection, BlockVersion, Organization } from '../../../models/index.js';
+import {
+  App,
+  AppCollection,
+  BlockVersion,
+  Organization,
+  transactional,
+} from '../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import { revokeServiceAccounts } from '../../../utils/serviceAccounts.js';
 
 export async function deleteOrganization(ctx: Context): Promise<void> {
   const {
@@ -45,7 +52,10 @@ export async function deleteOrganization(ctx: Context): Promise<void> {
     await app.destroy();
   });
 
-  await organization.destroy();
+  await transactional(async (transaction) => {
+    await revokeServiceAccounts({ OrganizationId: organizationId }, transaction);
+    await organization.destroy({ transaction });
+  });
 
   ctx.body = {
     id: organization.id,

@@ -95,6 +95,11 @@ to. These roles are the following:
   </table>
 </div>
 
+## Service accounts
+
+Owners create [service accounts](service-accounts.md) on the **Members** page for CI pipelines and
+other automation that uses the API on behalf of the organization.
+
 ## Single sign-on
 
 Owners configure OpenID Connect on the organization's **Single sign-on** page. Register a
@@ -120,6 +125,9 @@ The organization selects a sign-in policy:
 - **Require single sign-on for staff; allow invited external guests** lets explicitly invited guests
   use the selected other sign-in methods. Only Owners invite guests, and losing a staff group does
   not create a guest exception.
+
+The policy does not apply to [service accounts](service-accounts.md), which only use the API with
+client credentials.
 
 Select **Verify connection and save** and sign in with a provider account whose groups grant Owner
 access. The connection is saved after successful verification, and unsuccessful verification keeps
