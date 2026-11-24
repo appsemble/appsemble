@@ -1027,6 +1027,7 @@ describe('organization OIDC sign-in', () => {
 
   it('lets an Owner sign in again at the provider to change settings after ten minutes', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });
+    const signedIn = Math.floor(Date.now() / 1000);
     await signInAsOwner();
     vi.setSystemTime(Date.now() + 601_000);
     const rename = (): Promise<AxiosResponse> =>
@@ -1034,6 +1035,10 @@ describe('organization OIDC sign-in', () => {
     expect((await rename()).status).toBe(403);
     const started = await request.post(`${path}/login`, { link: true }, { headers: { origin } });
     expect(new URL(started.data.authorizationUrl).searchParams.get('max_age')).toBe('0');
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    claims = { auth_time: signedIn };
+    expect((await complete(await begin(true))).status).toBe(401);
+    claims = {};
     const response = await complete(await begin(true));
     expect(response.status).toBe(200);
     request.defaults.headers.common.authorization = `Bearer ${response.data.access_token}`;
