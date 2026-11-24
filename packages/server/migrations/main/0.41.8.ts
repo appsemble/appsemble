@@ -3,7 +3,7 @@ import { DataTypes, QueryTypes, type Sequelize, type Transaction } from 'sequeli
 
 import { closeAppDB, getAppDB } from '../../models/index.js';
 
-export const key = '0.41.6';
+export const key = '0.41.8';
 
 export async function up(transaction: Transaction, db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

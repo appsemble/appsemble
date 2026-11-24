@@ -2,7 +2,7 @@ import { type AppAccount, PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { down, up } from './0.41.6.js';
+import { down, up } from './0.41.8.js';
 import {
   App,
   getAppDB,
@@ -49,7 +49,7 @@ async function getAccountAppIds(user: User): Promise<number[]> {
   return response.data.map(({ app }) => app.id!).sort((a, b) => a - b);
 }
 
-describe('migration 0.41.6', () => {
+describe('migration 0.41.8', () => {
   beforeAll(async () => {
     setArgv({ host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' });
     const server = await createServer();
