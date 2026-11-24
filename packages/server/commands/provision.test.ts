@@ -24,7 +24,10 @@ const options: ProvisionOptions = {
 function requestToken(secret: string): Promise<{ status: number }> {
   return request.post(
     '/auth/oauth2/token',
-    new URLSearchParams({ grant_type: 'client_credentials', scope: 'apps:write' }),
+    new URLSearchParams({
+      grant_type: 'client_credentials',
+      scope: 'apps:write assets:write blocks:write resources:write',
+    }),
     {
       auth: { username: 'client', password: secret },
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -51,15 +54,18 @@ describe('provision', () => {
       auth: { username: 'owner@example.com', password: 'owner-password' },
     });
     authorizeStudio((await User.findOne({ where: { primaryEmail: 'owner@example.com' } }))!);
+    const members = await request.get('/api/organizations/example/members');
     const serviceAccounts = await request.get('/api/organizations/example/service-accounts');
     const token = await requestToken('secret');
 
     expect({
       login: login.status,
+      members: members.data,
       serviceAccounts: serviceAccounts.data,
       token: token.status,
     }).toMatchObject({
       login: 200,
+      members: [{ primaryEmail: 'owner@example.com', role: PredefinedOrganizationRole.Owner }],
       serviceAccounts: [{ id: 'client', role: PredefinedOrganizationRole.Maintainer }],
       token: 200,
     });
@@ -101,6 +107,15 @@ describe('provision', () => {
     await expect(provision(options)).rejects.toThrow(
       'Client credentials client belong to an account other than a service account of example.',
     );
+  });
+
+  it('preserves a service account when another organization tries to reuse its client ID', async () => {
+    await provision({ ...options, organizationId: 'other' });
+
+    await expect(provision({ ...options, clientCredentials: 'client:rotated' })).rejects.toThrow(
+      'Client credentials client belong to an account other than a service account of example.',
+    );
+    expect((await requestToken('secret')).status).toBe(200);
   });
 
   it('reconciles dns for an app domain strategy', async () => {

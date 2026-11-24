@@ -116,8 +116,10 @@ provision:
     timezone: Europe/Amsterdam
 ```
 
-The secret holds the service account's client credentials as `<id>:<secret>`, and the password of
-the user. Change them in the secret to rotate them on the next upgrade.
+The Secret holds the service account's client credentials as `<id>:<secret>` and the optional user's
+password. To rotate the credentials, keep the client ID, change the client secret, and run a Helm
+upgrade or a full Argo CD sync. To replace the client ID, provision the new account and revoke the
+old account after its clients switch over.
 
 ```sh
 kubectl create secret generic appsemble-provision \

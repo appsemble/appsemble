@@ -1622,6 +1622,15 @@ staging:
     GIT_STRATEGY: none
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
+    - |
+      case "${STAGING_APPSEMBLE_CLIENT_CREDENTIALS:-}" in
+        ?*:?*) ;;
+        *) echo 'Set STAGING_APPSEMBLE_CLIENT_CREDENTIALS to <id>:<secret>' >&2; exit 1 ;;
+      esac
+    - kubectl create secret generic staging-provision
+      --from-literal "client-credentials=$STAGING_APPSEMBLE_CLIENT_CREDENTIALS"
+      --from-literal "user-password=${BOT_ACCOUNT_PASSWORD:?Set BOT_ACCOUNT_PASSWORD}"
+      --dry-run=client -o yaml | kubectl apply -f -
     # This is the only way to make sure staging can be overwritten
     - helm delete staging --no-hooks || true
     # Replaces the skipped pre-delete cleanup hook: remove server-created app ingresses and TLS secrets
@@ -1637,10 +1646,6 @@ staging:
     - '[ -n "$STAGING_BACKUPS_HOST" ] || { echo "Please set STAGING_BACKUPS_HOST for staging backup destination" >&2; exit 1; }'
     - kubectl get secret backups-secret >/dev/null
     - kubectl get secret valkey >/dev/null
-    - kubectl create secret generic staging-provision
-      --from-literal "client-credentials=$APPSEMBLE_CLIENT_CREDENTIALS"
-      --from-literal "user-password=$BOT_ACCOUNT_PASSWORD"
-      --dry-run=client -o yaml | kubectl apply -f -
     # The CloudNativePG cluster lives outside the release (appsemble/infra), so the data survives a redeploy.
     - kubectl wait --for=condition=Ready cluster.postgresql.cnpg.io/staging-postgresql --timeout=1m
     # Reserve memory for workload peaks rather than average use, leaving capacity for monitoring.
@@ -1888,6 +1893,7 @@ provision staging:
     - staging
     - npm_ci
   script:
+    - export APPSEMBLE_CLIENT_CREDENTIALS="${STAGING_APPSEMBLE_CLIENT_CREDENTIALS:?Set STAGING_APPSEMBLE_CLIENT_CREDENTIALS}"
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context staging
     - npm run appsemble -- config set remote https://appsemble.eu
