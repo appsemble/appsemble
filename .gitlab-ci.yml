@@ -1169,13 +1169,17 @@ e2e SLA apps(private):
         SOUNDING_BODIES) TRIGGER_TOKEN="$DC_GITLAB_TRIGGER_SOUNDING_BODIES" ;;
         *) echo "Unknown project: $PROJECT_NAME"; exit 1 ;;
       esac
-      RESPONSE=$(curl -s --request POST \
+      # The remote GitLab answers 5xx without creating a pipeline when its object storage is
+      # briefly unavailable. curl empties its output file before each retry, so only the last
+      # response is read.
+      curl -s --retry 3 --retry-delay 30 --output trigger.json --request POST \
         --form "token=$TRIGGER_TOKEN" \
         --form "ref=main" \
         --form "variables[APPSEMBLE_IMAGE]=$APPSEMBLE_IMAGE" \
         --form "variables[APPSEMBLE_SSL_KEY_E2E]=$APPSEMBLE_SSL_KEY_E2E" \
         --form "variables[APPSEMBLE_SSL_CRT_E2E]=$APPSEMBLE_SSL_CRT_E2E" \
-        "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/trigger/pipeline")
+        "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/trigger/pipeline"
+      RESPONSE=$(cat trigger.json)
       echo "Trigger response: $(echo "$RESPONSE" | jq '{id, status, web_url, message}')"
       PIPELINE_ID=$(echo "$RESPONSE" | jq -r '.id')
       if [ "$PIPELINE_ID" = "null" ] || [ -z "$PIPELINE_ID" ]; then
