@@ -686,6 +686,24 @@ describe('app', () => {
       expect(await compare('open sesame', app.password!)).toBe(true);
     });
 
+    it('should publish an app on the domain of the context', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+      await publishApp({
+        path: resolveFixture('apps/test'),
+        context: 'production',
+        organization: organization.id,
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+      });
+      vi.useFakeTimers();
+      const app = (await App.findOne())!;
+      expect(app.domain).toBe('app.example.com');
+    });
+
     it('should publish seed app members with an app', async () => {
       vi.useRealTimers();
       const clientCredentials = await authorizeCLI('apps:write', testApp);
@@ -1691,6 +1709,49 @@ describe('app', () => {
 
       await app.reload();
       expect(await compare('open sesame', app.password!)).toBe(true);
+    });
+
+    it('should set the domain of the context', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+
+      await updateApp({
+        id: app.id,
+        path: resolveFixture('apps/test'),
+        context: 'production',
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+        force: false,
+      });
+      vi.useFakeTimers();
+
+      await app.reload();
+      expect(app.domain).toBe('app.example.com');
+    });
+
+    it('should keep the domain of the app if the context has none', async () => {
+      vi.useRealTimers();
+      await app.update({ domain: 'app.example.com' });
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+
+      await updateApp({
+        id: app.id,
+        path: resolveFixture('apps/test'),
+        context: 'notFound',
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+        force: false,
+      });
+      vi.useFakeTimers();
+
+      await app.reload();
+      expect(app.domain).toBe('app.example.com');
     });
 
     it('should upload the seed assets of a demo app again on every update', async () => {
@@ -3201,6 +3262,9 @@ describe('app', () => {
         "context": {
           "notFound": {
             "organization": "testorganization",
+          },
+          "production": {
+            "domain": "app.example.com",
           },
           "resolve": {
             "id": 5,

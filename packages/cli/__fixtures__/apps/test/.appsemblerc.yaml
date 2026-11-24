@@ -25,3 +25,6 @@ context:
 
   notFound:
     organization: testorganization
+
+  production:
+    domain: app.example.com

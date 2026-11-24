@@ -67,6 +67,8 @@ For Appsemble to know which app should be served on the given domain name, it sh
 to serve when it receives a request on this domain name.
 
 In the app settings of your app, enter the domain name in the _Domain_ field and save.
+Alternatively, set `domain` in a context of the app's `.appsemblerc.yaml`. `appsemble app publish`
+and `appsemble app update` with that context apply it.
 
 It may take up to a day until a domain name has been linked successfully, although in practice this
 will only take minutes.
