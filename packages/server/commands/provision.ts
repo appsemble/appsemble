@@ -280,13 +280,16 @@ export async function provision({
         ));
 
     const credentials = await OAuth2ClientCredentials.findByPk(clientId, { transaction });
-    const serviceAccount =
-      credentials &&
-      (await OrganizationMember.findOne({
+    if (credentials) {
+      const serviceAccount = await OrganizationMember.findOne({
         transaction,
         where: { OrganizationId: organizationId, UserId: credentials.UserId, serviceAccount: true },
-      }));
-    if (credentials && serviceAccount) {
+      });
+      if (!serviceAccount) {
+        throw new Error(
+          `Client credentials ${clientId} belong to an account other than a service account of ${organizationId}.`,
+        );
+      }
       await serviceAccount.update({ role: PredefinedOrganizationRole.Maintainer }, { transaction });
       await credentials.update(
         {
@@ -298,8 +301,6 @@ export async function provision({
         { transaction },
       );
     } else {
-      // The client id identifies the provisioned service account, whichever account held it before.
-      await credentials?.destroy({ transaction });
       await createServiceAccount(
         {
           description: provisionDescription,

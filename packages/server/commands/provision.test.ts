@@ -88,7 +88,7 @@ describe('provision', () => {
     });
   });
 
-  it('turns client credentials of another account into the service account', async () => {
+  it('refuses client credentials of another account', async () => {
     const user = await User.create({ name: 'Bot', timezone: 'UTC' });
     await OAuth2ClientCredentials.create({
       id: 'client',
@@ -97,14 +97,10 @@ describe('provision', () => {
       secret: 'previous',
       UserId: user.id,
     });
-    await provision(options);
 
-    expect({
-      token: (await requestToken('secret')).status,
-      serviceAccounts: await OrganizationMember.count({
-        where: { OrganizationId: 'example', serviceAccount: true },
-      }),
-    }).toStrictEqual({ token: 200, serviceAccounts: 1 });
+    await expect(provision(options)).rejects.toThrow(
+      'Client credentials client belong to an account other than a service account of example.',
+    );
   });
 
   it('reconciles dns for an app domain strategy', async () => {
