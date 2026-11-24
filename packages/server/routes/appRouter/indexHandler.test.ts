@@ -382,30 +382,6 @@ describe('indexHandler', () => {
             "template": false,
             "totp": "disabled",
             "visibility": "unlisted",
-            "yaml": "name: Test App
-      pages:
-        - name: Test Page
-          blocks:
-            - type: "@test/a"
-              version: 0.0.0
-            - type: a
-              version: 0.1.0
-            - type: a
-              version: 0.1.0
-        - name: Test Page with Flow
-          type: flow
-          steps:
-            - blocks:
-                - type: a
-                  version: 0.1.0
-                - type: a
-                  version: 0.1.1
-                  actions:
-                    whatever:
-                      blocks:
-                        - type: "@test/b"
-                          version: 0.0.2
-      ",
           },
           "appUpdated": "1970-01-01T00:00:00.000Z",
           "appUrl": "http://app.test.host.example/",
@@ -1194,30 +1170,6 @@ describe('indexHandler', () => {
             "template": false,
             "totp": "disabled",
             "visibility": "unlisted",
-            "yaml": "name: Test App
-      pages:
-        - name: Test Page
-          blocks:
-            - type: "@test/a"
-              version: 0.0.0
-            - type: a
-              version: 0.1.0
-            - type: a
-              version: 0.1.0
-        - name: Test Page with Flow
-          type: flow
-          steps:
-            - blocks:
-                - type: a
-                  version: 0.1.0
-                - type: a
-                  version: 0.1.1
-                  actions:
-                    whatever:
-                      blocks:
-                        - type: "@test/b"
-                          version: 0.0.2
-      ",
           },
           "appUpdated": "1970-01-01T00:00:00.000Z",
           "appUrl": "http://app.test.host.example/",
