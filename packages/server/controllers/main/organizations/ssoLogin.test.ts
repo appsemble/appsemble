@@ -2,6 +2,7 @@ import { createHash, generateKeyPairSync, randomUUID } from 'node:crypto';
 import { setTimeout } from 'node:timers/promises';
 
 import {
+  type OAuth2ClientCredentials as OAuth2ClientCredentialsType,
   type OrganizationSsoConfiguration,
   PredefinedOrganizationRole,
   type TokenResponse,
@@ -15,6 +16,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   getDB,
+  OAuth2ClientCredentials,
   Organization,
   OrganizationMember,
   OrganizationSso,
@@ -38,11 +40,14 @@ let nonce: string;
 let groups: string[];
 let claims: Record<string, unknown>;
 let challenges: Map<string, string>;
+let requestedScopes: Map<string, string>;
 let redeemed: Set<string>;
-let providerGrants: Map<string, { current: string; revoked: boolean }>;
+let providerGrants: Map<string, { current: string; revoked: boolean; offline: boolean }>;
 let providerLifetime: number | undefined;
 let providerUnavailable: boolean;
 let providerGrantRevoked: boolean;
+let providerGrantsOfflineAccess: boolean;
+let browserSessionEnded: boolean;
 let acceptedClientSecret: string;
 let configuration: OrganizationSsoConfiguration;
 let userInfoClaims: Record<string, unknown>;
@@ -64,6 +69,8 @@ function mockProvider(expiredRefreshToken?: string): void {
       userinfo_endpoint: `${issuer}/userinfo`,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       jwks_uri: `${issuer}/jwks`,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      revocation_endpoint: `${issuer}/revoke`,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       response_types_supported: ['code'],
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -105,10 +112,17 @@ function mockProvider(expiredRefreshToken?: string): void {
       redeemed.add(code);
     }
     const previousRefreshToken = parameters.get('refresh_token');
+    const scope = previousRefreshToken
+      ? undefined
+      : requestedScopes
+          .get(parameters.get('code')!)
+          ?.split(' ')
+          .filter((value) => providerGrantsOfflineAccess || value !== 'offline_access')
+          .join(' ');
     const grant = previousRefreshToken
       ? providerGrants.get(previousRefreshToken)
-      : { current: '', revoked: false };
-    if (!grant || grant.revoked) {
+      : { current: '', revoked: false, offline: Boolean(scope?.includes('offline_access')) };
+    if (!grant || grant.revoked || (browserSessionEnded && !grant.offline)) {
       return [400, JSON.stringify({ error: 'invalid_grant' }), headers];
     }
     if (previousRefreshToken && grant.current !== previousRefreshToken) {
@@ -122,6 +136,7 @@ function mockProvider(expiredRefreshToken?: string): void {
       JSON.stringify({
         access_token: 'provider-access-token',
         refresh_token: grant.current,
+        scope,
         token_type: 'Bearer',
         expires_in: providerLifetime,
         id_token: includeIdToken
@@ -145,6 +160,13 @@ function mockProvider(expiredRefreshToken?: string): void {
       headers,
     ];
   });
+  mock.onPost(`${issuer}/revoke`).reply((config) => {
+    const grant = providerGrants.get(new URLSearchParams(config.data).get('token')!);
+    if (grant) {
+      grant.revoked = true;
+    }
+    return [200, '', headers];
+  });
   mock.onGet(`${issuer}/userinfo`).reply(() => [
     200,
     JSON.stringify({
@@ -159,6 +181,18 @@ function mockProvider(expiredRefreshToken?: string): void {
   ]);
 }
 
+function authorizeAtProvider(response: AxiosResponse): { state: string; cookie: string } {
+  const url = new URL(response.data.authorizationUrl);
+  const state = url.searchParams.get('state')!;
+  nonce = url.searchParams.get('nonce')!;
+  challenges.set(state, url.searchParams.get('code_challenge')!);
+  requestedScopes.set(state, url.searchParams.get('scope')!);
+  return {
+    state,
+    cookie: response.headers['set-cookie']!.map((value: string) => value.split(';')[0]).join('; '),
+  };
+}
+
 async function begin(
   link = false,
   candidate?: OrganizationSsoConfiguration,
@@ -169,13 +203,7 @@ async function begin(
     { headers: { origin } },
   );
   expect(response.status).toBe(200);
-  const url = new URL(response.data.authorizationUrl);
-  nonce = url.searchParams.get('nonce')!;
-  challenges.set(url.searchParams.get('state')!, url.searchParams.get('code_challenge')!);
-  return {
-    state: url.searchParams.get('state')!,
-    cookie: response.headers['set-cookie']!.map((value: string) => value.split(';')[0]).join('; '),
-  };
+  return authorizeAtProvider(response);
 }
 
 function complete(flow: { state: string; cookie: string }): Promise<AxiosResponse> {
@@ -209,24 +237,35 @@ async function signInAsOwner(): Promise<TokenResponse> {
   return signIn();
 }
 
+function registerPersonalCredentials(): Promise<AxiosResponse> {
+  return request.post('/api/users/current/auth/oauth2/client-credentials', {
+    description: 'Personal publishing credentials',
+    scopes: ['organizations:write'],
+  });
+}
+
+function requestCredentialsToken(credentials: {
+  id: string;
+  secret: string;
+}): Promise<AxiosResponse> {
+  return request.post(
+    '/auth/oauth2/token',
+    'grant_type=client_credentials&scope=organizations%3Awrite',
+    {
+      auth: { username: credentials.id, password: credentials.secret },
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    },
+  );
+}
+
 async function createPersonalCredentials(): Promise<{
   id: string;
   secret: string;
   accessToken: string;
 }> {
-  const credentials = await request.post('/api/users/current/auth/oauth2/client-credentials', {
-    description: 'Personal publishing credentials',
-    scopes: ['organizations:write'],
-  });
-  expect(credentials.status).toBe(201);
-  const token = await request.post(
-    '/auth/oauth2/token',
-    'grant_type=client_credentials&scope=organizations%3Awrite',
-    {
-      auth: { username: credentials.data.id, password: credentials.data.secret },
-      headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    },
-  );
+  const credentials = await complete(authorizeAtProvider(await registerPersonalCredentials()));
+  expect(credentials.status).toBe(200);
+  const token = await requestCredentialsToken(credentials.data);
   expect(token).toMatchObject({
     status: 200,
     headers: { 'cache-control': 'no-store', pragma: 'no-cache' },
@@ -272,11 +311,14 @@ describe('organization OIDC sign-in', () => {
     groups = ['/staff/translators', '/staff/content'];
     claims = {};
     challenges = new Map();
+    requestedScopes = new Map();
     redeemed = new Set();
     providerGrants = new Map();
     providerLifetime = 300;
     providerUnavailable = false;
     providerGrantRevoked = false;
+    providerGrantsOfflineAccess = true;
+    browserSessionEnded = false;
     acceptedClientSecret = 'provider-secret';
     userInfoClaims = {};
     includeIdToken = true;
@@ -671,7 +713,7 @@ describe('organization OIDC sign-in', () => {
     expect((await request.get('/api/users/current')).status).toBe(401);
   });
 
-  it('revokes credentials from a replayed session while preserving independent sessions', async () => {
+  it('ends a replayed Studio session while preserving independent sessions and credentials', async () => {
     const independent = await signIn();
     unauthorize();
     const compromised = await signIn();
@@ -687,7 +729,9 @@ describe('organization OIDC sign-in', () => {
       refresh_token: compromised.refresh_token,
     });
     expect(replay.status).toBe(401);
-    expect((await request.get('/api/organizations/staff/members')).status).toBe(401);
+    expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
+    request.defaults.headers.common.authorization = `Bearer ${refreshed.data.access_token}`;
+    expect((await request.get('/api/users/current')).status).toBe(401);
     request.defaults.headers.common.authorization = `Bearer ${independent.access_token}`;
     expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
   });
@@ -792,10 +836,70 @@ describe('organization OIDC sign-in', () => {
     const credentials = await createPersonalCredentials();
     expect((await request.post('/api/auth/logout')).status).toBe(200);
     request.defaults.headers.common.authorization = `Bearer ${credentials.accessToken}`;
+    browserSessionEnded = true;
+    await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
     expect((await request.get('/api/organizations/staff/members')).status).toBe(200);
     await OrganizationSsoSession.update({ accessTokenExpires: new Date(0) }, { where: {} });
     groups = [];
     expect((await request.get('/api/organizations/staff/members')).status).toBe(403);
+  });
+
+  it('ends personal credentials whose offline grant the provider rejects', async () => {
+    await signIn();
+    const credentials = await createPersonalCredentials();
+    const { OrganizationSsoSessionId } = (await OAuth2ClientCredentials.findByPk(credentials.id))!;
+    await OrganizationSsoSession.update(
+      { accessTokenExpires: new Date(0) },
+      { where: { id: OrganizationSsoSessionId } },
+    );
+    providerGrantRevoked = true;
+    const token = await requestCredentialsToken(credentials);
+    const listed = await request.get('/api/users/current/auth/oauth2/client-credentials');
+    expect({
+      token: token.data,
+      listed: listed.data.map(({ authorizationEnded }: OAuth2ClientCredentialsType) => ({
+        authorizationEnded,
+      })),
+    }).toStrictEqual({ token: { error: 'invalid_grant' }, listed: [{ authorizationEnded: true }] });
+  });
+
+  it('revokes the offline grant at the provider when personal credentials are deleted', async () => {
+    await signIn();
+    const credentials = await createPersonalCredentials();
+    await request.delete(`/api/users/current/auth/oauth2/client-credentials/${credentials.id}`);
+    expect(
+      [...new Set(providerGrants.values())].map(({ offline, revoked }) => ({ offline, revoked })),
+    ).toStrictEqual([
+      { offline: false, revoked: false },
+      { offline: true, revoked: true },
+    ]);
+  });
+
+  it('refuses personal credentials when the provider does not grant offline access', async () => {
+    providerGrantsOfflineAccess = false;
+    await signIn();
+    const response = await complete(authorizeAtProvider(await registerPersonalCredentials()));
+    expect({
+      status: response.status,
+      message: response.data.message,
+      credentials: await OAuth2ClientCredentials.count(),
+    }).toStrictEqual({
+      status: 503,
+      message: 'The identity provider did not grant offline access',
+      credentials: 0,
+    });
+  });
+
+  it('does not back personal credentials with another provider account', async () => {
+    await signIn();
+    const registration = await registerPersonalCredentials();
+    claims = { sub: 'other-subject' };
+    userInfoClaims = { sub: 'other-subject' };
+    const response = await complete(authorizeAtProvider(registration));
+    expect({
+      status: response.status,
+      credentials: await OAuth2ClientCredentials.count(),
+    }).toStrictEqual({ status: 403, credentials: 0 });
   });
 
   it('rejects an already-issued CLI token after its personal credentials are deleted', async () => {

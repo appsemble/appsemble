@@ -9,9 +9,11 @@ import {
 } from '@appsemble/node-utils';
 import { type TokenResponse, type UserInfo } from '@appsemble/types';
 import axios from 'axios';
+import { hash } from 'bcrypt';
 import { addMinutes } from 'date-fns';
 import jwt from 'jsonwebtoken';
 import { type Context } from 'koa';
+import { type Transaction } from 'sequelize';
 
 import { argv } from './argv.js';
 import { normalizeLoginGroups } from './loginRoleMappings.js';
@@ -20,6 +22,7 @@ import {
   type AppMember,
   getAppDB,
   type OAuth2AuthorizationCode,
+  OAuth2ClientCredentials,
 } from '../models/index.js';
 
 export class GrantError extends Error {
@@ -250,4 +253,39 @@ export async function createAppOAuth2AuthorizationCode(
     scope,
     AppMemberId: appMember.id,
   });
+}
+
+/**
+ * Create personal OAuth2 client credentials.
+ *
+ * @param values The credentials to create.
+ * @param transaction The transaction to create them in.
+ * @returns The created credentials, including the secret, which only its hash is stored of.
+ */
+export async function createOAuth2ClientCredentials(
+  values: Pick<
+    OAuth2ClientCredentials,
+    'description' | 'expires' | 'loginMethod' | 'OrganizationSsoSessionId' | 'scopes' | 'UserId'
+  >,
+  transaction?: Transaction,
+): Promise<
+  Pick<OAuth2ClientCredentials, 'created' | 'description' | 'expires' | 'id'> & {
+    scopes: string[];
+    secret: string;
+  }
+> {
+  const id = randomBytes(16).toString('hex');
+  const secret = randomBytes(32).toString('hex');
+  const credentials = await OAuth2ClientCredentials.create(
+    { ...values, id, secret: await hash(secret, 10) },
+    { transaction },
+  );
+  return {
+    created: credentials.created,
+    description: credentials.description,
+    id,
+    expires: values.expires,
+    scopes: values.scopes.split(' '),
+    secret,
+  };
 }
