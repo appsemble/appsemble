@@ -131,7 +131,9 @@ client credentials.
 
 Select **Verify connection and save** and sign in with a provider account whose groups grant Owner
 access. The connection is saved after successful verification, and unsuccessful verification keeps
-the active connection intact.
+the active connection intact. Changing single sign-on settings requires a sign-in from the last ten
+minutes; when a change is refused, sign in again from the page, which asks the provider for
+credentials even during an active provider session.
 
 Staff sign in at `https://<studio-host>/login?organization=<organization id>`. Linking an existing
 Appsemble account requires signing in to that account first; a matching email address alone does not

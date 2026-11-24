@@ -29,12 +29,14 @@ let configuration: OrganizationSsoSettings | null;
 let stored: OrganizationSsoConfiguration | null;
 let domains: OrganizationSsoDomains;
 let publishedRecords: string[];
+let recentSignIn: boolean;
 
 beforeEach(() => {
   configuration = { ...settings };
   stored = { ...settings, clientSecret: 'existing-secret' };
   domains = { recordValue: 'appsemble-sso=ownership-proof', domains: [] };
   publishedRecords = [];
+  recentSignIn = true;
   axios.defaults.adapter = (config) => {
     if (config.url.includes('/sso/domains')) {
       if (config.method === 'post') {
@@ -65,6 +67,17 @@ beforeEach(() => {
           data: { message: 'Provider verification failed' },
           status: 401,
           statusText: 'Unauthorized',
+          headers: {},
+          config,
+        }),
+      );
+    }
+    if (config.method === 'put' && !recentSignIn) {
+      return Promise.reject(
+        new AxiosError('Forbidden', 'ERR_BAD_REQUEST', config, undefined, {
+          data: { message: 'Sign in again before changing single sign-on settings.' },
+          status: 403,
+          statusText: 'Forbidden',
           headers: {},
           config,
         }),
@@ -134,6 +147,16 @@ it('should allow mapping multiple groups to organization roles', async () => {
       { group: '/content-editors', role: PredefinedOrganizationRole.AppContentsManager },
     ]),
   );
+});
+
+it('should offer signing in again at the provider when saving needs a recent sign-in', async () => {
+  recentSignIn = false;
+  renderSettings();
+  const save = await screen.findByRole('button', { name: 'Save single sign-on settings' });
+  expect(screen.queryByRole('button', { name: 'Sign in again with Staff SSO' })).toBeNull();
+  fireEvent.click(save);
+
+  expect(await screen.findByRole('button', { name: 'Sign in again with Staff SSO' })).toBeDefined();
 });
 
 it('should prevent editing deployment-managed single sign-on settings', async () => {

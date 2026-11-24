@@ -22,7 +22,7 @@ import {
 import { storageKey } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type FormEvent, type ReactNode, useCallback, useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -48,6 +48,7 @@ export function SingleSignOnPage(): ReactNode {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string>();
+  const [reauthenticate, setReauthenticate] = useState(false);
   const requiresVerification =
     values != null &&
     (!data ||
@@ -87,6 +88,45 @@ export function SingleSignOnPage(): ReactNode {
     }
   }, [data, error, loading]);
 
+  const showError = useCallback(
+    (err: unknown, setError: (message: string) => void, fallback: MessageDescriptor) => {
+      if (axios.isAxiosError(err) && err.response?.status === 403) {
+        setReauthenticate(true);
+      }
+      setError(
+        axios.isAxiosError<{ message?: string }>(err) && err.response?.data?.message
+          ? err.response.data.message
+          : formatMessage(fallback),
+      );
+    },
+    [formatMessage],
+  );
+
+  const signInAtProvider = useCallback(
+    async (configuration?: OrganizationSsoConfiguration) => {
+      try {
+        const response = await axios.post<{ authorizationUrl: string }>(`${url}/login`, {
+          link: true,
+          configuration,
+        });
+        const { authorizationUrl } = response.data;
+        sessionStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            organizationId,
+            authorizationUrl,
+            state: new URL(authorizationUrl).searchParams.get('state'),
+            redirect: `/organizations/${encodeURIComponent(organizationId)}/sso`,
+          }),
+        );
+        window.location.href = authorizationUrl;
+      } catch (err: unknown) {
+        showError(err, setSaveError, messages.saveError);
+      }
+    },
+    [organizationId, showError, url],
+  );
+
   const save = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       if (!event.currentTarget.reportValidity()) {
@@ -102,37 +142,19 @@ export function SingleSignOnPage(): ReactNode {
           ...(clientSecret ? { clientSecret } : {}),
         };
         if (requiresVerification) {
-          const response = await axios.post<{ authorizationUrl: string }>(`${url}/login`, {
-            link: true,
-            configuration: proposed,
-          });
-          const { authorizationUrl } = response.data;
-          sessionStorage.setItem(
-            storageKey,
-            JSON.stringify({
-              organizationId,
-              authorizationUrl,
-              state: new URL(authorizationUrl).searchParams.get('state'),
-              redirect: `/organizations/${encodeURIComponent(organizationId)}/sso`,
-            }),
-          );
-          window.location.href = authorizationUrl;
+          await signInAtProvider(proposed);
           return;
         }
         const response = await axios.put<OrganizationSsoSettings>(url, proposed);
         setData(response.data);
         setSaved(true);
       } catch (err: unknown) {
-        setSaveError(
-          axios.isAxiosError<{ message?: string }>(err) && err.response?.data?.message
-            ? err.response.data.message
-            : formatMessage(messages.saveError),
-        );
+        showError(err, setSaveError, messages.saveError);
       } finally {
         setSaving(false);
       }
     },
-    [formatMessage, organizationId, requiresVerification, setData, url, values],
+    [requiresVerification, setData, showError, signInAtProvider, url, values],
   );
 
   const remove = useConfirmation({
@@ -146,11 +168,7 @@ export function SingleSignOnPage(): ReactNode {
         setData(null);
         setSaved(false);
       } catch (err: unknown) {
-        setSaveError(
-          axios.isAxiosError<{ message?: string }>(err) && err.response?.data?.message
-            ? err.response.data.message
-            : formatMessage(messages.saveError),
-        );
+        showError(err, setSaveError, messages.saveError);
       }
     },
   });
@@ -174,16 +192,12 @@ export function SingleSignOnPage(): ReactNode {
           }));
         }
       } catch (err: unknown) {
-        setDomainError(
-          axios.isAxiosError<{ message?: string }>(err) && err.response?.data?.message
-            ? err.response.data.message
-            : formatMessage(messages.domainError),
-        );
+        showError(err, setDomainError, messages.domainError);
       } finally {
         setChangingDomain(false);
       }
     },
-    [formatMessage, setDomains, url],
+    [setDomains, showError, url],
   );
 
   if (loading || (!values && !error)) {
@@ -198,6 +212,14 @@ export function SingleSignOnPage(): ReactNode {
   }
 
   const managed = data?.managedBy === 'deployment';
+  const signInAgain =
+    reauthenticate && data ? (
+      <div className="mt-3">
+        <Button color="primary" onClick={() => signInAtProvider()}>
+          <FormattedMessage {...messages.signInAgain} values={{ name: data.name }} />
+        </Button>
+      </div>
+    ) : null;
 
   return (
     <>
@@ -209,7 +231,12 @@ export function SingleSignOnPage(): ReactNode {
           <FormattedMessage {...messages.managed} />
         </Message>
       ) : null}
-      {saveError ? <Message color="danger">{saveError}</Message> : null}
+      {saveError ? (
+        <Message color="danger">
+          {saveError}
+          {signInAgain}
+        </Message>
+      ) : null}
       {saved ? (
         <Message color="success">
           <FormattedMessage {...messages.saved} />
@@ -417,6 +444,7 @@ export function SingleSignOnPage(): ReactNode {
               <span role="alert">
                 {domainError || <FormattedMessage {...messages.domainError} />}
               </span>
+              {signInAgain}
             </Message>
           ) : null}
           {domainsLoading ? (
