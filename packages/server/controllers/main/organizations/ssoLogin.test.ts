@@ -1025,6 +1025,21 @@ describe('organization OIDC sign-in', () => {
     expect((await propose()).status).toBe(403);
   });
 
+  it('lets an Owner sign in again at the provider to change settings after ten minutes', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    await signInAsOwner();
+    vi.setSystemTime(Date.now() + 601_000);
+    const rename = (): Promise<AxiosResponse> =>
+      request.put(path, { ...configuration, name: 'Renamed provider' });
+    expect((await rename()).status).toBe(403);
+    const started = await request.post(`${path}/login`, { link: true }, { headers: { origin } });
+    expect(new URL(started.data.authorizationUrl).searchParams.get('max_age')).toBe('0');
+    const response = await complete(await begin(true));
+    expect(response.status).toBe(200);
+    request.defaults.headers.common.authorization = `Bearer ${response.data.access_token}`;
+    expect((await rename()).status).toBe(200);
+  });
+
   it('does not verify a replacement for a deployment-managed provider', async () => {
     await signInAsOwner();
     await OrganizationSso.update(
