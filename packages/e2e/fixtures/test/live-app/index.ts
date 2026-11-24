@@ -69,16 +69,18 @@ export const test = base.extend<LiveAppFixtures>({
   async loginAppAppsembleOAuth({ page }, use) {
     await use(async () => {
       await page.waitForURL('**/Login**');
-      const params = new URLSearchParams(page.url().split('Login?')[1]);
-      const redirect = params.get('redirect');
+      const loginUrl = new URL(page.url());
+      const redirect = loginUrl.searchParams.get('redirect');
 
       await page.getByTestId('login-with-appsemble').click();
 
-      if (!redirect) {
-        return;
-      }
-
-      await page.waitForURL(`**${redirect}`);
+      // The OAuth2 callback is done once the app navigates from its Callback page to the
+      // redirect, or without one to its default page.
+      await page.waitForURL(
+        redirect
+          ? `**${redirect}`
+          : (url) => url.origin === loginUrl.origin && !/\/(Callback|Login)$/.test(url.pathname),
+      );
     });
   },
 
