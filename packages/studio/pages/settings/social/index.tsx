@@ -32,6 +32,8 @@ interface OrganizationSsoIdentity {
   id: string;
   issuer: string;
   subject: string;
+  username: string | null;
+  organizations: { id: string; name: string | null; provider: string }[];
 }
 
 interface OrganizationSsoIdentityRowProps {
@@ -59,6 +61,22 @@ function OrganizationSsoIdentityRow({
   return (
     <section aria-label={`${identity.issuer} (${identity.subject})`} className="box">
       <Title level={3}>{identity.issuer}</Title>
+      {identity.organizations.map((organization) => (
+        <p key={organization.id}>
+          <FormattedMessage
+            {...messages.organization}
+            values={{
+              organization: organization.name || organization.id,
+              provider: organization.provider,
+            }}
+          />
+        </p>
+      ))}
+      {identity.username ? (
+        <p>
+          <FormattedMessage {...messages.account} values={{ username: identity.username }} />
+        </p>
+      ) : null}
       <p className="mb-3">
         <FormattedMessage {...messages.accountId} values={{ subject: identity.subject }} />
       </p>

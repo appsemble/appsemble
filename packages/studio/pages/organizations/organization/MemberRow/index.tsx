@@ -128,6 +128,14 @@ export function MemberRow({
             <FormattedMessage {...messages.guest} />
           </span>
         ) : null}
+        {member.ssoUsernames?.length ? (
+          <div className="is-size-7">
+            <FormattedMessage
+              {...messages.ssoUsernames}
+              values={{ usernames: member.ssoUsernames.join(', ') }}
+            />
+          </div>
+        ) : null}
       </td>
       <td align="right">
         {member.role == null ? (

@@ -5,6 +5,14 @@ export const messages = defineMessages({
     defaultMessage: 'Organization single sign-on',
     id: 'studio.tPPlF9',
   },
+  organization: {
+    defaultMessage: 'Organization: {organization} ({provider})',
+    id: 'studio.KANIBl',
+  },
+  account: {
+    defaultMessage: 'Account: {username}',
+    id: 'studio.QVstl+',
+  },
   accountId: {
     defaultMessage: 'Account ID: {subject}',
     id: 'studio.Bx3fEm',
