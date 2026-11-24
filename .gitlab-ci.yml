@@ -1482,6 +1482,9 @@ update dependencies:
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-valkey --from-literal "password=$(openssl rand -base64 30)"
+    - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-provision
+      --from-literal "client-credentials=$APPSEMBLE_CLIENT_CREDENTIALS"
+      --from-literal "user-password=$BOT_ACCOUNT_PASSWORD"
     # Stripe webhook setup
     - |
       STRIPE_RELEASE_URL=$(curl -fsSL -H 'User-Agent: appsemble-ci' \
@@ -1540,13 +1543,12 @@ update dependencies:
       --set "postgresql.auth.existingSecret=review-$CI_MERGE_REQUEST_IID-postgresql-app"
       --set "resources.deployment.requests.cpu=250m"
       --set "resources.deployment.requests.memory=1Gi"
+      --set "provision.existingSecret=review-$CI_MERGE_REQUEST_IID-provision"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
-      --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.user.name=$BOT_ACCOUNT_NAME"
-      --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.user.timezone=Europe/Amsterdam"
       --set "proxy=true"
       --set "sentry.allowedDomains={*.appsemble.review}"
@@ -1620,6 +1622,15 @@ staging:
     GIT_STRATEGY: none
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
+    - |
+      case "${STAGING_APPSEMBLE_CLIENT_CREDENTIALS:-}" in
+        ?*:?*) ;;
+        *) echo 'Set STAGING_APPSEMBLE_CLIENT_CREDENTIALS to <id>:<secret>' >&2; exit 1 ;;
+      esac
+    - kubectl create secret generic staging-provision
+      --from-literal "client-credentials=$STAGING_APPSEMBLE_CLIENT_CREDENTIALS"
+      --from-literal "user-password=${BOT_ACCOUNT_PASSWORD:?Set BOT_ACCOUNT_PASSWORD}"
+      --dry-run=client -o yaml | kubectl apply -f -
     # This is the only way to make sure staging can be overwritten
     - helm delete staging --no-hooks || true
     # Replaces the skipped pre-delete cleanup hook: remove server-created app ingresses and TLS secrets
@@ -1672,13 +1683,12 @@ staging:
       --set 'resources.deployment.requests.memory=1536Mi'
       --set 'seaweedfs.allInOne.data.size=40Gi'
       --set "seaweedfs.allInOne.data.annotations.helm\\.sh/resource-policy=keep"
+      --set "provision.existingSecret=staging-provision"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
-      --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.user.name=$BOT_ACCOUNT_NAME"
-      --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.user.timezone=Europe/Amsterdam"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
@@ -1883,6 +1893,7 @@ provision staging:
     - staging
     - npm_ci
   script:
+    - export APPSEMBLE_CLIENT_CREDENTIALS="${STAGING_APPSEMBLE_CLIENT_CREDENTIALS:?Set STAGING_APPSEMBLE_CLIENT_CREDENTIALS}"
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context staging
     - npm run appsemble -- config set remote https://appsemble.eu
