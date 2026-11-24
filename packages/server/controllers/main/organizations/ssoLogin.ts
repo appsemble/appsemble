@@ -56,6 +56,7 @@ interface LoginFlow {
   nonce: string;
   codeVerifier: string;
   expires: number;
+  email?: string;
   linkUserId?: string;
   candidateId?: string;
 }
@@ -102,7 +103,7 @@ export async function startOrganizationSsoLogin(ctx: Context): Promise<void> {
   const current = await OrganizationSso.findByPk(organizationId, {
     include: [{ model: Organization, attributes: [], required: true }],
   });
-  const { configuration, link } = ctx.request.body;
+  const { configuration, email, link } = ctx.request.body;
   assertKoaCondition(
     !link || ctx.user != null,
     ctx,
@@ -187,6 +188,7 @@ export async function startOrganizationSsoLogin(ctx: Context): Promise<void> {
     nonce: randomNonce(),
     codeVerifier,
     expires: Date.now() + 10 * 60 * 1000,
+    ...(email ? { email: email.toLowerCase() } : {}),
     ...(link ? { linkUserId: ctx.user!.id } : {}),
     ...(candidateId ? { candidateId } : {}),
   };
@@ -417,9 +419,13 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
       if (!user) {
         assertKoaCondition(!memberUserId, ctx, 401, 'The linked Appsemble account is unavailable');
         const email = typeof info.email === 'string' ? info.email.toLowerCase() : undefined;
-        if (email) {
-          const existingEmail = await EmailAuthorization.findByPk(email, { transaction });
-          const existingUser = await User.findOne({ where: { primaryEmail: email }, transaction });
+        const emails = [email, flow.email].filter((address) => address !== undefined);
+        if (emails.length) {
+          const existingEmail = await EmailAuthorization.findOne({
+            where: { email: emails },
+            transaction,
+          });
+          const existingUser = await User.findOne({ where: { primaryEmail: emails }, transaction });
           assertKoaCondition(
             !existingEmail && !existingUser,
             ctx,
