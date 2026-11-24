@@ -298,8 +298,7 @@ export async function completeOrganizationSsoLogin(ctx: Context): Promise<void> 
       'Authorize with the provider account linked to your Appsemble account',
     );
     assertKoaCondition(
-      tokens.refresh_token != null &&
-        (!tokens.scope || tokens.scope.split(' ').includes('offline_access')),
+      tokens.refresh_token != null,
       ctx,
       503,
       'The identity provider did not grant offline access',

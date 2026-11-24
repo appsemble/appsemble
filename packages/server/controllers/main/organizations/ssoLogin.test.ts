@@ -47,6 +47,7 @@ let providerLifetime: number | undefined;
 let providerUnavailable: boolean;
 let providerGrantRevoked: boolean;
 let providerGrantsOfflineAccess: boolean;
+let providerListsOfflineAccess: boolean;
 let browserSessionEnded: boolean;
 let acceptedClientSecret: string;
 let configuration: OrganizationSsoConfiguration;
@@ -117,8 +118,7 @@ function mockProvider(expiredRefreshToken?: string): void {
       : requestedScopes
           .get(parameters.get('code')!)
           ?.split(' ')
-          .filter((value) => providerGrantsOfflineAccess || value !== 'offline_access')
-          .join(' ');
+          .filter((value) => providerGrantsOfflineAccess || value !== 'offline_access');
     const grant = previousRefreshToken
       ? providerGrants.get(previousRefreshToken)
       : { current: '', revoked: false, offline: Boolean(scope?.includes('offline_access')) };
@@ -135,8 +135,10 @@ function mockProvider(expiredRefreshToken?: string): void {
       200,
       JSON.stringify({
         access_token: 'provider-access-token',
-        refresh_token: grant.current,
-        scope,
+        refresh_token: providerGrantsOfflineAccess ? grant.current : undefined,
+        scope: scope
+          ?.filter((value) => providerListsOfflineAccess || value !== 'offline_access')
+          .join(' '),
         token_type: 'Bearer',
         expires_in: providerLifetime,
         id_token: includeIdToken
@@ -318,6 +320,7 @@ describe('organization OIDC sign-in', () => {
     providerUnavailable = false;
     providerGrantRevoked = false;
     providerGrantsOfflineAccess = true;
+    providerListsOfflineAccess = true;
     browserSessionEnded = false;
     acceptedClientSecret = 'provider-secret';
     userInfoClaims = {};
@@ -888,6 +891,16 @@ describe('organization OIDC sign-in', () => {
       message: 'The identity provider did not grant offline access',
       credentials: 0,
     });
+  });
+
+  it('creates personal credentials when the provider omits offline_access from the granted scope', async () => {
+    providerListsOfflineAccess = false;
+    await signIn();
+    const response = await complete(authorizeAtProvider(await registerPersonalCredentials()));
+    expect({
+      status: response.status,
+      credentials: await OAuth2ClientCredentials.count(),
+    }).toStrictEqual({ status: 200, credentials: 1 });
   });
 
   it('does not back personal credentials with another provider account', async () => {
