@@ -112,6 +112,7 @@ import { ResetPasswordToken } from './main/ResetPasswordToken.js';
 import { Theme } from './main/Theme.js';
 import { TrainingCompleted } from './main/TrainingCompleted.js';
 import { User } from './main/User.js';
+import { UserAppAccount } from './main/UserAppAccount.js';
 import { migrations } from '../migrations/apps/index.js';
 import { argv } from '../utils/argv.js';
 import { decrypt } from '../utils/crypto.js';
@@ -187,6 +188,7 @@ export {
   Theme,
   type SamlLoginRequest,
   User,
+  UserAppAccount,
   TrainingCompleted,
   type Resource,
 };
@@ -245,6 +247,7 @@ export function initDB({
       ResetPasswordToken,
       Theme,
       User,
+      UserAppAccount,
       TrainingCompleted,
     ],
     ...(schema
