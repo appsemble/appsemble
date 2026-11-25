@@ -21,7 +21,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
     pathParams: { appId },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['demoMode', 'definition', 'OrganizationId'],
+    attributes: ['id', 'demoMode', 'definition', 'OrganizationId', 's3Bucket'],
   });
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
@@ -50,7 +50,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   });
 
   await deleteAppAssetObjects(
-    appId,
+    app,
     demoAssetsToDelete.map((asset) => asset.id),
   );
 
@@ -64,7 +64,7 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
 
   const demoAssetsToReseed = await Asset.findAll({
-    attributes: ['id', 'mime', 'filename', 'name', 'ResourceId', 'ResourceType'],
+    attributes: ['id', 'mime', 'filename', 'name', 'sha256', 'ResourceId', 'ResourceType'],
     where: { seed: true },
   });
 
@@ -77,8 +77,8 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
       ephemeral: true,
       seed: false,
     });
-    const source = getAppAssetLocation(appId, id);
-    const target = getAppAssetLocation(appId, created.id);
+    const source = getAppAssetLocation(app, id);
+    const target = getAppAssetLocation(app, created.id);
     const stream = await getS3File(source.bucket, source.key);
     const stats = await getS3FileStats(source.bucket, source.key);
     await uploadS3File(target.bucket, target.key, stream, stats.size);

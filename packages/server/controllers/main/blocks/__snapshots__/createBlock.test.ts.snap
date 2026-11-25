@@ -566,7 +566,7 @@ If the input is not an array, the action will be applied to the input instead.",
 
 The remapper must resolve to an object containing the following properties:
 
-- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`.
+- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`. The files downloaded from links may total at most 25 MiB per email.
 - \`content\`: The raw content to include as the file content. This is mutually exclusive with \`target\`.
 - \`filename\`: The filename to include the attachment as.
 - \`accept\` If the target is a URL, this will be set as the HTTP \`Accept\` header when downloading the file.
@@ -641,7 +641,7 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
 
 The remapper must resolve to an object containing the following properties:
 
-- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`.
+- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`. The files downloaded from links may total at most 25 MiB per email.
 - \`content\`: The raw content to include as the file content. This is mutually exclusive with \`target\`.
 - \`filename\`: The filename to include the attachment as.
 - \`accept\` If the target is a URL, this will be set as the HTTP \`Accept\` header when downloading the file.
@@ -5486,6 +5486,9 @@ The user must have the \`$webhook:<webhookName>:invoke\` permission to call this
                       "$ref": "#/components/schemas/WebhookActionDefinition",
                     },
                   ],
+                  "discriminator": {
+                    "propertyName": "type",
+                  },
                 },
                 "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/CsvParseActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceDeleteAllActionDefinition>,<#/components/schemas/ResourceDeleteBulkActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceHistoryGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourceUpdateGroupActionDefinition>,<#/components/schemas/ResourceUpdatePositionsActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ScrollActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberCreateActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/GroupSelectedUpdateActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>,<#/components/schemas/WebhookActionDefinition>",
               },
@@ -5709,6 +5712,9 @@ The user must have the \`$webhook:<webhookName>:invoke\` permission to call this
                   "$ref": "#/components/schemas/WebhookActionDefinition",
                 },
               ],
+              "discriminator": {
+                "propertyName": "type",
+              },
             },
           },
         },
@@ -5954,6 +5960,9 @@ The user must have the \`$webhook:<webhookName>:invoke\` permission to call this
                   "$ref": "#/components/schemas/WebhookActionDefinition",
                 },
               ],
+              "discriminator": {
+                "propertyName": "type",
+              },
             },
           ],
         },
@@ -6511,7 +6520,7 @@ If the input is not an array, the action will be applied to the input instead.",
 
 The remapper must resolve to an object containing the following properties:
 
-- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`.
+- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`. The files downloaded from links may total at most 25 MiB per email.
 - \`content\`: The raw content to include as the file content. This is mutually exclusive with \`target\`.
 - \`filename\`: The filename to include the attachment as.
 - \`accept\` If the target is a URL, this will be set as the HTTP \`Accept\` header when downloading the file.
@@ -6586,7 +6595,7 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
 
 The remapper must resolve to an object containing the following properties:
 
-- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`.
+- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`. The files downloaded from links may total at most 25 MiB per email.
 - \`content\`: The raw content to include as the file content. This is mutually exclusive with \`target\`.
 - \`filename\`: The filename to include the attachment as.
 - \`accept\` If the target is a URL, this will be set as the HTTP \`Accept\` header when downloading the file.
@@ -11431,6 +11440,9 @@ The user must have the \`$webhook:<webhookName>:invoke\` permission to call this
               "$ref": "#/components/schemas/WebhookActionDefinition",
             },
           ],
+          "discriminator": {
+            "propertyName": "type",
+          },
         },
         "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ControllerActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/CsvParseActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowCancelActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceDeleteAllActionDefinition>,<#/components/schemas/ResourceDeleteBulkActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceHistoryGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourceUpdateGroupActionDefinition>,<#/components/schemas/ResourceUpdatePositionsActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ScrollActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/GroupMemberInviteActionDefinition>,<#/components/schemas/GroupMemberCreateActionDefinition>,<#/components/schemas/GroupMemberQueryActionDefinition>,<#/components/schemas/GroupMemberDeleteActionDefinition>,<#/components/schemas/GroupMemberRoleUpdateActionDefinition>,<#/components/schemas/GroupQueryActionDefinition>,<#/components/schemas/GroupSelectedUpdateActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/AppMemberLoginActionDefinition>,<#/components/schemas/AppMemberLogoutActionDefinition>,<#/components/schemas/AppMemberRegisterActionDefinition>,<#/components/schemas/AppMemberInviteActionDefinition>,<#/components/schemas/AppMemberRoleUpdateActionDefinition>,<#/components/schemas/AppMemberCurrentPatchActionDefinition>,<#/components/schemas/AppMemberPropertiesPatchActionDefinition>,<#/components/schemas/AppMemberQueryActionDefinition>,<#/components/schemas/AppMemberDeleteActionDefinition>,<#/components/schemas/WebhookActionDefinition>",
       },

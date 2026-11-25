@@ -174,7 +174,15 @@ export function CreateOrganizationModal({
       }
 
       const { data } = await axios.post<Organization>('/api/organizations', formData);
-      setOrganizations([...organizations, { ...data, role: PredefinedOrganizationRole.Owner }]);
+      setOrganizations([
+        ...organizations,
+        {
+          ...data,
+          roles: [PredefinedOrganizationRole.Owner],
+          ssoRoles: [],
+          guest: false,
+        },
+      ]);
       onCreateOrganization?.(data);
     },
     [setOrganizations, organizations, onCreateOrganization],

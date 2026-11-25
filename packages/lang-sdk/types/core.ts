@@ -79,6 +79,12 @@ export interface AppDefinition {
   defaultPage: string;
 
   /**
+   * What is displayed when the URL does not match a page: the built-in page if `true`, otherwise the
+   * page with this name.
+   */
+  notFoundPage?: string | true;
+
+  /**
    * The settings for the layout of the app.
    */
   layout?: {
@@ -219,9 +225,24 @@ export interface AppDefinition {
   /**
    * The strategy to use for apps to subscribe to push notifications.
    *
-   * If this is omitted, push notifications can not be sent.
+   * Either one strategy for all app members, or a strategy per role. If this is omitted, push
+   * notifications can not be sent.
    */
-  notifications?: 'login' | 'opt-in' | 'startup';
+  notifications?:
+    | 'login'
+    | 'opt-in'
+    | 'startup'
+    | {
+        /**
+         * The strategy for roles that aren't listed in `roles`, and for users without a role.
+         */
+        default?: 'login' | 'none' | 'opt-in' | 'startup';
+
+        /**
+         * The strategy per role.
+         */
+        roles: Record<AppRole, 'login' | 'none' | 'opt-in'>;
+      };
 
   /**
    * The pages of the app.

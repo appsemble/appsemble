@@ -61,7 +61,7 @@ export async function updateAppResource({
       });
 
       if (preparedAssets.length) {
-        await uploadAssets(app.id!, preparedAssets);
+        await uploadAssets(persistedApp, preparedAssets);
         uploadedAssetIds = preparedAssets.map((asset) => asset.id);
       }
 
@@ -110,7 +110,7 @@ export async function updateAppResource({
         await Asset.destroy({ where: { id: deletedAssetIds }, transaction });
         transaction.afterCommit(async () => {
           try {
-            await deleteAppAssetObjects(app.id!, deletedAssetIds);
+            await deleteAppAssetObjects(persistedApp, deletedAssetIds);
           } catch (error) {
             logger.error(error);
           }
@@ -133,7 +133,7 @@ export async function updateAppResource({
     });
   } catch (error) {
     if (uploadedAssetIds.length) {
-      await deleteAppAssetObjects(app.id!, uploadedAssetIds);
+      await deleteAppAssetObjects(persistedApp, uploadedAssetIds);
     }
 
     if (isUniqueConstraintErrorLike(error)) {

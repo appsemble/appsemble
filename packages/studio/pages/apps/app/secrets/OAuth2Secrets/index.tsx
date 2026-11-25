@@ -26,7 +26,7 @@ const initialSecret: AppOAuth2Secret = {
  * Render a CRUD interface for managing OAuth2 secrets.
  */
 export function OAuth2Secrets(): ReactNode {
-  const { app } = useApp();
+  const { app, refreshWarnings } = useApp();
   const modal = useToggle();
 
   const result = useData<AppOAuth2Secret[]>(`/api/apps/${app.id}/secrets/oauth2`);
@@ -35,8 +35,9 @@ export function OAuth2Secrets(): ReactNode {
   const onUpdated = useCallback(
     (newSecret: AppOAuth2Secret, oldSecret: AppOAuth2Secret) => {
       setSecrets((secrets) => secrets.map((s) => (s === oldSecret ? newSecret : s)));
+      refreshWarnings();
     },
-    [setSecrets],
+    [refreshWarnings, setSecrets],
   );
 
   const create = useCallback(
@@ -55,8 +56,9 @@ export function OAuth2Secrets(): ReactNode {
   const onDeleted = useCallback(
     (secret: AppOAuth2Secret) => {
       setSecrets((secrets) => secrets.filter((s) => s.id !== secret.id));
+      refreshWarnings();
     },
-    [setSecrets],
+    [refreshWarnings, setSecrets],
   );
 
   return (

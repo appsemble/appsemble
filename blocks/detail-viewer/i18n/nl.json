@@ -1,6 +1,9 @@
 {
+  "captions": "Ondertiteling",
   "closeImage": "Sluit vergrote afbeelding",
   "downloadImage": "Downloaden in HD",
   "loading": "Laden",
-  "map": "Kaart"
+  "map": "Kaart",
+  "video": "Video",
+  "videoThumbnail": "Videominiatuur"
 }

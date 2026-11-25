@@ -16,6 +16,7 @@ import { useSimpleForm } from '../SimpleForm/index.js';
 
 interface WebcamImageUploadProps {
   readonly videoButtonLabel?: ReactNode;
+  readonly clickButtonAriaLabel?: string;
   readonly clickButtonLabel?: ReactNode;
   readonly onCapture: (image: Blob) => void;
   readonly preview?: ReactNode;
@@ -27,6 +28,7 @@ interface WebcamImageUploadProps {
 export const WebcamImageUpload = forwardRef<HTMLVideoElement, WebcamImageUploadProps>(
   (
     {
+      clickButtonAriaLabel,
       clickButtonLabel,
       formComponentClassName,
       help,
@@ -113,7 +115,13 @@ export const WebcamImageUpload = forwardRef<HTMLVideoElement, WebcamImageUploadP
             <button className="button mr-1" onClick={startWebcam} type="button">
               {videoButtonLabel}
             </button>
-            <button className="button" onClick={handleCapture} ref={clickButtonRef} type="button">
+            <button
+              aria-label={clickButtonAriaLabel}
+              className="button"
+              onClick={handleCapture}
+              ref={clickButtonRef}
+              type="button"
+            >
               {clickButtonLabel || 'Click'}
             </button>
           </div>

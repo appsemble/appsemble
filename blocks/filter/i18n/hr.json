@@ -1,11 +1,11 @@
 {
   "clearLabel": "Jasno",
-  "closeLabel": "",
-  "fromLabel": "",
+  "closeLabel": "Zatvori filtar",
+  "fromLabel": "Od",
   "modalTitle": "Filtar",
-  "openLabel": "",
-  "sliderMaximum": "",
-  "sliderMinimum": "",
+  "openLabel": "Otvori filtar",
+  "sliderMaximum": "Maksimalno",
+  "sliderMinimum": "Minimalno",
   "submitLabel": "Filtar",
-  "toLabel": ""
+  "toLabel": "Za"
 }

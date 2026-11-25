@@ -1,15 +1,20 @@
 import { type ResourceHooks } from '@appsemble/lang-sdk';
-import { CheckboxField, FormComponent, Loader, useMessages } from '@appsemble/react-components';
+import { CheckboxField, FormComponent } from '@appsemble/preact-components';
 import { resourceSubscribableAction, type SubscriptionResponse } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactNode, useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { type JSX, type VNode } from 'preact';
+import { useEffect, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { FormattedMessage, useIntl } from '../../IntlProvider/index.js';
+import { Loader } from '../../Loader/index.js';
+import { useMessages } from '../../MessagesProvider/index.js';
+import { getNotificationStrategy } from '../../../utils/notifications.js';
 import { apiUrl, appId } from '../../../utils/settings.js';
 import { useAppDefinition } from '../../AppDefinitionProvider/index.js';
+import { useAppMember } from '../../AppMemberProvider/index.js';
 import { useServiceWorkerRegistration } from '../../ServiceWorkerRegistrationProvider/index.js';
 
 type ResourceState = Record<string, SubscriptionState>;
@@ -22,12 +27,13 @@ interface SubscriptionState {
   delete?: ExtendedResourceHooks;
 }
 
-export function AppSubscriptions(): ReactNode {
+export function AppSubscriptions(): VNode | null {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const [subscriptions, setSubscriptions] = useState<ResourceState>();
   const [loadingSubscriptions, setLoadingSubscriptions] = useState(true);
   const { definition } = useAppDefinition();
+  const { appMemberRoles } = useAppMember();
   const { requestPermission, subscribe, subscription, unsubscribe } =
     useServiceWorkerRegistration();
 
@@ -86,7 +92,7 @@ export function AppSubscriptions(): ReactNode {
     }
   }, [definition, push, subscription]);
 
-  const onSubscribeClick = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
+  const onSubscribeClick = async (event: JSX.TargetedEvent<HTMLInputElement>): Promise<void> => {
     event.preventDefault();
 
     if (subscription) {
@@ -155,7 +161,11 @@ export function AppSubscriptions(): ReactNode {
     }
   };
 
-  if (definition.notifications === undefined) {
+  // Members who are still subscribed keep the switch, so they can unsubscribe.
+  if (
+    definition.notifications == null ||
+    (!subscription && getNotificationStrategy(definition.notifications, appMemberRoles) === 'none')
+  ) {
     return null;
   }
 

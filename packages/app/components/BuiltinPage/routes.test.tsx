@@ -1,10 +1,9 @@
 import { type AppDefinition, type BuiltinPagesLayoutDefinition } from '@appsemble/lang-sdk';
 import { noop } from '@appsemble/utils';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
 import axios from 'axios';
-import { type ReactNode } from 'react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { type ComponentChildren } from 'preact';
+import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppDebug } from '../AppDebug/index.js';
@@ -17,6 +16,7 @@ import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
 import { EditPassword } from '../EditPassword/index.js';
 import { GroupInvite } from '../GroupInvite/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { Login } from '../Login/index.js';
 import { MenuProvider } from '../MenuProvider/index.js';
 import { OpenIDCallback } from '../OpenIDCallback/index.js';
@@ -25,6 +25,7 @@ import { ResetPassword } from '../ResetPassword/index.js';
 import { SentryFeedback } from '../SentryFeedback/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
 import { Verify } from '../Verify/index.js';
+import { IconTestWrapper } from '../../utils/test-utils.js';
 
 const settings = vi.hoisted(() => ({
   development: false,
@@ -59,10 +60,13 @@ vi.mock('../../utils/settings.js', async (importOriginal) => {
 });
 
 // A page that navigates away unmounts, which would hide the state it renders on its way out.
-vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react-router-dom')>();
+vi.mock('wouter-preact', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('wouter-preact')>();
 
-  return { ...actual, useNavigate: () => vi.fn() };
+  return {
+    ...actual,
+    useLocation: () => [actual.useLocation()[0], vi.fn()],
+  };
 });
 
 const appMember = {
@@ -141,17 +145,15 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-function renderRoute(element: ReactNode, path = '/en/Page'): void {
+function renderRoute(element: ComponentChildren, path = '/en/Page'): void {
+  window.history.replaceState(null, '', path);
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={[path]}>
-        <MenuProvider>
-          <Routes>
-            <Route element={element} path="/:lang/*" />
-          </Routes>
-        </MenuProvider>
-      </MemoryRouter>
+      <MenuProvider>
+        <Route path="/:lang/*?">{element}</Route>
+      </MenuProvider>
     </IntlProvider>,
+    { wrapper: IconTestWrapper },
   );
 }
 
@@ -171,6 +173,11 @@ interface RouteCase {
    * The state the page renders as `data-appsemble-page-state`.
    */
   state: string;
+
+  /**
+   * The name the page shows in the title bar instead of the app name.
+   */
+  appBarName?: string;
 
   /**
    * Bring the app and the API in the shape this state needs.
@@ -405,6 +412,7 @@ const cases: RouteCase[] = [
   {
     page: 'settings',
     state: 'default',
+    appBarName: 'Settings',
     setup() {
       appMember.isLoggedIn = true;
     },
@@ -413,9 +421,15 @@ const cases: RouteCase[] = [
   {
     page: 'feedback',
     state: 'form',
+    appBarName: 'Feedback',
     render: () => renderRoute(<SentryFeedback />, '/en/Feedback'),
   },
-  { page: 'debug', state: 'default', render: () => renderRoute(<AppDebug />, '/en/debug') },
+  {
+    page: 'debug',
+    state: 'default',
+    appBarName: 'Debug',
+    render: () => renderRoute(<AppDebug />, '/en/debug'),
+  },
   {
     page: 'openid-callback',
     state: 'error',
@@ -454,7 +468,25 @@ describe.each(cases)('$page $state', (routeCase) => {
     await renderCase(routeCase);
 
     const navbar = within(document.querySelector<HTMLElement>('.navbar')!);
-    expect(navbar.getByRole('heading', { level: 2 }).textContent).not.toBe('');
+    expect(navbar.queryByText(routeCase.appBarName ?? 'Test App')).not.toBeNull();
+  });
+
+  it('should name the page with one level 1 heading', async () => {
+    await renderCase(routeCase);
+
+    const headings = screen.getAllByRole('heading', { level: 1 });
+    expect(headings).toHaveLength(1);
+    expect(screen.getByRole('main').getAttribute('aria-label')).toBe(headings[0].textContent);
+  });
+
+  it('should name the page with one level 1 heading when the title bar shows the app name', async () => {
+    mockApp({ titleBarText: 'appName' });
+
+    await renderCase(routeCase);
+
+    const headings = screen.getAllByRole('heading', { level: 1 });
+    expect(headings).toHaveLength(1);
+    expect(screen.getByRole('main').getAttribute('aria-label')).toBe(headings[0].textContent);
   });
 
   it('should render the bottom navigation inside a layout that places it', async () => {

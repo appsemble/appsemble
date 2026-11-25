@@ -353,6 +353,67 @@ describe('updateAppResource', () => {
     `);
   });
 
+  it('should only notify the author when the notification hook targets $author', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        resources: {
+          ...app.definition.resources,
+          testResource: {
+            ...app.definition.resources!.testResource,
+            update: { hooks: { notification: { to: ['$author'] } } },
+          },
+        },
+      },
+    });
+    const { AppMember, AppSubscription, Resource } = await getAppDB(app.id);
+    const author = await AppMember.create({
+      email: 'author@example.com',
+      role: PredefinedAppRole.Member,
+      timezone: 'Europe/Amsterdam',
+    });
+    const other = await AppMember.create({
+      email: 'other@example.com',
+      role: PredefinedAppRole.Member,
+      timezone: 'Europe/Amsterdam',
+    });
+    await AppSubscription.create({
+      endpoint: 'https://192.0.2.1/author',
+      p256dh: 'p256dh',
+      auth: 'auth',
+      AppMemberId: author.id,
+    });
+    await AppSubscription.create({
+      endpoint: 'https://192.0.2.1/other',
+      p256dh: 'p256dh',
+      auth: 'auth',
+      AppMemberId: other.id,
+    });
+    const resource = await Resource.create({
+      type: 'testResource',
+      data: { foo: 'I am Foo.' },
+      AuthorId: author.id,
+    });
+    const sendNotification = vi.fn();
+    webpush.sendNotification = sendNotification;
+
+    authorizeStudio();
+    await request.put(`/api/apps/${app.id}/resources/testResource/${resource.id}`, {
+      foo: 'I am not Foo.',
+    });
+
+    await vi.waitFor(() =>
+      expect(sendNotification).toHaveBeenCalledWith(
+        expect.objectContaining({ endpoint: 'https://192.0.2.1/author' }),
+        expect.any(String),
+        expect.any(Object),
+      ),
+    );
+    expect(sendNotification.mock.calls.map(([{ endpoint }]) => endpoint)).toStrictEqual([
+      'https://192.0.2.1/author',
+    ]);
+  });
+
   it('should not be possible to update an existing resource through another resource', async () => {
     const { Resource } = await getAppDB(app.id);
     const resource = await Resource.create({
@@ -871,7 +932,7 @@ describe('updateAppResource', () => {
     ]);
     const assetsData = await Promise.all(
       assets.map((asset) => {
-        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
         return getS3FileBuffer(bucket, key);
       }),
     );

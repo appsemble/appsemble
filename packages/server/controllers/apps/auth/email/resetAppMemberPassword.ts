@@ -4,6 +4,7 @@ import { type Context } from 'koa';
 
 import { App, getAppDB } from '../../../../models/index.js';
 import { revokeAppMemberRefreshSessionsForMember } from '../../../../utils/appMemberRefreshSession.js';
+import { assertPasswordNotBreached } from '../../../../utils/breachedPassword.js';
 
 export async function resetAppMemberPassword(ctx: Context): Promise<void> {
   const {
@@ -12,7 +13,7 @@ export async function resetAppMemberPassword(ctx: Context): Promise<void> {
       body: { token },
     },
   } = ctx;
-  const { AppMember } = await getAppDB(appId);
+  const { AppMember, AppMemberEmailAuthorization } = await getAppDB(appId);
   const app = await App.findByPk(appId, { attributes: ['id'] });
 
   assertKoaCondition(app != null, ctx, 404, 'App could not be found.');
@@ -24,12 +25,17 @@ export async function resetAppMemberPassword(ctx: Context): Promise<void> {
 
   assertKoaCondition(appMember != null, ctx, 404, `Unknown password reset token: ${token}`);
 
+  await assertPasswordNotBreached(ctx, ctx.request.body.password);
   const password = await hash(ctx.request.body.password, 10);
 
+  // The reset link was mailed to the member's email, which proves the member controls it.
   await appMember.update({
     password,
     resetKey: null,
+    emailVerified: true,
+    emailKey: null,
   });
+  await AppMemberEmailAuthorization.destroy({ where: { AppMemberId: appMember.id } });
 
   await revokeAppMemberRefreshSessionsForMember(appId, appMember.id);
 }

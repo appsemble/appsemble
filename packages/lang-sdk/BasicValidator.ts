@@ -9,12 +9,40 @@ import { type JsonObject } from 'type-fest';
 
 import { isValidIconReference } from './icons.js';
 import { schemas as allSchemas, type BlockDefinition } from './index.js';
+import { skipBaseResolutionForSchemasWithoutId } from './jsonschemaBaseResolution.js';
 import { escapeJsonPointer } from './jsonPointer.js';
+import { COMPONENT_KEY } from './language-component/types.js';
 import { has } from './miscellaneous.js';
 
 interface ValidatorFactoryOptions {
   schemas: Record<string, Schema>;
   customFormats?: Record<string, CustomFormat>;
+  // Schema-node keys to permit on top of each closed node's declared properties, like a per-validator
+  // allow-list. Empty by default, so app-authored schemas (resources, webhooks) stay strict; only the
+  // block-parameter validator opts in, since a block's parameter schema may carry vendor extensions
+  // (`x-appsemble-gui`, `x-appsemble-language-component`) authored in the block's TypeScript.
+  allowedNodeAttributes?: readonly string[];
+}
+
+// Return a copy of `schemas` where every closed node (`additionalProperties: false`) additionally
+// declares `attributes` as permitted properties (accepting any value). A block's parameter schema may
+// carry these keys on any node; only the validator given this copy accepts them — the shared `schemas`
+// the engine and app-schema validators use are untouched, so the keys are neither accepted nor
+// suggested anywhere else. Plain JSON Schema: the added `properties` take the key out of
+// `additionalProperties`' scope, exactly as declaring any other property would.
+function permitNodeAttributes(
+  schemas: Record<string, Schema>,
+  attributes: readonly string[],
+): Record<string, Schema> {
+  const permitted = Object.fromEntries(attributes.map((name) => [name, {} as Schema]));
+  return Object.fromEntries(
+    Object.entries(schemas).map(([name, schema]) => [
+      name,
+      schema.additionalProperties === false
+        ? { ...schema, properties: { ...schema.properties, ...permitted } }
+        : schema,
+    ]),
+  );
 }
 
 export class BaseValidatorFactory {
@@ -38,12 +66,16 @@ export class BaseValidatorFactory {
 
   private customFormats;
 
-  constructor({ customFormats, schemas }: ValidatorFactoryOptions) {
+  private allowedNodeAttributes;
+
+  constructor({ allowedNodeAttributes, customFormats, schemas }: ValidatorFactoryOptions) {
     this.customFormats = customFormats;
     this.schemas = schemas;
+    this.allowedNodeAttributes = allowedNodeAttributes;
   }
 
   build(): Validator {
+    skipBaseResolutionForSchemasWithoutId();
     const validator = new Validator();
 
     for (const [key, format] of Object.entries({
@@ -53,7 +85,10 @@ export class BaseValidatorFactory {
       validator.customFormats[key] = format;
     }
 
-    for (const [key, schema] of Object.entries(this.schemas)) {
+    const schemas = this.allowedNodeAttributes?.length
+      ? permitNodeAttributes(this.schemas, this.allowedNodeAttributes)
+      : this.schemas;
+    for (const [key, schema] of Object.entries(schemas)) {
       const path = `#/components/schemas/${escapeJsonPointer(key)}`;
       validator.addSchema(schema, path);
     }
@@ -202,6 +237,10 @@ export class BlockParamSchemaValidator {
   constructor() {
     this.validator = new BaseValidatorFactory({
       schemas: allSchemas,
+      // A block's parameter schema may carry these vendor keys on its nodes (`x-appsemble-gui` for the
+      // GUI editor, `x-appsemble-language-component` for the engine); the app-authored schema validators
+      // do not opt in, so resource/webhook schemas stay strict.
+      allowedNodeAttributes: [COMPONENT_KEY, 'x-appsemble-gui'],
       customFormats: {
         fontawesome: () => true,
         remapper: () => true,

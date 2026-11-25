@@ -352,6 +352,42 @@ describe('makeActions', () => {
     expect(captureException).not.toHaveBeenCalled();
   });
 
+  it('should not report a login with a wrong email or password to Sentry', async () => {
+    pageReady();
+    const config = {
+      headers: {},
+      method: 'post',
+      url: 'https://appsemble.app/api/apps/42/auth/oauth2/token',
+    } as InternalAxiosRequestConfig;
+    const error = new AxiosError(
+      'Request failed with status code 400',
+      AxiosError.ERR_BAD_REQUEST,
+      config,
+      {},
+      { config, data: { error: 'invalid_client' }, headers: {}, status: 400, statusText: '' },
+    );
+    const actions = makeActions({
+      ...testDefaults,
+      actions: { onSubmit: {} },
+      context: {
+        actions: {
+          onSubmit: {
+            type: 'app.member.login',
+            email: { prop: 'email' },
+            password: { prop: 'password' },
+          },
+        },
+      },
+      getAppMemberInfo: () => null as any,
+      passwordLogin: vi.fn().mockRejectedValue(error),
+    });
+
+    await expect(
+      actions.onSubmit({ email: 'member@example.com', password: 'wrong' }),
+    ).rejects.toThrow(ActionError);
+    expect(captureException).not.toHaveBeenCalled();
+  });
+
   it('should not report a dialog closed by the user to Sentry', async () => {
     pageReady();
     // Closing a dialog rejects the action with no reason.

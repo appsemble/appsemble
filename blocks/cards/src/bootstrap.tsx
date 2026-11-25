@@ -63,7 +63,7 @@ export function Cards({
         ) : null}
       </div>
       {loading ? (
-        <Loader label={utils.formatMessage('loading')} />
+        <Loader label={utils.formatMessage('loading')} testId="loader-comp" />
       ) : hidden || empty ? null : error ? (
         <Message className="mt-4 mr-6 mb-4 ml-5" color="danger" role="alert">
           <span>

@@ -1,6 +1,9 @@
+import { xmlToJson as convert } from '@appsemble/utils';
+import { type OpenAPIV3 } from 'openapi-types';
 import { expect, it } from 'vitest';
 
-import { xmlToJson } from './xmlToJson.js';
+const xmlToJson = (xml: string, schema: OpenAPIV3.SchemaObject): unknown =>
+  convert(xml, schema, new DOMParser());
 
 /*
  * All test cases are taken from the examples of https://swagger.io/specification/#xmlObject

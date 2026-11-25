@@ -1,14 +1,17 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { render, screen, waitFor } from '@testing-library/react';
-import { type ReactNode } from 'react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { render, screen, waitFor } from '@testing-library/preact';
+import { userEvent } from '@testing-library/user-event';
+import { type VNode } from 'preact';
+import { Route, Router } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppRoutes } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
+import { useLocationString } from '../../utils/useLocationString.js';
+import { useRawLocation } from '../../utils/useRawLocation.js';
 
 vi.mock('../AppDebug/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -38,10 +41,25 @@ vi.mock('../OpenIDCallback/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
   OpenIDCallback: () => <p>Callback route</p>,
 }));
-vi.mock('../Page/index.js', () => ({
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  Page: () => <p>Page route</p>,
-}));
+vi.mock('../Page/index.js', async () => {
+  const { Link, Route: MockRoute, useLocation: useMockLocation } = await import('wouter-preact');
+  const { Redirect } = await import('../Redirect/index.js');
+  return {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    Page: () => (
+      <main tabIndex={-1}>
+        <p>Page route</p>
+        <Link to="/en/about">About</Link>
+        <Link to="/en/home/details">Details tab</Link>
+        <MockRoute path="/:lang/:pageId/details">
+          <p>Details tab content</p>
+        </MockRoute>
+        {/* A container page redirects to its first sub page after it renders. */}
+        {useMockLocation()[0] === '/en/container' ? <Redirect to="/en/child" /> : null}
+      </main>
+    ),
+  };
+});
 vi.mock('../Register/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
   Register: () => <p>Register route</p>,
@@ -59,9 +77,8 @@ vi.mock('../Verify/index.js', () => ({
   Verify: () => <p>Verify route</p>,
 }));
 
-function LocationProbe(): ReactNode {
-  const { hash, pathname, search } = useLocation();
-  return <p>{`${pathname}${search}${hash}`}</p>;
+function LocationProbe(): VNode {
+  return <p>{useLocationString()}</p>;
 }
 
 interface RenderOptions {
@@ -81,21 +98,15 @@ function renderRoutes(
     messagesReady,
   } as never);
 
+  window.history.replaceState(null, '', path);
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={[path]}>
-        <Routes>
-          <Route
-            element={
-              <>
-                <LocationProbe />
-                <AppRoutes />
-              </>
-            }
-            path="/:lang/*"
-          />
-        </Routes>
-      </MemoryRouter>
+      <Router hook={useRawLocation}>
+        <Route path="/:lang/*?">
+          <LocationProbe />
+          <AppRoutes />
+        </Route>
+      </Router>
     </IntlProvider>,
   );
 }
@@ -144,10 +155,104 @@ describe('AppRoutes', () => {
     expect(screen.getByText('/nl/InLoggen')).not.toBeNull();
   });
 
+  it('should render a translated built-in route whose segment has special characters', async () => {
+    renderRoutes('/fr/Caf%C3%A9%20(menu)', {
+      appMessages: { 'routes.Settings': 'Café (menu)' },
+    });
+    await waitFor(() => expect(screen.getByText('Settings route')).not.toBeNull());
+  });
+
+  it('should render a page whose path is a built-in route in lowercase', async () => {
+    renderRoutes('/en/login');
+    await waitFor(() => expect(screen.getByText('Page route')).not.toBeNull());
+    expect(screen.queryByText('Login route')).toBeNull();
+  });
+
+  it('should match the sub routes of a page regardless of case', async () => {
+    renderRoutes('/en/home/Details');
+    await waitFor(() => expect(screen.getByText('Details tab content')).not.toBeNull());
+  });
+
   it('should redirect an unknown path to the translated default page', async () => {
     renderRoutes('/nl', { appMessages: { 'pages.home': 'Start' } });
     await waitFor(() => expect(screen.getByText('/nl/start')).not.toBeNull());
     expect(screen.getByText('Page route')).not.toBeNull();
+  });
+
+  it.each(['Login', 'Register'])(
+    'should send a logged in member from the %s route to the default page',
+    async (route) => {
+      vi.spyOn(appMemberProvider, 'useAppMember').mockReturnValue({
+        appMemberRoles: [],
+        isLoggedIn: true,
+      } as never);
+      renderRoutes(`/nl/${route}`, { appMessages: { 'pages.home': 'Start' } });
+      await waitFor(() => expect(screen.getByText('/nl/start')).not.toBeNull());
+      expect(screen.getByText('Page route')).not.toBeNull();
+    },
+  );
+
+  describe('with a custom login page and a pending TOTP step', () => {
+    beforeEach(() => {
+      vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Home',
+          pages: [
+            { name: 'Home', blocks: [], roles: ['User'] },
+            { name: 'Login', blocks: [] },
+          ],
+          security: { default: { policy: 'everyone', role: 'User' }, roles: { User: {} } },
+        },
+      } as never);
+      vi.spyOn(appMemberProvider, 'useAppMember').mockReturnValue({
+        appMemberRoles: [],
+        isLoggedIn: false,
+        totpPending: {},
+      } as never);
+    });
+
+    it.each(['/en/login', '/en/Login', '/en/home', '/en/Register'])(
+      'should render the built-in login at %s',
+      (path) => {
+        renderRoutes(path);
+        expect(screen.getByText('Login route')).not.toBeNull();
+        expect(screen.getByText(path)).not.toBeNull();
+      },
+    );
+
+    it('should let the callback route finish its own login', () => {
+      renderRoutes('/en/Callback');
+      expect(screen.getByText('Callback route')).not.toBeNull();
+    });
+  });
+
+  it('should leave focus alone on the first page the app redirects to', async () => {
+    renderRoutes('/en');
+    await waitFor(() => expect(screen.getByText('/en/home')).not.toBeNull());
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it('should leave focus alone on a page the first page redirects to', async () => {
+    renderRoutes('/en/container');
+    await waitFor(() => expect(screen.getByText('/en/child')).not.toBeNull());
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it('should move focus to the page after navigating to another page', async () => {
+    vi.spyOn(navigator.userActivation, 'hasBeenActive', 'get').mockReturnValue(true);
+    renderRoutes('/en/home');
+    await userEvent.click(screen.getByRole('link', { name: 'About' }));
+    await waitFor(() => expect(screen.getByText('/en/about')).not.toBeNull());
+    expect(document.activeElement).toBe(screen.getByRole('main'));
+  });
+
+  it('should keep focus on the link after navigating within the page', async () => {
+    renderRoutes('/en/home');
+    const link = screen.getByRole('link', { name: 'Details tab' });
+    await userEvent.click(link);
+    await waitFor(() => expect(screen.getByText('/en/home/details')).not.toBeNull());
+    expect(document.activeElement).toBe(link);
   });
 
   it('should render the loader until the messages of the current language are loaded', () => {

@@ -3,11 +3,17 @@ import { mkdir, readdir, readFile, rm, stat } from 'node:fs/promises';
 import { basename, dirname, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
 
-import { type AppDefinition, type AppRole, normalizeBlockName } from '@appsemble/lang-sdk';
+import {
+  type AppDefinition,
+  type AppRole,
+  normalize,
+  normalizeBlockName,
+} from '@appsemble/lang-sdk';
 import {
   applyAppVariant,
   AppsembleError,
   authenticate,
+  hashFile,
   logger,
   opendirSafe,
   preProcessCSV,
@@ -26,6 +32,7 @@ import {
   type AppServiceSecretDefinition,
   type AppTotp,
   type AppVisibility,
+  type Asset,
   type Messages,
   type ProjectBuildConfig,
   type ProjectImplementations,
@@ -506,49 +513,103 @@ export async function publishSeedAppMembers(path: string, app: App, remote: stri
   }
 }
 
+/**
+ * Read the seed asset files of an app.
+ *
+ * @param assetsPath The path to the assets directory.
+ * @returns The absolute file paths by the normalized name of the asset, or null if the directory
+ *   doesn't exist.
+ * @throws AppsembleError if a file normalizes to an empty name, or two files to the same name.
+ */
+export async function getSeedAssetFiles(assetsPath: string): Promise<Map<string, string> | null> {
+  if (!existsSync(assetsPath)) {
+    return null;
+  }
+
+  const assetFiles = await readdir(assetsPath);
+  const normalizedPaths = assetFiles.map((assetFile) => normalizePath(join(assetsPath, assetFile)));
+  const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
+
+  const filesByName = new Map<string, string>();
+  for (const file of files) {
+    const name = normalize(parse(file).name);
+    if (!name) {
+      throw new AppsembleError(`Asset file ${basename(file)} normalizes to an empty name`);
+    }
+    const collision = filesByName.get(name);
+    if (collision) {
+      throw new AppsembleError(
+        `Asset files ${basename(collision)} and ${basename(file)} both normalize to ${name}`,
+      );
+    }
+    filesByName.set(name, file);
+  }
+  return filesByName;
+}
+
 export async function publishSeedAssets(
   path: string,
+  files: Map<string, string> | null,
   app: App,
   remote: string,
   assetsClonable: boolean,
 ): Promise<void> {
   const assetsPath = join(path, 'assets');
   logger.info(`Publishing seed assets from ${assetsPath}`);
-
-  if (existsSync(assetsPath)) {
-    logger.info(`Deleting existing seed assets from app ${app.id}`);
-
-    try {
-      await axios.delete(`/api/apps/${app.id}/assets`, {
-        data: [],
-        baseURL: remote,
-        params: { seed: true },
-      });
-
-      const assetFiles = await readdir(assetsPath);
-      const normalizedPaths = assetFiles.map((assetFile) =>
-        normalizePath(join(assetsPath, assetFile)),
-      );
-      const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
-
-      logger.info(`Publishing ${files.length} asset(s)`);
-      for (const assetFilePath of files) {
-        await publishAsset({
-          name: parse(assetFilePath).name,
-          // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-          appId: app.id,
-          path: assetFilePath,
-          remote,
-          seed: true,
-          clonable: assetsClonable,
-        });
-      }
-    } catch (error: unknown) {
-      logger.error('Something went wrong when creating assets:');
-      logger.error(error);
-    }
-  } else {
+  if (!files) {
     logger.warn(`Missing assets directory in ${path}. Skipping...`);
+    return;
+  }
+
+  const assetsUrl = `/api/apps/${app.id}/assets`;
+  try {
+    let serverAssets: Asset[] = [];
+    if (app.demoMode) {
+      // The asset endpoints only reach the ephemeral copies of a demo app, and the cleanup job
+      // gives those new ids on every run, so their seed assets can't be compared one by one.
+      logger.info(`Deleting existing seed assets from app ${app.id}`);
+      await axios.delete(assetsUrl, { data: [], baseURL: remote, params: { seed: true } });
+    } else {
+      ({ data: serverAssets } = await axios.get<Asset[]>(assetsUrl, {
+        baseURL: remote,
+        params: { named: true },
+      }));
+    }
+
+    const serverAssetsByName = new Map(serverAssets.map((asset) => [asset.name, asset]));
+    for (const [name, file] of files) {
+      const serverAsset = serverAssetsByName.get(name);
+      if (serverAsset) {
+        if (
+          serverAsset.sha256 === (await hashFile(file)) &&
+          serverAsset.clonable === assetsClonable
+        ) {
+          logger.info(`Keeping unchanged asset ${name}`);
+          continue;
+        }
+        await axios.delete(assetsUrl, { data: [serverAsset.id], baseURL: remote });
+      }
+      await publishAsset({
+        name,
+        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+        appId: app.id,
+        path: file,
+        remote,
+        seed: true,
+        clonable: assetsClonable,
+      });
+    }
+
+    const removedSeedAssetIds = serverAssets
+      .filter(({ name, seed }) => seed && !files.has(name!))
+      .map(({ id }) => id);
+    if (removedSeedAssetIds.length) {
+      logger.info(`Deleting ${removedSeedAssetIds.length} seed asset(s) without a local file`);
+      await axios.delete(assetsUrl, { data: removedSeedAssetIds, baseURL: remote });
+    }
+  } catch (error: unknown) {
+    logger.error('Something went wrong when creating assets:');
+    logger.error(error);
   }
 }
 
@@ -593,15 +654,15 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
 
   if (existsSync(configPath)) {
     try {
-      logger.info(`Deleting existing variables from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/variables`, { baseURL: remote });
-
       const appVariablesPath = join(configPath, 'variables.json');
       if (existsSync(appVariablesPath)) {
         const [appVariables] = (await readData(appVariablesPath)) as [
           AppConfigEntryDefinition[],
           string,
         ];
+
+        logger.info(`Deleting existing variables from app ${app.id}`);
+        await axios.delete(`/api/apps/${app.id}/variables`, { baseURL: remote });
 
         if (appVariables.length) {
           logger.info(`Publishing ${appVariables.length} app variable(s)`);
@@ -628,15 +689,15 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
     }
 
     try {
-      logger.info(`Deleting existing service secrets from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/secrets/service`, { baseURL: remote });
-
       const serviceSecretsPath = join(configPath, 'secrets', 'service.json');
       if (existsSync(serviceSecretsPath)) {
         const [serviceSecrets] = (await readData(serviceSecretsPath)) as [
           AppServiceSecretDefinition[],
           string,
         ];
+
+        logger.info(`Deleting existing service secrets from app ${app.id}`);
+        await axios.delete(`/api/apps/${app.id}/secrets/service`, { baseURL: remote });
 
         if (serviceSecrets.length) {
           logger.info(`Publishing ${serviceSecrets.length} app service secret(s)`);
@@ -670,15 +731,15 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
     }
 
     try {
-      logger.info(`Deleting existing saml secrets from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/secrets/saml`, { baseURL: remote });
-
       const samlSecretsPath = join(configPath, 'secrets', 'saml.json');
       if (existsSync(samlSecretsPath)) {
         const [samlSecrets] = (await readData(samlSecretsPath)) as [
           WritableAppSamlSecret[],
           string,
         ];
+
+        logger.info(`Deleting existing saml secrets from app ${app.id}`);
+        await axios.delete(`/api/apps/${app.id}/secrets/saml`, { baseURL: remote });
 
         if (samlSecrets.length) {
           logger.info(`Publishing ${samlSecrets.length} app saml secret(s)`);
@@ -710,12 +771,12 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
     }
 
     try {
-      logger.info(`Deleting existing oauth2 secrets from app ${app.id}`);
-      await axios.delete(`/api/apps/${app.id}/secrets/oauth2`, { baseURL: remote });
-
       const oauth2SecretsPath = join(configPath, 'secrets', 'oauth2.json');
       if (existsSync(oauth2SecretsPath)) {
         const [oauth2Secrets] = (await readData(oauth2SecretsPath)) as [AppOAuth2Secret[], string];
+
+        logger.info(`Deleting existing oauth2 secrets from app ${app.id}`);
+        await axios.delete(`/api/apps/${app.id}/secrets/oauth2`, { baseURL: remote });
 
         if (oauth2Secrets.length) {
           logger.info(`Publishing ${oauth2Secrets.length} app oauth2 secrets`);
@@ -950,7 +1011,7 @@ export async function writeAppMessages(
     for (const [key, message] of Object.entries(oldMessages.app ?? {})) {
       const match = /^(pages\.[\dA-Za-z-]+(\..+)?)\.blocks\.\d+.+/.exec(key);
       const emailMatch =
-        /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|welcome)\.(body|subject)/.test(
+        /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|totpReset|welcome)\.(body|subject)/.test(
           key,
         );
       if (emailMatch) {
@@ -1222,9 +1283,19 @@ interface PublishAppParams {
   dbPassword?: string;
 
   /**
+   * The pre-provisioned S3 bucket that holds the app’s assets.
+   */
+  s3Bucket?: string;
+
+  /**
    * The TOTP (two-factor authentication) setting for the app.
    */
   totp?: AppTotp;
+
+  /**
+   * The password visitors must enter to open the app.
+   */
+  password?: string;
 }
 
 /**
@@ -1306,6 +1377,7 @@ export async function publishApp({
   const dbHost = appsembleContext.dbHost ?? options.dbHost;
   const dbPort = appsembleContext.dbPort ?? options.dbPort;
   const dbUser = appsembleContext.dbUser ?? options.dbUser;
+  const s3Bucket = appsembleContext.s3Bucket ?? options.s3Bucket;
   const skipGroupInvites = appsembleContext.skipGroupInvites ?? options.skipGroupInvites ?? false;
   const totp = appsembleContext.totp ?? options.totp;
   const { dbPassword } = options;
@@ -1348,6 +1420,10 @@ export async function publishApp({
 
   if (dbPassword) {
     formData.append('dbPassword', dbPassword);
+  }
+
+  if (s3Bucket) {
+    formData.append('s3Bucket', s3Bucket);
   }
 
   if (supportedLanguages?.length) {
@@ -1397,6 +1473,13 @@ export async function publishApp({
     logger.info(`Setting TOTP to ${totp}`);
     formData.append('totp', totp);
   }
+
+  if (options.password) {
+    formData.append('password', options.password);
+  }
+
+  const seedAssetFiles =
+    assets && file.isDirectory() ? await getSeedAssetFiles(join(appVariantPath, 'assets')) : null;
 
   let authScope = 'apps:write';
 
@@ -1448,7 +1531,7 @@ export async function publishApp({
 
     // After uploading the app, publish seed resources and assets if they are available
     if (assets) {
-      await publishSeedAssets(appVariantPath, data, remote, assetsClonable);
+      await publishSeedAssets(appVariantPath, seedAssetFiles, data, remote, assetsClonable);
     }
 
     if (resources) {
@@ -1652,9 +1735,20 @@ interface UpdateAppParams {
   dbPassword?: string;
 
   /**
+   * The pre-provisioned S3 bucket that holds the app’s assets.
+   */
+  s3Bucket?: string;
+
+  /**
    * The TOTP (two-factor authentication) setting for the app.
    */
   totp?: AppTotp;
+
+  /**
+   * The password visitors must enter to open the app. An empty string turns password protection
+   * off.
+   */
+  password?: string;
 }
 
 /**
@@ -1735,6 +1829,7 @@ export async function updateApp({
   const dbHost = appsembleContext.dbHost ?? options.dbHost;
   const dbPort = appsembleContext.dbPort ?? options.dbPort;
   const dbUser = appsembleContext.dbUser ?? options.dbUser;
+  const s3Bucket = appsembleContext.s3Bucket ?? options.s3Bucket;
   const totp = appsembleContext.totp ?? options.totp;
   const { dbPassword } = options;
 
@@ -1775,8 +1870,17 @@ export async function updateApp({
     formData.append('dbPassword', dbPassword);
   }
 
+  if (s3Bucket) {
+    formData.append('s3Bucket', s3Bucket);
+  }
+
   if (supportedLanguages?.length) {
     formData.append('supportedLanguages', JSON.stringify(supportedLanguages));
+  }
+
+  if (options.password !== undefined) {
+    logger.info(options.password ? 'Setting app password' : 'Turning password protection off');
+    formData.append('password', options.password);
   }
 
   if (icon) {
@@ -1826,6 +1930,9 @@ export async function updateApp({
     logger.info(`Setting TOTP to ${totp}`);
     formData.append('totp', totp);
   }
+
+  const seedAssetFiles =
+    assets && file.isDirectory() ? await getSeedAssetFiles(join(appVariantPath, 'assets')) : null;
 
   let authScope = 'apps:write';
 
@@ -1880,7 +1987,7 @@ export async function updateApp({
 
     // After updating the app, publish seed resources and assets if they are available
     if (assets && (data.locked !== 'fullLock' || force)) {
-      await publishSeedAssets(appVariantPath, data, remote, assetsClonable);
+      await publishSeedAssets(appVariantPath, seedAssetFiles, data, remote, assetsClonable);
     }
 
     if (resources && (data.locked !== 'fullLock' || force)) {
@@ -1993,6 +2100,12 @@ interface PatchAppParams {
    * The TOTP (two-factor authentication) setting for the app.
    */
   totp?: AppTotp;
+
+  /**
+   * The password visitors must enter to open the app. An empty string turns password protection
+   * off.
+   */
+  password?: string;
 }
 
 export async function patchApp({ id, remote, ...options }: PatchAppParams): Promise<void> {
@@ -2054,6 +2167,10 @@ export async function patchApp({ id, remote, ...options }: PatchAppParams): Prom
   if (options.totp !== undefined) {
     logger.info(`Setting totp to ${options.totp}`);
     formData.append('totp', options.totp);
+  }
+  if (options.password !== undefined) {
+    logger.info(options.password ? 'Setting app password' : 'Turning password protection off');
+    formData.append('password', options.password);
   }
   try {
     if (!formData.getLengthSync() && options.locked === undefined) {

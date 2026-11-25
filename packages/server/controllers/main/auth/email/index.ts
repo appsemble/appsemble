@@ -1,4 +1,5 @@
 export { loginUserWithEmail } from './loginUserWithEmail.js';
+export { discoverOrganizationSso } from './discoverOrganizationSso.js';
 export { registerUserWithEmail } from './registerUserWithEmail.js';
 export { requestUserPasswordReset } from './requestUserPasswordReset.js';
 export { resendUserEmailVerification } from './resendUserEmailVerification.js';

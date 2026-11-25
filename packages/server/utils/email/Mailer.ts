@@ -1,7 +1,10 @@
+import { type Socket } from 'node:net';
+
 import {
   EmailError,
   EmailQuotaExceededError,
   getAppsembleMessages,
+  getSSRFProtectedAgents,
   getSupportedLanguages,
   logger,
 } from '@appsemble/node-utils';
@@ -151,7 +154,31 @@ type MailerArgs = Partial<
     | 'smtpSecure'
     | 'smtpUser'
   >
->;
+> &
+  Pick<SMTPTransportOptions, 'getSocket'>;
+
+/**
+ * Connect to an app's SMTP server through the SSRF protected agent, so a host that resolves to a
+ * private address is refused before a connection is made.
+ *
+ * @param options The SMTP transport options holding the host and port to connect to.
+ * @param callback Called with the connected socket, or the error that prevented connecting.
+ */
+function getSSRFProtectedSocket(
+  { host, port }: SMTPTransportOptions,
+  callback: (error: Error | null, socketOptions?: { connection: Socket }) => void,
+): void {
+  getSSRFProtectedAgents({ hostname: host })
+    .then(({ httpAgent }) => {
+      const socket = httpAgent.createConnection({ host, port: Number(port) }) as Socket;
+      socket.once('error', callback);
+      socket.once('connect', () => {
+        socket.off('error', callback);
+        callback(null, { connection: socket });
+      });
+    })
+    .catch(callback);
+}
 
 /**
  * A class to simplify sending emails.
@@ -186,6 +213,7 @@ export class Mailer {
   private imapUser: string;
 
   constructor({
+    getSocket,
     imapHost,
     imapPass,
     imapPort,
@@ -207,7 +235,7 @@ export class Mailer {
           host: smtpHost,
           secure: smtpSecure,
           auth,
-          ...(logger.isVerboseEnabled() ? { debug: true, logger: true } : {}),
+          getSocket,
         } as SMTPTransportOptions,
         { from: smtpFrom },
       );
@@ -403,7 +431,10 @@ export class Mailer {
           });
           const members = await OrganizationMember.findAll({
             where: {
-              role: PredefinedOrganizationRole.Owner,
+              [Op.or]: [
+                { role: PredefinedOrganizationRole.Owner },
+                { ssoRoles: { [Op.contains]: [PredefinedOrganizationRole.Owner] } },
+              ],
               // @ts-expect-error 18048 variable is possibly null (strictNullChecks)
               OrganizationId: fullApp.OrganizationId,
             },
@@ -470,6 +501,7 @@ export class Mailer {
     if (hasOwnEmail) {
       const smtpPass = decrypt(app.emailPassword!, argv.aesSecret);
       const mailer = new Mailer({
+        getSocket: getSSRFProtectedSocket,
         smtpFrom: from,
         smtpHost: app.emailHost,
         smtpPass,
@@ -510,7 +542,12 @@ export class Mailer {
     if (headers) {
       loggingMessage.push(`Headers: ${JSON.stringify(headers)}`);
     }
-    loggingMessage.push(`Subject: ${subject}`, '', text);
+    loggingMessage.push(`Subject: ${subject}`);
+    // The body can hold verification and password reset links and personal data. It is logged
+    // only without SMTP, where the log is how a developer reads the email.
+    if (!transport) {
+      loggingMessage.push('', text);
+    }
     logger.info(loggingMessage.join('\n'));
 
     if (attachments.length) {
@@ -559,11 +596,16 @@ export class Mailer {
         .compile()
         .build();
       if (argv.imapHost) {
-        await this.copyToSentFolder(message);
+        try {
+          await this.copyToSentFolder(message);
+        } catch (error) {
+          // Archiving is best effort: the email has already been sent.
+          logger.error('Failed to copy the email to the sent folder.');
+          logger.error(error);
+        }
       } else {
         logger.warn('IMAP hasn’t been configured. Not moving email to sent folder.');
       }
-      logger.info(String(message));
     }
   }
 

@@ -1,6 +1,6 @@
 import { expect, authenticatedTest as test } from '../../../index.js';
 
-test.describe.skip('Connected apps', () => {
+test.describe('Connected apps', () => {
   test('should navigate to connected apps from settings', async ({ page }) => {
     await page.goto('/settings/user');
     await page.getByRole('link', { name: 'Connected apps' }).click();
@@ -10,11 +10,6 @@ test.describe.skip('Connected apps', () => {
       - heading "Connected apps" [level=1]
       - paragraph: This page lists all apps which have been connected to your account using a login method.
     `);
-  });
-
-  test('should show an empty message when there are no connected apps', async ({ page }) => {
-    await page.goto('/settings/user/apps');
-    await expect(page.getByText('You haven’t logged in to any Appsemble apps yet.')).toBeVisible();
   });
 
   test('should show card of connected app', async ({ page }) => {

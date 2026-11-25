@@ -176,6 +176,27 @@ describe('verifyAppOAuth2SecretCode', () => {
     `);
   });
 
+  it('should refuse the code exchange while the client secret has no value', async () => {
+    await secret.update({ clientSecret: '' });
+    authorizeStudio();
+    const response = await request.post(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://test-app.testorganization.localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
+      { headers: { referer: 'http://localhost' } },
+    );
+
+    expect(response.data).toStrictEqual({
+      error: 'Service Unavailable',
+      message: 'OAuth2 secret is incomplete',
+      statusCode: 503,
+    });
+  });
+
   it('should trade the authorization code for an Appsemble authorization code', async () => {
     const accessToken = jwt.sign(
       {
@@ -609,7 +630,10 @@ describe('verifyAppOAuth2SecretCode', () => {
       { headers: { referer: 'http://localhost' } },
     );
 
-    expect(unmappedResponse.status).toBe(403);
+    expect(unmappedResponse).toMatchObject({
+      status: 403,
+      data: { data: { error: 'access_denied', error_description: 'noRoleMatch' } },
+    });
 
     await member?.reload();
     expect(member?.roles).toStrictEqual([]);
@@ -658,6 +682,10 @@ describe('verifyAppOAuth2SecretCode', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "data": {
+          "error": "access_denied",
+          "error_description": "noRoleMatch",
+        },
         "error": "Forbidden",
         "message": "User is not allowed to login because no external group matched an app role.",
         "statusCode": 403,

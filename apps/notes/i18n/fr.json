@@ -7,6 +7,7 @@
     "pages.notes": "Remarques"
   },
   "messageIds": {
+    "addNote": "Ajouter une note",
     "body": "Corps",
     "cancel": "Annuler",
     "configDelete": "Supprimer",

@@ -1,17 +1,27 @@
-import { readFile } from 'node:fs/promises';
-
-import { type App } from '@appsemble/types';
-
 import { expect, authenticatedTest as test } from '../../index.js';
+import pkg from '../../package.json' with { type: 'json' };
 
 let appId: number;
 
 test.describe('Individual app', () => {
   test.beforeAll(async ({ createApp, createOrganization, randomTestId }) => {
-    const { yaml } = JSON.parse(await readFile('mock-data/test-app-details.json', 'utf8')) as App;
     const organizationId = (await createOrganization({ id: randomTestId() })).id;
 
-    appId = (await createApp(organizationId, yaml!)).id!;
+    appId = (
+      await createApp(
+        organizationId,
+        `
+          name: test app
+          description: test app description
+          defaultPage: Page 1
+          pages:
+            - name: Page 1
+              blocks:
+                - type: data-loader
+                  version: ${pkg.version}
+        `,
+      )
+    ).id!;
   });
 
   test.afterAll(async ({ deleteApp }) => {

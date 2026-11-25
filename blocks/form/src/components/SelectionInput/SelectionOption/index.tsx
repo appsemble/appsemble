@@ -10,6 +10,8 @@ import { Header } from '../Header/index.js';
 import { Image } from '../Image/index.js';
 
 interface SelectionOptionProps {
+  readonly disabled?: boolean;
+  readonly inline?: boolean;
   readonly option: SelectionChoice;
   readonly onAdd: (id: number | string) => void;
   readonly onRemove: (id: number | string) => void;
@@ -18,6 +20,8 @@ interface SelectionOptionProps {
 }
 
 export function SelectionOption({
+  disabled,
+  inline = false,
   mayRemove = false,
   onAdd,
   onRemove,
@@ -27,6 +31,7 @@ export function SelectionOption({
   const { utils } = useBlock();
   const { id, image, imageInline } = option;
   const alignment = image?.alignment || 'default';
+  const label = (utils.remap(option.header, option) as string | undefined) ?? id;
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -91,12 +96,17 @@ export function SelectionOption({
       </div>
       <div className="is-flex is-flex-direction-column is-justify-content-end">
         <Button
-          aria-label={utils.formatMessage(
-            selected ? (mayRemove ? 'selectionRemove' : 'selectionSelected') : 'selectionAdd',
-            { option: (utils.remap(option.header, option) as string | undefined) ?? id },
-          )}
-          disabled={selected ? !mayRemove : undefined}
-          icon={selected ? (mayRemove ? 'xmark' : 'check') : 'plus'}
+          aria-label={
+            inline
+              ? String(label)
+              : utils.formatMessage(
+                  selected ? (mayRemove ? 'selectionRemove' : 'selectionSelected') : 'selectionAdd',
+                  { option: label },
+                )
+          }
+          aria-pressed={inline ? selected : undefined}
+          disabled={disabled || (selected ? !mayRemove : undefined)}
+          icon={selected ? (inline || !mayRemove ? 'check' : 'xmark') : 'plus'}
           onClick={onClick}
         />
       </div>

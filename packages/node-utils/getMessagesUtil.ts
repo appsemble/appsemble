@@ -55,7 +55,7 @@ export async function getMessagesUtil(
       Object.entries(appMsg).filter(([k]) => {
         const blockMatch = /^(pages\.[\dA-Za-z-]+(\..+)?)\.blocks\.\d+.+/.test(k);
         const emailMatch =
-          /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|welcome)\.(body|subject)/.test(
+          /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|totpReset|welcome)\.(body|subject)/.test(
             k,
           );
         if (blockMatch || emailMatch) {
@@ -71,8 +71,7 @@ export async function getMessagesUtil(
   const messages: AppsembleMessages = {
     core: Object.fromEntries(
       Object.entries(coreMessages).filter(
-        ([key]) =>
-          key.startsWith('app') || key.startsWith('react-components') || key.startsWith('server'),
+        ([key]) => key.startsWith('app') || key.startsWith('server'),
       ),
     ),
     blocks: {},

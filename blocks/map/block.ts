@@ -72,6 +72,11 @@ declare module '@appsemble/sdk' {
      * @default 'Couldn’t find your location. Are location services enabled?'
      */
     locationError: never;
+
+    /**
+     * The accessible name of a marker without a `markerLabel`.
+     */
+    marker: never;
   }
   interface Parameters {
     /**
@@ -83,6 +88,13 @@ declare module '@appsemble/sdk' {
      * The remapper used to retrieve the longitude.
      */
     longitude: Remapper;
+
+    /**
+     * The accessible name of a marker, remapped from the marker data.
+     *
+     * It is also shown as a tooltip when hovering the marker.
+     */
+    markerLabel?: Remapper;
 
     /**
      * The name of the latitude property in the resource.

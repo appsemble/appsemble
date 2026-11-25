@@ -2,7 +2,13 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, Organization, OrganizationMember, type User } from '../../../../../models/index.js';
+import {
+  App,
+  AppMessages,
+  Organization,
+  OrganizationMember,
+  type User,
+} from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
@@ -39,6 +45,34 @@ describe('queryCurrentUserApps', () => {
   afterAll(() => {
     vi.useRealTimers();
   });
+
+  it.each([PredefinedOrganizationRole.Member, PredefinedOrganizationRole.AppMemberManager])(
+    'should protect app translations in personal listings without query permission (%s)',
+    async (role) => {
+      await OrganizationMember.update({ role }, { where: { UserId: user.id } });
+      const app = await App.create({
+        path: 'protected',
+        definition: { name: 'Protected App', pages: [] },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        password: 'hash',
+      });
+      await AppMessages.create({
+        AppId: app.id,
+        language: 'nl',
+        messages: { messageIds: { secret: 'Private text' } },
+      });
+      authorizeStudio(user);
+
+      const response = await request.get('/api/users/current/apps?language=nl');
+
+      expect([response.status, response.data[0].messages?.messageIds]).toStrictEqual([
+        200,
+        role === PredefinedOrganizationRole.Member ? { secret: 'Private text' } : undefined,
+      ]);
+    },
+  );
 
   it('should be able to fetch filtered apps', async () => {
     await App.create(

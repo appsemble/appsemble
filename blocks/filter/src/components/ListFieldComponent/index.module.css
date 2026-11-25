@@ -10,7 +10,7 @@
 }
 
 .button em {
-  color: hsl(0deg 0% 50%);
+  color: var(--appsemble-placeholder-color, hsl(0deg 0% 45%));
 }
 
 .chips {

@@ -18,6 +18,7 @@ window.settings = {
   apiUrl: 'https://appsemble.app',
   appControllerCode: '',
   appControllerImplementations: {},
+  assetIds: {},
   blockManifests: [],
   pageManifests: {},
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
@@ -55,3 +56,16 @@ window.matchMedia = (query) => {
     dispatchEvent: () => false,
   };
 };
+
+// Jsdom implements no user activation. Tests start like a page the user hasn't interacted with, and
+// mock `hasBeenActive` to simulate interaction.
+Object.defineProperty(navigator, 'userActivation', {
+  value: {
+    get hasBeenActive() {
+      return false;
+    },
+    get isActive() {
+      return false;
+    },
+  },
+});

@@ -1,4 +1,3 @@
-import { type TrainingChapter } from '@appsemble/types';
 import '@xyflow/react/dist/style.css';
 import { type ReactNode, useMemo, useState } from 'react';
 import { type Edge, type Node, ReactFlow } from 'reactflow';
@@ -8,6 +7,7 @@ import { LoginBanner } from './LoginBanner/index.js';
 import { chapterEdges, chapterNodes } from './nodePositions.js';
 import { TrainingModuleNode } from './TrainingModuleNode/index.js';
 import { useUser } from '../UserProvider/index.js';
+import { type TrainingChapter } from '../../types.js';
 
 interface TrainingTreeProps {
   readonly chapters: TrainingChapter[];

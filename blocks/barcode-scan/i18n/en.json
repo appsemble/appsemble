@@ -3,8 +3,10 @@
   "empty": "There is no data to display",
   "error": "There was a problem loading the data.",
   "loading": "Loading…",
+  "noImage": "No image selected",
   "patchSize": "Patch size",
   "removeImage": "Remove image",
+  "selectedImage": "Selected image",
   "selectImage": "Select an image to scan",
   "stopScanning": "Stop scanning"
 }

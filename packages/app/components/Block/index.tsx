@@ -7,19 +7,18 @@ import {
   type PageDefinition,
   type Remapper,
 } from '@appsemble/lang-sdk';
-import {
-  Title,
-  trackShadowModalDialogs,
-  useIsInModalDialog,
-  useMessages,
-} from '@appsemble/react-components';
 import { type BlockUtils } from '@appsemble/sdk';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
-import { createIconElement, fa, resolveIcon } from '@appsemble/web-utils';
+import { createIconElement, fa, getIconAsset, resolveIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { createPortal } from 'preact/compat';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useLocation } from 'wouter-preact';
+import { useHistoryState } from 'wouter-preact/use-browser-location';
+import { useMessages } from '../MessagesProvider/index.js';
+import { trackShadowModalDialogs, useIsInModalDialog } from '../ModalCard/useModalDialog.js';
+import { Title } from '../Title/index.js';
 
 import styles from './index.module.css';
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
@@ -28,8 +27,10 @@ import { callBootstrap, getBlockFileURL } from '../../utils/bootstrapper.js';
 import { createEvents } from '../../utils/events.js';
 import { injectCSS } from '../../utils/injectCSS.js';
 import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
-import { apiUrl, appId, appUpdated } from '../../utils/settings.js';
+import { apiUrl, appId, appUpdated, assetIds, passwordToken } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
+import { useQuery } from '../../utils/useQuery.js';
+import { useRouteParams } from '../../utils/useRouteParams.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
@@ -69,6 +70,14 @@ interface BlockProps {
   readonly pageReady: Promise<void>;
   readonly prefix: string;
   readonly prefixIndex: string;
+
+  /**
+   * The signal that stops the action chains of the block, instead of its own unmount.
+   *
+   * The blocks in a dialog take the signal of the actions that open it, so closing the dialog
+   * doesn't stop the chain that closes it.
+   */
+  readonly signal?: AbortSignal;
 }
 
 const MOBILE_BREAKPOINT = 768;
@@ -94,16 +103,18 @@ export function Block({
   remap,
   showDialog,
   showShareDialog,
-}: BlockProps): ReactNode {
-  const navigate = useNavigate();
-  const params = useParams();
-  const location = useLocation();
+  signal,
+}: BlockProps): VNode | null {
+  const [, navigate] = useLocation();
+  const params = useRouteParams();
+  const query = useQuery();
+  const historyState = useHistoryState();
   const pageParameters = useMemo(
     () => ({
       ...params,
-      query: Object.fromEntries(new URLSearchParams(location.search)),
+      query: Object.fromEntries(query),
     }),
-    [location.search, params],
+    [query, params],
   );
   const push = useMessages();
   const { blockManifests, definition: appDefinition } = useAppDefinition();
@@ -130,6 +141,7 @@ export function Block({
     abortController.current = new AbortController();
   }
   const [initialized, setInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error>();
   const pushNotifications = useServiceWorkerRegistration();
   const isInModalDialog = useIsInModalDialog();
@@ -182,7 +194,7 @@ export function Block({
       getAppMessage,
       getAppVariable: getVariable,
       appStorage,
-      signal: abortController.current?.signal,
+      signal: signal ?? abortController.current?.signal,
       // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
       actions: manifest.actions,
       appDefinition,
@@ -217,7 +229,6 @@ export function Block({
           `appsemble-group-${appId}-appMemberSelectedGroup`,
           JSON.stringify(selectedGroup),
         );
-        navigate(0);
         return selectedGroup;
       },
       getAppMemberSelectedGroup: () => appMemberSelectedGroup,
@@ -238,7 +249,7 @@ export function Block({
         cleanups.current.push(fn);
       },
       asset(id) {
-        return `${apiUrl}/api/apps/${appId}/assets/${id}`;
+        return `${apiUrl}/api/apps/${appId}/assets/${id}${passwordToken ? `?passwordToken=${passwordToken}` : ''}`;
       },
       formatMessage(message, args = {}) {
         return getBlockMessage(blockName, block.version, { id: String(message) }, prefix).format(
@@ -247,7 +258,9 @@ export function Block({
       },
       fa,
       resolveIcon(reference) {
-        return resolveIcon(reference, appDefinition.icons, utils.asset);
+        return resolveIcon(reference, appDefinition.icons, (asset) =>
+          getIconAsset(apiUrl, appId, asset, assetIds, passwordToken),
+        );
       },
       icon(reference, options) {
         return createIconElement(utils.resolveIcon(reference), options);
@@ -266,6 +279,11 @@ export function Block({
 
     (async () => {
       if (shadowRoot) {
+        // The reduced motion rule of the app stylesheet doesn't reach into the shadow root.
+        const reducedMotionStyle = document.createElement('style');
+        reducedMotionStyle.textContent =
+          '@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; } }';
+        shadowRoot.append(reducedMotionStyle);
         await Promise.all(
           [
             bulmaUrl,
@@ -288,7 +306,7 @@ export function Block({
       await callBootstrap(manifest, {
         actions,
         parameters: block.parameters || {},
-        data: data || location.state,
+        data: data || historyState,
         events,
         pageParameters,
         theme,
@@ -298,6 +316,7 @@ export function Block({
         pathIndex: prefixIndex,
       });
 
+      setIsLoading(false);
       ready(block);
     })().catch(setError);
   }, [
@@ -310,9 +329,9 @@ export function Block({
     extraCreators,
     flowActions,
     getBlockMessage,
+    historyState,
     navigate,
     initialized,
-    location,
     manifest,
     pageDefinition,
     pageReady,
@@ -329,6 +348,7 @@ export function Block({
     setBlockMenu,
     showDialog,
     showShareDialog,
+    signal,
     getAppMessage,
     refetchDemoAppMembers,
     getVariable,
@@ -372,6 +392,7 @@ export function Block({
 
       const float = (
         <div
+          aria-busy={isLoading}
           className={classNames(`is-flex ${styles.root} ${styles.float}`, {
             [styles.top]: position.includes('top'),
             [styles.bottom]: position.includes('bottom'),
@@ -381,6 +402,7 @@ export function Block({
             [styles.hasBottomNav]: navigation === 'bottom',
           })}
           data-block={blockName}
+          data-block-name={block.name}
           data-path={prefix}
           data-path-index={prefixIndex}
         >
@@ -397,8 +419,10 @@ export function Block({
 
     return (
       <div
+        aria-busy={isLoading}
         className={`is-flex ${styles.root} ${layout === 'grow' ? styles.grow : styles.static}`}
         data-block={blockName}
+        data-block-name={block.name}
         data-path={prefix}
         data-path-index={prefixIndex}
         // eslint-disable-next-line react/forbid-dom-props

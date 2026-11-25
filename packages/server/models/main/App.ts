@@ -95,6 +95,12 @@ export class App extends Model {
   @Column(DataType.BOOLEAN)
   declare showAppDefinition: boolean;
 
+  /**
+   * The bcrypt hash of the password visitors must enter to open the app.
+   */
+  @Column(DataType.STRING)
+  declare password?: string | null;
+
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
@@ -251,6 +257,10 @@ export class App extends Model {
 
   @Column(DataType.BLOB)
   declare dbPassword: Buffer;
+
+  @Index({ name: 'App_s3Bucket_key', unique: true })
+  @Column(DataType.STRING)
+  declare s3Bucket: string;
 
   @UpdatedAt
   declare updated: Date;
@@ -469,6 +479,7 @@ export class App extends Model {
         ? undefined
         : this.AppSnapshots?.[0]?.yaml || stringify(this.definition),
       showAppDefinition: this.showAppDefinition,
+      passwordProtected: this.password ? true : undefined,
       sentryDsn: this.sentryDsn,
       sentryEnvironment: this.sentryEnvironment,
       showAppsembleLogin: this.showAppsembleLogin ?? false,

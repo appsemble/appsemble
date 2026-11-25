@@ -9,6 +9,51 @@ describe('replaceAssetFunctions', () => {
     expect(result).toBe("a{background:url('http://localhost/api/apps/42/assets/hero-bg')}");
   });
 
+  it('should authorize app asset URLs without leaking the token to other hosts', () => {
+    const css =
+      "@import 'http://localhost/api/apps/42/assets/theme?passwordToken=old#theme';a{--image:url('/api/apps/42/assets/hero-bg?width=10&passwordToken=old#photo');background:asset('logo')}b{background:url('https://example.com/image')}";
+
+    expect(replaceAssetFunctions(css, 42, 'http://localhost', 'current')).toBe(
+      "@import 'http://localhost/api/apps/42/assets/theme?passwordToken=current#theme';a{--image:url('http://localhost/api/apps/42/assets/hero-bg?width=10&passwordToken=current#photo');background:url('http://localhost/api/apps/42/assets/logo?passwordToken=current')}b{background:url('https://example.com/image')}",
+    );
+  });
+
+  it('should remove access tokens when storing app styles', () => {
+    expect(
+      replaceAssetFunctions(
+        "a{background:url('http://localhost/api/apps/42/assets/logo?width=10&passwordToken=secret#photo')}",
+        42,
+        'http://localhost',
+      ),
+    ).toBe("a{background:url('http://localhost/api/apps/42/assets/logo?width=10#photo')}");
+  });
+
+  it('should authorize same-origin protocol relative URLs and image sets', () => {
+    expect(
+      replaceAssetFunctions(
+        "a{background:image-set('//localhost/api/apps/42/assets/logo' 1x, 'https://example.com/image' 2x)}b{background:url('//example.com/api/apps/42/assets/logo')}c{background:url('//localhost:bad/image')}",
+        42,
+        'http://localhost',
+        'current',
+      ),
+    ).toBe(
+      "a{background:image-set('http://localhost/api/apps/42/assets/logo?passwordToken=current' 1x, 'https://example.com/image' 2x)}b{background:url('//example.com/api/apps/42/assets/logo')}c{background:url('//localhost:bad/image')}",
+    );
+  });
+
+  it('should authorize mixed URL and string sources in an image set', () => {
+    expect(
+      replaceAssetFunctions(
+        "a{background:image-set(url('/api/apps/42/assets/first') 1x, '/api/apps/42/assets/second' 2x)}",
+        42,
+        'http://localhost',
+        'current',
+      ),
+    ).toBe(
+      "a{background:image-set(url('http://localhost/api/apps/42/assets/first?passwordToken=current') 1x, 'http://localhost/api/apps/42/assets/second?passwordToken=current' 2x)}",
+    );
+  });
+
   it('should resolve asset utility URLs surrounded by whitespace', () => {
     const result = replaceAssetFunctions(
       "a{background:asset( 'hero-bg' )}",

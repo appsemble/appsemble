@@ -96,6 +96,82 @@ helm repo update
 helm install my-appsemble appsemble/appsemble --set 'ingress.host=my-appsemble.example.com'
 ```
 
+### Provisioning
+
+`provision` creates or updates an organization with a Maintainer service account, for example to
+deploy apps from CI, after each install and upgrade. `user` adds a password account to the
+organization, such as its first Owner; leave it out when people sign in through
+[organization single sign-on](#organization-single-sign-on).
+
+```yaml
+provision:
+  existingSecret: appsemble-provision
+  organization:
+    id: example
+    subscription: enterprise
+  user:
+    email: owner@example.com
+    name: Owner
+    organizationRole: Owner
+    timezone: Europe/Amsterdam
+```
+
+The Secret holds the service account's client credentials as `<id>:<secret>` and the optional user's
+password. To rotate the credentials, keep the client ID, change the client secret, and run a Helm
+upgrade or a full Argo CD sync. To replace the client ID, provision the new account and revoke the
+old account after its clients switch over.
+
+```sh
+kubectl create secret generic appsemble-provision \
+  --from-literal "client-credentials=$(openssl rand -hex 16):$(openssl rand -hex 32)" \
+  --from-literal "user-password=$(openssl rand -base64 30)"
+```
+
+### Organization single sign-on
+
+Organization Owners manage Studio single sign-on in their organization's settings, using an issuer
+listed in `organizationSsoIssuers`. Operators can manage the same configuration, with any issuer,
+through `organizationSso`:
+
+```yaml
+organizationSso:
+  example:
+    issuer: https://identity.example.com/realms/staff
+    clientId: appsemble-studio
+    clientSecretRef:
+      name: studio-sso
+      key: client-secret
+    name: Staff sign-in
+    scope: openid email profile
+    groupClaim: groups
+    policy: required-with-guests
+    allowedLoginMethods: [oidc, google, gitlab]
+    roleMappings:
+      - group: /appsemble/owners
+        role: Owner
+      - group: /appsemble/maintainers
+        role: Maintainer
+```
+
+The organization must exist. The provider's redirect URI is `https://<studio-host>/callback`. The
+chart reads the client secret from the referenced Kubernetes Secret and applies the configuration
+after migrations. Declared settings are read-only in Studio. Removing an organization from
+`organizationSso` deletes its group-managed memberships and ends its sessions through the provider;
+manual and guest memberships remain. Studio-managed SSO settings are unaffected.
+
+Studio organization SSO requires Valkey for connection verification and serialized provider
+renewals.
+
+Deployment-managed SSO uses installation-operator authority. Operators verify the provider
+connection and Owner mapping in a test environment and recover access through GitOps.
+
+`optional` permits the configured ordinary login methods, `required` requires the organization's SSO
+provider, and `required-with-guests` permits explicitly invited external guests to use the
+configured ordinary methods. `allowedLoginMethods` takes `password`, `github`, `gitlab`, `google`
+and `oidc`, the organization's own provider, and defaults to all of them. Group values match
+exactly, and permissions from multiple mapped roles combine across the organization. Staff without a
+matching group have no organization access.
+
 ### Upgrading
 
 ```sh
@@ -130,6 +206,57 @@ deleted, and writes the records of all organizations in the `reconcile-dns` job.
 Restrict the token to the records Appsemble manages. For deSEC, give it token policies which allow
 writing `A` and `AAAA` record sets in `dns.zone` and nothing else, so it cannot touch the
 `_acme-challenge` records of cert-manager or the records of custom domains in the same zone.
+
+### App host names
+
+Apps are served on `<app>.<organization>.ingress.host` by default. Where the network cannot route
+those wildcard host names, for example because a proxy in front of the cluster forwards only host
+names it knows, give each app a host name of its own in the _Domain name_ app setting, as described
+in the [DNS guide](https://appsemble.app/docs/guides/dns). Pick names the network already serves,
+outside `ingress.host`, because Appsemble reads the host names below `ingress.host` as organizations
+and apps. Create a DNS record for each name:
+
+| App      | Domain name               | DNS record                            |
+| -------- | ------------------------- | ------------------------------------- |
+| `survey` | `survey.apps.example.com` | `CNAME` to `my-appsemble.example.com` |
+| `intake` | `intake.apps.example.com` | `CNAME` to `my-appsemble.example.com` |
+
+Appsemble creates an Ingress for each domain name with the `ingress.annotations` and the
+cert-manager issuer of `ingress.clusterIssuer` or `ingress.issuer`. Its certificate covers a single
+host, so an ACME issuer can validate it with HTTP01. For an app with its own certificate in its SSL
+secrets, Appsemble writes that certificate to the TLS secret of the Ingress and sets no issuer.
+
+## OpenShift
+
+The OpenShift router serves an Ingress by generating a Route for each of its hosts. A host with a
+TLS secret gets an `edge` Route which serves the certificate in that secret and redirects HTTP to
+HTTPS. Expose Appsemble through the Ingress with certificates from cert-manager, and leave the chart
+Route disabled:
+
+```yaml
+ingress:
+  className: openshift-default
+  host: my-appsemble.example.com
+  tls: true
+  tlsSecretName: appsemble-tls
+  tlsWildcardSecretName: appsemble-tls-wildcard
+  clusterIssuer: my-cluster-issuer
+route:
+  enabled: false
+```
+
+cert-manager issues a certificate for `ingress.host` into `ingress.tlsSecretName` and one for
+`*.ingress.host` into `ingress.tlsWildcardSecretName`, like it does for the Ingress of every
+organization. The issuer must be able to sign wildcard hosts, which takes a DNS01 solver for an ACME
+issuer, and the IngressController must admit wildcard Routes
+(`routeAdmission.wildcardPolicy: WildcardsAllowed`). The Ingress of an
+[app host name](#app-host-names) serves a single host, so it needs neither, and the router generates
+its Route once its TLS secret exists.
+
+The Routes of `route.enabled` terminate TLS with the default certificate of the router. OpenShift
+generates no Route for an Ingress host whose TLS secret does not exist. On an installation which
+runs on the chart Route, set the `ingress` values first and set `route.enabled` to `false` once both
+Certificates are ready.
 
 ## Migrations
 
@@ -206,17 +333,14 @@ new. New pods will be created one at a time, to avoid downtime.
 
 ## PgBouncer (connection pooling)
 
-Set `pgbouncer.enabled=true` to route database traffic through PgBouncer. This requires a userlist
-secret (default name `pgbouncer-userlist`) containing a `userlist.txt` key with the database
-credentials in PgBouncer's auth file format:
+Set `pgbouncer.enabled=true` to route database traffic through PgBouncer. PgBouncer uses the
+credentials of the server: `postgresql.auth.username` and the password in
+`postgresql.auth.existingSecret`. Each PgBouncer pod reads them when it starts, so after changing
+the password, restart both the server and PgBouncer:
 
 ```sh
-printf '"%s" "%s"\n' "appsemble" "$POSTGRES_PASSWORD" > userlist.txt
-kubectl create secret generic pgbouncer-userlist --from-file=userlist.txt
+kubectl rollout restart deployment my-appsemble my-appsemble-pgbouncer
 ```
-
-The secret must exist before enabling PgBouncer, otherwise the PgBouncer pod cannot start and the
-database becomes unreachable.
 
 Transaction pooling is the default when PgBouncer is enabled. `pgbouncer.maxUserConnections` limits
 server connections per database user across all database pools. The default of `80` is sized for
@@ -264,6 +388,69 @@ serve a certificate of your own instead.
 The `secure` protocol shortcut allows TLS 1.2 and TLS 1.3. Set `postgresSSL: false` for a PostgreSQL
 server without TLS, otherwise startup fails with a TLS-not-supported error.
 
+## Connections to private addresses
+
+App developers decide where the server connects on behalf of their apps: request actions, OAuth2 and
+OpenID Connect logins, client credentials token requests, SAML metadata, app SMTP servers, push
+notification endpoints and email attachment links. The server refuses these connections when the
+host resolves to a private, loopback or link-local address. This keeps an app definition from
+reaching what runs next to Appsemble, such as the Kubernetes API, PostgreSQL, Valkey, object storage
+or a cloud metadata endpoint.
+
+An installation needs an exception when its apps call services on the internal network, for example
+an internal API or an OAuth2 or OpenID Connect provider such as Keycloak that runs in the cluster.
+List those hosts in `ssrfAllowIpAddressList`:
+
+```yaml
+ssrfAllowIpAddressList:
+  - keycloak.example.internal # The internal Keycloak service
+  - 192.168.10.25 # An internal API that apps call
+```
+
+Each entry is a single IP address, a CIDR range or a host name. A host name matches the host of the
+URL exactly, ignoring case, so `keycloak.example.internal` does not allow `api.example.internal`.
+The server connects to a listed host name whatever private address it resolves to. Each redirect is
+checked against its own host, so a listed host cannot redirect a request to a private address that
+is not listed. The chart joins the entries with commas into the `SSRF_ALLOW_IP_ADDRESS_LIST`
+environment variable of the server deployment and of the `run-cronjobs` cron job, which runs app
+cron jobs. The variable is not set when the list is empty, which is the default.
+
+Allow only the specific hosts an app needs. Allowing a whole private range such as `10.0.0.0/8`
+opens every service in that range to every app developer on the installation.
+
+## Private certificate authorities
+
+The server trusts the certificate authorities bundled with Node.js. When services such as object
+storage, an SMTP server or an OpenID Connect provider present certificates of a private certificate
+authority, name a ConfigMap which holds its PEM certificates in `trustedCaBundle.configMap`. The
+server and every Job and CronJob that runs the Appsemble image mount the key `trustedCaBundle.key`
+and trust its certificates in addition to the bundled ones.
+
+```sh
+kubectl create configmap trusted-ca-bundle --from-file ca-bundle.crt=my-ca.crt
+```
+
+```yaml
+trustedCaBundle:
+  configMap: trusted-ca-bundle
+```
+
+On OpenShift, the cluster writes its trusted CA bundle, which includes the certificate authorities
+of the cluster proxy configuration, to the key `ca-bundle.crt` of a ConfigMap with this label:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trusted-ca-bundle
+  labels:
+    config.openshift.io/inject-trusted-cabundle: 'true'
+```
+
+Node.js reads one extra file of certificates, so the bundle takes the place of the
+[Mailpit](#mailpit) certificate. Add that certificate to the bundle when apps send email through the
+bundled Mailpit.
+
 ## Health checks
 
 The server serves three operational endpoints on every hostname, following the
@@ -280,17 +467,23 @@ readiness. `/api/health` is a deprecated alias of `/health/ready`.
 
 ## Valkey
 
-The chart deploys one Valkey pod by default. Valkey holds only the app-serving cache (with a default
-`appServingCacheTtl` of 300 seconds) and the sliding-window counters for e-mail registration rate
-limits. It holds no sessions or queues. If Valkey restarts, the cache and counters reset; the server
-keeps serving requests and reconnects when Valkey returns. Cache operations fail fast during the
-outage, and registration requests proceed without the rate limit.
+The chart deploys one Valkey pod by default. Valkey holds the app-serving cache (with a default
+`appServingCacheTtl` of 300 seconds) and the sliding-window counters for e-mail registration and app
+password rate limits. It holds no sessions or queues. If Valkey restarts, the cache and counters
+reset; the server keeps serving requests and reconnects when Valkey returns. Cache operations fail
+fast during the outage, and registration requests and password attempts proceed without rate limits.
 
 The bundled Valkey has no persistent volume because its data is disposable. It has no replicas: the
 dependency chart does not promote a replica when the primary fails, so replicas would not keep the
 server's single-writer endpoint available. The bundled setup uses the `valkey` secret created above.
 `valkey.auth.usersExistingSecret` names that secret, and `valkey.auth.aclUsers.default.passwordKey`
 selects its `password` key.
+
+On OpenShift, install the chart with its `values-openshift.yaml` file. The `restricted-v2` security
+context constraint assigns the user and group IDs of the namespace to each pod and rejects a pod
+which sets its own, so the file unsets the fixed IDs of the bundled Valkey. With ArgoCD, list the
+file in `helm.valueFiles` of the chart source. With Helm, pass it with `--values` from the unpacked
+chart (`helm pull --untar`).
 
 To use a platform-managed Valkey or Redis service, create a password secret and set
 `valkey.enabled=false` with `externalValkey` connection settings:
@@ -315,6 +508,30 @@ externalValkey:
 The chart reads `externalValkey.passwordKey` from `externalValkey.existingSecret` in the release
 namespace. Set `host`, `port`, `username` and `tls` to match the external service. The chart does
 not deploy a bundled Valkey pod when `valkey.enabled=false`.
+
+## Mailpit
+
+The chart bundles [Mailpit](https://mailpit.axllent.org), an SMTP server that captures mail instead
+of delivering it. Its web interface is served at `mailpit.<ingress.host>`. Set `mailpit.enabled` to
+`false` to leave it out.
+
+The bundled Mailpit reads its SMTP and web interface logins from two htpasswd secrets and serves
+SMTP with a TLS certificate for its service name, `<release name>-mailpit-smtp`:
+
+```sh
+htpasswd -nbB my-smtp-user my-smtp-pass > smtp.htpasswd
+htpasswd -nbB my-ui-user my-ui-pass > ui.htpasswd
+kubectl create secret generic mailpit-smtp --from-file smtp.htpasswd
+kubectl create secret generic mailpit-ui --from-file ui.htpasswd
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt \
+  -subj '/CN=appsemble-mailpit-smtp' -addext 'subjectAltName=DNS:appsemble-mailpit-smtp'
+kubectl create secret tls mailpit-tls --cert mailpit.crt --key mailpit.key
+```
+
+Name the TLS secret in `mailpit.mailpit.smtp.tls.secretName`. The chart does not render without it
+while Mailpit is enabled. The Appsemble server trusts the certificate in that secret, unless it
+trusts a [private certificate authority](#private-certificate-authorities) instead.
 
 ## Object storage
 
@@ -358,6 +575,12 @@ production.
 The single bucket suits providers that limit the number of buckets, credentials that cannot create
 buckets, and buckets claimed through Kubernetes. `blockAssets.publicUrl` serves block assets from
 `<publicUrl>/<bucket>/<key>` in both layouts.
+
+In either layout, an app published with `appsemble app publish --s3-bucket <name>` keeps its assets
+in that pre-provisioned bucket, key `<assetId>`. The name must start with `s3.appBucketPrefix`, and
+no two apps can share a bucket; when the prefix is empty, apps cannot name their own bucket. The
+server never creates such a bucket, and the chart's asset backups leave it out: its owner provisions
+and backs it up. Changing the bucket later does not move existing assets.
 
 ### Provisioning the bucket
 
@@ -465,6 +688,29 @@ otherwise drop requests still being routed to it:
 With `replicaCount` above 1, a PodDisruptionBudget of `minAvailable: 1` is rendered as well, so a
 node drain or other voluntary disruption cannot evict every replica at once.
 
+## Synchronizing blocks
+
+When an app uses a block version that this server lacks, the server copies it from `remote` while
+the app is published, and creates the block's organization by its id if needed. This covers every
+block version that apps use, so a release needs no manual `appsemble block publish`. Set
+`remote: null` to use only blocks published on this server.
+
+`syncOrganizationBlocks` copies blocks before any app uses them, so Studio lists them. Each entry
+names an organization and the block version to copy, because organizations release their blocks
+independently and a block does not record which Appsemble version it needs:
+
+```yaml
+syncOrganizationBlocks:
+  - organization: appsemble
+    version: server # The Appsemble version of the image
+  - organization: acme
+    version: latest # The latest version of each block, or an explicit version such as 1.4.2
+```
+
+A block that the remote does not have in the requested version is skipped with a warning, and a
+later upgrade copies it once the remote has it. The copy runs as a hook Job after each install and
+upgrade; it needs network access to `remote`, and the install or upgrade fails when it fails.
+
 ## Variables
 
 | Name                                        | Default                        | Description                                                                                                                               |
@@ -486,6 +732,8 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `ingress.tls`                               | `false`                        | Whether TLS should be configured for the top-level and wildcard hosts.                                                                    |
 | `ingress.tlsSecretName`                     | `''`                           | The secret name to use to configure TLS for the top level host.                                                                           |
 | `ingress.tlsWildcardSecretName`             | `''`                           | The secret name to use to configure TLS for the direct wildcard host.                                                                     |
+| `ingress.issuer`                            |                                | The cert-manager issuer which issues the certificates of the Appsemble and organization ingresses.                                        |
+| `ingress.clusterIssuer`                     |                                | The cert-manager cluster issuer which issues the certificates of the Appsemble and organization ingresses.                                |
 | `dns.provider`                              | `''`                           | The provider which serves the DNS zone of the organization host names. The only supported value is `desec`.                               |
 | `dns.zone`                                  | `''`                           | The name of the DNS zone which contains the organization host names.                                                                      |
 | `dns.secret`                                | `''`                           | The name of the secret which holds the API token of the DNS provider under the key `dns-token`.                                           |
@@ -514,8 +762,12 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `nodeSelector`                              | `{}`                           |                                                                                                                                           |
 | `tolerations`                               | `[]`                           |                                                                                                                                           |
 | `affinity`                                  | `{}`                           |                                                                                                                                           |
+| `hostAliases`                               | `[]`                           | Extra hosts file entries for the pods that send email, such as an SMTP relay reached under its certificate name.                          |
 | `smtpSecret`                                | `smtp`                         | The secret to use for configuring SMTP. The secret should contain the following values: `host`, `port`, `secure`, `user`, `pass`, `from`. |
 | `oauthSecret`                               | `nil`                          | The secret which holds client ids and client secrets for OAuth2 providers.                                                                |
+| `organizationSso`                           | `{}`                           | Deployment-managed organization SSO settings and Kubernetes client-secret references.                                                     |
+| `organizationSsoIssuers`                    | `[]`                           | OpenID Connect issuers which organization Owners may configure for single sign-on in Studio.                                              |
+| `provision`                                 | `nil`                          | The organization, service account and user to provision. See [Provisioning](#provisioning).                                               |
 | `sentry.allowedDomains`                     | `[]`                           | A list of domains on which Sentry integration will be enabled. Wildcards are supported.                                                   |
 | `sentry.secret`                             | `nil`                          | The secret from which to read the [Sentry] DSN.                                                                                           |
 | `sentry.environment`                        | `nil`                          | The environment to send with Sentry error reports.                                                                                        |
@@ -532,10 +784,9 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `postgresql.auth.existingSecret`            | `appsemble-postgresql-app`     | The secret from which to read the PostgreSQL password, under the key `postgresql.auth.secretKeys.userPasswordKey` (`password`).           |
 | `postgresql.auth.username`                  | `appsemble`                    | The name of the PostgreSQL user.                                                                                                          |
 | `postgresql.auth.database`                  | `appsemble`                    | The name of the PostgreSQL database.                                                                                                      |
-| `pgbouncer.enabled`                         | `false`                        | Whether to deploy PgBouncer between Appsemble and PostgreSQL. Requires the `pgbouncer.auth.existingSecret` userlist secret to exist.      |
+| `pgbouncer.enabled`                         | `false`                        | Whether to deploy PgBouncer between Appsemble and PostgreSQL.                                                                             |
 | `pgbouncer.replicaCount`                    | `1`                            | The number of PgBouncer replicas. Above 1, a PodDisruptionBudget keeps one available.                                                     |
-| `pgbouncer.image.tag`                       | `v1.25.2-p0`                   | PgBouncer image tag.                                                                                                                      |
-| `pgbouncer.auth.existingSecret`             | `pgbouncer-userlist`           | The secret from which to read the PgBouncer userlist file.                                                                                |
+| `pgbouncer.image.tag`                       | `1.26.1-202611121015-trixie`   | PgBouncer image tag.                                                                                                                      |
 | `pgbouncer.auth.type`                       | `scram-sha-256`                | The PgBouncer client authentication method.                                                                                               |
 | `pgbouncer.tls.autoGenerated`               | `true`                         | Generate a self-signed PgBouncer service certificate when no existing TLS secret is configured.                                           |
 | `pgbouncer.tls.existingSecret`              | `''`                           | The Kubernetes TLS secret PgBouncer uses for client-facing TLS. Required if auto-generation is disabled and `postgresSSL=true`.           |
@@ -560,8 +811,15 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `externalValkey.tls`                        | `false`                        | Whether to use TLS for the external Valkey connection.                                                                                    |
 | `externalValkey.existingSecret`             | `null`                         | The secret from which to read the external Valkey password. Required when `valkey.enabled=false`.                                         |
 | `externalValkey.passwordKey`                | `password`                     | The key in `externalValkey.existingSecret` containing the Valkey password.                                                                |
-| `remote`                                    | `null`                         | A remote Appsemble server to connect to in order to synchronize blocks.                                                                   |
+| `remote`                                    | `https://appsemble.app`        | The server to copy a block version from when an app uses one this server lacks. `null` disables it.                                       |
+| `syncOrganizationBlocks`                    | `[]`                           | The organizations whose blocks are synchronized from `remote` on install and upgrade. See [Synchronizing blocks](#synchronizing-blocks).  |
 | `securityEmail`                             | `security@appsemble.com`       | The default security contact email for reporting security vulnerabilities.                                                                |
+| `verbosity`                                 | `0`                            | Log levels above `info`: 1 for `verbose`, 2 for `silly`. From `verbose` on, logs include sent emails with their links.                    |
+| `rejectBreachedPasswords`                   | `false`                        | If `true`, reject new passwords that appear in the Have I Been Pwned Pwned Passwords data set.                                            |
+| `ssrfAllowIpAddressList`                    | `[]`                           | Private IPs, CIDRs or host names apps may connect to. See [Connections to private addresses](#connections-to-private-addresses).          |
+| `trustedCaBundle.configMap`                 | `''`                           | A ConfigMap with PEM certificates to trust. See [Private certificate authorities](#private-certificate-authorities).                      |
+| `trustedCaBundle.key`                       | `ca-bundle.crt`                | The key in `trustedCaBundle.configMap` which holds the certificates.                                                                      |
+| `disableRegistration`                       | `false`                        | If `true`, disable registration with email and password. Without a Studio login provider (`oauthSecret`) nobody new can get an account.   |
 | `postgresSSL`                               | `true`                         | If `true`, establish the database connection over TLS. When PgBouncer is enabled, both DB hops use TLS.                                   |
 | `quotas.appEmail.enabled`                   | `false`                        | If `true`, enable app email quotas.                                                                                                       |
 | `quotas.appEmail.dailyLimit`                | `10`                           | The maximum number of emails an app can send per day.                                                                                     |
@@ -574,6 +832,8 @@ node drain or other voluntary disruption cannot evict every replica at once.
 | `blockAssets.publicUrl`                     | `''`                           | The public base URL of the object storage. When set, block assets are served from `<publicUrl>/<bucket>/<key>` instead of the API.        |
 | `blockAssets.migration.enabled`             | `true`                         | Run the job that moves database-stored block assets to object storage after each install and upgrade.                                     |
 | `blockAssets.migration.batch`               | `100`                          | The number of block assets that job migrates per database batch.                                                                          |
+| `mailpit.enabled`                           | `true`                         | Set this to false explicitly to leave out the bundled Mailpit and its `mailpit.<ingress.host>` ingress rule.                              |
+| `mailpit.mailpit.smtp.tls.secretName`       | `''`                           | The `kubernetes.io/tls` secret the bundled Mailpit serves SMTP with. Required while `mailpit.enabled` is true. See [Mailpit](#mailpit).   |
 | `seaweedfs`                                 |                                | Values passed into the bundled SeaweedFS dependency chart.                                                                                |
 | `seaweedfs.enabled`                         | `true`                         | Set this to false explicitly to bring your own S3 compatible object storage.                                                              |
 | `seaweedfs.fullnameOverride`                | `appsemble-seaweedfs`          | The name used for the bundled SeaweedFS service.                                                                                          |

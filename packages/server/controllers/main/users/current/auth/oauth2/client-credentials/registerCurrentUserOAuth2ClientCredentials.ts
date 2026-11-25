@@ -1,11 +1,10 @@
-import { randomBytes } from 'node:crypto';
-
-import { throwKoaError } from '@appsemble/node-utils';
-import { hash } from 'bcrypt';
+import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { isPast, parseISO } from 'date-fns';
 import { type Context } from 'koa';
 
-import { OAuth2ClientCredentials } from '../../../../../../../models/index.js';
+import { OrganizationSso, OrganizationSsoSession } from '../../../../../../../models/index.js';
+import { createOAuth2ClientCredentials } from '../../../../../../../utils/oauth2.js';
+import { startOrganizationSsoAuthorization } from '../../../../../../../utils/organizationOidc.js';
 
 export async function registerCurrentUserOAuth2ClientCredentials(ctx: Context): Promise<void> {
   const {
@@ -21,24 +20,37 @@ export async function registerCurrentUserOAuth2ClientCredentials(ctx: Context): 
     }
   }
   const scopes = body.scopes.sort().join(' ');
-  const id = randomBytes(16).toString('hex');
-  const secret = randomBytes(32).toString('hex');
 
-  const credentials = await OAuth2ClientCredentials.create({
+  if (ctx.state.loginMethod === 'oidc') {
+    // Credentials of an organization SSO account rely on an offline grant of their own, so they
+    // outlive the browser session at the provider.
+    const session = await OrganizationSsoSession.findByPk(ctx.state.organizationSsoSessionId);
+    const sso = session && (await OrganizationSso.findByPk(session.OrganizationId));
+    assertKoaCondition(sso != null, ctx, 401, 'The organization SSO session has ended');
+    ctx.body = {
+      authorizationUrl: await startOrganizationSsoAuthorization(
+        ctx,
+        sso,
+        {
+          credentials: {
+            userId: user.id,
+            description: body.description,
+            expires: body.expires,
+            scopes,
+          },
+        },
+        `${sso.scope} offline_access`,
+      ),
+      organizationId: sso.OrganizationId,
+    };
+    return;
+  }
+
+  ctx.body = await createOAuth2ClientCredentials({
     description: body.description,
     expires,
-    id,
     scopes,
-    secret: await hash(secret, 10),
     UserId: user.id,
+    loginMethod: ctx.state.loginMethod,
   });
-
-  ctx.body = {
-    created: credentials.created,
-    description: credentials.description,
-    id,
-    expires,
-    scopes: scopes.split(' '),
-    secret,
-  };
 }

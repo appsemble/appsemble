@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import { PredefinedAppRole } from '@appsemble/lang-sdk';
 import { createFormData, getAppAssetLocation, getS3FileBuffer } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole, type Resource as ResourceType } from '@appsemble/types';
@@ -585,9 +587,10 @@ describe('createAppResource', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: false,
+        sha256: createHash('sha256').update(assetContent).digest('hex'),
       }),
     ]);
-    const { bucket, key } = getAppAssetLocation(app.id, assets[0].id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, assets[0].id);
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(assetContent);
   });
 
@@ -622,7 +625,7 @@ describe('createAppResource', () => {
       filename: 'clip.mp4',
       mime: 'video/mp4',
     });
-    const { bucket, key } = getAppAssetLocation(app.id, assetId);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, assetId);
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(videoContent);
   });
 
@@ -822,11 +825,11 @@ describe('createAppResource', () => {
       }),
     ]);
 
-    const assetALocation = getAppAssetLocation(app.id, assetAId);
+    const assetALocation = getAppAssetLocation({ id: app.id }, assetAId);
     expect(await getS3FileBuffer(assetALocation.bucket, assetALocation.key)).toStrictEqual(
       assetAContent,
     );
-    const assetBLocation = getAppAssetLocation(app.id, assetBId);
+    const assetBLocation = getAppAssetLocation({ id: app.id }, assetBId);
     expect(await getS3FileBuffer(assetBLocation.bucket, assetBLocation.key)).toStrictEqual(
       assetBContent,
     );
@@ -1105,6 +1108,53 @@ describe('createAppResource', () => {
     expect(foundResource.dataValues.AuthorId).toBe(member.id);
   });
 
+  it('should only notify app members whose role is or inherits a role listed in the notification hook', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        resources: {
+          ...app.definition.resources,
+          testResource: {
+            ...app.definition.resources!.testResource,
+            create: { hooks: { notification: { to: ['Reader'] } } },
+          },
+        },
+      },
+    });
+    const { AppMember, AppSubscription } = await getAppDB(app.id);
+    // Admin inherits Reader in the example app, Visitor does not.
+    for (const role of ['Reader', 'Admin', 'Visitor']) {
+      const member = await AppMember.create({
+        email: `${role}@example.com`,
+        role,
+        timezone: 'Europe/Amsterdam',
+      });
+      await AppSubscription.create({
+        endpoint: `https://192.0.2.1/${role}`,
+        p256dh: 'p256dh',
+        auth: 'auth',
+        AppMemberId: member.id,
+      });
+    }
+    const sendNotification = vi.fn();
+    webpush.sendNotification = sendNotification;
+
+    authorizeStudio();
+    await request.post(`/api/apps/${app.id}/resources/testResource`, { foo: 'bar' });
+
+    await vi.waitFor(() =>
+      expect(sendNotification).toHaveBeenCalledWith(
+        expect.objectContaining({ endpoint: 'https://192.0.2.1/Reader' }),
+        expect.any(String),
+        expect.any(Object),
+      ),
+    );
+    expect(sendNotification.mock.calls.map(([{ endpoint }]) => endpoint).toSorted()).toStrictEqual([
+      'https://192.0.2.1/Admin',
+      'https://192.0.2.1/Reader',
+    ]);
+  });
+
   it('should create ephemeral resources in demo apps', async () => {
     authorizeStudio();
     await app.update({
@@ -1201,7 +1251,7 @@ describe('createAppResource', () => {
     ]);
     const ephemeraAssetsData = await Promise.all(
       ephemeralAssets.map((asset) => {
-        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
         return getS3FileBuffer(bucket, key);
       }),
     );
@@ -1359,7 +1409,7 @@ describe('createAppResource', () => {
     ]);
     const seedAssetsData = await Promise.all(
       seedAssets.map((asset) => {
-        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
         return getS3FileBuffer(bucket, key);
       }),
     );
@@ -1531,7 +1581,7 @@ describe('createAppResource', () => {
     ]);
     const seedAssetsData = await Promise.all(
       seedAssets.map((asset) => {
-        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
         return getS3FileBuffer(bucket, key);
       }),
     );
@@ -1566,7 +1616,7 @@ describe('createAppResource', () => {
     ]);
     const ephemeralAssetsData = await Promise.all(
       ephemeralAssets.map((asset) => {
-        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
         return getS3FileBuffer(bucket, key);
       }),
     );

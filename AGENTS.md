@@ -4,10 +4,10 @@ A where-to-look map, not a manual. Team-wide defaults (git, local-context commit
 tone) live in the global instructions — not repeated here. Follow the user's lead, keep changes
 scoped, and read the source when steered.
 
-Appsemble is a low-code platform: a Koa backend, a React studio + app runtime, a CLI, and reusable
-**Preact** UI "blocks" (only blocks use Preact; studio/app are React). npm-workspaces monorepo,
-all-ESM, Node >= 24. The current block/package version lives in `packages/cli/package.json`
-(`0.36.x-test.x`) and matters for block hot-reload.
+Appsemble is a low-code platform: a Koa backend, a React studio, a **Preact** app runtime, a CLI,
+and reusable **Preact** UI "blocks" (only the studio uses React). npm-workspaces monorepo, all-ESM,
+Node >= 24. The current block/package version lives in `packages/cli/package.json` (`0.36.x-test.x`)
+and matters for block hot-reload.
 
 ## What's where
 
@@ -85,6 +85,16 @@ all-ESM, Node >= 24. The current block/package version lives in `packages/cli/pa
 - Prettier `singleQuote`, `trailingComma: all`, `proseWrap: always` (wrap markdown at 80). Remark:
   heading levels can't skip; no undefined/unused refs.
 
+## HTTP error status codes
+
+Pick the code by who can fix the problem (`throwKoaError` / `assertKoaCondition`):
+
+- 409 only when the request clashes with existing data (a duplicate, a stale version) and resending
+  a changed request resolves it.
+- 503, with the reason in the message, when server or app setup the client cannot fix is missing or
+  incomplete (a secret without a value, an unconfigured provider).
+- 403 when the caller may not perform the action (e.g. a setting managed elsewhere).
+
 ## Changelog
 
 Per block/package `changed/{added,changed,fixed,deprecated,removed,security}/` — add an imperative
@@ -109,3 +119,7 @@ indexes (not constraints), queries take `{ transaction }`. Validate:
   from `main`, not just your diff. Jobs are sharded (tests, e2e) alongside
   build/validate/docker/downstream/review-deploy — don't run the full suite locally. Offer to wait
   on results, or let the user report them.
+- If you are any kind of automated agent with permissions to create MRs ad issues: some jobs (e.g.
+  `e2e SLA apps(private)`) only relay the status of pipelines in private projects. If you can't open
+  those, say so plainly and judge the MR on the jobs you can read; don't file issues, label MRs
+  `Blocked`, or call the failure opaque.

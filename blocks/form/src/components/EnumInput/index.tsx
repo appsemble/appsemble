@@ -18,6 +18,9 @@ import { isRequired } from '../../utils/requirements.js';
 
 type EnumInputProps = InputProps<string, EnumField>;
 
+// A stable default, because the options effect depends on it and sets a new options array.
+const noFieldsetEntryValues = {};
+
 /**
  * Render a select box which offers choices a JSON schema enum.
  */
@@ -27,7 +30,7 @@ export function EnumInput({
   disabled,
   errorLinkRef,
   field,
-  fieldsetEntryValues = {},
+  fieldsetEntryValues = noFieldsetEntryValues,
   formValues,
   name,
   onChange,
@@ -111,7 +114,9 @@ export function EnumInput({
     };
 
     const handleError = (): void => {
-      setError(utils.remap(field.loadError ?? 'Error loading options', {}) as string);
+      setError(
+        utils.remap(field.loadError ?? utils.formatMessage('selectionOptionsError'), {}) as string,
+      );
       setLoading(false);
     };
 
@@ -147,7 +152,9 @@ export function EnumInput({
     };
 
     const handleError = (): void => {
-      setError(utils.remap(field.loadError ?? 'Error loading options', {}) as string);
+      setError(
+        utils.remap(field.loadError ?? utils.formatMessage('selectionOptionsError'), {}) as string,
+      );
       setLoading(false);
     };
 

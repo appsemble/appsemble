@@ -7,12 +7,18 @@ import {
   hasBuiltinPagesGridArea,
   resendBannerGridArea,
 } from '@appsemble/lang-sdk';
-import { Content, Loader, Title, useMeta } from '@appsemble/react-components';
+import { Content } from '@appsemble/preact-components';
+import { type MessageDescriptor } from '@formatjs/intl';
 import classNames from 'classnames';
-import { type ReactNode, useMemo } from 'react';
-import { FormattedMessage, type MessageDescriptor } from 'react-intl';
+import { type ComponentChildren, type VNode } from 'preact';
+import { useMemo } from 'preact/hooks';
 
 import styles from './index.module.css';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
+import { Loader } from '../Loader/index.js';
+import { useMeta } from '../Meta/index.js';
+import { Title } from '../Title/index.js';
+import { titleBarShowsPageName } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
 import { Main } from '../Main/index.js';
@@ -52,14 +58,15 @@ interface BuiltinPageProps {
   /**
    * The title of the page.
    *
-   * It is used as the page metadata, and as the text of the `title` region if the app defines one.
+   * It is used as the page metadata and the H1 of the page: in the `title` region if the app defines
+   * one, else above the content unless the title bar names the page.
    */
   readonly title: MessageDescriptor;
 
   /**
    * What to render inside the title bar of the app.
    */
-  readonly appBarName?: ReactNode;
+  readonly appBarName?: ComponentChildren;
 
   /**
    * An additional class name for the content region, in both modes.
@@ -86,9 +93,15 @@ interface BuiltinPageProps {
   readonly narrow?: boolean;
 
   /**
+   * Whether to show the title above the content if neither the `title` grid area nor the title bar
+   * names the page.
+   */
+  readonly showTitle?: boolean;
+
+  /**
    * The content of the page.
    */
-  readonly children: ReactNode;
+  readonly children: ComponentChildren;
 }
 
 /**
@@ -102,18 +115,9 @@ export function useBuiltinPagesLayout(): BuiltinPagesLayoutDefinition | undefine
 }
 
 /**
- * Get whether the built-in pages render their name as a heading of their own.
- *
- * @returns Whether the layout of the app names the `title` grid area.
- */
-export function useBuiltinPageTitleArea(): boolean {
-  return hasBuiltinPagesGridArea(useBuiltinPagesLayout(), builtinPagesTitleGridArea);
-}
-
-/**
  * A loader for a built-in page that is still resolving its state.
  */
-export function BuiltinPageLoader(): ReactNode {
+export function BuiltinPageLoader(): VNode {
   const layout = useBuiltinPagesLayout();
 
   return <Loader className={layout ? styles.loader : undefined} />;
@@ -133,11 +137,13 @@ export function BuiltinPage({
   fallbackRootClassName,
   narrow,
   page,
+  showTitle,
   state,
   title,
-}: BuiltinPageProps): ReactNode {
+}: BuiltinPageProps): VNode {
   const { definition } = useAppDefinition();
   const { hasBottomNavigation } = usePage();
+  const { formatMessage } = useIntl();
   useMeta(title);
 
   const layout = definition.layout?.builtinPages;
@@ -152,14 +158,26 @@ export function BuiltinPage({
     stretchArea: builtinPagesContentGridArea,
   });
 
+  const hasTitleArea = hasBuiltinPagesGridArea(layout, builtinPagesTitleGridArea);
+  const titleBarNamesPage = appBarName && titleBarShowsPageName(definition);
+  // The title area or the title bar renders the H1, if either names the page.
+  const heading =
+    hasTitleArea || titleBarNamesPage ? null : (
+      <Title className={showTitle ? undefined : 'is-sr-only'}>
+        <FormattedMessage {...title} />
+      </Title>
+    );
+
   const contentClassName = classNames(className, gridClassName ? undefined : fallbackClassName);
   const content =
     narrow && !gridClassName ? (
       <Content className={contentClassName} data-grid-area={builtinPagesContentGridArea} padding>
+        {heading}
         {children}
       </Content>
     ) : (
       <div className={contentClassName} data-grid-area={builtinPagesContentGridArea}>
+        {heading}
         {children}
       </div>
     );
@@ -171,6 +189,7 @@ export function BuiltinPage({
 
   return (
     <Root
+      aria-label={formatMessage(title)}
       className={
         gridClassName
           ? classNames(gridClassName, {
@@ -181,10 +200,11 @@ export function BuiltinPage({
       }
       data-appsemble-page={page}
       data-appsemble-page-state={state}
+      tabIndex={-1}
     >
-      <AppBar>{appBarName}</AppBar>
+      <AppBar hasPageHeading={hasTitleArea}>{appBarName}</AppBar>
       {hasBuiltinPagesGridArea(layout, resendBannerGridArea) ? <VerifyBanner inGrid /> : null}
-      {hasBuiltinPagesGridArea(layout, builtinPagesTitleGridArea) ? (
+      {hasTitleArea ? (
         <Title data-grid-area={builtinPagesTitleGridArea} level={1}>
           <FormattedMessage {...title} />
         </Title>

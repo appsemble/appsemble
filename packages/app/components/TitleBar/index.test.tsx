@@ -1,8 +1,7 @@
 import { type AppDefinition } from '@appsemble/lang-sdk';
-import { SideMenuProvider } from '@appsemble/react-components';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
+import { type ComponentProps } from 'preact';
+import { Route } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppBar } from './index.js';
@@ -11,7 +10,15 @@ import { AppIconProvider } from '../AppIconProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import * as menuProvider from '../MenuProvider/index.js';
+import { SideMenuProvider } from '../SideMenu/index.js';
+
+vi.mock('../../utils/settings.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../utils/settings.js')>();
+
+  return { ...actual, assetIds: { brand: '0e1b2c3d' } };
+});
 
 const appDefinition = {
   name: 'Test App',
@@ -62,17 +69,28 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-function renderAppBar(): void {
+function mockLogoDefinition(): void {
+  vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+    definition: {
+      ...appDefinition,
+      layout: { navigation: 'top', login: 'hidden', logo: { position: 'navbar', asset: 'brand' } },
+    },
+    demoMode: false,
+    revision: 1,
+    blockManifests: [],
+  } as never);
+}
+
+function renderAppBar(props: ComponentProps<typeof AppBar> = {}): void {
+  window.history.replaceState(null, '', '/en/Home');
   render(
     <IntlProvider locale="en" messages={{}}>
       <AppIconProvider>
-        <MemoryRouter initialEntries={['/en/Home']}>
-          <SideMenuProvider base={null} bottom={null}>
-            <Routes>
-              <Route element={<AppBar />} path="/:lang/*" />
-            </Routes>
-          </SideMenuProvider>
-        </MemoryRouter>
+        <SideMenuProvider base={null} bottom={null}>
+          <Route path="/:lang/*?">
+            <AppBar {...props} />
+          </Route>
+        </SideMenuProvider>
       </AppIconProvider>
     </IntlProvider>,
   );
@@ -106,6 +124,27 @@ describe('AppBar top navigation', () => {
     expect(screen.getByAltText('app-logo')).not.toBeNull();
     expect(screen.getByText('Test App')).not.toBeNull();
     expect(screen.getByRole('link', { name: 'Reports' }).getAttribute('href')).toBe('/en/reports');
+  });
+
+  it('should request the navbar logo by asset id', () => {
+    mockLogoDefinition();
+
+    renderAppBar();
+
+    expect(screen.getByAltText('app-logo').getAttribute('src')).toBe(
+      'https://appsemble.app/api/apps/42/assets/0e1b2c3d',
+    );
+  });
+
+  it('should request the navbar logo by asset name when its id fails to load', () => {
+    mockLogoDefinition();
+
+    renderAppBar();
+    fireEvent.error(screen.getByAltText('app-logo'));
+
+    expect(screen.getByAltText('app-logo').getAttribute('src')).toBe(
+      'https://appsemble.app/api/apps/42/assets/brand',
+    );
   });
 
   it('should lay out all header content using the configured navbar grid', async () => {
@@ -184,13 +223,12 @@ describe('AppBar top navigation', () => {
       blockManifests: [],
     } as never);
 
+    window.history.replaceState(null, '', '/en/edit-profile');
     render(
       <IntlProvider locale="en" messages={{}}>
-        <MemoryRouter initialEntries={['/en/edit-profile']}>
-          <Routes>
-            <Route element={<AppBar />} path="/:lang/*" />
-          </Routes>
-        </MemoryRouter>
+        <Route path="/:lang/*?">
+          <AppBar />
+        </Route>
       </IntlProvider>,
     );
 
@@ -317,7 +355,7 @@ describe('AppBar top navigation', () => {
 });
 
 describe('AppBar title', () => {
-  it('should show the app name without a heading when the title bar shows the app name', () => {
+  it('should show the app name as text when the title bar shows the app name', () => {
     vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
       definition: { ...appDefinition, layout: { login: 'hidden', titleBarText: 'appName' } },
       demoMode: false,
@@ -325,13 +363,13 @@ describe('AppBar title', () => {
       blockManifests: [],
     });
 
-    renderAppBar();
+    renderAppBar({ children: 'Reports' });
 
     expect(screen.getByText('Test App')).not.toBeNull();
     expect(screen.queryByRole('heading')).toBeNull();
   });
 
-  it('should show the title as a level 2 heading when the title bar shows the page name', () => {
+  it('should show the page name as the level 1 heading when the title bar shows the page name', () => {
     vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
       definition: { ...appDefinition, layout: { login: 'hidden', titleBarText: 'pageName' } },
       demoMode: false,
@@ -339,9 +377,21 @@ describe('AppBar title', () => {
       blockManifests: [],
     });
 
-    renderAppBar();
+    renderAppBar({ children: 'Reports' });
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Test App' })).not.toBeNull();
+    expect(screen.getByRole('heading', { level: 1, name: 'Reports' })).not.toBeNull();
+  });
+
+  it('should render no heading when the page hides its name', () => {
+    renderAppBar({ children: 'Reports', hideName: true });
+
+    expect(screen.queryByRole('heading')).toBeNull();
+  });
+
+  it('should render no heading when the page renders its own', () => {
+    renderAppBar({ children: 'Reports', hasPageHeading: true });
+
+    expect(screen.queryByRole('heading')).toBeNull();
   });
 });
 

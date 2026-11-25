@@ -78,7 +78,10 @@ export function createIcon({
   const { icon = 'map-marker-alt' } = marker;
   const resolved = utils.resolveIcon(icon);
   if (resolved.type === 'asset') {
-    return createImageIcon(resolved.url, size, anchor, KNOWN_MARKER_ICONS.has(icon));
+    const pin = KNOWN_MARKER_ICONS.has(icon);
+    const { fallbackUrl } = resolved;
+    const image = createImageIcon(resolved.url, size, anchor, pin);
+    return fallbackUrl ? image.catch(() => createImageIcon(fallbackUrl, size, anchor, pin)) : image;
   }
   const html = document.createElement('i');
   html.className = `${utils.fa(icon)} has-text-${marker.color || 'primary'}`;

@@ -98,7 +98,7 @@ export function ListItem({ dataTestId, index, item }: ListItemProps): VNode {
 
       const top =
         itemElement.getBoundingClientRect().top + window.scrollY - itemPadding - navbarHeight;
-      window.scrollTo({ top, behavior: 'smooth' });
+      window.scrollTo({ top });
     };
 
     // We retry the scroll animation a couple of times with a callback chain because items load

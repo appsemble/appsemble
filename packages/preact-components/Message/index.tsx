@@ -1,7 +1,7 @@
 import { type BulmaColor } from '@appsemble/types';
 import { getMessageIcon } from '@appsemble/web-utils';
 import classNames from 'classnames';
-import { type VNode } from 'preact';
+import { type ComponentChildren, type VNode } from 'preact';
 
 import styles from './index.module.css';
 import { Icon } from '../index.js';
@@ -10,7 +10,7 @@ interface MessageProps {
   /**
    * The message content.
    */
-  readonly children: VNode;
+  readonly children: ComponentChildren;
 
   /**
    * Additional class names to assign to the message element.
@@ -25,7 +25,7 @@ interface MessageProps {
   /**
    * An optional header for the message.
    */
-  readonly header?: VNode;
+  readonly header?: ComponentChildren;
 
   /**
    * The live region role, so assistive technology announces the message.
@@ -34,9 +34,21 @@ interface MessageProps {
    * announced politely when the content of an already rendered message changes.
    */
   readonly role?: 'alert' | 'status';
+
+  /**
+   * The tab index of the message element, to let keyboard users scroll a message that overflows.
+   */
+  readonly tabIndex?: number;
 }
 
-export function Message({ children, className, color, header, role }: MessageProps): VNode {
+export function Message({
+  children,
+  className,
+  color,
+  header,
+  role,
+  tabIndex,
+}: MessageProps): VNode {
   const icon = getMessageIcon(color);
 
   return (
@@ -44,6 +56,7 @@ export function Message({ children, className, color, header, role }: MessagePro
       className={classNames('message', className, { [`is-${color}`]: color })}
       data-testid="message-comp"
       role={role}
+      tabIndex={tabIndex}
     >
       {header ? <h6 className="message-header">{header}</h6> : null}
       <div className={classNames('message-body', { [styles.body]: icon })}>

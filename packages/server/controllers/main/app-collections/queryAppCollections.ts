@@ -2,6 +2,7 @@ import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { AppCollection, Organization, OrganizationMember } from '../../../models/index.js';
+import { getOrganizationMemberAccess } from '../../../utils/organizationSso.js';
 
 export async function queryAppCollections(ctx: Context): Promise<void> {
   const memberships = await OrganizationMember.findAll({
@@ -10,6 +11,11 @@ export async function queryAppCollections(ctx: Context): Promise<void> {
     },
     attributes: ['OrganizationId'],
   });
+  const accessibleMemberships = (
+    await Promise.all(
+      memberships.map(({ OrganizationId }) => getOrganizationMemberAccess(ctx, OrganizationId)),
+    )
+  ).filter(Boolean);
   const collections = await AppCollection.findAll({
     include: [
       {
@@ -24,7 +30,7 @@ export async function queryAppCollections(ctx: Context): Promise<void> {
         },
         {
           OrganizationId: {
-            [Op.in]: memberships.map((membership) => membership.OrganizationId),
+            [Op.in]: accessibleMemberships.map((membership) => membership!.OrganizationId),
           },
         },
       ],

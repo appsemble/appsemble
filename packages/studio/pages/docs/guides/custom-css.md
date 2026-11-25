@@ -121,6 +121,28 @@ specific blocks on specific pages.
 }
 ```
 
+A page often uses the same block type in several roles. To style one of those instances, give the
+block definition a `name`. The name is lower case and hyphen separated, and is rendered as a
+`data-block-name` attribute on the block. Where `data-path` targets a block by its position, so the
+selector shifts when a block is inserted or removed and changes when the page is renamed, a name
+stays with the block. A name is unique within the page, tab or step the block belongs to, so the
+same name may be reused elsewhere to style the same role everywhere with one rule.
+
+```yaml copy
+blocks:
+  - type: markdown
+    version: 0.42.0
+    name: screen-title
+    parameters:
+      content: '# Welcome'
+```
+
+```css copy
+[data-block-name='screen-title'] {
+  text-align: center;
+}
+```
+
 At the current state Appsemble doesn’t support theming of specific parts of the block elements. As
 an example, it is possible to change list block’s background color but changing styling of list
 elements wouldn’t be possible. Such approach is currently only supported within the form block due
@@ -174,20 +196,22 @@ selectors (`.message` and `.bottom-nav`) rather than a `data-grid-area` attribut
 
 The following pages exist. A page is only mounted if its condition holds.
 
-| Page name         | Route             | States                                                       | Mounted                                                                     |
-| ----------------- | ----------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| `login`           | `/Login`          | `form`, `demo`, `totp`, `totp-setup`, `permission-error`     | Logged out, and the app has no custom `Login` page or demo login is enabled |
-| `register`        | `/Register`       | `form`                                                       | Logged out, and the app has no custom `Register` page                       |
-| `reset-password`  | `/Reset-Password` | `form`, `success`                                            | Always                                                                      |
-| `edit-password`   | `/Edit-Password`  | `form`, `success`                                            | Always                                                                      |
-| `verify`          | `/Verify`         | `loading`, `success`, `error`                                | Always                                                                      |
-| `app-invite`      | `/App-Invite`     | `loading`, `error`, `accepted`, `declined`, `member`, `form` | Always                                                                      |
-| `group-invite`    | `/Group-Invite`   | `loading`, `error`, `accepted`, `declined`, `form`           | Logged in                                                                   |
-| `settings`        | `/Settings`       | `default`                                                    | Always                                                                      |
-| `feedback`        | `/Feedback`       | `form`                                                       | A Sentry DSN is configured                                                  |
-| `debug`           | `/debug`          | `default`                                                    | Always                                                                      |
-| `openid-callback` | `/Callback`       | `error`                                                      | The OAuth2 login failed                                                     |
-| `page-error`      | any page route    | `permission`                                                 | Logged in, and no page of the app is allowed for the member                 |
+| Page name         | Route             | States                                                       | Mounted                                                                          |
+| ----------------- | ----------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| `login`           | `/Login`          | `form`, `demo`, `permission-error`                           | Logged out, and the app has no custom `Login` page or demo login is enabled      |
+| `login`           | any route         | `totp`, `totp-setup`                                         | A login is waiting for its TOTP step                                             |
+| `register`        | `/Register`       | `form`                                                       | Logged out, and the app has no custom `Register` page                            |
+| `reset-password`  | `/Reset-Password` | `form`, `success`                                            | Always                                                                           |
+| `edit-password`   | `/Edit-Password`  | `form`, `success`                                            | Always                                                                           |
+| `verify`          | `/Verify`         | `loading`, `success`, `error`                                | Always                                                                           |
+| `app-invite`      | `/App-Invite`     | `loading`, `error`, `accepted`, `declined`, `member`, `form` | Always                                                                           |
+| `group-invite`    | `/Group-Invite`   | `loading`, `error`, `accepted`, `declined`, `form`           | Logged in                                                                        |
+| `settings`        | `/Settings`       | `default`                                                    | Always                                                                           |
+| `feedback`        | `/Feedback`       | `form`                                                       | A Sentry DSN is configured                                                       |
+| `debug`           | `/debug`          | `default`                                                    | Always                                                                           |
+| `openid-callback` | `/Callback`       | `error`                                                      | The OAuth2 login failed                                                          |
+| `page-error`      | any page route    | `not-found`                                                  | The app sets `notFoundPage: true`, and the URL matches no page or its parameters |
+| `page-error`      | any page route    | `permission`                                                 | Logged in, and no page of the app is allowed for the member                      |
 
 ```css copy
 [data-appsemble-page='login'] [data-grid-area='title'] {

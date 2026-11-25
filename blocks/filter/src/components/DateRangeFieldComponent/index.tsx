@@ -42,7 +42,7 @@ export function DateRangeFieldComponent({
 
   return (
     <fieldset
-      aria-labelledby={field.label ? `${field.name}-label` : undefined}
+      aria-labelledby={`${field.name}-label`}
       className={classNames(
         `field is-align-items-center is-grouped ${className} ${styles.fieldset}`,
         {

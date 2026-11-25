@@ -52,3 +52,14 @@ it('should render an icon-only trigger as a named button that reports its expand
   fireEvent.click(trigger);
   expect(trigger.getAttribute('aria-expanded')).toBe('true');
 });
+
+it('should name a button trigger without a label by its aria label', () => {
+  render(
+    <Dropdown ariaLabel="More options" icon="ellipsis-h" label={null}>
+      <button type="button">test-button</button>
+    </Dropdown>,
+    { wrapper: Provider },
+  );
+
+  expect(screen.getByRole('button', { name: 'More options' })).toBeDefined();
+});

@@ -27,30 +27,6 @@ export const description = 'Start the Appsemble server';
 
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs)
-    .option('smtp-host', {
-      desc: 'The host of the SMTP server to connect to.',
-    })
-    .option('smtp-port', {
-      desc: 'The port of the SMTP server to connect to.',
-      type: 'number',
-    })
-    .option('smtp-secure', {
-      desc: 'Use TLS when connecting to the SMTP server.',
-      type: 'boolean',
-      default: false,
-    })
-    .option('smtp-user', {
-      desc: 'The user to use to login to the SMTP server.',
-      implies: ['smtp-pass', 'smtp-from'],
-    })
-    .option('smtp-pass', {
-      desc: 'The password to use to login to the SMTP server.',
-      implies: ['smtp-user', 'smtp-from'],
-    })
-    .option('smtp-from', {
-      desc: 'The address to use when sending emails.',
-      implies: ['smtp-user', 'smtp-pass'],
-    })
     .option('google-client-id', {
       desc: 'The application key to be used for Google OAuth2.',
       implies: ['google-client-secret'],
@@ -75,6 +51,9 @@ export function builder(yargs: Argv): Argv {
       desc: 'The secret key to be used for GitLab OAuth2.',
       implies: ['gitlab-client-id'],
     })
+    .option('organization-sso-issuers', {
+      desc: 'Comma separated OpenID Connect issuers which organization owners may configure for single sign-on in Studio.',
+    })
     .option('stripe-api-secret-key', {
       desc: 'The API key for stripe.',
     })
@@ -91,6 +70,11 @@ export function builder(yargs: Argv): Argv {
     })
     .option('disable-registration', {
       desc: 'If specified, user registration will be disabled on the server',
+      type: 'boolean',
+      default: false,
+    })
+    .option('reject-breached-passwords', {
+      desc: 'If specified, new passwords that appear in the Have I Been Pwned Pwned Passwords data set are rejected',
       type: 'boolean',
       default: false,
     })

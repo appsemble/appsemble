@@ -252,6 +252,26 @@ describe('verifyAppMemberTotpSetup', () => {
     expect(updatedMember?.totpEnabled).toBe(true);
   });
 
+  it('should not enable TOTP if the secret is removed while the code is verified', async () => {
+    const secret = authenticator.generateSecret();
+    const appMember = await createTestAppMember(app.id);
+    const { AppMember } = await getAppDB(app.id);
+    await appMember.update({ totpSecret: encrypt(secret, 'test') });
+    authorizeAppMember(app, appMember);
+    AppMember.addHook('afterBulkUpdate', 'reset', async () => {
+      AppMember.removeHook('afterBulkUpdate', 'reset');
+      await AppMember.update({ totpSecret: null }, { where: { id: appMember.id } });
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/auth/totp/verify-setup`, {
+      token: authenticator.generate(secret),
+    });
+
+    expect(response.status).toBe(400);
+    await appMember.reload();
+    expect(appMember.totpEnabled).toBe(false);
+  });
+
   it('should complete the login when enrolling with a pending TOTP token', async () => {
     await app.update({ totp: 'required' });
     const secret = authenticator.generateSecret();

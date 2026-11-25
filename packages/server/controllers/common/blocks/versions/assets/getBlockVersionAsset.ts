@@ -35,15 +35,13 @@ export async function getBlockVersionAsset(ctx: Context): Promise<void> {
       const stats = await getS3FileStats(bucket, key);
       const stream = await getS3File(bucket, key);
 
-      if (stream) {
-        ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
-        ctx.set('Content-Length', String(stats.size));
-        ctx.set('ETag', stats.etag);
-        ctx.set('Last-Modified', stats.lastModified.toUTCString());
-        ctx.body = stream;
-        ctx.type = asset.mime ?? 'application/octet-stream';
-        return;
-      }
+      ctx.set('Cache-Control', 'public,max-age=31536000,immutable');
+      ctx.set('Content-Length', String(stats.size));
+      ctx.set('ETag', stats.etag);
+      ctx.set('Last-Modified', stats.lastModified.toUTCString());
+      ctx.body = stream;
+      ctx.type = asset.mime ?? 'application/octet-stream';
+      return;
     } catch (error) {
       logger.warn(error);
     }

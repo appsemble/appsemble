@@ -67,5 +67,15 @@ declare module '@appsemble/sdk' {
      * The label of the next button
      */
     nextLabel: never;
+
+    /**
+     * The accessible name of the pagination landmark
+     */
+    navigationLabel: never;
+
+    /**
+     * The current page out of the total number of pages
+     */
+    pageLabel: { page: number; pageCount: number };
   }
 }

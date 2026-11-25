@@ -1,0 +1,52 @@
+import { describe, expect, it } from 'vitest';
+
+import { analyze, analyzeComponent, describeIdentities } from './harness.js';
+import { appScenarios, componentScenarios } from './scenarios.js';
+
+const appCases = Object.entries(appScenarios).map(([name, scenario]) => ({ name, ...scenario }));
+const componentCases = Object.entries(componentScenarios).map(([name, scenario]) => ({
+  name,
+  ...scenario,
+}));
+
+describe('mini schema language component analysis', () => {
+  // Each scenario declares the identity mounted at every path and whether the document validates.
+  // Asserting the whole table here makes scenarios.ts the single source of truth for engine output.
+  it.each(appCases)('app $name: $doc', ({ data, documentValid, identities }) => {
+    const result = analyze(data);
+
+    expect(result.documentValid).toBe(documentValid);
+    expect(describeIdentities(result)).toStrictEqual(identities);
+  });
+
+  it.each(componentCases)('component $name: $doc', ({ root, data, documentValid, identities }) => {
+    const result = analyzeComponent(root, data);
+
+    expect(result.documentValid).toBe(documentValid);
+    expect(describeIdentities(result)).toStrictEqual(identities);
+  });
+
+  // The experimentalVariantInProduction case additionally proves the shape of a kept-but-invalid
+  // node: a single mount that stays locally valid while the outer constraint error is attached to it.
+  it('keeps the local mount valid and attaches the outer constraint error', () => {
+    const result = analyzeComponent(
+      componentScenarios.experimentalVariantInProduction.root,
+      componentScenarios.experimentalVariantInProduction.data,
+    );
+    const mounts = [...result.mounts.values()];
+
+    expect(mounts).toHaveLength(1);
+    expect(mounts[0]).toMatchObject({
+      localValid: true,
+      path: ['buttonVariant'],
+    });
+    expect(mounts[0].errors).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: 'does not exactly match expected constant: false',
+          path: ['buttonVariant', 'experimental'],
+        }),
+      ]),
+    );
+  });
+});

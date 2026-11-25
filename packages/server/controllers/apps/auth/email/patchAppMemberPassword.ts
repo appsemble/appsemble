@@ -5,6 +5,7 @@ import { type Context } from 'koa';
 import { App, getAppDB } from '../../../../models/index.js';
 import { clearAppCookies } from '../../../../utils/appCookies.js';
 import { revokeAppMemberRefreshSessionsForMember } from '../../../../utils/appMemberRefreshSession.js';
+import { assertPasswordNotBreached } from '../../../../utils/breachedPassword.js';
 
 export async function patchAppMemberPassword(ctx: Context): Promise<void> {
   const {
@@ -26,6 +27,7 @@ export async function patchAppMemberPassword(ctx: Context): Promise<void> {
   const passwordsMatch = await compare(currentPassword, appMember!.password!);
   assertKoaCondition(passwordsMatch, ctx, 401, 'Old password is incorrect.');
 
+  await assertPasswordNotBreached(ctx, newPassword);
   const hashedNewPassword = await hash(newPassword, 10);
   await appMember!.update({ password: hashedNewPassword });
 

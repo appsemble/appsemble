@@ -1,5 +1,9 @@
+import { createHash } from 'node:crypto';
+
 import {
   assertKoaCondition,
+  type AssetOwner,
+  assetValidators,
   getAppAssetLocation,
   getS3File,
   getS3FileBuffer,
@@ -63,22 +67,28 @@ function getDerivedFilename(
 
 async function serveCachedDerivedAsset(
   ctx: Context,
-  appId: number,
+  app: AssetOwner,
   sourceAsset: { id: string; filename?: string | null },
   cachedAsset: { id: string; mime?: string | null; destroy: () => Promise<unknown> },
+  immutable: boolean,
 ): Promise<boolean> {
   try {
-    const { bucket, key } = getAppAssetLocation(appId, cachedAsset.id);
+    const { bucket, key } = getAppAssetLocation(app, cachedAsset.id);
     const stats = await getS3FileStats(bucket, key);
-    const stream = await getS3File(bucket, key);
     const mime = cachedAsset.mime ?? 'application/octet-stream';
-    setAssetHeaders(
-      ctx,
+    setAssetHeaders(ctx, {
       mime,
-      getDerivedFilename(sourceAsset.id, sourceAsset.filename, mime),
-      stats,
-    );
-    ctx.body = stream;
+      filename: getDerivedFilename(sourceAsset.id, sourceAsset.filename, mime),
+      immutable,
+      ...assetValidators(stats),
+    });
+    // Koa only reports a request as fresh for a 2xx or 304 status.
+    ctx.status = 200;
+    if (ctx.fresh) {
+      ctx.status = 304;
+      return true;
+    }
+    ctx.body = await getS3File(bucket, key);
     return true;
   } catch (error) {
     if (!isS3ErrorCode(error, 'NotFound') && !isS3ErrorCode(error, 'NoSuchKey')) {
@@ -96,7 +106,7 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     queryParams: { height, width },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId', 'demoMode'],
+    attributes: ['id', 'OrganizationId', 'demoMode', 's3Bucket'],
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
   const { Asset } = await getAppDB(appId);
@@ -116,6 +126,10 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
   });
   assertKoaCondition(sourceAsset != null, ctx, 404, 'Asset not found');
 
+  // Both the asset id and the asset name resolve here. Only the id keeps addressing these bytes
+  // after the name is pointed at a different asset.
+  const immutable = assetId === sourceAsset.id;
+
   // SVG is vector XML, not a raster source; a rasterized copy discards the vector, so serve it
   // unmodified below. Match the media type exactly, ignoring any parameter and case.
   const isSvg = sourceAsset.mime?.toLowerCase().split(';', 1)[0].trim() === 'image/svg+xml';
@@ -132,7 +146,10 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
         attributes: ['id', 'mime', 'filename', 'name'],
       });
 
-      if (cachedAsset && (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset))) {
+      if (
+        cachedAsset &&
+        (await serveCachedDerivedAsset(ctx, app, sourceAsset, cachedAsset, immutable))
+      ) {
         return;
       }
     } else {
@@ -144,12 +161,15 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
         attributes: ['id', 'mime', 'filename', 'name'],
       });
 
-      if (cachedAsset && (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset))) {
+      if (
+        cachedAsset &&
+        (await serveCachedDerivedAsset(ctx, app, sourceAsset, cachedAsset, immutable))
+      ) {
         return;
       }
     }
 
-    const source = getAppAssetLocation(appId, sourceAsset.id);
+    const source = getAppAssetLocation(app, sourceAsset.id);
     const sourceBuffer = await getS3FileBuffer(source.bucket, source.key);
     const image = sharp(sourceBuffer);
     const metadata = await image.metadata();
@@ -180,7 +200,10 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
         attributes: ['id', 'mime', 'filename', 'name'],
       });
 
-      if (cachedAsset && (await serveCachedDerivedAsset(ctx, appId, sourceAsset, cachedAsset))) {
+      if (
+        cachedAsset &&
+        (await serveCachedDerivedAsset(ctx, app, sourceAsset, cachedAsset, immutable))
+      ) {
         return;
       }
     }
@@ -206,10 +229,11 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       const newAsset = await Asset.create({
         name: derivedAssetName,
         mime: derivedMime,
+        sha256: createHash('sha256').update(derivedImage).digest('hex'),
         ...(app.demoMode ? { seed: false, ephemeral: true } : {}),
       });
 
-      const derived = getAppAssetLocation(appId, newAsset.id);
+      const derived = getAppAssetLocation(app, newAsset.id);
       await uploadS3File(derived.bucket, derived.key, derivedImage);
     } catch (error) {
       // A concurrent request already cached this derived asset. The name is deterministic, so a
@@ -219,21 +243,25 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
       }
     }
 
-    setAssetHeaders(
-      ctx,
-      derivedMime,
-      getDerivedFilename(sourceAsset.id, sourceAsset.filename, derivedMime),
-    );
+    setAssetHeaders(ctx, {
+      mime: derivedMime,
+      filename: getDerivedFilename(sourceAsset.id, sourceAsset.filename, derivedMime),
+      immutable,
+    });
     ctx.body = derivedImage;
     return;
   }
 
   const sourceFilename = getAssetFilename(sourceAsset.id, sourceAsset.filename, sourceAsset.mime);
-  const { bucket, key } = getAppAssetLocation(appId, sourceAsset.id);
+  const { bucket, key } = getAppAssetLocation(app, sourceAsset.id);
   const stats = await getS3FileStats(bucket, key);
-  const stream = await getS3File(bucket, key);
 
-  setAssetHeaders(ctx, sourceAsset.mime ?? 'application/octet-stream', sourceFilename, stats);
+  setAssetHeaders(ctx, {
+    mime: sourceAsset.mime ?? 'application/octet-stream',
+    filename: sourceFilename,
+    immutable,
+    ...assetValidators(stats),
+  });
 
   if (isSvg) {
     // An inline SVG renders as a document on this origin; sandbox it and block all resource loading
@@ -241,5 +269,11 @@ export async function getAppAssetById(ctx: Context): Promise<void> {
     ctx.set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; sandbox");
   }
 
-  ctx.body = stream;
+  // Koa only reports a request as fresh for a 2xx or 304 status.
+  ctx.status = 200;
+  if (ctx.fresh) {
+    ctx.status = 304;
+    return;
+  }
+  ctx.body = await getS3File(bucket, key);
 }

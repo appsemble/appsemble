@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.40.5/config/assets/logo.svg) Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.42.0/config/assets/logo.svg) Appsemble Server
 
 > The official Appsemble Docker image
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.40.5/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.40.5)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.42.0/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.42.0)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -81,6 +81,8 @@ passed as a command line parameter instead, if desired.
 | `DAILY_APP_EMAIL_QUOTA`         | `10`         | The maximum number of emails an app can send per day without a custom mail server configured.                          |
 | `ENABLE_APP_EMAIL_QUOTA_ALERTS` | `false`      | If specified, alerts will be sent to the Appsemble administrator when an app exceeds its daily quota.                  |
 | `DISABLE_REGISTRATION`          | `false`      | If specified, user registration will be disabled on the server                                                         |
+| `REJECT_BREACHED_PASSWORDS`     | `false`      | If specified, new passwords that appear in the Have I Been Pwned Pwned Passwords data set are rejected.                |
+| `ORGANIZATION_SSO_ISSUERS`      |              | Comma separated OpenID Connect issuers which organization owners may configure for single sign-on in Studio.           |
 | `HOST`                          |              | The external host on which the server is available. This should include the protocol, hostname, and optionally port.   |
 | `REMOTE`                        | `null`       | A remote Appsemble server to connect to in order to synchronize blocks.                                                |
 
@@ -202,5 +204,5 @@ With the Stripe CLI you can expose an endpoint on your machine that will receive
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.40.5/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.42.0/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

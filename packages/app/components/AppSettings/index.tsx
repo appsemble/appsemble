@@ -1,5 +1,4 @@
-import { type ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { type VNode } from 'preact';
 
 import { AppSubscriptions } from './AppSubscriptions/index.js';
 import { LanguagePreference } from './LanguagePreference/index.js';
@@ -7,12 +6,13 @@ import { messages } from './messages.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { ProfileSettings } from '../ProfileSettings/index.js';
 
 /**
  * Page containing all the settings configurable for an app
  */
-export function AppSettings(): ReactNode {
+export function AppSettings(): VNode {
   const { isLoggedIn } = useAppMember();
   const { definition } = useAppDefinition();
   const enabledSettings = definition.layout?.enabledSettings;

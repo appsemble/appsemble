@@ -13,12 +13,16 @@ spec:
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
+      # A run that is still active at the next ten-minute tick makes that tick skip, so a hung run
+      # ends early enough for its pod to terminate before the tick.
+      activeDeadlineSeconds: 480
       template:
         metadata:
           annotations:
             {{ include "appsemble.gitlab" . | indent 12 }}
         spec:
           restartPolicy: Never
+          serviceAccountName: {{ include "appsemble.fullname" . }}-serviceaccount
           containers:
             - name: {{ include "appsemble.fullname" . }}-scale-containers
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
@@ -29,7 +33,14 @@ spec:
                 {{- toYaml .Values.resources.cronjobs | nindent 16 }}
               args:
                 - scale-containers # Command that handles scaling
-                - -vv
+              {{- with .Values.verbosity }}
+                - -{{ repeat (int .) "v" }}
+              {{- end }}
               env:
+                - name: SERVICE_NAME
+                  value: {{ include "appsemble.fullname" . }}
 {{ include "appsemble.postgres" . | indent 16 }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 16 }}
+{{ include "appsemble.trustedCaBundle.volumeMounts" . | indent 14 }}
+{{ include "appsemble.trustedCaBundle.volumes" . | indent 10 }}
 {{ end }}

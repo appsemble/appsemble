@@ -29,7 +29,7 @@ export function AppScreenshots(): ReactNode {
   const [uploadingScreenshot, setUploadingScreenshot] = useState<File>();
   const uploadingScreenshotPreview = useObjectURL(uploadingScreenshot);
 
-  const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
+  const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.roles;
   const mayCreateScreenshots =
     userRole &&
     checkOrganizationRoleOrganizationPermissions(userRole, [

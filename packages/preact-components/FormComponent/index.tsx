@@ -60,8 +60,10 @@ export interface SharedFormComponentProps {
 
   /**
    * The label used for optional fields.
+   *
+   * Defaults to the value of {@link FormComponentOptionalLabelContext}.
    */
-  optionalLabel: ComponentChild;
+  optionalLabel?: ComponentChild;
 
   /**
    * The name for the HTML element.
@@ -123,6 +125,11 @@ export type FormComponentHelpPosition = 'above' | 'below';
  * The position of the help text and error message of the {@link FormComponent} elements inside.
  */
 export const FormComponentHelpPositionContext = createContext<FormComponentHelpPosition>('below');
+
+/**
+ * The label of optional {@link FormComponent} elements inside which don't set `optionalLabel`.
+ */
+export const FormComponentOptionalLabelContext = createContext<ComponentChild>(null);
 
 interface FormComponentAria {
   'aria-describedby'?: string;
@@ -211,6 +218,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
     const helpId = useId();
     const errorId = useId();
     const helpAbove = useContext(FormComponentHelpPositionContext) === 'above';
+    const defaultOptionalLabel = useContext(FormComponentOptionalLabelContext);
     const hasError = isValidElement(error) || typeof error === 'string' || Number.isFinite(error);
     const aria = useMemo<FormComponentAria>(
       () => ({
@@ -265,7 +273,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
             {label}
             {!required || tag ? (
               <span className="is-pulled-right has-text-weight-normal" data-testid="tag-formcomp">
-                {tag || optionalLabel}
+                {tag || (optionalLabel ?? defaultOptionalLabel)}
               </span>
             ) : null}
           </label>

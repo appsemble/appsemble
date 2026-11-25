@@ -45,15 +45,13 @@ function validateWebhookBody(ctx: Context, body: unknown, schema: Schema): void 
 
 export async function callAppWebhook(ctx: Context): Promise<void> {
   const {
-    client,
     mailer,
     pathParams: { appId, webhookName },
     request: { body },
-    user,
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'demoMode', 'domain', 'path', 'OrganizationId'],
+    attributes: ['id', 'definition', 'demoMode', 'domain', 'path', 'OrganizationId', 's3Bucket'],
   });
 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
@@ -62,14 +60,7 @@ export async function callAppWebhook(ctx: Context): Promise<void> {
 
   assertKoaCondition(webhookDefinition != null, ctx, 404, 'Webhook not found');
 
-  // Webhook secret auth: user is truthy (empty object) but no client.app
-  // App auth: user is truthy and client.app exists
-  // Guest: user is falsy
-  const clientApp = (client as { app?: unknown } | undefined)?.app;
-  const isWebhookSecretAuth = user && !clientApp;
-
-  // Check permissions for app auth and guest (not for webhook secret auth)
-  if (!isWebhookSecretAuth) {
+  if (!ctx.state.webhookAuthenticated) {
     logger.verbose(`Checking permissions for webhook '${webhookName}'`);
     await checkAppPermissions({
       context: ctx,

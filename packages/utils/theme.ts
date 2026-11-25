@@ -6,17 +6,26 @@ import { baseTheme, type Theme } from '@appsemble/lang-sdk';
 declare class URLSearchParams {
   constructor(params: Record<string, string>);
 
+  set(name: string, value: string): void;
+
   sort(): void;
 }
 
 /**
  * Merge multiple partial themes and the base theme into one resulting theme.
  *
+ * Theme variables are merged per key, so a higher priority theme can override a single variable
+ * while keeping the others.
+ *
  * @param themes The themes to merge. The later a theme is specified, the higher its priority.
  * @returns A combination of all themes.
  */
 export function mergeThemes(...themes: Partial<Theme>[]): Theme {
   const result = Object.assign({}, baseTheme, ...themes) as Theme;
+  const variableMaps = themes.filter((theme) => theme?.variables);
+  if (variableMaps.length) {
+    result.variables = Object.assign({}, ...variableMaps.map((theme) => theme.variables));
+  }
   result.font = { ...result.font, source: result.font.source || 'google' };
   if (result.displayFont) {
     result.displayFont = { ...result.displayFont, source: result.displayFont.source || 'google' };
@@ -31,7 +40,7 @@ export function mergeThemes(...themes: Partial<Theme>[]): Theme {
  * @returns The URL to the Bulma theme.
  */
 export function createThemeURL(theme: Theme): string {
-  const { displayFont, font, ...rest } = theme;
+  const { displayFont, font, variables, ...rest } = theme;
   const params = new URLSearchParams({
     ...rest,
     fontFamily: font.family,
@@ -41,6 +50,10 @@ export function createThemeURL(theme: Theme): string {
       displayFontSource: displayFont.source ?? '',
     }),
   });
+  if (variables && Object.keys(variables).length) {
+    // Serialize with sorted keys for cacheability.
+    params.set('variables', JSON.stringify(variables, Object.keys(variables).sort()));
+  }
   // Sort for cacheability.
   params.sort();
   return `/bulma/0.9.4/bulma.min.css?${params}`;

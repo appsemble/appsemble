@@ -117,6 +117,10 @@
         "pathStyle": {
           "type": "boolean",
           "description": "Whether to address buckets in the URL path instead of as a subdomain of the endpoint."
+        },
+        "appBucketPrefix": {
+          "type": "string",
+          "description": "The prefix the name of an app’s own bucket must start with. When unset, apps cannot name their own bucket."
         }
       }
     },
@@ -329,6 +333,26 @@
     "tolerations": {
       "type": "array"
     },
+    "hostAliases": {
+      "type": "array",
+      "description": "Extra hosts file entries for the pods that send email: the server, run-cronjobs and charge-organization-subscriptions. For example, map the host name on an SMTP relay's certificate to the relay's internal address.",
+      "items": {
+        "type": "object",
+        "required": ["ip", "hostnames"],
+        "properties": {
+          "ip": {
+            "type": "string"
+          },
+          "hostnames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "default": []
+    },
     "affinity": {
       "type": "object"
     },
@@ -343,6 +367,102 @@
     "adminApiSecret": {
       "type": "string",
       "description": "The secret to use for authenticating admin users, e.g. for newsletter-related endpoints. The secret should contain the following values: `admin-api-secret`."
+    },
+    "organizationSso": {
+      "description": "Deployment-managed single sign-on settings keyed by organization ID. Organizations omitted from this map lose deployment-managed SSO grants; Studio-managed settings are preserved.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[0-9a-z]+(-[0-9a-z]+)*$",
+        "maxLength": 30
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["issuer", "clientId", "name", "policy", "roleMappings", "clientSecretRef"],
+        "properties": {
+          "issuer": {
+            "type": "string",
+            "format": "uri"
+          },
+          "clientId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1
+          },
+          "groupClaim": {
+            "type": "string",
+            "minLength": 1
+          },
+          "domains": {
+            "description": "Trusted exact email domains and aliases for Studio sign-in discovery. Deployment operators assert ownership; domains added in Studio require DNS verification.",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "policy": {
+            "enum": ["optional", "required", "required-with-guests"]
+          },
+          "allowedLoginMethods": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "enum": ["password", "github", "gitlab", "google", "oidc"]
+            }
+          },
+          "roleMappings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["group", "role"],
+              "properties": {
+                "group": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "role": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "clientSecretRef": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "key"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "key": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "organizationSsoIssuers": {
+      "type": "array",
+      "description": "OpenID Connect issuers which organization Owners may configure for single sign-on in Studio. Settings in `organizationSso` may use any issuer.",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "default": []
     },
     "oauthSecret": {
       "type": ["string", "null"],
@@ -596,14 +716,6 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "existingSecret": {
-              "type": "string",
-              "description": "The Kubernetes secret containing PgBouncer's userlist file."
-            },
-            "userlistKey": {
-              "type": "string",
-              "description": "The key in pgbouncer.auth.existingSecret containing the userlist file."
-            },
             "type": {
               "type": "string",
               "description": "The PgBouncer authentication method.",
@@ -749,8 +861,34 @@
     },
     "remote": {
       "type": ["string", "null"],
-      "description": "A remote Appsemble server to connect to in order to synchronize blocks.",
+      "description": "The Appsemble server to copy block versions from when an app uses a block version this server does not have. `null` disables it.",
       "format": "uri"
+    },
+    "syncOrganizationBlocks": {
+      "type": "array",
+      "description": "The organizations whose blocks are synchronized from `remote` on install and upgrade.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["organization", "version"],
+        "properties": {
+          "organization": {
+            "type": "string",
+            "description": "The ID of the organization."
+          },
+          "version": {
+            "type": "string",
+            "description": "The block version to synchronize: `server` for the Appsemble version of the image, `latest` for the latest version of each block, or an explicit version."
+          }
+        }
+      }
+    },
+    "verbosity": {
+      "type": "integer",
+      "description": "How many levels above `info` the server and its jobs log: 1 for `verbose`, 2 for `silly`. From `verbose` on, the logs include sent emails with their links.",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0
     },
     "securityEmail": {
       "type": "string",
@@ -758,22 +896,55 @@
       "format": "email",
       "default": "security@appsemble.com"
     },
-    "provision": {
+    "rejectBreachedPasswords": {
+      "type": "boolean",
+      "description": "If `true`, reject new passwords that appear in the Have I Been Pwned Pwned Passwords data set. The server then sends the first 5 characters of the SHA-1 hash of each new password to api.pwnedpasswords.com.",
+      "default": false
+    },
+    "ssrfAllowIpAddressList": {
+      "type": "array",
+      "description": "Private IP addresses, CIDR ranges or host names the server may connect to on behalf of apps, for example in request actions, OAuth2 logins and app SMTP. A listed host name may resolve to any private address. Allow only the specific internal hosts an app needs, not whole private ranges, because the block also protects cluster internals.",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "trustedCaBundle": {
       "type": "object",
-      "description": "Provision the database with a pre-configured account and client credentials. This is for development purposes only.",
       "additionalProperties": false,
-      "required": ["user"],
+      "description": "PEM certificates the server and its Jobs and CronJobs trust in addition to the certificate authorities bundled with Node.js.",
       "properties": {
+        "configMap": {
+          "type": "string",
+          "description": "The ConfigMap which holds the certificates."
+        },
+        "key": {
+          "type": "string",
+          "description": "The key in the ConfigMap which holds the certificates."
+        }
+      }
+    },
+    "disableRegistration": {
+      "type": "boolean",
+      "description": "If `true`, disable user registration with email and password. Without a Studio login provider (`oauthSecret`) nobody new can get an account.",
+      "default": false
+    },
+    "provision": {
+      "type": ["object", "null"],
+      "description": "Provision an organization with a Maintainer service account, and optionally a user account.",
+      "additionalProperties": false,
+      "required": ["existingSecret", "organization"],
+      "properties": {
+        "existingSecret": {
+          "type": "string",
+          "description": "The secret which holds the `<id>:<secret>` client credentials of the service account under the key `client-credentials`, and the password of the user account under the key `user-password`."
+        },
         "user": {
           "type": "object",
           "description": "The user account to provision.",
           "additionalProperties": false,
-          "required": ["clientCredentials", "email", "name", "password", "timezone"],
+          "required": ["email", "name", "organizationRole", "timezone"],
           "properties": {
-            "clientCredentials": {
-              "type": "string",
-              "description": "Client credentials that can be used to authenticate the user."
-            },
             "email": {
               "type": "string",
               "description": "The email address of the user account.",
@@ -782,10 +953,6 @@
             "name": {
               "type": "string",
               "description": "The display name of the user account."
-            },
-            "password": {
-              "type": "string",
-              "description": "The password of the user account."
             },
             "timezone": {
               "type": "string",

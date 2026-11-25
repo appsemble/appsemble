@@ -166,7 +166,7 @@ export function Table({
   }, [actions, selectedData]);
 
   if (loading) {
-    return <Loader label={utils.formatMessage('loading')} />;
+    return <Loader label={utils.formatMessage('loading')} testId="loader-comp" />;
   }
 
   if (error) {

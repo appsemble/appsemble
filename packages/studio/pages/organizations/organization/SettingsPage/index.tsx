@@ -15,7 +15,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type App, type AppCollection } from '@appsemble/types';
+import { type App, type AppCollection, PredefinedOrganizationRole } from '@appsemble/types';
 import axios from 'axios';
 import countries from 'i18n-iso-countries';
 import {
@@ -378,7 +378,7 @@ export function SettingsPage({ onChangeOrganization, organization }: SettingsPag
           </SimpleSubmit>
         </SimpleForm>
       </Collapsible>
-      {organization.role === 'Owner' ? (
+      {organization.roles.includes(PredefinedOrganizationRole.Owner) ? (
         <Content>
           <Message
             className={styles.dangerZone}

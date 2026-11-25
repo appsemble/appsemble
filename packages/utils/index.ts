@@ -21,3 +21,4 @@ export * from './assets.js';
 export * from './appMessages.js';
 export * from './validateAppMessages.js';
 export * from './theme.js';
+export * from './xmlToJson.js';

@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import * as nodeUtils from '@appsemble/node-utils';
 import {
   createFixtureStream,
@@ -100,6 +102,7 @@ describe('createAppAsset', () => {
       mime: 'application/octet-stream',
       name: 'test-asset',
       AppMemberId: null,
+      sha256: createHash('sha256').update(data).digest('hex'),
     });
   });
 
@@ -110,7 +113,7 @@ describe('createAppAsset', () => {
       `/api/apps/${app.id}/assets`,
       createFormData({ file: data, name: 'test-asset' }),
     );
-    const { bucket, key } = getAppAssetLocation(app.id, response.data.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, response.data.id);
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(data);
   });
 
@@ -224,7 +227,7 @@ describe('createAppAsset', () => {
       filename: 'uploaded.bin',
       mime: 'image/png',
     });
-    const { bucket, key } = getAppAssetLocation(app.id, response.data.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, response.data.id);
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(image);
   });
 
@@ -326,6 +329,7 @@ describe('createAppAsset', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: true,
+        sha256: createHash('sha256').update('Test asset').digest('hex'),
       }),
     );
   });
@@ -375,6 +379,7 @@ describe('createAppAsset', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: true,
+        sha256: createHash('sha256').update('Test asset').digest('hex'),
       }),
     );
 
@@ -399,6 +404,7 @@ describe('createAppAsset', () => {
         mime: 'application/octet-stream',
         name: null,
         seed: false,
+        sha256: createHash('sha256').update('Test asset').digest('hex'),
       }),
     );
   });

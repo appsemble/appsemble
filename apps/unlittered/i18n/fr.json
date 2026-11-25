@@ -5,7 +5,16 @@
     "pages.litter-details": "Détails sur Litter",
     "pages.litter-list": "Liste des déchets",
     "pages.litter-overview": "Présentation de Litter",
-    "pages.report-litter": "Signaler un contenu inapproprié"
+    "pages.report-litter": "Signaler un contenu inapproprié",
+    "routes.App-Invite": "",
+    "routes.Edit-Password": "",
+    "routes.Feedback": "",
+    "routes.Group-Invite": "",
+    "routes.Login": "",
+    "routes.Register": "",
+    "routes.Reset-Password": "",
+    "routes.Settings": "",
+    "routes.Verify": ""
   },
   "messageIds": {
     "date": "Date",
@@ -13,6 +22,7 @@
     "notes": "Remarques",
     "notesExample": "Exemple : il y a un vélo dans les buissons",
     "photos": "Photos",
-    "process": "Processus"
+    "process": "Processus",
+    "reportLitter": ""
   }
 }

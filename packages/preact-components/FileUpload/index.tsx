@@ -1,0 +1,122 @@
+import { type ComponentChildren } from 'preact';
+import { type ChangeEvent, type ComponentPropsWithoutRef, forwardRef } from 'preact/compat';
+import { useCallback, useEffect, useImperativeHandle, useRef } from 'preact/hooks';
+
+import {
+  FormComponent,
+  FormComponentContext,
+  FormComponentError,
+  type SharedFormComponentProps,
+} from '../FormComponent/index.js';
+import { Icon } from '../Icon/index.js';
+import { type Input } from '../Input/index.js';
+
+type FileUploadProps = Omit<
+  ComponentPropsWithoutRef<typeof Input>,
+  keyof SharedFormComponentProps | 'onChange' | 'value'
+> &
+  SharedFormComponentProps & {
+    readonly fileButtonLabel?: ComponentChildren;
+    readonly fileLabel?: ComponentChildren;
+    readonly preview?: ComponentChildren;
+    readonly onChange: (event: ChangeEvent<HTMLInputElement>, value: File) => void;
+    readonly formComponentClassName?: string;
+    readonly value?: File;
+    readonly handleRemove?: () => void;
+    readonly hasPicture?: boolean;
+  };
+
+export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
+  (
+    {
+      capture,
+      name,
+      id = name,
+      accept,
+      className,
+      error,
+      fileButtonLabel,
+      fileLabel,
+      formComponentClassName,
+      help,
+      icon = 'upload',
+      label,
+      onChange,
+      preview = null,
+      required = false,
+      value,
+      handleRemove,
+      hasPicture = false,
+    },
+    ref,
+  ) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
+    useImperativeHandle(ref, () => inputRef.current);
+
+    const handleChange = useCallback(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
+      (event: ChangeEvent<HTMLInputElement>) => onChange(event, event?.currentTarget.files?.[0]),
+      [onChange],
+    );
+
+    useEffect(() => {
+      // Make sure the input is cleared when the value is cleared.
+      if (!value) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore 2322 null is not assignable to type (strictNullChecks)
+        inputRef.current.value = null;
+      }
+    }, [value, inputRef]);
+
+    const fileName = value?.name || fileLabel;
+
+    const handleRemoveClick = (): void => {
+      handleRemove?.();
+      inputRef.current?.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+
+    return (
+      <FormComponent className={formComponentClassName} id={id} label={label} required={required}>
+        <FormComponentError error={error}>
+          {preview}
+          <div className="file has-name">
+            <label className={`file-label ${className}`} htmlFor={id}>
+              <FormComponentContext.Consumer>
+                {(aria) => (
+                  <input
+                    {...aria}
+                    accept={accept}
+                    capture={capture}
+                    className="file-input"
+                    id={id}
+                    name={name}
+                    onChange={handleChange}
+                    ref={inputRef}
+                    type="file"
+                  />
+                )}
+              </FormComponentContext.Consumer>
+              <span className="file-cta">
+                <Icon icon={icon} />
+                {fileButtonLabel ? <span className="file-label">{fileButtonLabel}</span> : null}
+              </span>
+              {fileName ? <span className="file-name">{fileName}</span> : null}
+            </label>
+            {hasPicture ? (
+              <button
+                className="delete is-medium is-align-self-center ml-2"
+                onClick={handleRemoveClick}
+                type="button"
+              />
+            ) : null}
+          </div>
+        </FormComponentError>
+        {!error && help ? <p className="help">{help}</p> : null}
+      </FormComponent>
+    );
+  },
+);

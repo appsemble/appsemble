@@ -5,7 +5,16 @@
     "pages.litter-details": "Litter details",
     "pages.litter-list": "Litter list",
     "pages.litter-overview": "Litter Overview",
-    "pages.report-litter": "Report litter"
+    "pages.report-litter": "Report litter",
+    "routes.App-Invite": "App-Invite",
+    "routes.Edit-Password": "Edit-Password",
+    "routes.Feedback": "Feedback",
+    "routes.Group-Invite": "Group-Invite",
+    "routes.Login": "Login",
+    "routes.Register": "Register",
+    "routes.Reset-Password": "Reset-Password",
+    "routes.Settings": "Settings",
+    "routes.Verify": "Verify"
   },
   "messageIds": {
     "date": "Date",
@@ -13,6 +22,7 @@
     "notes": "Notes",
     "notesExample": "Example: There is a bicycle in the bushes",
     "photos": "Photos",
-    "process": "Process"
+    "process": "Process",
+    "reportLitter": "Report litter"
   }
 }

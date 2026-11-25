@@ -107,7 +107,7 @@ describe('oauth2', () => {
     });
 
     it('should not let an empty groups list shadow a later source with real groups', async () => {
-      mock.onGet('/userinfo').reply(() => [
+      mock.onGet('https://example.com/userinfo').reply(() => [
         200,
         {
           groups: ['/Managers', '/Users'],
@@ -125,7 +125,7 @@ describe('oauth2', () => {
           },
           'secret',
         ),
-        '/userinfo',
+        'https://example.com/userinfo',
       );
       expect(userInfo).toMatchObject({
         groups: ['/Managers', '/Users'],
@@ -160,7 +160,7 @@ describe('oauth2', () => {
     });
 
     it('should fall back to user info endpoint', async () => {
-      mock.onGet('/userinfo').reply(() => [
+      mock.onGet('https://example.com/userinfo').reply(() => [
         200,
         {
           email: 'user@example.com',
@@ -172,7 +172,11 @@ describe('oauth2', () => {
           zoneinfo: undefined,
         },
       ]);
-      const userInfo = await getUserInfo('', jwt.sign({ sub: '1337' }, 'secret'), '/userinfo');
+      const userInfo = await getUserInfo(
+        '',
+        jwt.sign({ sub: '1337' }, 'secret'),
+        'https://example.com/userinfo',
+      );
       expect(userInfo).toStrictEqual({
         email: 'user@example.com',
         email_verified: false,
@@ -186,7 +190,7 @@ describe('oauth2', () => {
     });
 
     it('should support a remapper for the user info endpoint', async () => {
-      mock.onGet('/user').reply(() => [
+      mock.onGet('https://example.com/user').reply(() => [
         200,
         {
           emailAddress: 'user@example.com',
@@ -200,7 +204,7 @@ describe('oauth2', () => {
       ]);
       // @ts-expect-error 2345 argument of type is not assignable to parameter of type
       // (strictNullChecks)
-      const userInfo = await getUserInfo('', null, '/user', [
+      const userInfo = await getUserInfo('', null, 'https://example.com/user', [
         {
           'object.from': {
             email: [{ prop: 'emailAddress' }],

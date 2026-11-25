@@ -1,9 +1,15 @@
+// eslint-disable-next-line n/prefer-global/console -- Vitest's global console lacks the Console class.
+import { Console } from 'node:console';
+import { type AddressInfo, createServer as createTcpServer, type Socket } from 'node:net';
+import { Writable } from 'node:stream';
+
+import { logger } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
 import { type ImapFlow, type MailboxLockObject } from 'imapflow';
 import { type Transporter } from 'nodemailer';
-import { afterAll, afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type Mock, onTestFinished, vi } from 'vitest';
 
 import { Mailer } from './Mailer.js';
 import { App, AppMessages, Organization, OrganizationMember, User } from '../../models/index.js';
@@ -11,6 +17,7 @@ import { type Argv, argv, setArgv } from '../argv.js';
 import { createServer } from '../createServer.js';
 import { encrypt } from '../crypto.js';
 import { createTestUser } from '../test/authorization.js';
+import { countConnections } from '../test/countConnections.js';
 
 let mailer: Mailer;
 
@@ -19,6 +26,58 @@ const baseArgv: Partial<Argv> = {
   smtpFrom: 'test@example.com',
   aesSecret: 'testSecret',
 };
+
+/**
+ * Listen on 127.0.0.1 for an email delivered over SMTP.
+ *
+ * The server is closed when the current test finishes.
+ *
+ * @returns The port listened on, and the message data received so far.
+ */
+async function receiveEmail(): Promise<{ message: string; port: number }> {
+  const smtp = { message: '', port: 0 };
+  const sockets: Socket[] = [];
+  const server = createTcpServer((socket) => {
+    sockets.push(socket);
+    let receivingData = false;
+    socket.write('220 localhost ESMTP\r\n');
+    socket.on('data', (chunk) => {
+      if (receivingData) {
+        smtp.message += chunk;
+        if (smtp.message.endsWith('\r\n.\r\n')) {
+          receivingData = false;
+          socket.write('250 OK\r\n');
+        }
+        return;
+      }
+      switch (String(chunk).slice(0, 4).toUpperCase()) {
+        case 'EHLO':
+          socket.write('250-localhost\r\n250 AUTH PLAIN\r\n');
+          break;
+        case 'AUTH':
+          socket.write('235 OK\r\n');
+          break;
+        case 'DATA':
+          receivingData = true;
+          socket.write('354 OK\r\n');
+          break;
+        default:
+          socket.write('250 OK\r\n');
+      }
+    });
+  });
+  onTestFinished(() => {
+    for (const socket of sockets) {
+      socket.destroy();
+    }
+    server.close();
+  });
+  await new Promise<void>((resolve) => {
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  smtp.port = (server.address() as AddressInfo).port;
+  return smtp;
+}
 
 describe('Mailer', () => {
   beforeEach(() => {
@@ -179,6 +238,10 @@ describe('Mailer', () => {
           tokenUrl: 'https://login.microsoftonline.com/tenant/oauth2/v2.0/token',
           error: 'AADSTS7000215: Invalid client secret provided.',
         },
+      ],
+      totpReset: [
+        { name: 'null', appName: 'Test App' },
+        { name: 'John Doe', appName: 'Test App' },
       ],
     };
 
@@ -600,7 +663,7 @@ _Test App_
       vi.setSystemTime(0);
     });
 
-    afterAll(() => {
+    afterEach(() => {
       vi.runOnlyPendingTimers();
       vi.useRealTimers();
     });
@@ -701,6 +764,29 @@ _Test App_
         .replaceAll(/^-{4}_NmP-.*-Part_1(?:--)?$/gm, '');
       expect(appendCallBody).toMatchSnapshot();
       expect(appendMock.mock.calls[0][2]).toStrictEqual(['\\Seen']);
+    });
+
+    it('should send the email if copying it to the sent folder fails', async () => {
+      const smtp = await receiveEmail();
+      // The IMAP server closes every connection, so the copy fails.
+      const imap = await countConnections();
+      mailer = new Mailer({
+        smtpHost: '127.0.0.1',
+        smtpPort: smtp.port,
+        imapHost: '127.0.0.1',
+        imapPort: imap.port,
+      });
+
+      await mailer.sendEmail({
+        to: 'test@example.com',
+        subject: 'Test',
+        text: 'Test',
+        html: '<p>Test</p>',
+        attachments: [],
+      });
+
+      expect(smtp.message).toContain('Subject: Test');
+      expect(imap.connections).toBe(1);
     });
   });
 
@@ -1004,6 +1090,113 @@ _Test App_
       await expect(() => mailer.sendEmail(email)).rejects.toThrow(
         'Unable to determine the sender or recipient of the message.',
       );
+    });
+  });
+
+  describe('app SMTP settings', () => {
+    function sendAppEmail(emailHost: string, emailPort: number): Promise<void> {
+      return mailer.sendEmail({
+        to: 'test@example.com',
+        subject: 'Test',
+        text: 'Test',
+        html: '<p>Test</p>',
+        app: {
+          id: 1,
+          demoMode: false,
+          emailHost,
+          emailName: 'Test',
+          emailPassword: encrypt('secret', baseArgv.aesSecret!),
+          emailPort,
+          emailSecure: false,
+          emailUser: 'user@example.com',
+        },
+      });
+    }
+
+    beforeEach(() => {
+      vi.stubEnv('VITEST_CONF_ALLOW_PRIVATE_IP_PROXY', '');
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it.each(['127.0.0.1', 'localhost'])(
+      'should not connect to an SMTP server at %s',
+      async (emailHost) => {
+        const target = await countConnections();
+
+        await expect(sendAppEmail(emailHost, target.port)).rejects.toThrow(/is not allowed/);
+        expect(target.connections).toBe(0);
+      },
+    );
+
+    it('should reject an invalid SMTP port', async () => {
+      vi.stubEnv('SSRF_ALLOW_IP_ADDRESS_LIST', '127.0.0.1');
+
+      await expect(sendAppEmail('127.0.0.1', 70_000)).rejects.toThrow(/Port should be/);
+    });
+
+    it('should send email through an SMTP server on an allowed address', async () => {
+      vi.stubEnv('SSRF_ALLOW_IP_ADDRESS_LIST', '127.0.0.1');
+      const smtp = await receiveEmail();
+
+      await sendAppEmail('127.0.0.1', smtp.port);
+
+      expect(smtp.message).toContain('Subject: Test');
+    });
+  });
+
+  describe('logging', () => {
+    const text = 'Reset your password [here](https://example.com/reset?token=abcdefg).';
+    const { level } = logger;
+
+    afterEach(() => {
+      logger.level = level;
+      vi.unstubAllGlobals();
+    });
+
+    async function sendAndReadLog(): Promise<string> {
+      let log = '';
+      // Winston and nodemailer both log through the global console.
+      vi.stubGlobal(
+        'console',
+        new Console(
+          new Writable({
+            write(chunk, encoding, callback) {
+              log += chunk;
+              callback();
+            },
+          }),
+        ),
+      );
+      await mailer.sendEmail({
+        to: 'test@example.com',
+        subject: 'Reset your password',
+        text,
+        html: '<p>Reset your password</p>',
+        attachments: [],
+      });
+      return log;
+    }
+
+    it('should leave the body out of the logs at the verbosity of the Helm chart', async () => {
+      // The Helm chart starts the server with -vv, which logs at the most verbose level.
+      logger.level = 'silly';
+      setArgv({ ...baseArgv, imapCopyToSentFolder: true });
+      const smtp = await receiveEmail();
+      mailer = new Mailer({ ...argv, smtpHost: '127.0.0.1', smtpPort: smtp.port });
+
+      const log = await sendAndReadLog();
+
+      expect(log).toContain('Subject: Reset your password');
+      expect(log).not.toContain('abcdefg');
+    });
+
+    it('should log the body when SMTP is not configured', async () => {
+      logger.level = 'info';
+
+      expect(await sendAndReadLog()).toContain('token=abcdefg');
     });
   });
 });

@@ -1,14 +1,14 @@
-import { type RegistrationFormValues } from '@appsemble/react-components';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/preact';
 import { AxiosError, AxiosHeaders, type AxiosResponse } from 'axios';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Register } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
+import { type RegistrationFormValues } from '../RegisterForm/index.js';
 
 const { axiosPost } = vi.hoisted(() => ({ axiosPost: vi.fn() }));
 
@@ -18,13 +18,13 @@ vi.mock('axios', async (importOriginal) => {
   return { ...actual, default: { ...actual.default, post: axiosPost } };
 });
 
-vi.mock('@appsemble/react-components', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@appsemble/react-components')>();
+vi.mock('../RegisterForm/index.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../RegisterForm/index.js')>();
 
   return {
     ...actual,
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    Register: ({
+    RegisterForm: ({
       onRegister,
     }: {
       readonly onRegister: (values: RegistrationFormValues) => Promise<void>;
@@ -56,13 +56,12 @@ function createError(status: number, data: unknown): AxiosError {
 }
 
 async function submit(): Promise<void> {
+  window.history.replaceState(null, '', '/en/Register');
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/en/Register']}>
-        <Routes>
-          <Route element={<Register />} path="/:lang/Register" />
-        </Routes>
-      </MemoryRouter>
+      <Route path="/:lang/Register">
+        <Register />
+      </Route>
     </IntlProvider>,
   );
 

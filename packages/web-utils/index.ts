@@ -1,3 +1,4 @@
+export * from './asset.js';
 export * from './constants.js';
 export * from './download.js';
 export * from './fa.js';

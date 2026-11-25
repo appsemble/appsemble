@@ -180,7 +180,7 @@ describe('updateAppResources', () => {
     ]);
     const assetsData = await Promise.all(
       assets.map((asset) => {
-        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
         return getS3FileBuffer(bucket, key);
       }),
     );

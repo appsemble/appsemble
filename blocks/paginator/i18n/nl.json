@@ -1,4 +1,6 @@
 {
-  "nextLabel": "",
-  "prevLabel": ""
+  "navigationLabel": "Paginering",
+  "nextLabel": "Volgende",
+  "pageLabel": "Pagina {page} van {pageCount}",
+  "prevLabel": "Vorige"
 }

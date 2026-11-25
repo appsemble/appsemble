@@ -25,6 +25,7 @@ import { MembersPage } from './MembersPage/index.js';
 import { messages } from './messages.js';
 import { OrganizationSubscriptionsPage } from './OrganizationSubscriptionsPage/index.js';
 import { SettingsPage } from './SettingsPage/index.js';
+import { SingleSignOnPage } from './SingleSignOnPage/index.js';
 import { AsyncDataView } from '../../../components/AsyncDataView/index.js';
 import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
@@ -73,6 +74,11 @@ export function OrganizationSideMenu({
           <FormattedMessage {...messages.settings} />
         </MenuItem>
       ) : null}
+      {mayEdit ? (
+        <MenuItem end icon="key" to={`${url}/sso`}>
+          <FormattedMessage {...messages.singleSignOn} />
+        </MenuItem>
+      ) : null}
     </MenuSection>
   );
 }
@@ -92,12 +98,12 @@ export function OrganizationRoutes(): ReactNode {
   ).data;
   const mayEdit =
     userOrganization &&
-    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+    checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
       OrganizationPermission.UpdateOrganizations,
     ]);
   const mayEditSubscriptions =
     userOrganization &&
-    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+    checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
       OrganizationPermission.ManageOrganizationSubscriptions,
     ]);
 
@@ -143,6 +149,7 @@ export function OrganizationRoutes(): ReactNode {
               }
               path="/settings"
             />
+            <Route element={<SingleSignOnPage />} path="/sso" />
           </Route>
           <Route
             element={

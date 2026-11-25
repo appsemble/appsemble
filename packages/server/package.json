@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.40.5",
+  "version": "0.42.0",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -40,17 +40,17 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/lang-sdk": "0.40.5",
-    "@appsemble/node-utils": "0.40.5",
-    "@appsemble/types": "0.40.5",
-    "@appsemble/utils": "0.40.5",
+    "@appsemble/lang-sdk": "0.42.0",
+    "@appsemble/node-utils": "0.42.0",
+    "@appsemble/types": "0.42.0",
+    "@appsemble/utils": "0.42.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@koa/cors": "^5.0.0",
     "@odata/parser": "^0.2.0",
     "@sentry/node": "^10.0.0",
     "@sentry/profiling-node": "^10.0.0",
     "@types/mdast": "^4.0.0",
-    "@xmldom/xmldom": "^0.9.0",
+    "@xmldom/xmldom": "^0.9.9",
     "axios": "^1.0.0",
     "bcrypt": "^6.0.0",
     "chalk": "^5.0.0",
@@ -89,9 +89,11 @@
     "node-forge": "^1.0.0",
     "nodemailer": "^10.0.0",
     "openapi-types": "^12.0.0",
+    "openid-client": "6.8.9",
     "otplib": "^12.0.0",
     "pdf-lib": "^1.17.1",
     "raw-body": "^2.0.0",
+    "redis-semaphore": "6.0.0",
     "reflect-metadata": "^0.2.0",
     "rehype-document": "^7.0.0",
     "rehype-stringify": "^10.0.0",
@@ -143,11 +145,11 @@
     "ein-validator": "1.0.1",
     "jest-image-snapshot": "6.5.2",
     "jsvat": "2.5.4",
-    "memfs": "4.80.0",
+    "memfs": "4.80.1",
     "strip-indent": "4.1.1",
     "validate-vat": "0.9.0",
     "vitest": "4.1.12",
-    "xpath": "0.0.35"
+    "xpath": "0.0.36"
   },
   "peerDependencies": {
     "webpack": "^5"

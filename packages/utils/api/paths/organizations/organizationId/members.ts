@@ -37,6 +37,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             type: 'object',
             required: ['email', 'role'],
             properties: {
+              guest: { type: 'boolean', default: false },
               email: {
                 type: 'string',
                 format: 'email',

@@ -41,5 +41,11 @@ export async function getAppAssetHeadersById(ctx: Context): Promise<void> {
     }
   }
 
-  setAssetHeaders(ctx, mime ?? 'application/octet-stream', filename ?? asset.id);
+  setAssetHeaders(ctx, {
+    mime: mime ?? 'application/octet-stream',
+    filename: filename ?? asset.id,
+    // Both the asset id and the asset name resolve here. Only the id keeps addressing these bytes
+    // after the name is pointed at a different asset.
+    immutable: assetId === asset.id,
+  });
 }

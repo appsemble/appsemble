@@ -63,6 +63,10 @@ export const messages = defineMessages({
     id: 'studio.du1laW',
     defaultMessage: 'Never',
   },
+  authorizationEnded: {
+    id: 'studio.XR05UA',
+    defaultMessage: 'Authorization ended; register new client credentials',
+  },
   expiresHelp: {
     id: 'studio.oxZwJN',
     defaultMessage: 'The date on which the client credentials expire',

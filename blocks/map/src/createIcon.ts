@@ -79,7 +79,12 @@ export function createIcon(
   const { icon = 'map-marker-alt' } = icons;
   const resolved = utils.resolveIcon(icon);
   if (resolved.type === 'asset') {
-    return createImageIcon(resolved.url, fullSize, anchor, KNOWN_MARKER_ICONS.has(icon));
+    const pin = KNOWN_MARKER_ICONS.has(icon);
+    const { fallbackUrl } = resolved;
+    const image = createImageIcon(resolved.url, fullSize, anchor, pin);
+    return fallbackUrl
+      ? image.catch(() => createImageIcon(fallbackUrl, fullSize, anchor, pin))
+      : image;
   }
   const html = document.createElement('i');
   html.className = `${utils.fa(icon)} has-text-${icons.color || 'primary'}`;

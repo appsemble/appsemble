@@ -5,6 +5,7 @@ import { type Context } from 'koa';
 import { App, getAppDB } from '../../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { checkAppLock } from '../../../../../utils/checkAppLock.js';
+import { isSecretIncomplete } from '../../../../../utils/secrets.js';
 
 export async function getAppServiceSecrets(ctx: Context): Promise<void> {
   const {
@@ -34,8 +35,12 @@ export async function getAppServiceSecrets(ctx: Context): Promise<void> {
       'ca',
       'lastTokenError',
       'lastTokenErrorAt',
+      'secret',
     ],
   });
 
-  ctx.body = serviceSecrets.map((secret) => secret.toJSON());
+  ctx.body = serviceSecrets.map((serviceSecret) => {
+    const { secret, ...configuration } = serviceSecret.toJSON();
+    return { ...configuration, incomplete: isSecretIncomplete(secret) };
+  });
 }

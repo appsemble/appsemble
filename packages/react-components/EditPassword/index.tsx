@@ -3,12 +3,12 @@ import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import {
+  BreachedPasswordSimpleFormError,
   FormButtons,
   Message,
   PasswordField,
   PasswordStrengthIndicator,
   SimpleForm,
-  SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
 } from '../index.js';
@@ -37,7 +37,9 @@ export function EditPassword({ onSubmit }: EditPasswordProps): ReactNode {
     </Message>
   ) : (
     <SimpleForm defaultValues={{ password: '' }} onSubmit={submit}>
-      <SimpleFormError>{() => <FormattedMessage {...messages.requestFailed} />}</SimpleFormError>
+      <BreachedPasswordSimpleFormError>
+        {() => <FormattedMessage {...messages.requestFailed} />}
+      </BreachedPasswordSimpleFormError>
       <SimpleFormField
         autoComplete="new-password"
         component={PasswordField}

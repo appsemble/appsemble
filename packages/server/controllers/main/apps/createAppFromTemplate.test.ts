@@ -20,6 +20,7 @@ import {
   OrganizationSubscription,
 } from '../../../models/index.js';
 import { setArgv } from '../../../utils/argv.js';
+import { createAppPasswordToken } from '../../../utils/app.js';
 import { createServer } from '../../../utils/createServer.js';
 import { resourcePartitionName } from '../../../utils/resourcePartition.js';
 import { getResourceUniqueIndexName } from '../../../utils/resourceUniqueIndexes.js';
@@ -105,11 +106,12 @@ describe('createAppFromTemplate', () => {
     const asset1 = await Asset.create({
       name: 'test-clonable',
       clonable: true,
+      sha256: 'hash',
     });
     const asset2 = await Asset.create({ name: 'test' });
     vi.useRealTimers();
     for (const asset of [asset1, asset2]) {
-      const { bucket, key } = getAppAssetLocation(t2.id, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: t2.id }, asset.id);
       await uploadS3File(bucket, key, Buffer.from('test'));
     }
     await AppMessages.create({
@@ -203,6 +205,54 @@ describe('createAppFromTemplate', () => {
   afterAll(() => {
     vi.useRealTimers();
   });
+
+  it.each([false, true])(
+    'should refuse copying protected apps without source access (template: %s)',
+    async (template) => {
+      await templates[2].update({
+        template,
+        visibility: 'public',
+        showAppDefinition: true,
+        password: 'hash',
+      });
+      authorizeStudio();
+
+      const response = await request.post('/api/app-templates', {
+        templateId: templates[2].id,
+        organizationId: 'testorganization',
+      });
+
+      expect(response.status).toBe(403);
+    },
+  );
+
+  it.each(['member', 'password'])(
+    'should allow copying protected apps with source access (%s)',
+    async (access) => {
+      const source = templates[access === 'member' ? 0 : 2];
+      await source.update({ visibility: 'public', showAppDefinition: true, password: 'hash' });
+      authorizeStudio();
+
+      const response = await request.post(
+        '/api/app-templates',
+        {
+          templateId: source.id,
+          organizationId: 'testorganization',
+        },
+        {
+          headers:
+            access === 'password'
+              ? { 'X-Appsemble-Password-Token': createAppPasswordToken(source) }
+              : {},
+        },
+      );
+
+      expect([response.status, response.data.definition]).toStrictEqual([
+        201,
+        { name: 'Test Template', pages: [] },
+      ]);
+    },
+  );
 
   it('should create a new app using a template', async () => {
     authorizeStudio();
@@ -460,10 +510,39 @@ describe('createAppFromTemplate', () => {
 
     for (const asset of assets) {
       expect(asset.name).toBe('test-clonable');
-      const { bucket, key } = getAppAssetLocation(id!, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: id! }, asset.id);
       expect(await getS3FileBuffer(bucket, key)).toStrictEqual(Buffer.from('test'));
     }
-    expect(assets.map((a) => a.name)).toStrictEqual(['test-clonable']);
+    expect(assets.map(({ name, sha256 }) => ({ name, sha256 }))).toStrictEqual([
+      { name: 'test-clonable', sha256: 'hash' },
+    ]);
+  });
+
+  it('should copy the content of every unnamed asset', async () => {
+    const [, template] = templates;
+    vi.useRealTimers();
+    const { Asset: TemplateAsset } = await getAppDB(template.id);
+    const contents = new Map<string, string>();
+    for (const content of ['first', 'second']) {
+      const { id } = await TemplateAsset.create({ clonable: true });
+      const { bucket, key } = getAppAssetLocation({ id: template.id }, id);
+      await uploadS3File(bucket, key, Buffer.from(content));
+      contents.set(id, content);
+    }
+
+    authorizeStudio();
+    const response = await request.post<AppType>('/api/app-templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      assets: true,
+    });
+
+    for (const [id, content] of contents) {
+      const { bucket, key } = getAppAssetLocation({ id: response.data.id! }, id);
+      expect(String(await getS3FileBuffer(bucket, key))).toBe(content);
+    }
   });
 
   it('should include the app’s styles when cloning an app', async () => {
@@ -547,7 +626,7 @@ describe('createAppFromTemplate', () => {
 
     const { AppOAuth2Secret, AppSamlSecret, AppServiceSecret } = await getAppDB(id!);
     const appServiceSecret = (await AppServiceSecret.findOne({
-      attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier', 'secret'],
+      attributes: ['name', 'authenticationMethod', 'urlPatterns', 'identifier'],
     }))!;
 
     expect(appServiceSecret.toJSON()).toStrictEqual({
@@ -555,7 +634,6 @@ describe('createAppFromTemplate', () => {
       authenticationMethod: 'custom-header',
       urlPatterns: 'urlPatterns',
       identifier: 'identifier',
-      secret: Buffer.from('placeholder'),
     });
 
     const appSamlSecret = (await AppSamlSecret.findOne({
@@ -616,6 +694,27 @@ describe('createAppFromTemplate', () => {
       tokenUrl: 'tokenUrl',
       userInfoUrl: 'userInfoUrl',
     });
+  });
+
+  it('should list the copied secrets as missing their values', async () => {
+    const [, template] = templates;
+    vi.useRealTimers();
+    authorizeStudio();
+    const { data: app } = await request.post<App>('/api/app-templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      secrets: true,
+    });
+
+    const { data: warnings } = await request.get(`/api/apps/${app.id}/warnings`);
+
+    expect(warnings).toStrictEqual([
+      { code: 'missing-secret', type: 'service', id: expect.any(Number), name: 'test' },
+      { code: 'missing-secret', type: 'oauth2', id: expect.any(Number), name: 'test' },
+      { code: 'missing-secret', type: 'scim', name: 'SCIM' },
+    ]);
   });
 
   it('should remove name and description when cloning an app', async () => {

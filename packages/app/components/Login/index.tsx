@@ -1,12 +1,11 @@
 import { getPagePathSegment } from '@appsemble/lang-sdk';
-import { Message, useQuery } from '@appsemble/react-components';
-import { type ReactNode } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Navigate } from 'react-router-dom';
+import { Message } from '@appsemble/preact-components';
+import { type VNode } from 'preact';
+import { useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import {
   apiUrl,
   appId,
@@ -22,24 +21,33 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BuiltinPage } from '../BuiltinPage/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
 import { MainLogin } from '../MainLogin/index.js';
+import { useQuery } from '../../utils/useQuery.js';
+import { Redirect } from '../Redirect/index.js';
 
 type LoginState = 'demo' | 'form' | 'permission-error' | 'totp-setup' | 'totp';
 
-export function Login(): ReactNode {
+export function Login(): VNode {
   const { definition } = useAppDefinition();
-  const { appMemberRoles, isLoggedIn, totpPending } = useAppMember();
+  const { totpPending } = useAppMember();
   const { getAppMessage } = useAppMessages();
+  const { lang } = useParams<{ lang: string }>();
   const qs = useQuery();
   const redirect = qs.get('redirect');
 
-  if (isLoggedIn || !definition.security) {
-    const defaultPageName = getDefaultPageName(isLoggedIn, appMemberRoles, definition);
+  if (!definition.security) {
     return (
-      <Navigate to={redirect || getPagePathSegment({ name: defaultPageName }, getAppMessage)} />
+      <Redirect
+        to={
+          redirect ||
+          `/${lang}/${getPagePathSegment({ name: definition.defaultPage }, getAppMessage)}`
+        }
+      />
     );
   }
 
-  const hasNoLogin = !logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin;
+  // An app member action can start a login on an app without built-in login methods.
+  const hasNoLogin =
+    !totpPending && !logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin;
 
   let state: LoginState;
   if (hasNoLogin) {

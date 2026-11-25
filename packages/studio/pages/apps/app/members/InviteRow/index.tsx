@@ -23,6 +23,11 @@ interface InviteRowProps {
    * @param invite The invite that has been deleted.
    */
   readonly onDelete: (invite: AppInvite) => void;
+
+  /**
+   * Whether to render the TOTP column.
+   */
+  readonly showTotp: boolean;
 }
 
 /**
@@ -33,6 +38,7 @@ export function InviteRow({
   mayDeleteInvites,
   mayInvite,
   onDelete,
+  showTotp,
 }: InviteRowProps): ReactNode {
   const { formatMessage } = useIntl();
   const { id: appId } = useParams<{ id: string }>();
@@ -72,6 +78,7 @@ export function InviteRow({
       <td>{invite.email}</td>
       <td />
       <td />
+      {showTotp ? <td /> : null}
       <td>{invite.roles.join(', ')}</td>
       <td align="right">
         {mayInvite ? (

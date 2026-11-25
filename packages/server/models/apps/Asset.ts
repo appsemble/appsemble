@@ -26,6 +26,8 @@ export class AssetGlobal extends Model {
 
   declare name?: string;
 
+  declare sha256?: string;
+
   declare clonable: boolean;
 
   declare seed: boolean;
@@ -80,6 +82,12 @@ export function createAssetModel(sequelize: Sequelize): typeof AssetGlobal {
     @Index({ name: 'assetNameIndex' })
     @Column(DataType.STRING)
     declare name?: string;
+
+    /**
+     * The hex encoded SHA-256 hash of the asset content
+     */
+    @Column(DataType.STRING)
+    declare sha256?: string;
 
     /**
      * If true, the asset will be transferred when cloning an app

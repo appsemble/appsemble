@@ -22,9 +22,11 @@ bootstrap(
       setPage((prev) => Math.max(0, prev - 1));
     }, []);
 
+    const lastPage = (pageCount || 1) - 1;
+
     const nextPage = useCallback(() => {
-      setPage((prev) => Math.min((pageCount || 1) - 1, prev + 1));
-    }, [pageCount]);
+      setPage((prev) => Math.min(lastPage, prev + 1));
+    }, [lastPage]);
 
     useEffect(() => {
       if (paginatorType !== 'scroll') {
@@ -111,15 +113,24 @@ bootstrap(
         return <div ref={(ref as MutableRef<HTMLDivElement>) || undefined} />;
       default:
         return (
-          // eslint-disable-next-line react/forbid-dom-props
-          <div class="mt-4 ml-auto mr-auto" style={{ width: 'fit-content' }}>
-            <Button className="mr-4" disabled={loading} onClick={prevPage}>
-              {formatMessage('prevLabel') || 'Prev'}
+          <nav
+            aria-label={formatMessage('navigationLabel')}
+            class="mt-4 ml-auto mr-auto"
+            // eslint-disable-next-line react/forbid-dom-props
+            style={{ width: 'fit-content' }}
+          >
+            <Button className="mr-4" disabled={loading || page === 0} onClick={prevPage}>
+              {formatMessage('prevLabel')}
             </Button>
-            <Button disabled={loading} onClick={nextPage}>
-              {formatMessage('nextLabel') || 'Next'}
+            {pageCount === undefined ? null : (
+              <span aria-live="polite" className="mr-4">
+                {formatMessage('pageLabel', { page: page + 1, pageCount })}
+              </span>
+            )}
+            <Button disabled={loading || page >= lastPage} onClick={nextPage}>
+              {formatMessage('nextLabel')}
             </Button>
-          </div>
+          </nav>
         );
     }
   },

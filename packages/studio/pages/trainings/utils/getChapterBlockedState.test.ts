@@ -1,7 +1,7 @@
-import { type TrainingChapter } from '@appsemble/types';
 import { describe, expect, it } from 'vitest';
 
 import { getChapterBlockedState } from './getChapterBlockedState.js';
+import { type TrainingChapter } from '../../../types.js';
 
 describe('getChapterBlockedState', () => {
   it('should return blocked if blocking chapter is not completed', () => {

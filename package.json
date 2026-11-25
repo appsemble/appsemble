@@ -30,7 +30,7 @@
     ],
     "*.{js,md,ts,tsx}": [
       "eslint",
-      "npx -- cspell"
+      "npx -- cspell --no-must-find-files"
     ],
     "{apps,blocks,packages}/**/*.ts?(x)": [
       "sh -c 'npx --workspaces tsc --incremental --noEmit'"
@@ -43,18 +43,22 @@
     "@ericblade/quagga2": {
       "sharp": "^0.35.5"
     },
-    "axios": "~1.20.0",
+    "axios": "~1.21.0",
     "gitleaks-secret-scanner": {
       "tar": "7.5.21"
     },
-    "katex": "0.19.0",
-    "third-party-web": "0.30.0"
+    "katex": "0.19.1",
+    "third-party-web": "0.30.0",
+    "vscode-languageserver-types": "3.18.6",
+    "yaml-language-server": {
+      "vscode-languageserver": "^11.0.0"
+    }
   },
   "devDependencies": {
-    "@appsemble/eslint-config": "0.40.5",
+    "@appsemble/eslint-config": "0.42.0",
     "@vitest/coverage-v8": "4.1.12",
     "@vitest/ui": "4.1.12",
-    "cspell": "10.4.0",
+    "cspell": "10.4.1",
     "dictionary-en": "4.0.0",
     "dictionary-nl": "2.0.0",
     "eslint-formatter-gitlab": "7.0.1",
@@ -62,8 +66,8 @@
     "identity-obj-proxy": "3.0.0",
     "intl-messageformat": "10.7.18",
     "jsdom": "22.1.0",
-    "lint-staged": "17.6.0",
-    "postcss": "8.5.31",
+    "lint-staged": "17.6.1",
+    "postcss": "8.5.33",
     "postcss-preset-env": "10.6.1",
     "prettier": "3.9.10",
     "prettier-plugin-packagejson": "2.5.22",
@@ -97,7 +101,7 @@
     "stylelint-config-standard": "36.0.1",
     "stylelint-no-unsupported-browser-features": "8.1.2",
     "stylelint-order": "6.0.4",
-    "stylelint-prettier": "5.0.3",
+    "stylelint-prettier": "5.1.0",
     "ts-json-schema-generator": "1.5.1",
     "tsx": "4.23.15",
     "typescript": "5.9.3",
@@ -137,7 +141,8 @@
     "smtp-from": "localdev@appsemble.com"
   },
   "dependenciesComments": {
-    "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tags of the `mermaid svgs`, `e2e node`, and `e2e keycloak` jobs in .gitlab-ci.yml; Renovate bumps them all together (see renovate.json)."
+    "@playwright/test": "Pinned exact and kept in sync with the mcr.microsoft.com/playwright:v<version>-noble tags of the `mermaid svgs`, `e2e node`, `e2e keycloak`, and `lighthouse` jobs in .gitlab-ci.yml; Renovate bumps them all together (see renovate.json).",
+    "yaml-language-server": "Declares `vscode-languageserver: ^9.0.0` (`^10.1.2` as of 2.0.0), which installs a second copy beside the version `@appsemble/appsemble-language-server` depends on; the `Connection` and `TextDocuments` the language server hands to the language service then have two distinct declarations and tsc rejects every call. The override in `overrides` resolves one copy; drop it once yaml-language-server declares a range that includes the version in packages/appsemble-language-server/package.json."
   },
   "dependencies": {
     "@playwright/test": "1.64.1",

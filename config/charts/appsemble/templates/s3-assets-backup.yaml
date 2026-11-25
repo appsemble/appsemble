@@ -38,6 +38,9 @@ spec:
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
+      # A run that is still active at the next tick makes that tick skip, so a hung run ends
+      # instead of blocking the following backups. A large incremental backup takes hours.
+      activeDeadlineSeconds: 21600
       template:
         metadata:
           annotations:

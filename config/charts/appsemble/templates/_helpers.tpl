@@ -164,6 +164,10 @@ Configure the environment variables for Appsemble to connect with the S3 compati
 - name: S3_BUCKET
   value: {{ . | quote }}
 {{- end }}
+{{- with .Values.s3.appBucketPrefix }}
+- name: S3_APP_BUCKET_PREFIX
+  value: {{ . | quote }}
+{{- end }}
 - name: S3_REGION
   value: {{ .Values.s3.region | quote }}
 - name: S3_PATH_STYLE
@@ -368,4 +372,59 @@ Configure the environment variables for Sentry.
   value: {{ join "," . | quote }}
 {{ end }}
 {{ end }}
+{{- end -}}
+
+{{/*
+Trust the certificates of trustedCaBundle in addition to the certificate authorities bundled with
+Node.js. Every container which runs the Appsemble image includes the environment variable, the
+volume mount and the volume.
+*/}}
+{{- define "appsemble.trustedCaBundle.env" -}}
+{{- if .Values.trustedCaBundle.configMap }}
+- name: NODE_EXTRA_CA_CERTS
+  value: /etc/appsemble/ca-bundle.crt
+{{- end }}
+{{- end -}}
+
+{{/*
+The trusted CA bundle volume mount, for a container with other volume mounts.
+*/}}
+{{- define "appsemble.trustedCaBundle.volumeMount" -}}
+{{- if .Values.trustedCaBundle.configMap }}
+- name: trusted-ca-bundle
+  mountPath: /etc/appsemble/ca-bundle.crt
+  subPath: {{ .Values.trustedCaBundle.key | quote }}
+  readOnly: true
+{{- end }}
+{{- end -}}
+
+{{/*
+The volume mounts of a container without other volume mounts.
+*/}}
+{{- define "appsemble.trustedCaBundle.volumeMounts" -}}
+{{- with include "appsemble.trustedCaBundle.volumeMount" . }}
+volumeMounts:
+  {{- . | trim | nindent 2 }}
+{{- end }}
+{{- end -}}
+
+{{/*
+The trusted CA bundle volume, for a pod with other volumes.
+*/}}
+{{- define "appsemble.trustedCaBundle.volume" -}}
+{{- with .Values.trustedCaBundle.configMap }}
+- name: trusted-ca-bundle
+  configMap:
+    name: {{ . | quote }}
+{{- end }}
+{{- end -}}
+
+{{/*
+The volumes of a pod without other volumes.
+*/}}
+{{- define "appsemble.trustedCaBundle.volumes" -}}
+{{- with include "appsemble.trustedCaBundle.volume" . }}
+volumes:
+  {{- . | trim | nindent 2 }}
+{{- end }}
 {{- end -}}

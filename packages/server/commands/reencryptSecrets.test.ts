@@ -1,7 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { reencryptSecrets } from './reencryptSecrets.js';
-import { App, getAppDB, Organization } from '../models/index.js';
+import {
+  App,
+  getAppDB,
+  Organization,
+  OrganizationSso,
+  OrganizationSsoIdentity,
+  OrganizationSsoSession,
+  User,
+} from '../models/index.js';
 import { decrypt, encrypt } from '../utils/crypto.js';
 
 const OLD_AES_SECRET = 'Local Appsemble development AES secret';
@@ -13,6 +21,64 @@ describe('reencryptSecrets', () => {
       id: 'testorganization',
       name: 'Test Organization',
     });
+  });
+
+  it('keeps organization provider credentials usable after key rotation', async () => {
+    const provider = await OrganizationSso.create({
+      OrganizationId: 'testorganization',
+      issuer: 'https://identity.example.com',
+      clientId: 'studio',
+      clientSecret: encrypt('provider-secret', OLD_AES_SECRET),
+      name: 'Staff',
+      scope: 'openid',
+      groupClaim: 'groups',
+      policy: 'optional',
+      managedBy: 'studio',
+      allowedLoginMethods: ['oidc'],
+      configurationUpdated: new Date(),
+    });
+    const user = await User.create({ timezone: 'Europe/Amsterdam' });
+    const identity = await OrganizationSsoIdentity.create({
+      issuer: provider.issuer,
+      subject: 'staff-member',
+      UserId: user.id,
+    });
+    const session = await OrganizationSsoSession.create({
+      OrganizationId: provider.OrganizationId,
+      OrganizationSsoIdentityId: identity.id,
+      refreshToken: encrypt('provider-refresh-token', OLD_AES_SECRET),
+      refreshTokenHash: 'refresh-hash',
+      idToken: encrypt('provider-id-token', OLD_AES_SECRET),
+      accessTokenExpires: new Date(Date.now() + 300_000),
+      expires: new Date(Date.now() + 28_800_000),
+      configurationUpdated: provider.configurationUpdated,
+    });
+    const sessionWithoutRefreshToken = await OrganizationSsoSession.create({
+      OrganizationId: provider.OrganizationId,
+      OrganizationSsoIdentityId: identity.id,
+      refreshTokenHash: 'other-refresh-hash',
+      idToken: encrypt('other-provider-id-token', OLD_AES_SECRET),
+      accessTokenExpires: new Date(Date.now() + 300_000),
+      expires: new Date(Date.now() + 28_800_000),
+      configurationUpdated: provider.configurationUpdated,
+    });
+
+    await reencryptSecrets({ oldAesSecret: OLD_AES_SECRET, newAesSecret: NEW_AES_SECRET });
+    await provider.reload();
+    await session.reload();
+    await sessionWithoutRefreshToken.reload();
+
+    expect([
+      decrypt(provider.clientSecret, NEW_AES_SECRET),
+      decrypt(session.refreshToken!, NEW_AES_SECRET),
+      decrypt(session.idToken!, NEW_AES_SECRET),
+      decrypt(sessionWithoutRefreshToken.idToken!, NEW_AES_SECRET),
+    ]).toStrictEqual([
+      'provider-secret',
+      'provider-refresh-token',
+      'provider-id-token',
+      'other-provider-id-token',
+    ]);
   });
 
   it('should re-encrypt app dbPassword with the new AES secret', async () => {

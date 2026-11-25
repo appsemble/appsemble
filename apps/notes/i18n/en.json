@@ -7,6 +7,7 @@
     "pages.notes": "Notes"
   },
   "messageIds": {
+    "addNote": "Add note",
     "body": "Body",
     "cancel": "Cancel",
     "configDelete": "Delete",

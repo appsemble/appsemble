@@ -1,4 +1,3 @@
-import { version } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { serverImport } from '../lib/serverImport.js';
@@ -11,7 +10,7 @@ export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('migrate-to', {
       desc: 'The database version to migrate to.',
-      default: version,
+      default: 'next',
     })
     .option('database-host', {
       desc: 'The host of the database to connect to. This defaults to the connected database container.',

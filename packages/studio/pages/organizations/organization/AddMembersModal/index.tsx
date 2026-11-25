@@ -1,5 +1,6 @@
 import {
   CardFooterButton,
+  Checkbox,
   Form,
   FormComponent,
   Input,
@@ -10,9 +11,12 @@ import {
 } from '@appsemble/react-components';
 import {
   type OrganizationInvite,
+  OrganizationPermission,
   PredefinedOrganizationRole,
+  predefinedOrganizationRolePermissions,
   predefinedOrganizationRoles,
 } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions, emailPattern } from '@appsemble/utils';
 import axios from 'axios';
 import {
   type ChangeEvent,
@@ -26,7 +30,6 @@ import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { emailPattern } from '@appsemble/utils';
 
 interface AddMembersModalProps {
   /**
@@ -45,6 +48,7 @@ interface AddMembersModalProps {
 const defaultInvite: OrganizationInvite = {
   email: '',
   role: PredefinedOrganizationRole.Member,
+  guest: false,
 };
 
 /**
@@ -58,6 +62,9 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
   const [invites, setInvites] = useState<OrganizationInvite[]>([defaultInvite]);
   const [submitting, setSubmitting] = useState(false);
   const organization = organizations.find((org) => org.id === organizationId.replace('@', ''));
+  const mayGrantGuests = checkOrganizationRoleOrganizationPermissions(organization.roles, [
+    OrganizationPermission.UpdateOrganizationMemberRoles,
+  ]);
 
   const reset = useCallback(() => {
     setInvites([defaultInvite]);
@@ -83,12 +90,11 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
   }, [formatMessage, invites, onInvited, organizationId, push, state]);
 
   const onChange = useCallback(
-    (
-      { currentTarget: { id } }: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-      value: string,
-    ) => {
-      const [field, i] = id.split('-');
+    ({ currentTarget }: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const [field, i] = currentTarget.id.split('-');
       const index = Number(i);
+      const value =
+        field === 'guest' ? (currentTarget as HTMLInputElement).checked : currentTarget.value;
 
       const copy = [...invites];
       copy[index] = { ...invites[index], [field]: value };
@@ -144,7 +150,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
         ...invites.slice(0, index),
         ...lines.map((line) => {
           const [email, name] = line.split('\t');
-          return { email, name, role: PredefinedOrganizationRole.Member } as OrganizationInvite;
+          return { ...defaultInvite, email, name } as OrganizationInvite;
         }),
         ...invites.slice(index),
       ]);
@@ -203,10 +209,11 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
               value={member.role}
             >
               {predefinedOrganizationRoles
-                .filter(
-                  (r) =>
-                    predefinedOrganizationRoles.indexOf(r) <=
-                    predefinedOrganizationRoles.indexOf(organization?.role),
+                .filter((r) =>
+                  checkOrganizationRoleOrganizationPermissions(
+                    organization.roles,
+                    predefinedOrganizationRolePermissions[r],
+                  ),
                 )
                 .map((r: PredefinedOrganizationRole) => (
                   <option key={r} value={r}>
@@ -214,6 +221,17 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
                   </option>
                 ))}
             </Select>
+            {mayGrantGuests ? (
+              <Checkbox
+                className="ml-3"
+                disabled={submitting}
+                id={`guest-${index}`}
+                label={<FormattedMessage {...messages.guest} />}
+                name="guest"
+                onChange={onChange}
+                value={member.guest}
+              />
+            ) : null}
           </div>
         ))}
       </FormComponent>

@@ -17,6 +17,7 @@ import { RegisterPage } from './register/index.js';
 import { ResetPasswordPage } from './reset-password/index.js';
 import { SAMLResponsePage } from './saml/index.js';
 import { SettingsRoutes } from './settings/index.js';
+import { SubscribePage } from './subscribe/index.js';
 import { TrainingRoutes } from './trainings/index.js';
 import { VerifyPage } from './verify/index.js';
 import { AnonymousRoute } from '../components/AnonymousRoute/index.js';
@@ -35,15 +36,16 @@ export function TopLevelRoutes(): ReactNode {
       <Route element={<ProtectedRoute />}>
         <Route element={<SettingsRoutes />} path="/settings/*" />
         <Route element={<FeedbackPage />} path="/feedback" />
+        <Route element={<SubscribePage />} path="/subscribe/:subscriptionPlanName" />
       </Route>
       <Route element={<CollectionsRoutes />} path="/collections/*" />
       <Route element={<ConnectRoutes />} path="/connect/authorize/*" />
       <Route element={<OrganizationInvitePage />} path="/organization-invite" />
       <Route element={<VerifyPage />} path="/verify" />
       <Route element={<CallbackPage />} path="/callback" />
+      <Route element={<LoginPage />} path="/login" />
       <Route element={<AnonymousRoute />}>
         {enableRegistration ? <Route element={<RegisterPage />} path="/register" /> : null}
-        <Route element={<LoginPage />} path="/login" />
         <Route element={<EditPasswordPage />} path="/edit-password" />
       </Route>
       <Route element={<ResetPasswordPage />} path="/reset-password" />

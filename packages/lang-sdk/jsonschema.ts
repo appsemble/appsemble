@@ -31,6 +31,7 @@ declare module 'jsonschema' {
 
   interface SchemaContext {
     path: (number | string)[];
+    resolve: (target: string) => string;
   }
 }
 

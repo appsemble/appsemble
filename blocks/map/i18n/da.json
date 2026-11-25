@@ -1,3 +1,4 @@
 {
-  "locationError": "Vi kunne ikke finde din placering. Er placeringstjenester aktiveret?"
+  "locationError": "Vi kunne ikke finde din placering. Er placeringstjenester aktiveret?",
+  "marker": ""
 }

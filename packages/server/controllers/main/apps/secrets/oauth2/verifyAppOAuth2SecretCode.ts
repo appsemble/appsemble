@@ -19,6 +19,7 @@ import {
   resolveLoginRoleMappings,
   syncLoginRoleMappings,
 } from '../../../../../utils/loginRoleMappings.js';
+import { isSecretIncomplete } from '../../../../../utils/secrets.js';
 
 export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   const {
@@ -66,6 +67,12 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   assertKoaCondition(appOAuth2Secrets.length > 0, ctx, 404, 'OAuth2 secret not found');
 
   const [secret] = appOAuth2Secrets;
+  assertKoaCondition(
+    !isSecretIncomplete(secret.clientSecret),
+    ctx,
+    503,
+    'OAuth2 secret is incomplete',
+  );
   const {
     access_token: accessToken,
     id_token: idToken,
@@ -113,20 +120,15 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   }
 
   let appMember = authorization?.AppMember;
-  if (shouldSyncRoleMappings && appMember && !resolvedRoleMappings.length) {
-    await syncLoginRoleMappings(AppMemberAssignedRole, appMember, []);
+  if (shouldSyncRoleMappings && !resolvedRoleMappings.length) {
+    if (appMember) {
+      await syncLoginRoleMappings(AppMemberAssignedRole, appMember, []);
+    }
     throwKoaError(
       ctx,
       403,
       'User is not allowed to login because no external group matched an app role.',
-    );
-  }
-
-  if (!appMember && shouldSyncRoleMappings && !resolvedRoleMappings.length) {
-    throwKoaError(
-      ctx,
-      403,
-      'User is not allowed to login because no external group matched an app role.',
+      { error: 'access_denied', error_description: 'noRoleMatch' },
     );
   }
 

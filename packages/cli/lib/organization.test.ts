@@ -340,7 +340,8 @@ describe('organization', () => {
           countryCode: null,
           invoiceReference: null,
         }),
-      ).rejects.toThrow('Request failed with status code 403');
+      ).rejects.toThrow('Request failed with status code 409');
+      await organization.reload();
       expect(organization).toMatchObject({
         id: 'test',
         name: 'Test',

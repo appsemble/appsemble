@@ -15,6 +15,7 @@
   "files": ["**/*.md", "**/*.ts", "**/*.tsx"],
   "ignorePaths": ["**/*.nl.md", "node_modules", "packages/server/utils/email/Mailer.test.ts"],
   "ignoreRegExpList": [
+    "\\bid:\\s*'[a-z][a-z-]*\\.[A-Za-z0-9+/]{6}'",
     "import[^\\;]*",
     "const[^\\;]*",
     "let[^\\;]*",
@@ -52,6 +53,7 @@
     "kleuren",
     "resourcehistory",
     "invitekey",
+    "testpassword",
     "blablabla",
     "serviceaccount",
     "libvips",
@@ -198,6 +200,7 @@
     "typname",
     "psql",
     "pgbouncer",
+    "userlist",
     "formcomp",
     "Klokgebouw",
     "DATEONLY",
@@ -212,6 +215,7 @@
     "otplib",
     "Otplib",
     "reencrypted",
+    "Flexib",
     "datname",
     "securitytxt",
     "httponly",
@@ -226,6 +230,15 @@
     "dbname",
     "desec",
     "rrsets",
-    "CREATEDB"
+    "CREATEDB",
+    "Voss",
+    "dockercompose",
+    "languageservice",
+    "distinguishability",
+    "componentized",
+    "componentizes",
+    "derefs",
+    "dispatchable",
+    "lowcode"
   ]
 }

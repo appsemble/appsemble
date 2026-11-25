@@ -1,15 +1,19 @@
-import { randomBytes } from 'node:crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 import {
   assertKoaCondition,
+  isLayoutBucket,
   getSupportedLanguages,
   logger,
   mergeMessages,
+  replaceAssetFunctions,
   type TempFile,
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
+import { type App as AppType } from '@appsemble/types';
 import { extractAppMessages, normalizeLocale, StyleValidationError } from '@appsemble/utils';
+import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 import tags from 'language-tags';
 import { lookup } from 'mime-types';
@@ -110,6 +114,133 @@ export async function getApp(
       })) ?? undefined;
   }
   return value;
+}
+
+export const APP_PASSWORD_TOKEN_MAX_AGE = 3 * 24 * 60 * 60 * 1000;
+
+function signAppPasswordToken(
+  { id, password }: Pick<App, 'id' | 'password'>,
+  issued: string,
+): string {
+  const signature = createHmac('sha256', argv.secret)
+    .update(`${id}:${password}:${issued}`)
+    .digest('base64url');
+  return `${issued}.${signature}`;
+}
+
+/**
+ * Create a token which grants access to a password protected app for 3 days.
+ *
+ * The token is signed with the password hash, so changing the password revokes it.
+ *
+ * @param app The password protected app to create the token for.
+ * @returns The token.
+ */
+export function createAppPasswordToken(app: Pick<App, 'id' | 'password'>): string {
+  return signAppPasswordToken(app, String(Date.now()));
+}
+
+/**
+ * Check whether a token grants access to a password protected app.
+ *
+ * @param app The password protected app to check the token for.
+ * @param token The token to check.
+ * @returns Whether the token belongs to the current password and has not expired.
+ */
+export function isAppPasswordTokenValid(
+  app: Pick<App, 'id' | 'password'>,
+  token: unknown,
+): token is string {
+  if (typeof token !== 'string') {
+    return false;
+  }
+  const [issued] = token.split('.', 1);
+  const actual = Buffer.from(token);
+  const expected = Buffer.from(signAppPasswordToken(app, issued));
+  // The response time must not reveal how much of a guessed signature is correct.
+  return (
+    Date.now() - Number(issued) < APP_PASSWORD_TOKEN_MAX_AGE &&
+    actual.length === expected.length &&
+    timingSafeEqual(actual, expected)
+  );
+}
+
+/**
+ * Get the token to hand to the client of a request for a password protected app.
+ *
+ * The token that admitted the request is handed back unchanged, even when it expires or the
+ * password changes while the request is handled, so passing it on never extends access. Requests
+ * admitted without a token, from someone who may see the app without the password, get a new one.
+ *
+ * @param ctx The Koa context of the request.
+ * @param app The app to get the token for.
+ * @returns The token, or `undefined` if the app is not password protected.
+ */
+export function getAppPasswordToken(
+  ctx: Context,
+  app: Pick<App, 'id' | 'password'>,
+): string | undefined {
+  if (!app.password) {
+    return undefined;
+  }
+  return ctx.state.appPasswordToken ?? createAppPasswordToken(app);
+}
+
+/**
+ * Hash the password visitors must enter to open an app.
+ *
+ * @param ctx The Koa context to throw a 400 error on if the password is too long.
+ * @param password The password to hash. An empty string turns password protection off.
+ * @returns The bcrypt hash of the password, or `null` if the password is empty.
+ */
+export function hashAppPassword(ctx: Context, password: string): Promise<string | null> {
+  // Bcrypt ignores everything after the first 72 bytes.
+  assertKoaCondition(
+    Buffer.byteLength(password, 'utf8') <= 72,
+    ctx,
+    400,
+    'The app password must not exceed 72 UTF-8 bytes.',
+  );
+  return password ? hash(password, 10) : Promise.resolve(null);
+}
+
+/**
+ * Get public listing metadata without exposing the content of an app.
+ *
+ * @param app The app to list.
+ * @returns The public app listing.
+ */
+export function getAppStoreListing(app: App): Omit<AppType, 'definition'> & {
+  definition: Pick<AppType['definition'], 'defaultLanguage' | 'description' | 'name'>;
+} {
+  const { defaultLanguage, description, name } = app.definition;
+  return {
+    ...app.toJSON(['yaml', 'messages', 'controllerCode', 'controllerImplementations']),
+    definition: {
+      defaultLanguage,
+      description: app.messages?.app?.description || description,
+      name: app.messages?.app?.name || name,
+    },
+  };
+}
+
+/**
+ * Add the app password token of the request to asset URLs in a served stylesheet.
+ *
+ * @param ctx The Koa context of the request for the stylesheet.
+ * @param app The app whose stylesheet is served.
+ * @param style The stored stylesheet.
+ * @returns The stylesheet with authorized asset URLs.
+ */
+export function getAppStyle(
+  ctx: Context,
+  app: Pick<App, 'id' | 'password'>,
+  style?: string | null,
+): string {
+  const passwordToken = getAppPasswordToken(ctx, app);
+  return passwordToken && style
+    ? replaceAssetFunctions(style, app.id, argv.host, passwordToken)
+    : style || '';
 }
 
 export function getAppUrl(app: App): URL {
@@ -259,7 +390,7 @@ export async function createAppScreenshots(
   const supportedLanguages = await getSupportedLanguages();
 
   for (const screenshot of screenshots) {
-    const { filename } = screenshot;
+    const filename = screenshot.filename!;
     let language = normalizeLocale(filename.slice(0, filename.indexOf('-')));
 
     if (!supportedLanguages.has(language)) {
@@ -281,8 +412,8 @@ export async function createAppScreenshots(
     });
 
     const sortedScreenshots = languageScreenshots.sort((a, b) => {
-      const { filename: aFilename } = a;
-      const { filename: bFilename } = b;
+      const aFilename = a.filename!;
+      const bFilename = b.filename!;
       if (aFilename > bFilename) {
         return 1;
       }
@@ -335,8 +466,9 @@ export async function createAppReadmes(
 
   return AppReadme.bulkCreate(
     await Promise.all(
-      readmes.map(async ({ filename, path }: TempFile) => {
-        const contents = await uploadToBuffer(path);
+      readmes.map(async (readme: TempFile) => {
+        const filename = readme.filename!;
+        const contents = await uploadToBuffer(readme.path);
         let language = normalizeLocale(
           filename.slice(filename.indexOf('.') + 1, filename.lastIndexOf('.')),
         );
@@ -354,6 +486,38 @@ export async function createAppReadmes(
     ),
     // These queries provide huge logs.
     { transaction, logging: false },
+  );
+}
+
+/**
+ * Assert an app may keep its assets in a bucket with this name.
+ *
+ * The name must start with the configured app bucket prefix, so an app cannot reach buckets that
+ * the operator did not set aside for apps, and no other app may use it.
+ *
+ * @param ctx The Koa context to throw an error with.
+ * @param s3Bucket The bucket name the app asks for.
+ * @param appId The id of the app that asks for it, if it exists already.
+ */
+export async function assertAppS3Bucket(
+  ctx: Context,
+  s3Bucket: string,
+  appId?: number,
+): Promise<void> {
+  assertKoaCondition(
+    Boolean(argv.s3AppBucketPrefix) &&
+      s3Bucket.startsWith(argv.s3AppBucketPrefix) &&
+      !isLayoutBucket(s3Bucket),
+    ctx,
+    400,
+    `Apps on this server cannot use bucket “${s3Bucket}”`,
+  );
+  const owner = await App.findOne({ attributes: ['id'], where: { s3Bucket }, paranoid: false });
+  assertKoaCondition(
+    owner == null || owner.id === appId,
+    ctx,
+    409,
+    `Another app already uses bucket “${s3Bucket}”`,
   );
 }
 

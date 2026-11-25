@@ -1,8 +1,19 @@
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { col, fn, literal, Op } from 'sequelize';
 
 import { App, AppRating, Organization, OrganizationMember } from '../../../../../models/index.js';
-import { applyAppMessages, compareApps, parseLanguage } from '../../../../../utils/app.js';
+import {
+  applyAppMessages,
+  compareApps,
+  getAppStoreListing,
+  parseLanguage,
+} from '../../../../../utils/app.js';
+import {
+  getOrganizationMemberAccess,
+  getOrganizationMemberRoles,
+} from '../../../../../utils/organizationSso.js';
 
 export async function queryCurrentUserApps(ctx: Context): Promise<void> {
   const user = ctx.user!;
@@ -12,11 +23,18 @@ export async function queryCurrentUserApps(ctx: Context): Promise<void> {
     query: languageQuery,
   } = parseLanguage(ctx, ctx.query?.language ?? []);
 
-  const memberships = await OrganizationMember.findAll({
-    attributes: ['OrganizationId'],
+  const organizationMemberships = await OrganizationMember.findAll({
+    attributes: ['OrganizationId', 'role'],
     raw: true,
     where: { UserId: user.id },
   });
+  const memberships = (
+    await Promise.all(
+      organizationMemberships.map(({ OrganizationId }) =>
+        getOrganizationMemberAccess(ctx, OrganizationId),
+      ),
+    )
+  ).filter(Boolean);
 
   const apps = await App.findAll({
     attributes: {
@@ -59,7 +77,7 @@ export async function queryCurrentUserApps(ctx: Context): Promise<void> {
       },
       ...languageQuery,
     ],
-    where: { OrganizationId: { [Op.in]: memberships.map((m) => m.OrganizationId) } },
+    where: { OrganizationId: { [Op.in]: memberships.map((m) => m!.OrganizationId) } },
   });
 
   const ratings = await AppRating.findAll({
@@ -89,12 +107,21 @@ export async function queryCurrentUserApps(ctx: Context): Promise<void> {
     })
     .sort(compareApps)
     .map((app) =>
-      Object.assign(app.toJSON(['yaml']), {
-        definition: {
-          name: app.definition.name,
-          description: app.definition.description,
-          defaultLanguage: app.definition.defaultLanguage,
-        },
-      }),
+      app.password &&
+      !memberships.some(
+        (member) =>
+          member!.OrganizationId === app.OrganizationId &&
+          checkOrganizationRoleOrganizationPermissions(getOrganizationMemberRoles(member!), [
+            OrganizationPermission.QueryApps,
+          ]),
+      )
+        ? getAppStoreListing(app)
+        : Object.assign(app.toJSON(['yaml']), {
+            definition: {
+              name: app.definition.name,
+              description: app.definition.description,
+              defaultLanguage: app.definition.defaultLanguage,
+            },
+          }),
     );
 }

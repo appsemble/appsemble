@@ -25,6 +25,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
             type: 'object',
             required: ['role'],
             properties: {
+              guest: { type: 'boolean' },
               role: {
                 type: 'string',
                 enum: predefinedOrganizationRoles,

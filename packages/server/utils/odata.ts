@@ -367,6 +367,11 @@ export function odataFilterToSequelize(
   return processLogicalExpression(ast, tableName, rename, jsonbColumns, false);
 }
 
+/**
+ * A property name or a slash-separated path of property names.
+ */
+const orderbyNamePattern = /^[\p{L}\p{N}_-]+(?:\/[\p{L}\p{N}_-]+)*$/u;
+
 export function odataOrderbyToSequelize(
   value: string,
   rename: RenameWithCasting = defaultRenameWithCasting,
@@ -375,8 +380,15 @@ export function odataOrderbyToSequelize(
   if (!value) {
     return [];
   }
-  return value.split(/,/g).map((line) => {
+  const lines = value
+    .split(/,/g)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return lines.map((line) => {
     const [name, direction] = line.split(' ');
+    if (!orderbyNamePattern.test(name)) {
+      throw new Error(`Invalid $orderby property: ${name}`);
+    }
 
     const resourceDefinitionProperty = resourceDefinition?.schema?.properties?.[
       name

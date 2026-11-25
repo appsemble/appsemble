@@ -11,6 +11,7 @@ import * as cleanupDemoAppMembers from './commands/cleanupDemoAppMembers.js';
 import * as cleanupExpiredDomains from './commands/cleanupExpiredDomains.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
 import * as cleanupSoftDeletedRecords from './commands/cleanupSoftDeletedRecords.js';
+import * as configureOrganizationSso from './commands/configureOrganizationSso.js';
 import * as fuzzMigrations from './commands/fuzzMigrations.js';
 import * as health from './commands/health.js';
 import * as migrate from './commands/migrate.js';
@@ -23,6 +24,7 @@ import * as restoreDataFromBackup from './commands/restoreDataFromBackup.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as scaleContainers from './commands/scaleContainers.js';
 import * as start from './commands/start.js';
+import * as syncOrganizationBlocks from './commands/syncOrganizationBlocks.js';
 import './types.js';
 import { setArgv } from './utils/argv.js';
 
@@ -52,8 +54,63 @@ const parser = yargs()
     desc: 'The Sentry environment to use for error reporting. See https://sentry.io for details.',
     type: 'string',
   })
+  .option('smtp-host', {
+    desc: 'The host of the SMTP server to connect to.',
+    type: 'string',
+  })
+  .option('smtp-port', {
+    desc: 'The port of the SMTP server to connect to.',
+    type: 'number',
+  })
+  .option('smtp-secure', {
+    desc: 'Use TLS when connecting to the SMTP server.',
+    type: 'boolean',
+    default: false,
+  })
+  .option('smtp-user', {
+    desc: 'The user to use to login to the SMTP server.',
+    type: 'string',
+    implies: ['smtp-pass', 'smtp-from'],
+  })
+  .option('smtp-pass', {
+    desc: 'The password to use to login to the SMTP server.',
+    type: 'string',
+    implies: ['smtp-user', 'smtp-from'],
+  })
+  .option('smtp-from', {
+    desc: 'The address to use when sending emails.',
+    type: 'string',
+    implies: ['smtp-user', 'smtp-pass'],
+  })
+  .option('imap-host', {
+    desc: 'The host of the IMAP server to connect to.',
+    type: 'string',
+  })
+  .option('imap-port', {
+    desc: 'The port of the IMAP server to connect to.',
+    type: 'number',
+  })
+  .option('imap-secure', {
+    desc: 'Use TLS when connecting to the IMAP server.',
+    type: 'boolean',
+    default: false,
+  })
+  .option('imap-user', {
+    desc: 'The user to use to login to the IMAP server.',
+    type: 'string',
+  })
+  .option('imap-pass', {
+    desc: 'The password to use to login to the IMAP server.',
+    type: 'string',
+  })
+  .option('imap-copy-to-sent-folder', {
+    desc: 'Copy sent emails to the Sent folder of the IMAP server.',
+    type: 'boolean',
+    default: false,
+  })
   .middleware([setArgv as (...args: Parameters<typeof setArgv>) => void, configureLogger])
   .command(cleanup as CommandModule)
+  .command(configureOrganizationSso as unknown as CommandModule)
   .command(reconcile as CommandModule)
   .command(cleanupResourcesAndAssets as CommandModule)
   .command(cleanupDemoAppMembers as CommandModule)
@@ -74,6 +131,7 @@ const parser = yargs()
   .command(backupProductionData as CommandModule)
   .command(cleanupExpiredDomains as CommandModule)
   .command(restoreDataFromBackup as CommandModule)
+  .command(syncOrganizationBlocks as unknown as CommandModule)
   .fail(handleError)
   .help('help', 'Show this help message.')
   .alias('h', 'help')

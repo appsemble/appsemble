@@ -24,7 +24,7 @@ export function ReseedButton({ app }: ReseedButtonProps): ReactNode {
   const { hash } = useLocation();
   const { organizations, userInfo } = useUser();
 
-  const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
+  const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.roles;
 
   const mayReseedApp =
     userRole &&

@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { bootstrap } from './index.js';
+import { bootstrap, controller, type ControllerFunction } from './index.js';
+
+declare module './index.js' {
+  interface Actions {
+    read: never;
+  }
+}
 
 let event: CustomEvent;
 let originalCurrentScript: HTMLOrSVGScriptElement;
@@ -34,5 +40,16 @@ describe('bootstrap', () => {
     expect(document.currentScript?.dispatchEvent).toHaveBeenCalledWith(new CustomEvent(''));
     expect(event.type).toBe('AppsembleBootstrap');
     expect(event.detail).toStrictEqual({ fn, document });
+  });
+});
+
+describe('controller', () => {
+  it('should expose handlers with names independent from configured actions', async () => {
+    const fn = (({ actions }) => ({ view: () => actions.read() })) satisfies ControllerFunction;
+    controller(fn);
+
+    const handlers = event.detail.fn({ actions: { read: () => Promise.resolve('Saved lamp') } });
+
+    expect(await handlers.view()).toBe('Saved lamp');
   });
 });

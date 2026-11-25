@@ -710,7 +710,7 @@ describe('patchAppResource', () => {
     ]);
     const assetsData = await Promise.all(
       assets.map((asset) => {
-        const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+        const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
         return getS3FileBuffer(bucket, key);
       }),
     );
@@ -917,7 +917,7 @@ describe('patchAppResource', () => {
       .spyOn(nodeUtils.logger, 'error')
       .mockImplementation(() => nodeUtils.logger);
 
-    await deleteAppAssetsWithLogging(app.id, ['asset-id']);
+    await deleteAppAssetsWithLogging({ id: app.id }, ['asset-id']);
 
     expect(loggerSpy).toHaveBeenCalledWith(error);
   });
@@ -957,7 +957,7 @@ describe('patchAppResource', () => {
     expect(response.status).toBe(500);
     expect(transactionSpy).toHaveBeenCalledWith(expect.any(Function));
     expect(deleteSpy).toHaveBeenCalledWith(
-      app.id,
+      expect.objectContaining({ id: app.id }),
       expect.arrayContaining([expect.stringMatching(uuid4Pattern)]),
     );
   });

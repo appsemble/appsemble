@@ -32,9 +32,12 @@ import {
   transactional,
 } from '../../../models/index.js';
 import {
+  assertAppS3Bucket,
   createAppReadmes,
   createAppScreenshots,
+  getAppPasswordToken,
   handleAppValidationError,
+  hashAppPassword,
 } from '../../../utils/app.js';
 import { argv } from '../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
@@ -81,8 +84,10 @@ export async function patchApp(ctx: Context): Promise<void> {
         maskableIcon,
         metaPixelID,
         msClarityID,
+        password,
         path,
         readmes,
+        s3Bucket,
         screenshots,
         sentryDsn,
         sentryEnvironment,
@@ -285,6 +290,10 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.showAppDefinition = showAppDefinition;
     }
 
+    if (password !== undefined) {
+      result.password = await hashAppPassword(ctx, password);
+    }
+
     if (sentryDsn !== undefined) {
       result.sentryDsn = sentryDsn;
     }
@@ -369,6 +378,10 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.dbUser = dbUser;
     }
 
+    if (s3Bucket) {
+      result.s3Bucket = s3Bucket;
+    }
+
     if (supportedLanguages?.length) {
       result.supportedLanguages = JSON.parse(supportedLanguages);
     }
@@ -398,10 +411,12 @@ export async function patchApp(ctx: Context): Promise<void> {
       domain !== undefined ||
       path !== undefined ||
       visibility !== undefined ||
+      password !== undefined ||
       template !== undefined ||
       icon !== undefined ||
       maskableIcon !== undefined ||
-      iconBackground !== undefined
+      iconBackground !== undefined ||
+      s3Bucket !== undefined
     ) {
       permissionsToCheck.push(OrganizationPermission.UpdateAppSettings);
     }
@@ -425,6 +440,10 @@ export async function patchApp(ctx: Context): Promise<void> {
       organizationId: dbApp.OrganizationId,
       requiredPermissions: permissionsToCheck,
     });
+
+    if (s3Bucket) {
+      await assertAppS3Bucket(ctx, s3Bucket, dbApp.id);
+    }
 
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
@@ -538,7 +557,7 @@ WHERE resource.id = positions.id`,
       }
     });
 
-    ctx.body = dbApp.toJSON();
+    ctx.body = { ...dbApp.toJSON(), passwordToken: getAppPasswordToken(ctx, dbApp) };
   } catch (error: unknown) {
     handleAppValidationError(ctx, error as Error, result);
   }

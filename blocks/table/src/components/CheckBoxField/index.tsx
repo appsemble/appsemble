@@ -21,13 +21,13 @@ interface CheckBoxFieldPropsInterface {
 }
 
 export function CheckBoxField({
-  field: { checkbox },
+  field: { checkbox, label },
   index,
   item,
   onChange,
 }: CheckBoxFieldPropsInterface): VNode {
   const {
-    utils: { remap },
+    utils: { formatMessage, remap },
   } = useBlock();
 
   const disabled = useMemo(
@@ -38,6 +38,7 @@ export function CheckBoxField({
     <span>
       <label className={classNames('checkbox')}>
         <input
+          aria-label={(remap(label, {}) as string) || formatMessage('selectRow')}
           disabled={disabled}
           onChange={(event) => onChange(event, event.currentTarget.checked)}
           type="checkbox"

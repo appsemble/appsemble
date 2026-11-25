@@ -43,16 +43,14 @@ export async function getBlockAsset({
       const stats = await getS3FileStats(bucket, key);
       const stream = await getS3File(bucket, key);
 
-      if (stream) {
-        return {
-          etag: stats.etag,
-          filename: asset.filename,
-          lastModified: stats.lastModified,
-          mime: asset.mime ?? 'application/octet-stream',
-          size: stats.size,
-          stream,
-        };
-      }
+      return {
+        etag: stats.etag,
+        filename: asset.filename,
+        lastModified: stats.lastModified,
+        mime: asset.mime ?? 'application/octet-stream',
+        size: stats.size,
+        stream,
+      };
     } catch (error) {
       logger.warn(error);
     }

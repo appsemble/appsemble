@@ -47,3 +47,18 @@ it('should render a readonly input element', () => {
   expect(input.attributes.getNamedItem('readOnly')).not.toBeNull();
   expect(input.classList).toContain('has-background-white-bis');
 });
+
+it('should add custom class names to the input', () => {
+  render(<Input className="mb-2" data-testid="input-testid" error />);
+  expect(screen.getByTestId('input-testid').className).toBe('input mb-2 is-danger');
+});
+
+it('should link to its own suggestions', () => {
+  render(<Input data-testid="input-testid" datalist={['test']} id="field" list="other" />);
+  expect(screen.getByTestId('input-testid').getAttribute('list')).toBe('field-dataset');
+});
+
+it('should link to an external datalist without suggestions of its own', () => {
+  render(<Input data-testid="input-testid" list="other" />);
+  expect(screen.getByTestId('input-testid').getAttribute('list')).toBe('other');
+});
