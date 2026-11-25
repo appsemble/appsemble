@@ -12,6 +12,7 @@ import {
   type App,
   type AppMember,
   BlockVersion,
+  getAppDB,
   Organization,
   OrganizationMember,
   type User,
@@ -232,6 +233,84 @@ describe('resetAppMemberTotp', () => {
       }),
     );
     expect(refresh).toMatchObject({ status: 400, data: { error: 'invalid_grant' } });
+  });
+
+  it('should refuse a login whose code was accepted right before the reset', async () => {
+    const { AppMember } = await getAppDB(app.id);
+    const login = await request.post(
+      `/api/apps/${app.id}/auth/email/login`,
+      {},
+      loginAuthorization,
+    );
+    vi.setSystemTime(30_000);
+    authorizeStudio();
+    AppMember.addHook('afterBulkUpdate', 'reset', async () => {
+      AppMember.removeHook('afterBulkUpdate', 'reset');
+      await request.delete(`/api/apps/${app.id}/app-members/${appMember.id}/totp`);
+    });
+
+    const verify = await request.post(`/api/apps/${app.id}/auth/totp/verify`, {
+      token: authenticator.generate(oldSecret),
+      totpToken: login.data.data.totpToken,
+    });
+
+    expect(verify.status).toBe(401);
+    await appMember.reload();
+    expect(appMember.totpEnabled).toBe(false);
+  });
+
+  it('should sign out a login which is being completed during the reset', async () => {
+    const { AppMemberRefreshSession, sequelize } = await getAppDB(app.id);
+    const login = await request.post(
+      `/api/apps/${app.id}/auth/email/login`,
+      {},
+      loginAuthorization,
+    );
+    vi.setSystemTime(30_000);
+    authorizeStudio();
+    let reset: Promise<{ status: number }>;
+    AppMemberRefreshSession.addHook('beforeCreate', 'reset', async () => {
+      AppMemberRefreshSession.removeHook('beforeCreate', 'reset');
+      let done = false;
+      reset = request.delete(`/api/apps/${app.id}/app-members/${appMember.id}/totp`).finally(() => {
+        done = true;
+      });
+      // Hold the login until the reset has either finished or is waiting for the login.
+      let waiting = 0;
+      while (!done && !waiting) {
+        const [[row]] = (await sequelize.query(
+          "SELECT count(*)::int AS waiting FROM pg_stat_activity WHERE datname = current_database() AND wait_event_type = 'Lock'",
+        )) as unknown as [{ waiting: number }[]];
+        ({ waiting } = row);
+      }
+    });
+
+    const verify = await request.post(`/api/apps/${app.id}/auth/totp/verify`, {
+      token: authenticator.generate(oldSecret),
+      totpToken: login.data.data.totpToken,
+    });
+    expect(verify.status).toBe(200);
+    expect((await reset!).status).toBe(204);
+
+    const refresh = await request.post(
+      `/apps/${app.id}/auth/oauth2/token`,
+      new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: verify.data.refresh_token,
+      }),
+    );
+    expect(refresh).toMatchObject({ status: 400, data: { error: 'invalid_grant' } });
+  });
+
+  it('should reset TOTP if the email can not be sent', async () => {
+    vi.spyOn(server.context.mailer, 'sendEmail').mockRejectedValueOnce(new Error('No mail server'));
+    authorizeStudio();
+
+    const response = await request.delete(`/api/apps/${app.id}/app-members/${appMember.id}/totp`);
+
+    expect(response.status).toBe(204);
+    await appMember.reload();
+    expect(appMember.totpEnabled).toBe(false);
   });
 
   it('should email the app member', async () => {

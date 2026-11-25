@@ -27,7 +27,7 @@ export async function verifyAppMemberTotp(ctx: Context): Promise<void> {
   const pending = verifyTotpPendingToken(ctx, appId, totpToken);
   const { jti, scope, sub } = pending;
 
-  const { AppMember } = await getAppDB(appId);
+  const { AppMember, sequelize } = await getAppDB(appId);
 
   const member = await AppMember.findByPk(sub);
   assertKoaCondition(member != null, ctx, 404, 'App member not found');
@@ -44,11 +44,25 @@ export async function verifyAppMemberTotp(ctx: Context): Promise<void> {
   await assertTotpToken(ctx, member, token, 401, jti);
 
   const aud = `app:${appId}`;
-  const refreshToken = await createAppMemberRefreshSession(ctx, {
-    appId,
-    aud,
-    scope,
-    sub: member.id,
+  // Updating the app member locks it, and a reset locks it too. A reset thus either makes this login
+  // fail or revokes its session.
+  const refreshToken = await sequelize.transaction(async (transaction) => {
+    const [unchanged] = await AppMember.update(
+      { totpEnabled: true },
+      {
+        transaction,
+        where: { id: member.id, totpEnabled: true, totpSecret: member.totpSecret },
+      },
+    );
+    assertKoaCondition(unchanged > 0, ctx, 401, 'TOTP was changed during the login');
+
+    return createAppMemberRefreshSession(ctx, {
+      appId,
+      aud,
+      scope,
+      sub: member.id,
+      transaction,
+    });
   });
 
   const tokenResponse = createJWTResponse(member.id, { aud, refreshToken: false, scope });
