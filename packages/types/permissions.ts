@@ -354,6 +354,11 @@ export enum OrganizationPermission {
    * The permission to invoke webhooks for an app.
    */
   InvokeAppWebhooks,
+
+  /**
+   * The permission to reset the TOTP of app members.
+   */
+  ResetAppMemberTotp,
 }
 
 export const appOrganizationPermissionMapping: Record<AppPermission, OrganizationPermission> = {
