@@ -1,4 +1,4 @@
-import { act, render, waitFor } from '@testing-library/preact';
+import { act, render, screen, waitFor } from '@testing-library/preact';
 import {
   AxiosError,
   AxiosHeaders,
@@ -12,7 +12,10 @@ import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vite
 import { AppMemberProvider, useAppMember } from './index.js';
 import { startAccountLinking } from '../../utils/accountLinking.js';
 import { ActionOwnerAbortError, createTestAction } from '../../utils/makeActions.js';
+import { IconTestWrapper } from '../../utils/test-utils.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
+import { MessagesProvider } from '../MessagesProvider/index.js';
 
 const { axiosGet, axiosPost, definitionSecurity, getUri, requestEject, requestUse, setSentryUser } =
   vi.hoisted(() => ({
@@ -80,10 +83,15 @@ function renderProvider(initialEntry = '/en/Home'): void {
   window.history.replaceState(null, '', initialEntry);
   render(
     <Route path="/:lang/*?">
-      <AppMemberProvider>
-        <Consumer />
-      </AppMemberProvider>
+      <IntlProvider locale="en">
+        <MessagesProvider>
+          <AppMemberProvider>
+            <Consumer />
+          </AppMemberProvider>
+        </MessagesProvider>
+      </IntlProvider>
     </Route>,
+    { wrapper: IconTestWrapper },
   );
 }
 
@@ -254,7 +262,7 @@ describe('AppMemberProvider', () => {
     );
   });
 
-  it('should return to the login page without running handlers if the TOTP step expires', async () => {
+  it('should return to the login page with a message and run no handlers if the TOTP step expires', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     const ended = await startActionLogin();
 
@@ -266,6 +274,11 @@ describe('AppMemberProvider', () => {
       expect(ended).toHaveBeenCalledWith(expect.any(ActionOwnerAbortError), false),
     );
     expect(window.location.pathname).toBe('/en/Login');
+    // The message is still there for an app member who comes back later.
+    await act(() => {
+      vi.advanceTimersByTime(60_000);
+    });
+    expect(screen.getByText('Logging in took too long. Please log in again.')).toBeTruthy();
   });
 
   it.each([

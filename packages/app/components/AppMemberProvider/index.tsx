@@ -17,7 +17,10 @@ import {
 } from 'preact/hooks';
 import { useLocation, useParams } from 'wouter-preact';
 
+import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
 import { Loader } from '../Loader/index.js';
+import { useMessages } from '../MessagesProvider/index.js';
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
 import { ActionOwnerAbortError } from '../../utils/makeActions.js';
@@ -157,6 +160,8 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
   const isOAuth2Callback = /(^|\/)Callback$/.test(pathname);
   const { lang } = useParams<{ lang: string }>();
   const { getAppMessage } = useAppMessages();
+  const { formatMessage } = useIntl();
+  const push = useMessages();
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
@@ -525,9 +530,13 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
     if (!state.totpPending) {
       return;
     }
-    const timeoutId = setTimeout(cancelTotpLogin, state.totpPending.expires - Date.now());
+    const timeoutId = setTimeout(() => {
+      cancelTotpLogin();
+      // The app member may be away when the step expires, so the message stays until dismissed.
+      push({ body: formatMessage(messages.totpExpired), color: 'warning', dismissable: true });
+    }, state.totpPending.expires - Date.now());
     return () => clearTimeout(timeoutId);
-  }, [cancelTotpLogin, state.totpPending]);
+  }, [cancelTotpLogin, formatMessage, push, state.totpPending]);
 
   const addAppMemberGroup: (group: AppMemberGroup) => void = useCallback((group) => {
     setState(({ appMemberGroups, ...oldState }) => {
