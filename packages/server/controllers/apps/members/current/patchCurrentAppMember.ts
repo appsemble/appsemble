@@ -1,6 +1,7 @@
 import {
   AppMemberPropertiesError,
   assertKoaCondition,
+  PhoneNumberValidationError,
   throwKoaError,
   uploadToBuffer,
 } from '@appsemble/node-utils';
@@ -72,9 +73,10 @@ export async function patchCurrentAppMember(ctx: Context): Promise<void> {
   try {
     await appMember.update(result);
   } catch (error) {
-    if (error instanceof AppMemberPropertiesError) {
+    if (error instanceof AppMemberPropertiesError || error instanceof PhoneNumberValidationError) {
       throwKoaError(ctx, 400, error.message);
     }
+    throw error;
   }
 
   ctx.body = await getAppMemberInfoById(appId, authSubject!.id);

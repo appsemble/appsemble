@@ -2,7 +2,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setArgv } from '../../../../../index.js';
-import { App, getAppDB, Organization, User } from '../../../../../models/index.js';
+import { App, getAppDB, Organization } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
 import { encrypt } from '../../../../../utils/crypto.js';
@@ -44,11 +44,9 @@ describe('updateAppScimUser', () => {
     authorizeScim(scimToken);
   });
 
-  it.todo('should update a user and app member', async () => {
-    const user = await User.create({ timezone: 'Europe/Amsterdam' });
+  it('should update an app member', async () => {
     const { AppMember } = await getAppDB(app.id);
     const member = await AppMember.create({
-      userId: user.id,
       email: 'user@example.com',
       role: 'User',
     });
@@ -72,7 +70,16 @@ describe('updateAppScimUser', () => {
     });
 
     expect(response).toMatchInlineSnapshot(
-      { data: { id: expect.any(String), meta: { location: expect.any(String) } } },
+      {
+        data: {
+          id: expect.any(String),
+          meta: {
+            created: expect.any(String),
+            lastModified: expect.any(String),
+            location: expect.any(String),
+          },
+        },
+      },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -83,8 +90,8 @@ describe('updateAppScimUser', () => {
         "id": Any<String>,
         "locale": "nl_NL",
         "meta": {
-          "created": "2000-01-01T00:00:00.000Z",
-          "lastModified": "2000-01-01T00:00:00.000Z",
+          "created": Any<String>,
+          "lastModified": Any<String>,
           "location": Any<String>,
           "resourceType": "User",
         },
@@ -101,19 +108,14 @@ describe('updateAppScimUser', () => {
     `,
     );
 
-    await member.reload({ include: User });
+    await member.reload();
     expect(member).toMatchObject({
-      AppId: app.id,
-      User: {
-        locale: 'nl_NL',
-        name: 'Patrick Star',
-        timezone: 'Etc/UTC',
-      },
       email: 'patrick@krustykrab.example',
       id: response.data.id,
+      locale: 'nl_NL',
       name: 'Patrick Star',
-      role: 'User',
       scimExternalId: 'ptrk',
+      timezone: 'Etc/UTC',
     });
   });
 });

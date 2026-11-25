@@ -579,9 +579,9 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
         'beforeUpdate',
         'validateAppMemberProperties',
         async (instance: AppMember) => {
-          // Properties that were not loaded are undefined. Validating those would overwrite the stored
-          // ones with default values.
-          if (instance.properties !== undefined) {
+          // Validating properties that are not being set would overwrite properties that were not
+          // loaded, and let properties that are not valid block unrelated updates.
+          if (instance.changed('properties')) {
             await validateAppMemberProperties(instance, app, models.Resource);
           }
         },

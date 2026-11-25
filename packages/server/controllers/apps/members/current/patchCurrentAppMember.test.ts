@@ -4,7 +4,13 @@ import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, type AppMember, BlockVersion, Organization } from '../../../../models/index.js';
+import {
+  App,
+  type AppMember,
+  BlockVersion,
+  getAppDB,
+  Organization,
+} from '../../../../models/index.js';
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { authorizeAppMember, createTestAppMember } from '../../../../utils/test/authorization.js';
@@ -228,6 +234,85 @@ describe('patchCurrentAppMember', () => {
     expect(response.data.picture).toMatch(/https:\/\/www\.gravatar\.com\/avatar\/.*/gm);
     await appMember.reload();
     expect(appMember.picture).toBeNull();
+  });
+
+  it('should reject an invalid phone number', async () => {
+    await app.update({ definition: { members: { phoneNumber: { enable: true } } } });
+    authorizeAppMember(app);
+
+    const response = await request.patch(
+      `/api/apps/${app.id}/members/current`,
+      createFormData({ phoneNumber: '+3112345678901' }),
+    );
+
+    expect(response).toMatchObject({ status: 400, data: { message: 'Invalid Phone Number' } });
+  });
+
+  it('should not report success if the update fails', async () => {
+    authorizeAppMember(app);
+
+    const { status } = await request.patch(
+      `/api/apps/${app.id}/members/current`,
+      createFormData({ name: 'a'.repeat(256) }),
+    );
+
+    expect(status).toBe(500);
+  });
+
+  it('should update an app member who has a property that was removed from the app', async () => {
+    const changedApp = await App.create({
+      OrganizationId: 'appsemble',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: { members: { properties: { department: { schema: { type: 'string' } } } } },
+    });
+    const { AppMember: Member } = await getAppDB(changedApp.id);
+    const member = await createTestAppMember(changedApp.id);
+    await Member.update({ properties: { removed: 'value' } }, { where: { id: member.id } });
+    authorizeAppMember(changedApp, member);
+
+    const { status } = await request.patch(
+      `/api/apps/${changedApp.id}/members/current`,
+      createFormData({ name: 'Me' }),
+    );
+
+    await member.reload();
+    expect({ status, name: member.name, properties: member.properties }).toStrictEqual({
+      status: 200,
+      name: 'Me',
+      properties: { removed: 'value' },
+    });
+  });
+
+  it('should only accept references to ephemeral resources in demo apps', async () => {
+    const demoApp = await App.create({
+      OrganizationId: 'appsemble',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      demoMode: true,
+      definition: {
+        members: {
+          properties: { task: { schema: { type: 'integer' }, reference: { resource: 'tasks' } } },
+        },
+        resources: { tasks: { schema: { type: 'object' } } },
+      },
+    });
+    const { Resource } = await getAppDB(demoApp.id);
+    const seedTask = await Resource.create({ type: 'tasks', seed: true, data: {} });
+    const ephemeralTask = await Resource.create({ type: 'tasks', ephemeral: true, data: {} });
+    const member = await createTestAppMember(demoApp.id);
+    authorizeAppMember(demoApp, member);
+
+    const statuses: number[] = [];
+    for (const task of [seedTask.id, ephemeralTask.id]) {
+      const { status } = await request.patch(
+        `/api/apps/${demoApp.id}/members/current`,
+        createFormData({ properties: { task: String(task) } }),
+      );
+      statuses.push(status);
+    }
+
+    expect(statuses).toStrictEqual([400, 200]);
   });
 
   it('should throw 404 if the app doesn’t exist', async () => {
