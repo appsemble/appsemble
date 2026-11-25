@@ -417,6 +417,54 @@ describe('AppMemberProvider', () => {
     expect(appMember?.isLoggedIn).toBe(false);
   });
 
+  it('should return to the login page without a session if loading it fails after the TOTP step', async () => {
+    const ended = await startActionLogin();
+    window.history.replaceState(null, '', '/en/protected');
+    axiosPost.mockResolvedValueOnce({
+      data: { access_token: accessToken, refresh_token: 'failed' },
+    });
+    axiosGet.mockRejectedValueOnce(new Error('Failed to load the app member'));
+
+    await act(() =>
+      expect(appMember!.totpLogin('123456')).rejects.toThrow('Failed to load the app member'),
+    );
+
+    await waitFor(() =>
+      expect(ended).toHaveBeenCalledWith(expect.any(ActionOwnerAbortError), false),
+    );
+    expect(appMember).toMatchObject({ isLoggedIn: false, totpPending: null });
+    expect(window.location.pathname).toBe('/en/Login');
+    expect(
+      axiosPost.mock.calls.map(([, data]) => Object.fromEntries(new URLSearchParams(data))),
+    ).toContainEqual(
+      expect.objectContaining({ grant_type: 'revoke_token', refresh_token: 'failed' }),
+    );
+  });
+
+  it('should keep a newer login if loading the session of an ended TOTP step fails', async () => {
+    const ended = await startActionLogin();
+    let fail: (error: Error) => void;
+    axiosGet.mockReturnValueOnce(
+      new Promise((resolve, reject) => {
+        fail = reject;
+      }),
+    );
+
+    await act(async () => {
+      const completed = appMember!.completeTotpLogin({ access_token: accessToken });
+      appMember!.cancelTotpLogin();
+      axiosPost.mockResolvedValue({ data: { access_token: accessToken } });
+      await appMember!.authorizationCodeLogin({ code: 'code', redirect_uri: 'uri' });
+      fail!(new Error('Failed to load the app member'));
+      await expect(completed).rejects.toThrow('Failed to load the app member');
+    });
+
+    await waitFor(() =>
+      expect(ended).toHaveBeenCalledWith(expect.any(ActionOwnerAbortError), expect.any(Boolean)),
+    );
+    expect(appMember?.isLoggedIn).toBe(true);
+  });
+
   it('should ignore malformed request URLs in the authorization interceptor', async () => {
     renderProvider();
 

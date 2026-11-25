@@ -461,6 +461,21 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
   );
 
   /**
+   * Cancel pending TOTP verification and return to the login page.
+   */
+  const cancelTotpLogin = useCallback(() => {
+    logout();
+    const redirect =
+      state.totpPending?.redirect ?? new URLSearchParams(window.location.search).get('redirect');
+    navigate(
+      `/${lang}/${getRouteSegment('Login', getAppMessage)}${
+        redirect ? `?${new URLSearchParams({ redirect })}` : ''
+      }`,
+      { replace: true },
+    );
+  }, [getAppMessage, lang, logout, navigate, state.totpPending]);
+
+  /**
    * Complete login with TOTP verification.
    *
    * @param token The TOTP token from the authenticator app.
@@ -478,10 +493,19 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
       const auth = `Bearer ${data.access_token}`;
       setAuthorization(auth);
       applyTokenExpiration(data.access_token, requestId);
-      await hydrateAuthenticatedState(requestId, auth, state.totpPending);
+      try {
+        await hydrateAuthenticatedState(requestId, auth, state.totpPending);
+      } catch (error: unknown) {
+        // The code and the pending token are spent, so the step can't be retried.
+        if (isLatestAuthRequest(requestId)) {
+          cancelTotpLogin();
+        }
+        throw error;
+      }
     },
     [
       applyTokenExpiration,
+      cancelTotpLogin,
       hydrateAuthenticatedState,
       isLatestAuthRequest,
       revokeSession,
@@ -507,21 +531,6 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
     },
     [completeTotpLogin, state.totpPending],
   );
-
-  /**
-   * Cancel pending TOTP verification and return to the login page.
-   */
-  const cancelTotpLogin = useCallback(() => {
-    logout();
-    const redirect =
-      state.totpPending?.redirect ?? new URLSearchParams(window.location.search).get('redirect');
-    navigate(
-      `/${lang}/${getRouteSegment('Login', getAppMessage)}${
-        redirect ? `?${new URLSearchParams({ redirect })}` : ''
-      }`,
-      { replace: true },
-    );
-  }, [getAppMessage, lang, logout, navigate, state.totpPending]);
 
   // However the TOTP step ends, the login waiting for it must not be left hanging.
   useEffect(() => () => state.totpPending?.settle(false), [state.totpPending]);
