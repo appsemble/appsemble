@@ -198,6 +198,16 @@ describe('resetAppMemberTotp', () => {
     expect(verifySetup.status).toBe(200);
   });
 
+  it('should keep the properties of the app member', async () => {
+    await appMember.update({ properties: { employee: 'E42' } });
+    authorizeStudio();
+
+    await request.delete(`/api/apps/${app.id}/app-members/${appMember.id}/totp`);
+
+    await appMember.reload();
+    expect(appMember.properties).toStrictEqual({ employee: 'E42' });
+  });
+
   it('should sign the app member out', async () => {
     const login = await request.post(
       `/api/apps/${app.id}/auth/email/login`,

@@ -85,6 +85,20 @@ describe('assertTotpToken', () => {
     expect((await AppMember.findByPk(appMember.id))?.totpLastCounter).toBe(0);
   });
 
+  it('should reject a code if the secret was reset after the member was read', async () => {
+    const { AppMember } = await getAppDB(app.id);
+    const member = (await AppMember.findByPk(appMember.id))!;
+    await AppMember.update(
+      { totpEnabled: false, totpLastCounter: null, totpSecret: null },
+      { where: { id: appMember.id } },
+    );
+
+    await expect(
+      assertTotpToken(createContext(), member, authenticator.generate(secret), 401, 'jti'),
+    ).rejects.toThrow('TOTP token already used');
+    expect((await AppMember.findByPk(appMember.id))?.totpConsumedJti).toBeNull();
+  });
+
   it('should spend a pending token only once when codes are verified concurrently', async () => {
     const { AppMember } = await getAppDB(app.id);
     vi.spyOn(Date, 'now').mockReturnValue(0);

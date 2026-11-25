@@ -35,6 +35,8 @@ export async function resetAppMemberTotp(ctx: Context): Promise<void> {
     organizationId: app.OrganizationId,
   });
 
+  const user = await User.findByPk(authSubject!.id, { attributes: ['id', 'name'] });
+
   const { AppMember, sequelize } = await getAppDB(appId);
   const appMember = await sequelize.transaction(async (transaction) => {
     const member = await AppMember.findByPk(appMemberId, {
@@ -45,7 +47,17 @@ export async function resetAppMemberTotp(ctx: Context): Promise<void> {
     assertKoaCondition(member != null, ctx, 404, 'App member not found');
     assertKoaCondition(member.totpEnabled, ctx, 400, 'TOTP is not enabled');
 
-    await member.update(
+    await app.reload({
+      include: {
+        model: AppMessages,
+        attributes: ['messages'],
+        required: false,
+        where: { language: member.locale ?? defaultLocale },
+      },
+    });
+
+    // The member is loaded partially, and updating the instance would overwrite its properties.
+    await AppMember.update(
       {
         totpSecret: null,
         totpEnabled: false,
@@ -53,25 +65,16 @@ export async function resetAppMemberTotp(ctx: Context): Promise<void> {
         totpFailedAttempts: 0,
         totpLockedUntil: null,
       },
-      { transaction },
+      { where: { id: member.id }, transaction },
     );
     await revokeAppMemberRefreshSessionsForMember(appId, member.id, transaction);
     return member;
   });
 
-  const user = await User.findByPk(authSubject!.id, { attributes: ['id', 'name'] });
   logger.verbose(
     `Organization member ${user!.name} (${user!.id}) reset the TOTP of app member ${appMember.id} of app ${appId}`,
   );
 
-  await app.reload({
-    include: {
-      model: AppMessages,
-      attributes: ['messages'],
-      required: false,
-      where: { language: appMember.locale ?? defaultLocale },
-    },
-  });
   mailer
     .sendTranslatedEmail({
       to: appMember,
