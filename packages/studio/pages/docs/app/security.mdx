@@ -72,6 +72,14 @@ App members who have logged into your app can be viewed from the â€œApp Membersâ
 roles of app members can be adjusted, as well as view and edit any custom properties associated with
 the app member as set by the app.
 
+On apps that use TOTP, this page also shows which app members have set up TOTP. An app member who
+lost their authenticator app can't log in with a TOTP code anymore. Organization members with a
+[role](../studio/organizations.mdx#organization-members) that has the `ResetAppMemberTotp`
+permission can reset the TOTP of such an app member. This signs the app member out on all devices
+within an hour and sends them an email. On apps where TOTP is required, the app member sets up a new
+authenticator app at their next login. Otherwise, they log in without a TOTP code and can set up
+TOTP again from their profile settings.
+
 ## Security Definition
 
 The security definition, as defined [here](../reference/app.mdx#security-definition), can be used to

@@ -289,4 +289,8 @@ export const messages = defineMessages({
     id: 'studio.9CzlTo',
     defaultMessage: 'The permission to invoke app webhooks.',
   },
+  ResetAppMemberTotp: {
+    id: 'studio.PNMt4Z',
+    defaultMessage: 'The permission to reset the TOTP of app members.',
+  },
 });

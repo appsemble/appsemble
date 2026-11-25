@@ -1011,7 +1011,7 @@ export async function writeAppMessages(
     for (const [key, message] of Object.entries(oldMessages.app ?? {})) {
       const match = /^(pages\.[\dA-Za-z-]+(\..+)?)\.blocks\.\d+.+/.exec(key);
       const emailMatch =
-        /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|welcome)\.(body|subject)/.test(
+        /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|totpReset|welcome)\.(body|subject)/.test(
           key,
         );
       if (emailMatch) {

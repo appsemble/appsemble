@@ -57,4 +57,20 @@ export const messages = defineMessages({
     id: 'studio.wL7VAE',
     defaultMessage: 'Actions',
   },
+  totp: {
+    id: 'studio.w2s5JE',
+    defaultMessage: 'TOTP',
+  },
+  totpFilterAll: {
+    id: 'studio.sKwqTt',
+    defaultMessage: 'All members',
+  },
+  totpFilterEnabled: {
+    id: 'studio.VSBCqM',
+    defaultMessage: 'With TOTP',
+  },
+  totpFilterDisabled: {
+    id: 'studio.ejazW+',
+    defaultMessage: 'Without TOTP',
+  },
 });

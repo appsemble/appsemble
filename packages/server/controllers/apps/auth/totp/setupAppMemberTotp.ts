@@ -5,7 +5,11 @@ import { authenticator } from 'otplib';
 import { App, getAppDB } from '../../../../models/index.js';
 import { argv } from '../../../../utils/argv.js';
 import { encrypt } from '../../../../utils/crypto.js';
-import { verifyTotpPendingToken } from '../../../../utils/totpPendingToken.js';
+import {
+  assertUnusedTotpPendingToken,
+  type TotpPendingPayload,
+  verifyTotpPendingToken,
+} from '../../../../utils/totpPendingToken.js';
 
 export async function setupAppMemberTotp(ctx: Context): Promise<void> {
   const {
@@ -25,8 +29,11 @@ export async function setupAppMemberTotp(ctx: Context): Promise<void> {
 
   // During the login flow the app member has verified their password, but has no access token yet.
   // The pending token issued by that first step is what identifies them here.
-  const memberId =
-    appMember?.id ?? (totpToken ? verifyTotpPendingToken(ctx, appId, totpToken).sub : null);
+  let pending: TotpPendingPayload | null = null;
+  if (!appMember && totpToken) {
+    pending = verifyTotpPendingToken(ctx, appId, totpToken);
+  }
+  const memberId = appMember?.id ?? pending?.sub;
   assertKoaCondition(memberId != null, ctx, 401, 'User is not authenticated');
 
   const { AppMember } = await getAppDB(appId);
@@ -34,6 +41,10 @@ export async function setupAppMemberTotp(ctx: Context): Promise<void> {
   const member = await AppMember.findByPk(memberId);
   assertKoaCondition(member != null, ctx, 404, 'App member not found');
   assertKoaCondition(!member.totpEnabled, ctx, 400, 'TOTP is already enabled');
+
+  if (pending) {
+    assertUnusedTotpPendingToken(ctx, pending, member);
+  }
 
   const secret = authenticator.generateSecret();
 

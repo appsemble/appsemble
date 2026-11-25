@@ -41,6 +41,7 @@ const OrganizationAppMemberManagerPermissions = [
   OrganizationPermission.DeleteAppMembers,
   OrganizationPermission.UpdateAppMemberRoles,
   OrganizationPermission.PatchAppMemberProperties,
+  OrganizationPermission.ResetAppMemberTotp,
 ];
 
 const OrganizationAppGroupMembersManagerPermissions = [

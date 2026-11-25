@@ -49,6 +49,7 @@ import { pathItems as appsAppIdMaskableIcon } from './apps/appId/maskableIcon.js
 import { pathItems as appsAppIdAppMembersAppMemberIdPicture } from './apps/appId/members/appMemberId/picture.js';
 import { pathItems as appsAppIdAppMembersAppMemberIdProperties } from './apps/appId/members/appMemberId/properties.js';
 import { pathItems as appsAppIdAppMembersAppMemberIdRole } from './apps/appId/members/appMemberId/role.js';
+import { pathItems as appsAppIdAppMembersAppMemberIdTotp } from './apps/appId/members/appMemberId/totp.js';
 import { pathItems as appsAppIdAppMembersAppMemberId } from './apps/appId/members/appMemberId.js';
 import { pathItems as appsAppIdMembersCurrentGroups } from './apps/appId/members/current/groups.js';
 import { pathItems as appsAppIdMembersCurrentLink } from './apps/appId/members/current/link.js';
@@ -197,6 +198,7 @@ export const paths = {
   '/api/apps/{appId}/app-members/{appMemberId}/properties':
     appsAppIdAppMembersAppMemberIdProperties,
   '/api/apps/{appId}/app-members/{appMemberId}/role': appsAppIdAppMembersAppMemberIdRole,
+  '/api/apps/{appId}/app-members/{appMemberId}/totp': appsAppIdAppMembersAppMemberIdTotp,
   '/api/apps/{appId}/app-members/{appMemberId}': appsAppIdAppMembersAppMemberId,
   '/api/apps/{appId}/actions/{path}': appsAppIdActionsPath,
   '/api/apps/{appId}/clonable-assets': appsAppIdClonableAssets,

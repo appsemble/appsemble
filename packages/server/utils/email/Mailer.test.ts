@@ -239,6 +239,10 @@ describe('Mailer', () => {
           error: 'AADSTS7000215: Invalid client secret provided.',
         },
       ],
+      totpReset: [
+        { name: 'null', appName: 'Test App' },
+        { name: 'John Doe', appName: 'Test App' },
+      ],
     };
 
     beforeEach(() => {

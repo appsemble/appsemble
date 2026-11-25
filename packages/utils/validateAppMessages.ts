@@ -46,7 +46,7 @@ export function validateMessages(messages: AppsembleMessages, app: AppDefinition
     Object.keys(messages.app).map((key) => {
       const blockMatch = /^(pages\.[\dA-Za-z-]+(\..+)?)\.blocks\.\d+.+/.exec(key);
       const emailMatch =
-        /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|welcome)\.(body|subject)/.exec(
+        /emails\.(appInvite|appMemberEmailChange|emailAdded|groupInvite|resend|reset|totpReset|welcome)\.(body|subject)/.exec(
           key,
         );
       if (

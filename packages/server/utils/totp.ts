@@ -136,8 +136,9 @@ async function registerFailedTotpAttempt(member: AppMember, now: number): Promis
  * A code is only accepted once. Codes for a counter which has already been used are rejected, even
  * though they are still within the verification window. Too many rejected codes lock the app member
  * out for a while. Accepting a code also consumes the pending token of the login it completes, if
- * there is one, and a pending token which has already been consumed rejects the code. A rejected
- * code which is correct but already used does not count as a failed attempt.
+ * there is one, and a pending token which has already been consumed rejects the code. A code is also
+ * rejected if the secret changed after the member was read. A rejected code which is correct but
+ * already used does not count as a failed attempt.
  *
  * @param ctx The Koa context used to throw the error response.
  * @param member The app member whose code to verify. Must have a TOTP secret.
@@ -183,6 +184,7 @@ export async function assertTotpToken(
       {
         where: {
           id: member.id,
+          totpSecret: member.totpSecret,
           [Op.and]: [
             { [Op.or]: [{ totpLastCounter: null }, { totpLastCounter: { [Op.lt]: counter } }] },
             ...(consumedJti == null
