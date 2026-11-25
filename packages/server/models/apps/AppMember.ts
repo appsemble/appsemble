@@ -575,8 +575,16 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
       AppMember.addHook('beforeCreate', 'validateAppMemberProperties', (instance: AppMember) =>
         validateAppMemberProperties(instance, app, models.Resource),
       );
-      AppMember.addHook('beforeUpdate', 'validateAppMemberProperties', (instance: AppMember) =>
-        validateAppMemberProperties(instance, app, models.Resource),
+      AppMember.addHook(
+        'beforeUpdate',
+        'validateAppMemberProperties',
+        async (instance: AppMember) => {
+          // Properties that were not loaded are undefined. Validating those would overwrite the stored
+          // ones with default values.
+          if (instance.properties !== undefined) {
+            await validateAppMemberProperties(instance, app, models.Resource);
+          }
+        },
       );
     }
 

@@ -140,4 +140,30 @@ describe('patchAppMemberProperties', () => {
     await appMember.reload();
     expect(appMember.properties).toStrictEqual({ foo: 'test' });
   });
+
+  it('should reject properties that do not match the app definition', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: { members: { properties: { level: { schema: { type: 'integer' } } } } },
+    });
+    const { AppMember } = await getAppDB(app.id);
+    const appMember = await AppMember.create({
+      email: user.primaryEmail,
+      role: PredefinedAppRole.Member,
+      properties: { level: 1 },
+    });
+
+    const { status } = await request.put(
+      `/api/apps/${app.id}/app-members/${appMember.id}/properties`,
+      createFormData({ properties: { level: 'high' } }),
+    );
+
+    expect(status).toBe(400);
+    await appMember.reload();
+    expect(appMember.properties).toStrictEqual({ level: 1 });
+  });
 });
