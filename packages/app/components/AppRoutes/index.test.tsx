@@ -192,6 +192,41 @@ describe('AppRoutes', () => {
     },
   );
 
+  describe('with a custom login page and a pending TOTP step', () => {
+    beforeEach(() => {
+      vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Home',
+          pages: [
+            { name: 'Home', blocks: [], roles: ['User'] },
+            { name: 'Login', blocks: [] },
+          ],
+          security: { default: { policy: 'everyone', role: 'User' }, roles: { User: {} } },
+        },
+      } as never);
+      vi.spyOn(appMemberProvider, 'useAppMember').mockReturnValue({
+        appMemberRoles: [],
+        isLoggedIn: false,
+        totpPending: {},
+      } as never);
+    });
+
+    it.each(['/en/login', '/en/Login', '/en/home', '/en/Register'])(
+      'should render the built-in login at %s',
+      (path) => {
+        renderRoutes(path);
+        expect(screen.getByText('Login route')).not.toBeNull();
+        expect(screen.getByText(path)).not.toBeNull();
+      },
+    );
+
+    it('should let the callback route finish its own login', () => {
+      renderRoutes('/en/Callback');
+      expect(screen.getByText('Callback route')).not.toBeNull();
+    });
+  });
+
   it('should leave focus alone on the first page the app redirects to', async () => {
     renderRoutes('/en');
     await waitFor(() => expect(screen.getByText('/en/home')).not.toBeNull());

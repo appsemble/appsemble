@@ -105,7 +105,7 @@ function translatedRoute({ element, getAppMessage, name }: TranslatedRouteProps)
 export function AppRoutes(): VNode | null {
   const { getAppMessage, messagesReady } = useAppMessages();
   const { definition } = useAppDefinition();
-  const { appMemberRoles, appMemberSelectedGroup, isLoggedIn } = useAppMember();
+  const { appMemberRoles, appMemberSelectedGroup, isLoggedIn, totpPending } = useAppMember();
   const focusedPage = useRef<string>();
   const { lang } = useParams<{ lang: string }>();
 
@@ -187,6 +187,11 @@ export function AppRoutes(): VNode | null {
         <Route path={builtinPath('Callback')}>
           <OpenIDCallback />
         </Route>
+        {totpPending ? (
+          <Route>
+            <Login />
+          </Route>
+        ) : null}
 
         {translatableRoutes.flatMap((name) =>
           elements[name] ? translatedRoute({ element: elements[name], getAppMessage, name }) : [],

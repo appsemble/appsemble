@@ -134,11 +134,9 @@ export function TotpSetup({
           <FormattedMessage {...messages.title} />
         </Title>
         <Message color="danger">{error || formatMessage(messages.setupError)}</Message>
-        {isRequired ? null : (
-          <Button onClick={onCancel}>
-            <FormattedMessage {...messages.cancelButton} />
-          </Button>
-        )}
+        <Button onClick={onCancel}>
+          <FormattedMessage {...messages.cancelButton} />
+        </Button>
       </div>
     );
   }
@@ -181,11 +179,9 @@ export function TotpSetup({
           required
         />
         <FormButtons>
-          {isRequired ? null : (
-            <Button onClick={onCancel}>
-              <FormattedMessage {...messages.cancelButton} />
-            </Button>
-          )}
+          <Button onClick={onCancel}>
+            <FormattedMessage {...messages.cancelButton} />
+          </Button>
           <SimpleSubmit>
             <FormattedMessage {...messages.verifyButton} />
           </SimpleSubmit>

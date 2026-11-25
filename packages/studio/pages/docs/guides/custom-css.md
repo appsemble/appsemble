@@ -198,7 +198,8 @@ The following pages exist. A page is only mounted if its condition holds.
 
 | Page name         | Route             | States                                                       | Mounted                                                                          |
 | ----------------- | ----------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------- |
-| `login`           | `/Login`          | `form`, `demo`, `totp`, `totp-setup`, `permission-error`     | Logged out, and the app has no custom `Login` page or demo login is enabled      |
+| `login`           | `/Login`          | `form`, `demo`, `permission-error`                           | Logged out, and the app has no custom `Login` page or demo login is enabled      |
+| `login`           | any route         | `totp`, `totp-setup`                                         | A login is waiting for its TOTP step                                             |
 | `register`        | `/Register`       | `form`                                                       | Logged out, and the app has no custom `Register` page                            |
 | `reset-password`  | `/Reset-Password` | `form`, `success`                                            | Always                                                                           |
 | `edit-password`   | `/Edit-Password`  | `form`, `success`                                            | Always                                                                           |

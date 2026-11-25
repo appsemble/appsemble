@@ -17,9 +17,13 @@ import {
 } from 'preact/hooks';
 import { useLocation, useParams } from 'wouter-preact';
 
+import { messages } from './messages.js';
+import { useIntl } from '../IntlProvider/index.js';
 import { Loader } from '../Loader/index.js';
+import { useMessages } from '../MessagesProvider/index.js';
 import { clearAccountLinkingState, loadAccountLinkingState } from '../../utils/accountLinking.js';
 import { oauth2Scope } from '../../utils/constants.js';
+import { ActionOwnerAbortError } from '../../utils/makeActions.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { getGrantTotpChallenge } from '../../utils/totp.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -27,6 +31,7 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 
 interface JwtPayload {
   exp: number;
+  iat: number;
   scopes: string;
   sub: string;
   iss: string;
@@ -76,7 +81,22 @@ interface DemoLoginParams {
 }
 
 interface TotpPendingState {
+  /**
+   * When the pending TOTP token expires, in milliseconds since the epoch.
+   */
+  expires: number;
   redirect?: string;
+
+  /**
+   * The auth request this TOTP step belongs to. Once a newer request replaces it, such as a logout
+   * or another login, the step may no longer result in a session.
+   */
+  requestId: number;
+
+  /**
+   * Settle the login waiting for this TOTP step. Only the first call has an effect.
+   */
+  settle: (completed: boolean) => void;
   totpEnabled: boolean;
 
   /**
@@ -140,6 +160,8 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
   const isOAuth2Callback = /(^|\/)Callback$/.test(pathname);
   const { lang } = useParams<{ lang: string }>();
   const { getAppMessage } = useAppMessages();
+  const { formatMessage } = useIntl();
+  const push = useMessages();
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)
@@ -186,13 +208,11 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
   }, []);
 
   /**
-   * Clear the current app member session from both client state and server cookies.
+   * Revoke a session on the server and clear its cookies.
+   *
+   * @param refreshToken The refresh token of the session. By default the cookie determines it.
    */
-  const logout = useCallback(async () => {
-    const refreshToken = refreshTokenRef.current;
-    invalidateAuthRequests();
-    resetSessionState();
-
+  const revokeSession = useCallback(async (refreshToken?: string) => {
     try {
       await axios.post(
         `${apiUrl}/apps/${appId}/auth/oauth2/token`,
@@ -205,7 +225,17 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
     } catch {
       // Do nothing
     }
-  }, [invalidateAuthRequests, resetSessionState]);
+  }, []);
+
+  /**
+   * Clear the current app member session from both client state and server cookies.
+   */
+  const logout = useCallback(async () => {
+    const refreshToken = refreshTokenRef.current;
+    invalidateAuthRequests();
+    resetSessionState();
+    await revokeSession(refreshToken);
+  }, [invalidateAuthRequests, resetSessionState, revokeSession]);
 
   const applyTokenExpiration = useCallback(
     (accessToken: string, requestId: number) => {
@@ -222,7 +252,11 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
   );
 
   const hydrateAuthenticatedState = useCallback(
-    async (requestId: number, auth: string, redirect?: string) => {
+    async (
+      requestId: number,
+      auth: string,
+      { redirect, settle }: Partial<Pick<TotpPendingState, 'redirect' | 'settle'>>,
+    ) => {
       const config = { headers: { authorization: auth } };
       const linking = loadAccountLinkingState();
       if (linking) {
@@ -238,7 +272,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
       }
 
       if (!isLatestAuthRequest(requestId)) {
-        return;
+        return false;
       }
 
       const { data: appMember } = await axios.get<AppMemberInfo>(
@@ -247,7 +281,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
       );
 
       if (!isLatestAuthRequest(requestId)) {
-        return;
+        return false;
       }
 
       let appMemberGroups: AppMemberGroup[] = [];
@@ -262,7 +296,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
       }
 
       if (!isLatestAuthRequest(requestId)) {
-        return;
+        return false;
       }
 
       setSentryUser({ id: appMember.sub });
@@ -273,11 +307,14 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
         appMemberGroups,
         totpPending: null,
       });
+      // The state update is queued first, so whatever waits for this login sees the session.
+      settle?.(true);
       clearAccountLinkingState();
 
       if (redirect) {
         navigate(redirect);
       }
+      return true;
     },
     [isLatestAuthRequest, navigate],
   );
@@ -287,7 +324,9 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
    *
    * @param grantType The grant type to authenticate with
    * @param params Additional parameters, which depend on the grant type.
-   * @returns The authorization header for the session, or null if TOTP is required.
+   * @returns The authorization header for the session. If TOTP is required, this resolves once that
+   *   step has settled, with whether it was completed. A request replaced by a newer one results in
+   *   false.
    */
   const fetchToken = useCallback(
     async (grantType: string, params: Record<string, string>, requestId: number) => {
@@ -310,28 +349,26 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
         if (!isLatestAuthRequest(requestId)) {
           return false;
         }
-        // The credentials check out, but no session exists yet. The pending token is what proves
-        // that first step to the TOTP endpoints. The redirect is carried along, so completing the
-        // second factor still lands on the page the login was started from.
-        setState((prev) => ({
-          ...prev,
-          totpPending: {
-            redirect: params.redirect,
-            totpEnabled: challenge.totpEnabled,
-            totpToken: challenge.totpToken,
-          },
-        }));
-        // Only the login page renders the second step, so a login started anywhere else, such as
-        // registering or an app member action, has to move there to be completed.
-        const loginSegment = getRouteSegment('Login', getAppMessage);
-        if (pathname.split('/').at(-1) !== loginSegment) {
-          navigate(
-            `/${lang}/${loginSegment}${
-              params.redirect ? `?${new URLSearchParams({ redirect: params.redirect })}` : ''
-            }`,
-          );
-        }
-        return null;
+        // The lifetime is added to the local time, because the clocks of the server and the client
+        // may differ.
+        const { exp: tokenExp, iat } = jwtDecode<JwtPayload>(challenge.totpToken);
+        const expires = Date.now() + (tokenExp - iat) * 1000;
+        return new Promise<boolean>((settle) => {
+          // The credentials check out, but no session exists yet. The pending token is what proves
+          // that first step to the TOTP endpoints. The redirect is carried along, so completing the
+          // second factor still lands on the page the login was started from.
+          setState((prev) => ({
+            ...prev,
+            totpPending: {
+              expires,
+              redirect: params.redirect,
+              requestId,
+              settle,
+              totpEnabled: challenge.totpEnabled,
+              totpToken: challenge.totpToken,
+            },
+          }));
+        });
       }
 
       if (!isLatestAuthRequest(requestId)) {
@@ -347,7 +384,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
       applyTokenExpiration(accessToken, requestId);
       return auth;
     },
-    [applyTokenExpiration, getAppMessage, isLatestAuthRequest, lang, navigate, pathname],
+    [applyTokenExpiration, isLatestAuthRequest],
   );
 
   /**
@@ -355,6 +392,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
    *
    * @param grantType The grant type to authenticate with
    * @param params Additional parameters, which depend on the grant type.
+   * @returns Whether this login resulted in a session.
    */
   const login = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -364,16 +402,9 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
       try {
         const auth = await fetchToken(grantType, params as Record<string, string>, requestId);
 
-        // If the session is not ready yet, TOTP verification is required.
-        if (auth == null || auth === false) {
-          return;
-        }
-
-        await hydrateAuthenticatedState(
-          requestId,
-          auth,
-          (params as { redirect?: string }).redirect,
-        );
+        return typeof auth === 'string'
+          ? await hydrateAuthenticatedState(requestId, auth, params)
+          : auth;
       } catch (error: unknown) {
         if (isLatestAuthRequest(requestId)) {
           await logout();
@@ -387,10 +418,17 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
   /**
    * Login using the discouraged password grant type.
    *
+   * This resolves only once there is a session. A login which ends without one and without an error,
+   * such as a cancelled TOTP step, stops the action chain it was started from.
+   *
    * @param credentials The username and password.
    */
   const passwordLogin = useCallback(
-    (credentials: PasswordLoginParams) => login('password', credentials),
+    async (credentials: PasswordLoginParams) => {
+      if (!(await login('password', credentials))) {
+        throw new ActionOwnerAbortError();
+      }
+    },
     [login],
   );
 
@@ -400,7 +438,9 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
    * @param credentials The authorization code and redirect uri.
    */
   const authorizationCodeLogin = useCallback(
-    (credentials: AuthorizationCodeLoginParams) => login('authorization_code', credentials),
+    async (credentials: AuthorizationCodeLoginParams) => {
+      await login('authorization_code', credentials);
+    },
     [login],
   );
 
@@ -412,7 +452,7 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
   const demoLogin = useCallback(
     async ({ appMemberId, appRole }: DemoLoginParams) => {
       await logout();
-      return login('urn:ietf:params:oauth:grant-type:demo-login', {
+      await login('urn:ietf:params:oauth:grant-type:demo-login', {
         appMemberId,
         appRole,
       });
@@ -421,20 +461,56 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
   );
 
   /**
+   * Cancel pending TOTP verification and return to the login page.
+   */
+  const cancelTotpLogin = useCallback(() => {
+    logout();
+    const redirect =
+      state.totpPending?.redirect ?? new URLSearchParams(window.location.search).get('redirect');
+    navigate(
+      `/${lang}/${getRouteSegment('Login', getAppMessage)}${
+        redirect ? `?${new URLSearchParams({ redirect })}` : ''
+      }`,
+      { replace: true },
+    );
+  }, [getAppMessage, lang, logout, navigate, state.totpPending]);
+
+  /**
    * Complete login with TOTP verification.
    *
    * @param token The TOTP token from the authenticator app.
    */
   const completeTotpLogin = useCallback(
     async (data: TokenResponse) => {
-      const requestId = invalidateAuthRequests();
+      // The server already created a session for a step which ended while it was being verified.
+      if (!state.totpPending || !isLatestAuthRequest(state.totpPending.requestId)) {
+        await revokeSession(data.refresh_token);
+        return;
+      }
+
+      const { requestId } = state.totpPending;
       refreshTokenRef.current = data.refresh_token;
       const auth = `Bearer ${data.access_token}`;
       setAuthorization(auth);
       applyTokenExpiration(data.access_token, requestId);
-      await hydrateAuthenticatedState(requestId, auth, state.totpPending?.redirect);
+      try {
+        await hydrateAuthenticatedState(requestId, auth, state.totpPending);
+      } catch (error: unknown) {
+        // The code and the pending token are spent, so the step can't be retried.
+        if (isLatestAuthRequest(requestId)) {
+          cancelTotpLogin();
+        }
+        throw error;
+      }
     },
-    [applyTokenExpiration, hydrateAuthenticatedState, invalidateAuthRequests, state.totpPending],
+    [
+      applyTokenExpiration,
+      cancelTotpLogin,
+      hydrateAuthenticatedState,
+      isLatestAuthRequest,
+      revokeSession,
+      state.totpPending,
+    ],
   );
 
   const totpLogin = useCallback(
@@ -456,15 +532,20 @@ export function AppMemberProvider({ children }: AppMemberProviderProps): VNode {
     [completeTotpLogin, state.totpPending],
   );
 
-  /**
-   * Cancel pending TOTP verification.
-   */
-  const cancelTotpLogin = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      totpPending: null,
-    }));
-  }, []);
+  // However the TOTP step ends, the login waiting for it must not be left hanging.
+  useEffect(() => () => state.totpPending?.settle(false), [state.totpPending]);
+
+  useEffect(() => {
+    if (!state.totpPending) {
+      return;
+    }
+    const timeoutId = setTimeout(() => {
+      cancelTotpLogin();
+      // The app member may be away when the step expires, so the message stays until dismissed.
+      push({ body: formatMessage(messages.totpExpired), color: 'warning', dismissable: true });
+    }, state.totpPending.expires - Date.now());
+    return () => clearTimeout(timeoutId);
+  }, [cancelTotpLogin, formatMessage, push, state.totpPending]);
 
   const addAppMemberGroup: (group: AppMemberGroup) => void = useCallback((group) => {
     setState(({ appMemberGroups, ...oldState }) => {

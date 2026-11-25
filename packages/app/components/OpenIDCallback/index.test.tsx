@@ -47,7 +47,7 @@ function renderCallback(query = 'code=abc&state=state-1'): void {
   render(
     <IntlProvider locale="en" messages={{}}>
       <AppIconProvider>
-        <Route path="/Login">
+        <Route path="/en/Login">
           <p>Login page</p>
         </Route>
         <Route path="/:lang/Callback">

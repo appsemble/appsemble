@@ -45,7 +45,9 @@ export function Login(): VNode {
     );
   }
 
-  const hasNoLogin = !logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin;
+  // An app member action can start a login on an app without built-in login methods.
+  const hasNoLogin =
+    !totpPending && !logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin;
 
   let state: LoginState;
   if (hasNoLogin) {

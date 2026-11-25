@@ -105,7 +105,6 @@ export function MainLogin(): VNode {
       } catch (error: unknown) {
         busy.disable();
         push({ body: formatMessage(messages.totpError), color: 'danger' });
-        cancelTotpLogin();
         throw error;
       }
       busy.disable();
