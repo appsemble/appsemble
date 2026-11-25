@@ -2,6 +2,7 @@ import {
   Button,
   Loader,
   Message,
+  Select,
   Table,
   useData,
   useMeta,
@@ -10,7 +11,7 @@ import {
 import { type AppInvite, type AppMemberInfo, OrganizationPermission } from '@appsemble/types';
 import { checkOrganizationRoleOrganizationPermissions, convertToCsv } from '@appsemble/utils';
 import { downloadBlob } from '@appsemble/web-utils';
-import { type ReactNode, useCallback } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { AddMembersModal } from './AddMembersModal/index.js';
@@ -44,6 +45,13 @@ export function MembersPage(): ReactNode {
   const userOrganization = organizations?.find((org) => org.id === app?.OrganizationId);
 
   const addMembersModal = useToggle();
+
+  const showTotp = app.totp !== 'disabled';
+  const [totpFilter, setTotpFilter] = useState<'all' | 'disabled' | 'enabled'>('all');
+  const shownMembers =
+    totpFilter === 'all'
+      ? members
+      : members?.filter((member) => member.totpEnabled === (totpFilter === 'enabled'));
 
   const onMemberChanged = useCallback(
     (member: AppMemberInfo) => setMembers(members.map((m) => (m.sub === member.sub ? member : m))),
@@ -85,6 +93,12 @@ export function MembersPage(): ReactNode {
     OrganizationPermission.DeleteAppMembers,
   ]);
 
+  const mayResetTotp =
+    showTotp &&
+    checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
+      OrganizationPermission.ResetAppMemberTotp,
+    ]);
+
   const mayInvite =
     userOrganization &&
     checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
@@ -121,10 +135,22 @@ export function MembersPage(): ReactNode {
         </Message>
       ) : (
         <>
-          <div>
+          <div className="is-flex is-align-items-center">
             <Button icon="download" onClick={onMemberExport}>
               <FormattedMessage {...messages.export} />
             </Button>
+            {showTotp ? (
+              <Select
+                aria-label={formatMessage(messages.totp)}
+                className="ml-2"
+                onChange={(event, value) => setTotpFilter(value as typeof totpFilter)}
+                value={totpFilter}
+              >
+                <option value="all">{formatMessage(messages.totpFilterAll)}</option>
+                <option value="enabled">{formatMessage(messages.totpFilterEnabled)}</option>
+                <option value="disabled">{formatMessage(messages.totpFilterDisabled)}</option>
+              </Select>
+            ) : null}
           </div>
           <Table>
             <thead>
@@ -138,6 +164,11 @@ export function MembersPage(): ReactNode {
                 <th>
                   <FormattedMessage {...messages.demo} />
                 </th>
+                {showTotp ? (
+                  <th>
+                    <FormattedMessage {...messages.totp} />
+                  </th>
+                ) : null}
                 <th className="has-text-right">
                   <FormattedMessage {...messages.role} />
                 </th>
@@ -147,15 +178,17 @@ export function MembersPage(): ReactNode {
               </tr>
             </thead>
             <tbody>
-              {members.map((member) => (
+              {shownMembers.map((member) => (
                 <MemberRow
                   key={member.sub}
                   mayDelete={mayDelete}
                   mayPatchProperties={mayPatchProperties}
+                  mayResetTotp={mayResetTotp}
                   mayUpdateRoles={mayUpdateRoles}
                   member={member}
                   onChanged={onMemberChanged}
                   onDeleted={onMemberDeleted}
+                  showTotp={showTotp}
                 />
               ))}
               {invites?.map((invite) => (
@@ -165,6 +198,7 @@ export function MembersPage(): ReactNode {
                   mayDeleteInvites={mayDeleteInvites}
                   mayInvite={mayInvite}
                   onDelete={onAppInviteDeleted}
+                  showTotp={showTotp}
                 />
               ))}
             </tbody>

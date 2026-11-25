@@ -42,6 +42,16 @@ interface AppMemberRowProperties {
   readonly mayDelete: boolean;
 
   /**
+   * Whether the user may reset the TOTP of members.
+   */
+  readonly mayResetTotp: boolean;
+
+  /**
+   * Whether the app uses TOTP, so the TOTP status of the member is shown.
+   */
+  readonly showTotp: boolean;
+
+  /**
    * This is called when the member data has changed.
    *
    * @param member The member that has been changed.
@@ -59,12 +69,14 @@ interface AppMemberRowProperties {
 export function MemberRow({
   mayDelete,
   mayPatchProperties,
+  mayResetTotp,
   mayUpdateRoles,
   member,
   onChanged,
   onDeleted,
+  showTotp,
 }: AppMemberRowProperties): ReactNode {
-  const { demo, email, name, properties, roles, sub } = member;
+  const { demo, email, name, properties, roles, sub, totpEnabled } = member;
   const {
     userInfo: { email: currentUserEmail },
   } = useUser();
@@ -151,6 +163,29 @@ export function MemberRow({
     action: callDelete,
   });
 
+  const callResetTotp = useCallback(async () => {
+    await axios.delete(`/api/apps/${app.id}/app-members/${sub}/totp`);
+    onChanged({ ...member, totpEnabled: false });
+
+    push({
+      body: formatMessage(messages.resetTotpSuccess, { member: name || email }),
+      color: 'info',
+    });
+  }, [app.id, sub, onChanged, member, push, formatMessage, name, email]);
+
+  const resetTotp = useConfirmation({
+    title: <FormattedMessage {...messages.resetTotp} />,
+    body: (
+      <FormattedMessage
+        {...messages.resetTotpConfirmationBody}
+        values={{ member: name || email }}
+      />
+    ),
+    cancelLabel: <FormattedMessage {...messages.cancelLabel} />,
+    confirmLabel: <FormattedMessage {...messages.resetTotp} />,
+    action: callResetTotp,
+  });
+
   const roleKeys = getAppRoles(app.definition.security);
 
   return (
@@ -184,6 +219,11 @@ export function MemberRow({
         <td className={styles.noWrap}>
           <span>{String(demo)}</span>
         </td>
+        {showTotp ? (
+          <td className={styles.noWrap}>
+            <FormattedMessage {...(totpEnabled ? messages.totpEnabled : messages.totpDisabled)} />
+          </td>
+        ) : null}
         <td className="has-text-right">
           <div className="control is-inline">
             <AsyncSelect
@@ -202,7 +242,16 @@ export function MemberRow({
             </AsyncSelect>
           </div>
         </td>
-        <td align="right">
+        <td align="right" className={styles.noWrap}>
+          {mayResetTotp && totpEnabled ? (
+            <AsyncButton
+              className="mr-1"
+              color="warning"
+              icon="key"
+              onClick={resetTotp}
+              title={formatMessage(messages.resetTotp)}
+            />
+          ) : null}
           {mayDelete ? (
             <AsyncButton
               color="danger"
