@@ -160,7 +160,8 @@ describe('resetAppMemberTotp', () => {
     expect(verify.status).toBe(200);
   });
 
-  it('should not let a login token spent before the reset enroll a new authenticator', async () => {
+  it('should not let a login token spent before the reset interfere with enrolling again', async () => {
+    await app.update({ totp: 'required' });
     const login = await request.post(
       `/api/apps/${app.id}/auth/email/login`,
       {},
@@ -177,13 +178,24 @@ describe('resetAppMemberTotp', () => {
 
     await request.delete(`/api/apps/${app.id}/app-members/${appMember.id}/totp`);
 
-    const setup = await request.post(`/api/apps/${app.id}/auth/totp/setup`, { totpToken });
-    expect(setup.status).toBe(200);
+    const newLogin = await request.post(
+      `/api/apps/${app.id}/auth/email/login`,
+      {},
+      loginAuthorization,
+    );
+    const { totpToken: newTotpToken } = newLogin.data.data;
+    const setup = await request.post(`/api/apps/${app.id}/auth/totp/setup`, {
+      totpToken: newTotpToken,
+    });
+
+    const spentSetup = await request.post(`/api/apps/${app.id}/auth/totp/setup`, { totpToken });
+    expect(spentSetup.status).toBe(401);
+
     const verifySetup = await request.post(`/api/apps/${app.id}/auth/totp/verify-setup`, {
       token: authenticator.generate(setup.data.secret),
-      totpToken,
+      totpToken: newTotpToken,
     });
-    expect(verifySetup.status).toBe(401);
+    expect(verifySetup.status).toBe(200);
   });
 
   it('should sign the app member out', async () => {

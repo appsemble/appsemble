@@ -48,7 +48,8 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         description: 'TOTP is already enabled for this member or TOTP is disabled for this app.',
       },
       401: {
-        description: 'User is not authenticated.',
+        description:
+          'User is not authenticated, or the pending TOTP token is invalid or already spent.',
       },
     },
     security: [{ app: [] }, {}],
