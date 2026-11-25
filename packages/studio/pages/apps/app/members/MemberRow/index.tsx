@@ -164,7 +164,12 @@ export function MemberRow({
   });
 
   const callResetTotp = useCallback(async () => {
-    await axios.delete(`/api/apps/${app.id}/app-members/${sub}/totp`);
+    try {
+      await axios.delete(`/api/apps/${app.id}/app-members/${sub}/totp`);
+    } catch {
+      push({ body: formatMessage(messages.resetTotpError, { member: name || email }) });
+      return;
+    }
     onChanged({ ...member, totpEnabled: false });
 
     push({

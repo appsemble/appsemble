@@ -1295,6 +1295,7 @@
   "studio.g7HwgE": "The permission to create app translations.",
   "studio.g807h/": "Would you like to create an account using this {provider} account?",
   "studio.gCeNmM": "Save single sign-on settings",
+  "studio.gGdza6": "Something went wrong when trying to reset the TOTP of {member}",
   "studio.gHMvwI": "Resource: {resourceName}",
   "studio.gL86bv": "Group name",
   "studio.gR2hpT": "This email address has already been registered.",

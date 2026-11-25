@@ -1,6 +1,7 @@
+import { Confirmation, MessagesProvider } from '@appsemble/react-components';
 import { PredefinedOrganizationRole } from '@appsemble/types';
-import { fireEvent, render, screen } from '@testing-library/react';
-import axios from 'axios';
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import axios, { type AxiosAdapter } from 'axios';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
@@ -9,6 +10,7 @@ import { MembersPage } from './index.js';
 
 let app: Record<string, unknown>;
 let role: PredefinedOrganizationRole;
+let resetTotp: AxiosAdapter;
 const transport = axios.defaults.adapter;
 
 vi.mock('../index.js', () => ({ useApp: () => ({ app, setApp: vi.fn() }) }));
@@ -27,8 +29,13 @@ beforeEach(() => {
     totp: 'enabled',
   };
   role = PredefinedOrganizationRole.AppMemberManager;
-  axios.defaults.adapter = (config) =>
-    Promise.resolve({
+  resetTotp = (config) =>
+    Promise.resolve({ data: '', status: 204, statusText: 'No Content', headers: {}, config });
+  axios.defaults.adapter = (config) => {
+    if (config.method === 'delete' && config.url === '/api/apps/1/app-members/alice/totp') {
+      return resetTotp(config);
+    }
+    return Promise.resolve({
       data:
         config.url === '/api/apps/1/members'
           ? [
@@ -41,6 +48,7 @@ beforeEach(() => {
       headers: {},
       config,
     });
+  };
 });
 
 afterEach(() => {
@@ -51,7 +59,11 @@ function renderPage(): void {
   render(
     <IntlProvider locale="en" messages={{}}>
       <MemoryRouter>
-        <MembersPage />
+        <MessagesProvider>
+          <Confirmation>
+            <MembersPage />
+          </Confirmation>
+        </MessagesProvider>
       </MemoryRouter>
     </IntlProvider>,
   );
@@ -83,6 +95,37 @@ it('should offer to reset the TOTP of app members who set it up', async () => {
   await screen.findByText('Alice');
 
   expect(screen.getAllByTitle('Reset TOTP')).toHaveLength(1);
+});
+
+it('should show that TOTP is not set up after resetting it', async () => {
+  renderPage();
+  const row = within((await screen.findByText('Alice')).closest('tr')!);
+  expect(row.getByText('Enabled')).toBeDefined();
+
+  fireEvent.click(row.getByTitle('Reset TOTP'));
+  fireEvent.click(
+    within(await screen.findByRole('dialog')).getByRole('button', { name: 'Reset TOTP' }),
+  );
+
+  expect(await row.findByText('Not set up')).toBeDefined();
+  expect(row.queryByTitle('Reset TOTP')).toBeNull();
+  expect(await screen.findByText('The TOTP of Alice was reset')).toBeDefined();
+});
+
+it('should report that resetting TOTP failed', async () => {
+  resetTotp = () => Promise.reject(new Error('Request failed with status code 403'));
+  renderPage();
+  const row = within((await screen.findByText('Alice')).closest('tr')!);
+
+  fireEvent.click(row.getByTitle('Reset TOTP'));
+  fireEvent.click(
+    within(await screen.findByRole('dialog')).getByRole('button', { name: 'Reset TOTP' }),
+  );
+
+  expect(
+    await screen.findByText('Something went wrong when trying to reset the TOTP of Alice'),
+  ).toBeDefined();
+  expect(row.getByText('Enabled')).toBeDefined();
 });
 
 it('should not offer to reset TOTP to organization members without the permission', async () => {

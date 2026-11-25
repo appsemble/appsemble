@@ -74,4 +74,8 @@ export const messages = defineMessages({
     id: 'studio.gpcKdF',
     defaultMessage: 'The TOTP of {member} was reset',
   },
+  resetTotpError: {
+    id: 'studio.gGdza6',
+    defaultMessage: 'Something went wrong when trying to reset the TOTP of {member}',
+  },
 });
