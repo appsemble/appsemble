@@ -1,3 +1,7 @@
 .button {
   width: 100%;
 }
+
+.identity {
+  overflow-wrap: anywhere;
+}

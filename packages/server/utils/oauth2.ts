@@ -1,12 +1,19 @@
 import { randomBytes } from 'node:crypto';
 
 import { remap, type Remapper } from '@appsemble/lang-sdk';
-import { AppsembleError, basicAuth, throwKoaError } from '@appsemble/node-utils';
+import {
+  AppsembleError,
+  basicAuth,
+  getSSRFProtectedAgents,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import { type TokenResponse, type UserInfo } from '@appsemble/types';
 import axios from 'axios';
+import { hash } from 'bcrypt';
 import { addMinutes } from 'date-fns';
 import jwt from 'jsonwebtoken';
 import { type Context } from 'koa';
+import { type Transaction } from 'sequelize';
 
 import { argv } from './argv.js';
 import { normalizeLoginGroups } from './loginRoleMappings.js';
@@ -15,6 +22,7 @@ import {
   type AppMember,
   getAppDB,
   type OAuth2AuthorizationCode,
+  OAuth2ClientCredentials,
 } from '../models/index.js';
 
 export class GrantError extends Error {
@@ -106,6 +114,7 @@ export async function getAccessToken(
         // Some providers only support basic auth,
         authorization: basicAuth(clientId, clientSecret),
       },
+      ...(await getSSRFProtectedAgents({ hostname: new URL(tokenUrl).hostname })),
     },
   );
   return data;
@@ -185,15 +194,19 @@ export async function getUserInfo(
   }
 
   if ((shouldTryNext() || !groups) && userInfoUrl) {
-    const requestConfig = {
-      headers: { authorization: `Bearer ${accessToken}` },
-    };
-    const { data } = await axios.get<UserInfo>(userInfoUrl, requestConfig);
+    const headers = { authorization: `Bearer ${accessToken}` };
+    const { data } = await axios.get<UserInfo>(userInfoUrl, {
+      headers,
+      ...(await getSSRFProtectedAgents({ hostname: new URL(userInfoUrl).hostname })),
+    });
     const actualData: UserInfo = remapper
       ? (remap(remapper, data, null as never) as UserInfo)
       : (data as UserInfo);
     if (!actualData.email && userEmailsUrl) {
-      const { data: emailsData } = await axios.get(userEmailsUrl, requestConfig);
+      const { data: emailsData } = await axios.get(userEmailsUrl, {
+        headers,
+        ...(await getSSRFProtectedAgents({ hostname: new URL(userEmailsUrl).hostname })),
+      });
       if (emailsData.length > 0) {
         actualData.email = emailsData[0].email;
       }
@@ -240,4 +253,39 @@ export async function createAppOAuth2AuthorizationCode(
     scope,
     AppMemberId: appMember.id,
   });
+}
+
+/**
+ * Create personal OAuth2 client credentials.
+ *
+ * @param values The credentials to create.
+ * @param transaction The transaction to create them in.
+ * @returns The created credentials, including the secret, which only its hash is stored of.
+ */
+export async function createOAuth2ClientCredentials(
+  values: Pick<
+    OAuth2ClientCredentials,
+    'description' | 'expires' | 'loginMethod' | 'OrganizationSsoSessionId' | 'scopes' | 'UserId'
+  >,
+  transaction?: Transaction,
+): Promise<
+  Pick<OAuth2ClientCredentials, 'created' | 'description' | 'expires' | 'id'> & {
+    scopes: string[];
+    secret: string;
+  }
+> {
+  const id = randomBytes(16).toString('hex');
+  const secret = randomBytes(32).toString('hex');
+  const credentials = await OAuth2ClientCredentials.create(
+    { ...values, id, secret: await hash(secret, 10) },
+    { transaction },
+  );
+  return {
+    created: credentials.created,
+    description: credentials.description,
+    id,
+    expires: values.expires,
+    scopes: values.scopes.split(' '),
+    secret,
+  };
 }

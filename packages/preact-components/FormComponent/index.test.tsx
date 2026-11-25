@@ -5,7 +5,12 @@ import { type ComponentChildren, type VNode } from 'preact';
 import { expect, it } from 'vitest';
 
 import { getDescription } from './getDescription.js';
-import { FormComponent, FormComponentError, FormComponentHelpPositionContext } from './index.js';
+import {
+  FormComponent,
+  FormComponentError,
+  FormComponentHelpPositionContext,
+  FormComponentOptionalLabelContext,
+} from './index.js';
 import { Input } from '../Input/index.js';
 
 const block = {
@@ -249,4 +254,26 @@ it('should render the error of a form component error below its controls by defa
     }),
   ).toStrictEqual(['label', 'input', 'error', 'help']);
   expect(getDescription(input)).toBe('Choose a size Size is required');
+});
+
+it('should render the optional label of the context by default', () => {
+  render(
+    <FormComponentOptionalLabelContext.Provider value="(Optional)">
+      <FormComponent label="Name">
+        <Input />
+      </FormComponent>
+    </FormComponentOptionalLabelContext.Provider>,
+  );
+  expect(screen.getByTestId('tag-formcomp').textContent).toBe('(Optional)');
+});
+
+it('should prefer its own optional label over the one of the context', () => {
+  render(
+    <FormComponentOptionalLabelContext.Provider value="(Optional)">
+      <FormComponent label="Name" optionalLabel="(Not required)">
+        <Input />
+      </FormComponent>
+    </FormComponentOptionalLabelContext.Provider>,
+  );
+  expect(screen.getByTestId('tag-formcomp').textContent).toBe('(Not required)');
 });

@@ -7,18 +7,18 @@ import {
   logger,
   uploadS3File,
 } from '@appsemble/node-utils';
-import { Op } from 'sequelize';
+import { literal, Op } from 'sequelize';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { App, getAppDB, initDB } from '../models/index.js';
+import { App, getAppDB, initDB, OrganizationSsoSession } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { reseedResourcesRecursively } from '../utils/resource.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 
 export const command = 'cleanup-resources-and-assets';
 export const description =
-  'Deletes all expired or ephemeral resources and assets from the database.';
+  'Deletes all expired or ephemeral resources and assets, and expired organization SSO sessions, from the database.';
 
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs);
@@ -27,7 +27,10 @@ export function builder(yargs: Argv): Argv {
 export async function cleanupResourcesAndAssets(): Promise<void> {
   const date = new Date();
 
-  const demoApps = await App.findAll({ attributes: ['id'], where: { demoMode: true } });
+  const demoApps = await App.findAll({
+    attributes: ['id', 'definition', 's3Bucket'],
+    where: { demoMode: true },
+  });
   for (const demoApp of demoApps) {
     let appDB: Awaited<ReturnType<typeof getAppDB>>;
 
@@ -50,7 +53,7 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
 
       try {
         await deleteAppAssetObjects(
-          demoApp.id,
+          demoApp,
           demoAssetsToDestroy.map((a) => a.id),
         );
       } catch (error) {
@@ -66,21 +69,21 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
       logger.info(`Removed ${demoAssetsDeletionResult} ephemeral assets.`);
 
       const demoAssetsToReseed = await Asset.findAll({
-        attributes: ['id', 'mime', 'filename', 'data', 'name', 'ResourceId', 'ResourceType'],
-        where: { OriginalId: null, seed: true },
+        attributes: ['id', 'mime', 'filename', 'name', 'sha256', 'ResourceId', 'ResourceType'],
+        where: { seed: true },
       });
 
       logger.info(`Reseeding ephemeral assets into demo app ${demoApp.id}.`);
 
       for (const asset of demoAssetsToReseed) {
-        const { data, id, ...values } = asset.dataValues;
+        const { id, ...values } = asset.dataValues;
         const created = await Asset.create({
           ...values,
           ephemeral: true,
           seed: false,
         });
-        const source = getAppAssetLocation(demoApp.id, id);
-        const target = getAppAssetLocation(demoApp.id, created.id);
+        const source = getAppAssetLocation(demoApp, id);
+        const target = getAppAssetLocation(demoApp, created.id);
         const stream = await getS3File(source.bucket, source.key);
         const stats = await getS3FileStats(source.bucket, source.key);
         await uploadS3File(target.bucket, target.key, stream, stats.size);
@@ -129,7 +132,7 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
     }
   }
 
-  const apps = await App.findAll({ attributes: ['id'], where: { demoMode: false } });
+  const apps = await App.findAll({ attributes: ['id', 's3Bucket'], where: { demoMode: false } });
   for (const app of apps) {
     let appDB: Awaited<ReturnType<typeof getAppDB>>;
 
@@ -152,7 +155,7 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
 
       try {
         await deleteAppAssetObjects(
-          app.id,
+          app,
           assetsToDestroy.map((a) => a.id),
         );
       } catch (error) {
@@ -197,6 +200,17 @@ export async function cleanupResourcesAndAssets(): Promise<void> {
       }
     }
   }
+
+  // Personal credentials created from a session keep using it after its interactive expiry.
+  const sessionsDeletionResult = await OrganizationSsoSession.destroy({
+    where: {
+      expires: { [Op.lt]: date },
+      [Op.and]: literal(
+        'NOT EXISTS (SELECT 1 FROM "OAuth2ClientCredentials" credentials WHERE credentials."OrganizationSsoSessionId" = "OrganizationSsoSession".id AND (credentials.expires IS NULL OR credentials.expires > NOW()))',
+      ),
+    },
+  });
+  logger.info(`Removed ${sessionsDeletionResult} expired organization SSO sessions.`);
 }
 
 export async function handler(): Promise<void> {

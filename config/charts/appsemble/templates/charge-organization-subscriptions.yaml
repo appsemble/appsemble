@@ -12,12 +12,18 @@ spec:
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
+      # A run takes seconds, so a hung run ends well before the next hourly tick.
+      activeDeadlineSeconds: 600
       template:
         metadata:
           annotations:
             {{ include "appsemble.gitlab" . | indent 12 }}
         spec:
           restartPolicy: Never
+          {{- with .Values.hostAliases }}
+          hostAliases:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           containers:
             - name: {{ include "appsemble.fullname" . }}-cronjob-charge-organization-subscriptions
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
@@ -28,7 +34,9 @@ spec:
                 {{- toYaml .Values.resources.cronjobs | nindent 16 }}
               args:
                 - charge-organization-subscriptions
-                - -vv
+              {{- with .Values.verbosity }}
+                - -{{ repeat (int .) "v" }}
+              {{- end }}
               env:
 {{ include "appsemble.postgres" . | indent 16 }}
 {{ include "appsemble.valkey" . | indent 16 }}
@@ -40,6 +48,8 @@ spec:
                       key: stripe-api-secret-key
                 {{- end }}
 {{ include "appsemble.stripeWebhookSecret" . | indent 16 }}
+                - name: HOST
+                  value: {{ include "appsemble.host" . }}
                 {{- if hasPrefix "review-" (include "appsemble.fullname" .) }}
                 - name: SMTP_HOST
                   value: "{{ include "appsemble.fullname" . }}-mailpit-smtp"
@@ -109,4 +119,7 @@ spec:
                       name: {{ . | quote }}
                       key: imap-copy-to-sent-folder
                 {{- end }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 16 }}
+{{ include "appsemble.trustedCaBundle.volumeMounts" . | indent 14 }}
+{{ include "appsemble.trustedCaBundle.volumes" . | indent 10 }}
 {{ end }}

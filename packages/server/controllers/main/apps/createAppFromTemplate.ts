@@ -24,7 +24,10 @@ import {
 } from '../../../models/index.js';
 import { handleAppValidationError, setAppPath } from '../../../utils/app.js';
 import { argv } from '../../../utils/argv.js';
-import { checkUserOrganizationPermissions } from '../../../utils/authorization.js';
+import {
+  checkAppPassword,
+  checkUserOrganizationPermissions,
+} from '../../../utils/authorization.js';
 import { checkAppLimit } from '../../../utils/checkAppLimit.js';
 import { createAppBuildManifest } from '../../../utils/appBuildManifest.js';
 import { syncAppDefinitionIndexes } from '../../../utils/appDefinitionIndexes.js';
@@ -66,6 +69,8 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       'demoMode',
       'scimEnabled',
       'sslKey',
+      'password',
+      's3Bucket',
     ],
     include: [
       { model: AppMessages, required: false },
@@ -92,6 +97,7 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
   });
 
   assertKoaCondition(template != null, ctx, 404, `Template with ID ${templateId} does not exist.`);
+  await checkAppPassword(ctx, template);
 
   if (!template.template && (template.visibility === 'private' || !template.showAppDefinition)) {
     // Only allow cloning of unlisted apps if the user is part of the template’s organization.
@@ -121,7 +127,6 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
       sharedStyle: template.sharedStyle,
       sslKey: '',
       sslCertificate: '',
-      scimToken: Buffer.from('placeholder'),
       scimEnabled: template.scimEnabled,
       OrganizationId: organizationId,
       AppMessages: ([] as AppMessages[]).concat(template.AppMessages),
@@ -184,24 +189,26 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
 
     if (assets) {
       const templateAssets = await TemplateAsset.findAll({ where: { clonable: true } });
-      const recordAssets = await RecordAsset.bulkCreate(
-        templateAssets.map(({ filename, id, mime, name: assetName, seed }) => ({
-          id,
-          mime,
-          filename,
-          name: assetName,
-          seed,
-        })),
-      );
-      for (const templateAsset of templateAssets) {
-        const source = getAppAssetLocation(template.id, templateAsset.id);
-        const templateStream = await getS3File(source.bucket, source.key);
-        const templateStats = await getS3FileStats(source.bucket, source.key);
-        const createdAsset = recordAssets.find((asset) => asset.name === templateAsset.name);
-        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-        const target = getAppAssetLocation(record.id, createdAsset.id);
-        await uploadS3File(target.bucket, target.key, templateStream, templateStats.size);
-      }
+      await recordDB.transaction(async (transaction) => {
+        await RecordAsset.bulkCreate(
+          templateAssets.map(({ filename, id, mime, name: assetName, seed, sha256 }) => ({
+            id,
+            mime,
+            filename,
+            name: assetName,
+            seed,
+            sha256,
+          })),
+          { transaction },
+        );
+        for (const templateAsset of templateAssets) {
+          const source = getAppAssetLocation(template, templateAsset.id);
+          const templateStream = await getS3File(source.bucket, source.key);
+          const templateStats = await getS3FileStats(source.bucket, source.key);
+          const target = getAppAssetLocation(record, templateAsset.id);
+          await uploadS3File(target.bucket, target.key, templateStream, templateStats.size);
+        }
+      });
     }
 
     await syncAppDefinitionIndexes({
@@ -311,7 +318,6 @@ export async function createAppFromTemplate(ctx: Context): Promise<void> {
             authenticationMethod,
             identifier,
             tokenUrl,
-            secret: Buffer.from('placeholder'),
           }),
         ),
       );

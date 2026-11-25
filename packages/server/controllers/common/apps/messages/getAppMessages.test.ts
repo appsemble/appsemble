@@ -620,15 +620,18 @@ describe('getAppMessages', () => {
           messageIds: { test: 'test translation' },
           core: {
             ...Object.fromEntries(
-              Object.entries(messages).filter(
-                ([key]) => key.startsWith('app') || key.startsWith('react-components'),
-              ),
+              Object.entries(messages).filter(([key]) => key.startsWith('app')),
             ),
           },
           blocks: {},
         },
       },
     });
+    expect(
+      Object.keys(response.data.messages.core).filter(
+        (key) => !key.startsWith('app') && !key.startsWith('server'),
+      ),
+    ).toStrictEqual([]);
   });
 
   it('should include defaults for app messages if override is set to false', async () => {
@@ -693,9 +696,7 @@ describe('getAppMessages', () => {
           messageIds: {},
           core: {
             ...Object.fromEntries(
-              Object.entries(messages).filter(
-                ([key]) => key.startsWith('app') || key.startsWith('react-components'),
-              ),
+              Object.entries(messages).filter(([key]) => key.startsWith('app')),
             ),
           },
           app: {
@@ -782,9 +783,7 @@ describe('getAppMessages', () => {
           messageIds: { bla: 'bla' },
           core: {
             ...Object.fromEntries(
-              Object.entries(messages).filter(
-                ([key]) => key.startsWith('app') || key.startsWith('react-components'),
-              ),
+              Object.entries(messages).filter(([key]) => key.startsWith('app')),
             ),
           },
           app: {

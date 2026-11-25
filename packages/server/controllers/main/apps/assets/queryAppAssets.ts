@@ -1,6 +1,7 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
 import { OrganizationPermission } from '@appsemble/types';
 import { type Context } from 'koa';
+import { Op } from 'sequelize';
 
 import { App, getAppDB } from '../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../utils/authorization.js';
@@ -8,7 +9,7 @@ import { checkUserOrganizationPermissions } from '../../../../utils/authorizatio
 export async function queryAppAssets(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
-    queryParams: { $skip, $top },
+    queryParams: { $skip, $top, named },
   } = ctx;
   const app = await App.findByPk(appId, { attributes: ['OrganizationId', 'demoMode'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
@@ -20,6 +21,21 @@ export async function queryAppAssets(ctx: Context): Promise<void> {
   });
 
   const { Asset, Resource } = await getAppDB(appId);
+
+  if (named) {
+    ctx.body = await Asset.findAll({
+      attributes: ['id', 'name', 'seed', 'clonable', 'sha256'],
+      where: {
+        name: { [Op.not]: null },
+        ...(app.demoMode ? { seed: false, ephemeral: true } : { ephemeral: false }),
+      },
+      offset: $skip,
+      limit: $top,
+      order: [['name', 'ASC']],
+    });
+    return;
+  }
+
   const assets = await Asset.findAll({
     attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],
     include: [

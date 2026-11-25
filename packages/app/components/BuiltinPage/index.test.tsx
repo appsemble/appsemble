@@ -1,8 +1,6 @@
 import { type AppDefinition, type BuiltinPagesLayoutDefinition } from '@appsemble/lang-sdk';
-import { render, screen } from '@testing-library/react';
-import { type ReactNode } from 'react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter } from 'react-router-dom';
+import { render, screen, within } from '@testing-library/preact';
+import { type ComponentChildren } from 'preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { BuiltinPage } from './index.js';
@@ -10,12 +8,14 @@ import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { MenuProvider } from '../MenuProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
+import { IconTestWrapper } from '../../utils/test-utils.js';
 
 vi.mock('../TitleBar/index.js', () => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention -- This mocks a component export.
-  AppBar: ({ children }: { readonly children?: ReactNode }) => (
+  AppBar: ({ children }: { readonly children?: ComponentChildren }) => (
     <div data-testid="app-bar">{children}</div>
   ),
 }));
@@ -66,16 +66,16 @@ function mockApp(layout: AppDefinition['layout'] = {}, emailVerified = true): vo
   } as never);
 }
 
-function renderPage(children: ReactNode): void {
+function renderPage(children: ComponentChildren): void {
+  window.history.replaceState(null, '', '/en/Verify');
   render(
     <IntlProvider locale="en" messages={{ 'test.title': 'Verify your account' }}>
-      <MemoryRouter initialEntries={['/en/Verify']}>
-        <MenuProvider>
-          <VerifyBanner />
-          {children}
-        </MenuProvider>
-      </MemoryRouter>
+      <MenuProvider>
+        <VerifyBanner />
+        {children}
+      </MenuProvider>
     </IntlProvider>,
+    { wrapper: IconTestWrapper },
   );
 }
 
@@ -117,8 +117,8 @@ describe('BuiltinPage', () => {
       </BuiltinPage>,
     );
 
-    const content = document.querySelector('[data-grid-area="content"]')!;
-    expect(content.textContent).toBe('Verified');
+    const content = document.querySelector<HTMLElement>('[data-grid-area="content"]')!;
+    expect(within(content).queryByText('Verified')).not.toBeNull();
   });
 
   it('should render the title bar', () => {
@@ -152,14 +152,14 @@ describe('BuiltinPage', () => {
       expect(generatedCss()).toBe('');
     });
 
-    it('should render no heading', () => {
+    it('should render the page name as the heading of the page', () => {
       renderPage(
         <BuiltinPage page="verify" state="success" title={title}>
           <span>Verified</span>
         </BuiltinPage>,
       );
 
-      expect(screen.queryByRole('heading')).toBeNull();
+      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Verify your account');
     });
   });
 
@@ -197,7 +197,7 @@ describe('BuiltinPage', () => {
       expect(css).toContain('grid-template-rows: auto 1fr');
     });
 
-    it('should render no heading for a layout that names content only', () => {
+    it('should render the page name as the heading for a layout that names content only', () => {
       mockApp({ builtinPages: contentOnly });
 
       renderPage(
@@ -206,7 +206,7 @@ describe('BuiltinPage', () => {
         </BuiltinPage>,
       );
 
-      expect(screen.queryByRole('heading')).toBeNull();
+      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Verify your account');
       expect(document.querySelector('[data-grid-area="content"]')).not.toBeNull();
     });
 

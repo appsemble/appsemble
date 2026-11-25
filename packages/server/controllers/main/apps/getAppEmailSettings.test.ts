@@ -81,7 +81,7 @@ describe('getAppEmailSettings', () => {
       emailHost: 'smtp.gmail.com',
       emailName: 'test@example.com',
       emailUser: 'example',
-      password: encrypt('password', 'key'),
+      emailPassword: encrypt('password', 'key'),
     });
 
     authorizeStudio(user);
@@ -94,7 +94,7 @@ describe('getAppEmailSettings', () => {
       {
         "emailHost": "smtp.gmail.com",
         "emailName": "test@example.com",
-        "emailPassword": false,
+        "emailPassword": true,
         "emailPort": 587,
         "emailSecure": true,
         "emailUser": "example",
@@ -112,7 +112,7 @@ describe('getAppEmailSettings', () => {
       OrganizationId: organization.id,
       emailHost: 'smtp.gmail.com',
       emailUser: 'example',
-      password: encrypt('password', 'key'),
+      emailPassword: encrypt('password', 'key'),
     });
 
     await OrganizationMember.update(

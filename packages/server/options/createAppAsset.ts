@@ -13,7 +13,7 @@ import {
 import { UniqueConstraintError } from 'sequelize';
 
 import { getCurrentAppMember } from './getCurrentAppMember.js';
-import { type Asset, getAppDB } from '../models/index.js';
+import { App, type Asset, getAppDB } from '../models/index.js';
 
 export async function createAppAsset({
   app,
@@ -34,11 +34,10 @@ export async function createAppAsset({
 
   const member = await getCurrentAppMember({ context, app });
   const { Asset, sequelize } = await getAppDB(app.id!);
+  const owner = (await App.findByPk(app.id, { attributes: ['id', 's3Bucket'] }))!;
   const assetId = Asset.build().id;
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
-  await uploadAssets(app.id, [{ id: assetId, mime: validatedMime, path }]);
+  await uploadAssets(owner, [{ id: assetId, mime: validatedMime, path }]);
 
   let asset: Asset;
   try {
@@ -55,14 +54,14 @@ export async function createAppAsset({
       ),
     );
   } catch (error: unknown) {
-    await deleteAppAssetObjects(app.id!, [assetId]);
+    await deleteAppAssetObjects(owner, [assetId]);
     if (error instanceof UniqueConstraintError) {
       throwKoaError(context, 409, `An asset named ${name} already exists`);
     }
     throw error;
   }
 
-  const { bucket, key } = getAppAssetLocation(app.id!, asset.id);
+  const { bucket, key } = getAppAssetLocation(owner, asset.id);
   // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
   return { ...asset, stream: await getS3File(bucket, key) };
 }

@@ -28,30 +28,6 @@ export function builder(yargs: Argv): Argv {
     })
     .option('sentry-environment', {
       desc: 'The Sentry environment to use for error reporting. See https://sentry.io for details.',
-    })
-    .option('smtp-host', {
-      desc: 'The host of the SMTP server to connect to.',
-    })
-    .option('smtp-port', {
-      desc: 'The port of the SMTP server to connect to.',
-      type: 'number',
-    })
-    .option('smtp-secure', {
-      desc: 'Use TLS when connecting to the SMTP server.',
-      type: 'boolean',
-      default: false,
-    })
-    .option('smtp-user', {
-      desc: 'The user to use to login to the SMTP server.',
-      implies: ['smtp-pass', 'smtp-from'],
-    })
-    .option('smtp-pass', {
-      desc: 'The password to use to login to the SMTP server.',
-      implies: ['smtp-user', 'smtp-from'],
-    })
-    .option('smtp-from', {
-      desc: 'The address to use when sending emails.',
-      implies: ['smtp-user', 'smtp-pass'],
     });
 }
 
@@ -104,18 +80,16 @@ export async function handler(): Promise<void> {
       'emailPassword',
       'emailPort',
       'emailSecure',
+      's3Bucket',
     ],
     where: { definition: { cron: { [Op.not]: null } } },
   })) {
-    let lastId;
+    logger.info(
+      `Processing ${Object.keys(app.definition.cron ?? {}).length} cron jobs for app ${app.id}`,
+    );
 
-    try {
-      logger.info(
-        `Processing ${Object.keys(app.definition.cron ?? {}).length} cron jobs for app ${app.id}`,
-      );
-
-      for (const [id, job] of Object.entries(app.definition.cron ?? {})) {
-        lastId = id;
+    for (const [id, job] of Object.entries(app.definition.cron ?? {})) {
+      try {
         const schedule = cron.parseExpression(job.schedule, { startDate });
 
         if (!schedule.hasPrev()) {
@@ -135,10 +109,10 @@ export async function handler(): Promise<void> {
           options,
           context: { mailer } as any,
         });
+      } catch (error: unknown) {
+        logger.error(`Failed to run ${id} for app ${app.id}`);
+        logger.error(error);
       }
-    } catch (error: unknown) {
-      logger.error(`Failed to run ${lastId} for app ${app.id}`);
-      logger.error(error);
     }
   }
 

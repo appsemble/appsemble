@@ -65,7 +65,7 @@ export function AddToCollectionButton({
           await Promise.all(
             organizations
               ?.filter((org) =>
-                checkOrganizationRoleOrganizationPermissions(org.role, [
+                checkOrganizationRoleOrganizationPermissions(org.roles, [
                   OrganizationPermission.UpdateAppCollections,
                 ]),
               )
@@ -97,7 +97,7 @@ export function AddToCollectionButton({
   const hasCollections = availableCollections && availableCollections.length > 0;
 
   const organizationForCreate = organizations?.find((org) =>
-    checkOrganizationRoleOrganizationPermissions(org.role, [
+    checkOrganizationRoleOrganizationPermissions(org.roles, [
       OrganizationPermission.CreateAppCollections,
     ]),
   );

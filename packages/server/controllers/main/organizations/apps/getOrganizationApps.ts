@@ -1,14 +1,24 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { col, fn, literal } from 'sequelize';
 
-import { App, AppRating, Organization, OrganizationMember } from '../../../../models/index.js';
-import { applyAppMessages, compareApps, parseLanguage } from '../../../../utils/app.js';
+import { App, AppRating, Organization } from '../../../../models/index.js';
+import {
+  getOrganizationMemberAccess,
+  getOrganizationMemberRoles,
+} from '../../../../utils/organizationSso.js';
+import {
+  applyAppMessages,
+  compareApps,
+  getAppStoreListing,
+  parseLanguage,
+} from '../../../../utils/app.js';
 
 export async function getOrganizationApps(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId },
-    user: authSubject,
   } = ctx;
 
   const {
@@ -20,16 +30,12 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
   const organization = await Organization.findByPk(organizationId);
 
   assertKoaCondition(organization != null, ctx, 404, 'Organization not found.');
-  let organizationMember;
-
-  if (authSubject) {
-    organizationMember = await OrganizationMember.findOne({
-      where: {
-        UserId: authSubject!.id,
-        OrganizationId: organizationId,
-      },
-    });
-  }
+  const organizationMember = await getOrganizationMemberAccess(ctx, organizationId);
+  const canQueryApps =
+    organizationMember &&
+    checkOrganizationRoleOrganizationPermissions(getOrganizationMemberRoles(organizationMember), [
+      OrganizationPermission.QueryApps,
+    ]);
 
   const apps = await App.findAll({
     attributes: {
@@ -82,5 +88,5 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
       return app;
     })
     .sort(compareApps)
-    .map((app) => app.toJSON(['yaml']));
+    .map((app) => (app.password && !canQueryApps ? getAppStoreListing(app) : app.toJSON(['yaml'])));
 }

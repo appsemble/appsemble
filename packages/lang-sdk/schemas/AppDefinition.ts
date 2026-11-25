@@ -30,7 +30,27 @@ This will be displayed on the app store.
       description: 'Properties related to the layout of the app.',
     },
     notifications: {
-      enum: ['login', 'opt-in', 'startup'],
+      oneOf: [
+        { enum: ['login', 'opt-in', 'startup'] },
+        {
+          type: 'object',
+          required: ['roles'],
+          additionalProperties: false,
+          properties: {
+            default: {
+              enum: ['login', 'none', 'opt-in', 'startup'],
+              description: `The strategy for roles that aren’t listed in \`roles\`, and for users without
+a role. Defaults to \`none\`.`,
+            },
+            roles: {
+              type: 'object',
+              minProperties: 1,
+              description: 'The strategy per role.',
+              additionalProperties: { enum: ['login', 'none', 'opt-in'] },
+            },
+          },
+        },
+      ],
       description: `The strategy to use for apps to subscribe to push notifications.
 
 If specified, push notifications can be sent to subscribed users via the _Notifications_ tab in the
@@ -40,6 +60,10 @@ to \`startup\` will cause Appsemble to immediately request for the permission up
 If this is set to \`login\`, the app will request permissions for push notification once the user
 logs in.
 
+To use a different strategy per role, set \`roles\` to a map of role names to \`login\`, \`opt-in\`, or
+\`none\`. Roles that aren’t listed use \`default\`. A member with several roles gets the most eager
+strategy of those roles. Only roles assigned to the member count, not roles they inherit.
+
 > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
 `,
     },
@@ -48,6 +72,20 @@ logs in.
       description: `The name of the page that should be displayed when the app is initially loaded.
 
 This **must** match the name of a page defined for the app.
+`,
+    },
+    notFoundPage: {
+      oneOf: [{ type: 'string' }, { enum: [true] }],
+      description: `What is displayed when the URL does not match a page.
+
+Set this to \`true\` to display a built-in “Page not found” page, or to the name of a page to display
+that page. The page **must** be a top-level page of the app, may not specify parameters, and may not
+be a container or tabs page. It is displayed at the URL that was not found, without checking the
+roles of the app member.
+
+The not found page is also displayed for path segments that don’t match the parameters of a page,
+except on tabs pages. If this is not specified, a URL that matches no page redirects to the default
+page.
 `,
     },
     defaultLanguage: {
@@ -81,7 +119,17 @@ The most basic resource has a \`schema\` property and defines the minimal securi
       type: 'array',
       minItems: 1,
       description: 'The pages of the app.',
+      // Pages are discriminated by `type`: tabs/flow/loop/container each carry a `type` enum, while a
+      // basic page has none — so `default: 'basic'` (mapped to `PageDefinition`) resolves the untagged
+      // basic page in O(1) instead of a fallback walk. Both the resolver and the GUI read this instead
+      // of guessing which field is the discriminant. Cast because openapi-types doesn't model our
+      // `x-appsemble-discriminator` vendor extension on a schema object.
       items: {
+        'x-appsemble-discriminator': {
+          propertyNames: ['type'],
+          default: 'basic',
+          mapping: { basic: '#/components/schemas/PageDefinition' },
+        },
         anyOf: [
           { $ref: '#/components/schemas/PageDefinition' },
           { $ref: '#/components/schemas/TabsPageDefinition' },
@@ -89,7 +137,7 @@ The most basic resource has a \`schema\` property and defines the minimal securi
           { $ref: '#/components/schemas/LoopPageDefinition' },
           { $ref: '#/components/schemas/ContainerPageDefinition' },
         ],
-      },
+      } as OpenAPIV3.NonArraySchemaObject,
     },
     theme: {
       $ref: '#/components/schemas/Theme',

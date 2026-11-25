@@ -38,6 +38,8 @@ const serverMessageKeys = [
   'server.emails.appEmailQuotaLimitHit.subject',
   'server.emails.serviceSecretTokenError.body',
   'server.emails.serviceSecretTokenError.subject',
+  'server.emails.totpReset.body',
+  'server.emails.totpReset.subject',
   'server.invoice.invoice',
   'server.invoice.invoiceNumber',
   'server.invoice.invoiceDate',
@@ -53,6 +55,13 @@ const serverMessageKeys = [
   'server.emails.appCollectionDomainExpired.subject',
   'server.emails.domainExpired.body',
   'server.emails.domainExpired.subject',
+  'server.passwordPage.title',
+  'server.passwordPage.heading',
+  'server.passwordPage.password',
+  'server.passwordPage.incorrectPassword',
+  'server.passwordPage.message',
+  'server.passwordPage.submit',
+  'server.passwordPage.tooManyAttempts',
 ];
 
 export async function extractMessages(): Promise<Translations> {

@@ -1,4 +1,4 @@
-import { defineMessages } from 'react-intl';
+import { defineMessages } from '@formatjs/intl';
 
 export const messages = defineMessages({
   login: {
@@ -8,6 +8,11 @@ export const messages = defineMessages({
   accessDenied: {
     id: 'app.Azs7Bx',
     defaultMessage: 'Access was denied',
+  },
+  noRoleMatch: {
+    id: 'app.yoh2QS',
+    defaultMessage:
+      'Your account is not in a group that gives access to this app. Ask your administrator for access.',
   },
   error: {
     id: 'app.7Lfwtm',

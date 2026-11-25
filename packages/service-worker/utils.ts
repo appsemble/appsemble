@@ -1,24 +1,37 @@
 import { type Promisable } from 'type-fest';
 
+const cacheWrites = new Set<Promise<unknown>>();
+
 async function put(
   request: Request,
   response: Response,
   fallback: () => Promisable<Response>,
+  cacheRequest: Request = request,
 ): Promise<Response> {
-  // Only cache responses if the status code is 2xx
-  // or if the status is 0 due to cors and the destination is an image
-  if (
-    response.type !== 'opaque' &&
-    (response.ok || (response.status === 0 && request.destination === 'image'))
-  ) {
+  if (response.status === 401 || response.status === 403) {
+    return response;
+  }
+  // Cache successful responses and opaque image responses.
+  if (response.ok || (response.type === 'opaque' && request.destination === 'image')) {
     const cache = await caches.open('appsemble');
-    cache.put(request, response.clone());
+    // The response streams to the page while it is stored. A failed write, for example when the
+    // storage quota is exceeded, keeps the response usable.
+    const write = cache.put(cacheRequest, response.clone()).catch((): null => null);
+    cacheWrites.add(write);
+    write.finally(() => cacheWrites.delete(write));
     return response;
   }
   return fallback();
 }
 
-async function tryCached(
+/**
+ * Wait until the cache writes that have started are finished.
+ */
+export async function finishCacheWrites(): Promise<void> {
+  await Promise.all(cacheWrites);
+}
+
+export async function tryCached(
   request: Request,
   fallback: () => Promisable<Response>,
 ): Promise<Response> {
@@ -61,19 +74,129 @@ export function cacheFirst(request: Request): Promise<Response> {
  * If the request fails for whatever reason, a cached response is returned.
  *
  * @param request The request for which to get a response.
+ * @param cacheRequest The request used to identify the cached response.
  * @returns The fetch response object.
  */
-export async function requestFirst(request: Request): Promise<Response> {
+export async function requestFirst(
+  request: Request,
+  cacheRequest: Request = request,
+): Promise<Response> {
   let response: Response;
   try {
+    // Not SSRF: a service worker fetches from the visitor's browser.
+    // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
     response = await fetch(request);
   } catch (error: unknown) {
     // This might happen if the API could not be reached.
-    return tryCached(request, () => {
+    return tryCached(cacheRequest, () => {
       throw error;
     });
   }
-  return put(request, response, () => tryCached(request, () => response));
+  return put(cacheRequest, response, () => tryCached(cacheRequest, () => response));
+}
+
+/**
+ * Serve a stored stylesheet of an app first, unless the server marked it `no-store`.
+ *
+ * Stylesheets of a password protected app hold the password token of the visitor, which changes
+ * when the visitor enters the password again. Those are only served from the cache when the
+ * network is unreachable.
+ *
+ * @param request The request for which to get a response.
+ * @returns The fetch response object.
+ */
+export async function appStylesheetFirst(request: Request): Promise<Response> {
+  const cached = await caches.match(request);
+  if (!cached) {
+    return cacheFirst(request);
+  }
+  return cached.headers.get('Cache-Control')?.includes('no-store') ? requestFirst(request) : cached;
+}
+
+/**
+ * Serve a cached response only if it is marked immutable, and request a fresh one otherwise.
+ *
+ * App asset URLs carry either an asset id or an asset name in their last segment. An id addresses
+ * one fixed set of bytes, while a name can be pointed at a different asset at any time. Only the
+ * server can tell the two apart, and it records that verdict in `Cache-Control`, so read the
+ * verdict back off the stored response instead of deriving it from the URL.
+ *
+ * A stored response that may be replaced is still served when the network fails or takes longer
+ * than 3 seconds to respond, so a stalled connection does not hold up an asset that is available.
+ *
+ * @param request The request for which to get a response.
+ * @param cacheRequest The request used to identify the cached response.
+ * @returns The fetch response object.
+ */
+export async function cacheFirstIfImmutable(
+  request: Request,
+  cacheRequest: Request = request,
+): Promise<Response> {
+  const cached = await caches.match(cacheRequest);
+  if (cached?.headers.get('Cache-Control')?.includes('immutable')) {
+    return cached;
+  }
+  let response: Response;
+  try {
+    // Not SSRF: a service worker fetches from the visitor's browser.
+    // nosemgrep: nodejs_scan.javascript-ssrf-rule-node_ssrf
+    const fetching = fetch(request);
+    response = await (cached
+      ? Promise.race([
+          fetching,
+          new Promise<never>((resolve, reject) => {
+            setTimeout(() => reject(new Error('The network did not respond in time')), 3000);
+          }),
+        ])
+      : fetching);
+  } catch (error: unknown) {
+    return tryCached(cacheRequest, () => {
+      throw error;
+    });
+  }
+
+  if (response.status === 404) {
+    const cache = await caches.open('appsemble');
+    const { origin, pathname } = new URL(request.url);
+    const cacheKeys = await cache.keys();
+    for (const key of cacheKeys) {
+      const cachedUrl = new URL(key.url);
+      if (cachedUrl.origin === origin && cachedUrl.pathname === pathname) {
+        await cache.delete(key);
+      }
+    }
+    return response;
+  }
+
+  return put(request, response, () => tryCached(cacheRequest, () => response), cacheRequest);
+}
+
+/**
+ * Serve an app asset, matching SVG images independently of raster resize parameters and stored
+ * assets independently of the password token.
+ *
+ * @param request The asset request.
+ * @returns The requested asset response.
+ */
+export async function assetFirst(request: Request): Promise<Response> {
+  // The password token of a protected app changes with every password entry, while the asset is
+  // the same for everyone who may see it.
+  const url = new URL(request.url);
+  url.searchParams.delete('passwordToken');
+  try {
+    return await cacheFirstIfImmutable(request, new Request(url));
+  } catch (error) {
+    if (!url.searchParams.has('width') && !url.searchParams.has('height')) {
+      throw error;
+    }
+    url.searchParams.delete('width');
+    url.searchParams.delete('height');
+    const cached = await caches.match(new Request(url));
+    if (cached?.headers.get('content-type')?.split(';', 1)[0].trim() === 'image/svg+xml') {
+      return cached;
+    }
+    throw error;
+  }
 }
 
 /**

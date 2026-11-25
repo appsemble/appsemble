@@ -1,6 +1,6 @@
 import { type OpenAPIV3 } from 'openapi-types';
 
-import { partialNormalized, semver } from '../constants/index.js';
+import { normalized, partialNormalized, semver } from '../constants/index.js';
 
 export const BlockDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
@@ -32,6 +32,19 @@ Some examples:
 
 Since blocks may change over time, a version must be specified in order to ensure that the block
 will remain the same until it is manually updated.
+`,
+    },
+    name: {
+      type: 'string',
+      pattern: normalized.source,
+      maxLength: 40,
+      description: `A name which identifies this single block instance.
+
+The name is rendered as a \`data-block-name\` attribute on the wrapper element of the block, so app
+styles can target one instance instead of every block of the same type. Names must be lower case and
+hyphen separated.
+
+For example, a block named \`screen-title\` is targeted with \`[data-block-name='screen-title']\`.
 `,
     },
     layout: {

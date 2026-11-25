@@ -62,6 +62,19 @@ Layout float can be combined with the \`position\` property to place the block o
                 "static",
               ],
             },
+            "name": {
+              "description": "A name which identifies this single block instance.
+
+The name is rendered as a \`data-block-name\` attribute on the wrapper element of the block, so app
+styles can target one instance instead of every block of the same type. Names must be lower case and
+hyphen separated.
+
+For example, a block named \`screen-title\` is targeted with \`[data-block-name='screen-title']\`.
+",
+              "maxLength": 40,
+              "pattern": "^([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)$",
+              "type": "string",
+            },
             "parameters": {
               "additionalProperties": true,
               "description": "A free form mapping of named parameters.
@@ -2350,6 +2363,15 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/ContainerPageDefinition",
             },
           ],
+          "x-appsemble-discriminator": {
+            "default": "basic",
+            "mapping": {
+              "basic": "#/components/schemas/PageDefinition",
+            },
+            "propertyNames": [
+              "type",
+            ],
+          },
         },
         "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>,<#/components/schemas/LoopPageDefinition>,<#/components/schemas/ContainerPageDefinition>",
       },
@@ -2423,6 +2445,19 @@ Layout float can be combined with the \`position\` property to place the block o
                 "static",
               ],
             },
+            "name": {
+              "description": "A name which identifies this single block instance.
+
+The name is rendered as a \`data-block-name\` attribute on the wrapper element of the block, so app
+styles can target one instance instead of every block of the same type. Names must be lower case and
+hyphen separated.
+
+For example, a block named \`screen-title\` is targeted with \`[data-block-name='screen-title']\`.
+",
+              "maxLength": 40,
+              "pattern": "^([0-9a-z](?:(?!.*--)[-0-9a-z]*[0-9a-z])?)$",
+              "type": "string",
+            },
             "parameters": {
               "additionalProperties": true,
               "description": "A free form mapping of named parameters.
@@ -4711,6 +4746,15 @@ instructed to contact the app owner to get permissions.
               "$ref": "#/components/schemas/ContainerPageDefinition",
             },
           ],
+          "x-appsemble-discriminator": {
+            "default": "basic",
+            "mapping": {
+              "basic": "#/components/schemas/PageDefinition",
+            },
+            "propertyNames": [
+              "type",
+            ],
+          },
         },
         "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>,<#/components/schemas/LoopPageDefinition>,<#/components/schemas/ContainerPageDefinition>",
       },

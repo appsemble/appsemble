@@ -1,4 +1,6 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { col, fn, literal, Op } from 'sequelize';
 
@@ -9,14 +11,21 @@ import {
   AppMessages,
   AppRating,
   Organization,
-  OrganizationMember,
 } from '../../../../models/index.js';
-import { applyAppMessages, compareApps, parseLanguage } from '../../../../utils/app.js';
+import {
+  getOrganizationMemberAccess,
+  getOrganizationMemberRoles,
+} from '../../../../utils/organizationSso.js';
+import {
+  applyAppMessages,
+  compareApps,
+  getAppStoreListing,
+  parseLanguage,
+} from '../../../../utils/app.js';
 
 export async function queryAppCollectionApps(ctx: Context): Promise<void> {
   const {
     pathParams: { appCollectionId },
-    user,
   } = ctx;
   const { baseLanguage, language } = parseLanguage(ctx, ctx.query?.language ?? []);
 
@@ -26,13 +35,7 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
 
   assertKoaCondition(collection != null, ctx, 404, 'App collection not found');
 
-  const organizationMember = await OrganizationMember.findOne({
-    where: {
-      UserId: user?.id ?? null,
-      OrganizationId: collection.OrganizationId,
-    },
-    attributes: ['OrganizationId'],
-  });
+  const organizationMember = await getOrganizationMemberAccess(ctx, collection.OrganizationId);
 
   assertKoaCondition(
     !(collection.visibility === 'private' && !organizationMember),
@@ -91,6 +94,16 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
 
   assertKoaCondition(apps != null, ctx, 404, 'App collection apps not found');
 
+  const memberships = (
+    await Promise.all(
+      [
+        ...new Set(
+          apps.filter(({ App: app }) => app!.password).map(({ App: app }) => app!.OrganizationId),
+        ),
+      ].map((organizationId) => getOrganizationMemberAccess(ctx, organizationId)),
+    )
+  ).filter(Boolean);
+
   const ratingsMap = new Map(
     (
       await AppRating.findAll({
@@ -136,5 +149,19 @@ export async function queryAppCollectionApps(ctx: Context): Promise<void> {
       }
       return compareApps(app1, app2);
     })
-    .map(({ app, pinnedAt }) => Object.assign(app.toJSON(['yaml']), { pinnedAt }));
+    .map(({ app, pinnedAt }) =>
+      Object.assign(
+        app.password &&
+          !memberships.some(
+            (member) =>
+              member!.OrganizationId === app.OrganizationId &&
+              checkOrganizationRoleOrganizationPermissions(getOrganizationMemberRoles(member!), [
+                OrganizationPermission.QueryApps,
+              ]),
+          )
+          ? getAppStoreListing(app)
+          : app.toJSON(['yaml']),
+        { pinnedAt },
+      ),
+    );
 }

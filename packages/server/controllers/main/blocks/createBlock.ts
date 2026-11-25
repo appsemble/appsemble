@@ -113,7 +113,7 @@ export async function createBlock(ctx: Context): Promise<void> {
 
   const filenames = files.map((file) => {
     try {
-      return decodeURIComponent(file.filename);
+      return decodeURIComponent(file.filename!);
     } catch {
       throwKoaError(ctx, 400, `Invalid block asset filename: ${file.filename}`);
     }
@@ -145,7 +145,7 @@ export async function createBlock(ctx: Context): Promise<void> {
 
       for (const file of files) {
         logger.verbose(
-          `Creating block assets for ${name}@${version}: ${decodeURIComponent(file.filename)}`,
+          `Creating block assets for ${name}@${version}: ${decodeURIComponent(file.filename!)}`,
         );
       }
 

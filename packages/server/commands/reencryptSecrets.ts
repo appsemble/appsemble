@@ -2,7 +2,14 @@ import { logger } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
-import { App, getAppDB, initDB, transactional } from '../models/index.js';
+import {
+  App,
+  getAppDB,
+  initDB,
+  OrganizationSso,
+  OrganizationSsoSession,
+  transactional,
+} from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { decrypt, encrypt } from '../utils/crypto.js';
 import { handleDBError } from '../utils/sqlUtils.js';
@@ -253,6 +260,51 @@ export async function reencryptSecrets({
       }
     });
   }
+
+  await transactional(async (transaction) => {
+    for (let offset = 0; ; offset += batch) {
+      const providers = await OrganizationSso.findAll({
+        attributes: ['OrganizationId', 'clientSecret'],
+        order: [['OrganizationId', 'ASC']],
+        limit: batch,
+        offset,
+        transaction,
+      });
+      for (const provider of providers) {
+        await provider.update(
+          { clientSecret: encrypt(decrypt(provider.clientSecret, oldAesSecret), newAesSecret) },
+          { transaction },
+        );
+      }
+      if (providers.length < batch) {
+        break;
+      }
+    }
+    for (let offset = 0; ; offset += batch) {
+      const sessions = await OrganizationSsoSession.findAll({
+        attributes: ['id', 'refreshToken', 'idToken'],
+        order: [['id', 'ASC']],
+        limit: batch,
+        offset,
+        transaction,
+      });
+      for (const session of sessions) {
+        await session.update(
+          {
+            refreshToken:
+              session.refreshToken &&
+              encrypt(decrypt(session.refreshToken, oldAesSecret), newAesSecret),
+            idToken:
+              session.idToken && encrypt(decrypt(session.idToken, oldAesSecret), newAesSecret),
+          },
+          { transaction },
+        );
+      }
+      if (sessions.length < batch) {
+        break;
+      }
+    }
+  });
 
   logger.info('Re-encryption complete');
   return result;

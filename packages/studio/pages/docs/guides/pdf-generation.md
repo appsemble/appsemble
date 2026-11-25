@@ -23,7 +23,7 @@ parameters:
 ```yaml
 containers:
   - name: pdf-generator
-    image: registry.gitlab.com/appsemble/apps/eindhoven/pdf-generator-api:main
+    image: registry.gitlab.com/appsemble/core-images/pdf-generator-api:main
     port: 3000
 ```
 
@@ -34,8 +34,12 @@ For this specific image, a few additional settings are required.
 ```yaml
 containers:
   - name: pdf-generator
-    image: registry.gitlab.com/appsemble/apps/eindhoven/pdf-generator-api:main
+    image: registry.gitlab.com/appsemble/core-images/pdf-generator-api:main
     port: 3000
+    resources:
+      limits:
+        cpu: '0.5'
+        memory: 768Mi
     env:
       - name: SECRET
         value: secret
@@ -48,6 +52,9 @@ containers:
         value: '36'
 ```
 
+- `resources` - The image renders documents with LibreOffice, which needs more memory and CPU than
+  the default [resource limits](./companion-containers.md#resource-limitations) of a companion
+  container.
 - `env` - Here you can define the environment variables:
   - `SECRET` - This is important for authentication. Value should be the name of the secret created
     in the `secrets` page.
@@ -146,6 +153,8 @@ The request should:
   - `template` - The `Id` of the template from the previous step as **string**.
   - `params` - An object, the keys of which are the same as the markers of the template, as shown in
     the [example](#example) section above.
+  - `convertTo` - The output format, `pdf` for a PDF document. Without it, the response is the
+    filled-in template in the format of the template file.
 - Have the `proxy` parameter set to `true`
 
 A request action should looks something like:
@@ -163,6 +172,7 @@ print:
         object.from:
           value: my-value
           anotherValue: '123'
+      convertTo: pdf
   onSuccess:
     type: download
     filename: my-rendered.pdf
@@ -194,8 +204,8 @@ Open the app in the live view, instead of in the editor and try downloading agai
   request.
 - `500` - Internal error within the container. Probably the container has started, but it might be
   unable to fetch the template from Appsemble. Check if the name of the template is spelled
-  properly, if the format of the provided file is [supported](#pdf-template), if the `appId` and
-  `remote` in the container definition are set properly.
+  properly, if the format of the provided file is [supported](#pdf-template), if `APP_ID` and
+  `REMOTE` in the container definition are set properly.
 - `502` - Indicates that the url, to which the request is sent is invalid, or the container has not
   be created at all.
 

@@ -44,6 +44,12 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
-    security: [{ webhook: [] }, { app: ['email', 'profile'] }, {}],
+    security: [
+      { webhook: [] },
+      { app: ['email', 'profile'] },
+      { studio: [] },
+      { cli: ['apps:write'] },
+      {},
+    ],
   },
 };

@@ -19,8 +19,27 @@ export const OrganizationMember: OpenAPIV3.NonArraySchemaObject = {
       description: 'The primary email address of the user.',
     },
     role: {
+      description: 'The manual role, or null for group-managed staff.',
+      nullable: true,
       enum: predefinedOrganizationRoles,
     },
+    roles: {
+      description: 'The effective organization roles.',
+      type: 'array',
+      items: { enum: predefinedOrganizationRoles },
+    },
+    ssoRoles: {
+      description: 'The roles assigned by identity-provider group mappings.',
+      type: 'array',
+      items: { enum: predefinedOrganizationRoles },
+    },
+    ssoUsernames: {
+      description:
+        'The identity provider accounts linked through organization single sign-on, shown to members who manage members.',
+      type: 'array',
+      items: { type: 'string' },
+    },
+    guest: { type: 'boolean' },
     properties: {
       type: 'object',
       description: 'Additional custom properties that a user might have.',

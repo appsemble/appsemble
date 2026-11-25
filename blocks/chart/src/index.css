@@ -1,0 +1,8 @@
+.data:not(:focus-within) {
+  block-size: 1px;
+  inline-size: 1px;
+  margin: -1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+}

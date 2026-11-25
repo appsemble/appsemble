@@ -1,6 +1,6 @@
 import { getRandomValues } from 'node:crypto';
 
-import { createFixtureStream, createFormData } from '@appsemble/node-utils';
+import { createFixtureStream, createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import {
   type App as AppType,
   PredefinedOrganizationRole,
@@ -9,6 +9,7 @@ import {
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
+import { compare } from 'bcrypt';
 import stripIndent from 'strip-indent';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -322,6 +323,30 @@ describe('createApp', () => {
     );
     expect(response.status).toBe(201);
     expect(response.data.supportedLanguages).toStrictEqual(['en', 'nl']);
+  });
+
+  it('should create a password protected app', async () => {
+    authorizeStudio();
+    const response = await request.post<AppType>(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        password: 'open sesame',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    expect(response.status).toBe(201);
+    expect(response.data.passwordProtected).toBe(true);
+    const { password } = (await App.findByPk(response.data.id))!;
+    expect(await compare('open sesame', password!)).toBe(true);
   });
 
   it('should create an app member with role `cron` if the security definition has cron defined', async () => {
@@ -1166,6 +1191,10 @@ describe('createApp', () => {
                   "format": "binary",
                   "type": "string",
                 },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
+                  "type": "string",
+                },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
                 },
@@ -1176,6 +1205,11 @@ describe('createApp', () => {
                     "type": "string",
                   },
                   "type": "array",
+                },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -1261,6 +1295,10 @@ describe('createApp', () => {
                   "format": "binary",
                   "type": "string",
                 },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
+                  "type": "string",
+                },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
                 },
@@ -1271,6 +1309,11 @@ describe('createApp', () => {
                     "type": "string",
                   },
                   "type": "array",
+                },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -1391,6 +1434,10 @@ describe('createApp', () => {
                   "format": "binary",
                   "type": "string",
                 },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
+                  "type": "string",
+                },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
                 },
@@ -1401,6 +1448,11 @@ describe('createApp', () => {
                     "type": "string",
                   },
                   "type": "array",
+                },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -2054,6 +2106,10 @@ describe('createApp', () => {
                   "format": "binary",
                   "type": "string",
                 },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
+                  "type": "string",
+                },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
                 },
@@ -2064,6 +2120,11 @@ describe('createApp', () => {
                     "type": "string",
                   },
                   "type": "array",
+                },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -2213,6 +2274,10 @@ describe('createApp', () => {
                   "format": "binary",
                   "type": "string",
                 },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
+                  "type": "string",
+                },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
                 },
@@ -2223,6 +2288,11 @@ describe('createApp', () => {
                     "type": "string",
                   },
                   "type": "array",
+                },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -2774,6 +2844,29 @@ describe('createApp', () => {
                     "minLength": 1,
                     "type": "string",
                   },
+                  "notFoundPage": {
+                    "description": "What is displayed when the URL does not match a page.
+
+      Set this to \`true\` to display a built-in “Page not found” page, or to the name of a page to display
+      that page. The page **must** be a top-level page of the app, may not specify parameters, and may not
+      be a container or tabs page. It is displayed at the URL that was not found, without checking the
+      roles of the app member.
+
+      The not found page is also displayed for path segments that don’t match the parameters of a page,
+      except on tabs pages. If this is not specified, a URL that matches no page redirects to the default
+      page.
+      ",
+                    "oneOf": [
+                      {
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          true,
+                        ],
+                      },
+                    ],
+                  },
                   "notifications": {
                     "description": "The strategy to use for apps to subscribe to push notifications.
 
@@ -2784,12 +2877,51 @@ describe('createApp', () => {
       If this is set to \`login\`, the app will request permissions for push notification once the user
       logs in.
 
+      To use a different strategy per role, set \`roles\` to a map of role names to \`login\`, \`opt-in\`, or
+      \`none\`. Roles that aren’t listed use \`default\`. A member with several roles gets the most eager
+      strategy of those roles. Only roles assigned to the member count, not roles they inherit.
+
       > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
       ",
-                    "enum": [
-                      "login",
-                      "opt-in",
-                      "startup",
+                    "oneOf": [
+                      {
+                        "enum": [
+                          "login",
+                          "opt-in",
+                          "startup",
+                        ],
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "default": {
+                            "description": "The strategy for roles that aren’t listed in \`roles\`, and for users without
+      a role. Defaults to \`none\`.",
+                            "enum": [
+                              "login",
+                              "none",
+                              "opt-in",
+                              "startup",
+                            ],
+                          },
+                          "roles": {
+                            "additionalProperties": {
+                              "enum": [
+                                "login",
+                                "none",
+                                "opt-in",
+                              ],
+                            },
+                            "description": "The strategy per role.",
+                            "minProperties": 1,
+                            "type": "object",
+                          },
+                        },
+                        "required": [
+                          "roles",
+                        ],
+                        "type": "object",
+                      },
                     ],
                   },
                   "pages": {
@@ -2812,6 +2944,15 @@ describe('createApp', () => {
                           "$ref": "#/components/schemas/ContainerPageDefinition",
                         },
                       ],
+                      "x-appsemble-discriminator": {
+                        "default": "basic",
+                        "mapping": {
+                          "basic": "#/components/schemas/PageDefinition",
+                        },
+                        "propertyNames": [
+                          "type",
+                        ],
+                      },
                     },
                     "minItems": 1,
                     "type": "array",
@@ -2953,6 +3094,173 @@ describe('createApp', () => {
       }),
     );
     expect(decrypt(app!.dbPassword, 'testSecret')).toBe(databasePassword);
+  });
+
+  // The single-bucket test job only grants access to that one bucket.
+  it.skipIf(process.env.S3_BUCKET)(
+    'should keep the assets of an app in the bucket it names',
+    async () => {
+      vi.useRealTimers();
+      setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
+      authorizeStudio();
+      const { data: app } = await request.post<AppType>(
+        '/api/apps',
+        createFormData({
+          OrganizationId: organization.id,
+          s3Bucket: 'tst-named-bucket',
+          yaml: stripIndent(`
+            name: Test App
+            defaultPage: Test Page
+            pages:
+              - name: Test Page
+                blocks:
+                  - type: test
+                    version: 0.0.0
+          `),
+        }),
+      );
+      const file = Buffer.from('named bucket');
+      const { data: asset } = await request.post<{ id: string }>(
+        `/api/apps/${app.id}/assets`,
+        createFormData({ file, name: 'named' }),
+      );
+
+      expect(await getS3FileBuffer('tst-named-bucket', asset.id)).toStrictEqual(file);
+    },
+  );
+
+  it('should not let apps name a bucket when the server sets no app bucket prefix', async () => {
+    setArgv(argv);
+    authorizeStudio();
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        s3Bucket: 'tst-named-bucket',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it('should not let apps name a bucket outside the app bucket prefix', async () => {
+    setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
+    authorizeStudio();
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        s3Bucket: 'appsemble-block-assets',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it('should not let apps name a bucket the server manages', async () => {
+    setArgv({ ...argv, s3AppBucketPrefix: 'app-' });
+    authorizeStudio();
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        s3Bucket: 'app-12',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it('should not let two apps share a bucket', async () => {
+    setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
+    authorizeStudio();
+    await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        s3Bucket: 'tst-shared-bucket',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        path: 'other-app',
+        s3Bucket: 'tst-shared-bucket',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 409,
+      data: { message: 'Another app already uses bucket “tst-shared-bucket”' },
+    });
+  });
+
+  it('should reject an invalid bucket name', async () => {
+    authorizeStudio();
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        s3Bucket: 'Not_A_Bucket',
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+      }),
+    );
+
+    expect(response.status).toBe(400);
   });
 
   it('should use passed database parameters if present', async () => {

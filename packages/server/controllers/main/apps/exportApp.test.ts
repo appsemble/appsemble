@@ -606,11 +606,14 @@ describe('exportApp', () => {
 
     vi.useRealTimers();
 
-    await uploadAsset(app.id, {
-      id: asset.id,
-      mime: 'image/png',
-      path: resolveFixture('nodejs-logo.png'),
-    });
+    await uploadAsset(
+      { id: app.id },
+      {
+        id: asset.id,
+        mime: 'image/png',
+        path: resolveFixture('nodejs-logo.png'),
+      },
+    );
 
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/export?assets=true`, {

@@ -26,7 +26,7 @@ export function OrganizationInvitePage(): ReactNode {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const qs = useQuery();
-  const { logout, organizations, setOrganizations, userInfo } = useUser();
+  const { organizations, setOrganizations, signOut, userInfo } = useUser();
   const redirect = useLocationString();
 
   const [success, setSuccess] = useState(false);
@@ -52,7 +52,7 @@ export function OrganizationInvitePage(): ReactNode {
         if (response) {
           setOrganizations([
             ...organizations,
-            { ...organization, role: PredefinedOrganizationRole.Member },
+            { ...organization, roles: [PredefinedOrganizationRole.Member] },
           ]);
         }
       } catch (err) {
@@ -122,6 +122,7 @@ export function OrganizationInvitePage(): ReactNode {
   if (!userInfo) {
     const search = new URLSearchParams(qs);
     search.set('redirect', redirect);
+    search.set('organization', organization.id);
 
     return (
       <Content className="has-text-centered">
@@ -180,7 +181,7 @@ export function OrganizationInvitePage(): ReactNode {
           <FormattedMessage {...messages.alreadyJoined} />
         </p>
         <div className="py-4">
-          <Button className="mr-3" color="primary" icon="sign-out-alt" onClick={logout}>
+          <Button className="mr-3" color="primary" icon="sign-out-alt" onClick={signOut}>
             <FormattedMessage {...messages.logout} />
           </Button>
         </div>

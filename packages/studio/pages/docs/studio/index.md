@@ -36,5 +36,6 @@ The studio consists of 5 pages:
 - [App store](app-store.md)
 - [Block store](block-store.md)
 - [Organizations](organizations.mdx)
+- [Service accounts](service-accounts.md)
 - [Account management](account-management.md)
 - [GUI editor](gui-editor.md)

@@ -16,15 +16,15 @@ export async function updateAppSslSecret(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, { attributes: ['domain', 'id', 'OrganizationId'] });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
-  await app.update({
-    sslCertificate: certificate?.trim() || null,
-    sslKey: key?.trim() || null,
-  });
-
   await checkUserOrganizationPermissions({
     context: ctx,
     organizationId: app.OrganizationId,
     requiredPermissions: [OrganizationPermission.UpdateAppSecrets],
+  });
+
+  await app.update({
+    sslCertificate: certificate?.trim() || null,
+    sslKey: key?.trim() || null,
   });
 
   ctx.body = {

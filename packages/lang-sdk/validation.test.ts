@@ -146,6 +146,79 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should report duplicate block names within a page', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push(
+      { type: 'test', version: '1.2.3', name: 'screen-title' },
+      { type: 'test', version: '1.2.3', name: 'screen-title' },
+    );
+    const result = await validateAppDefinition(app, () => [
+      { name: '@appsemble/test', version: '1.2.3', files: [], languages: [] },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is a duplicate block name', 'screen-title', undefined, [
+        'pages',
+        0,
+        'blocks',
+        1,
+        'name',
+      ]),
+    ]);
+  });
+
+  it('should accept conditionally displayed blocks sharing a grid area', async () => {
+    const app = createTestApp();
+    Object.assign(app.pages[0], {
+      layout: {
+        desktop: {
+          spacing: { unit: '40px', gap: 1 / 8, padding: 1 / 4 },
+          layout: { columns: 2, template: ['a b'] },
+        },
+      } as PageLayoutDefinition,
+    });
+    (app.pages[0] as BasicPageDefinition).blocks.push(
+      { type: 'test', version: '1.2.3', gridArea: 'a', hide: { prop: 'editing' } },
+      { type: 'test', version: '1.2.3', gridArea: 'a', hide: { not: [{ prop: 'editing' }] } },
+    );
+    const result = await validateAppDefinition(app, () => [
+      { name: '@appsemble/test', version: '1.2.3', files: [], languages: [] },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should accept the same block name on different pages', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      name: 'screen-title',
+    });
+    (app.pages[1] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      name: 'screen-title',
+    });
+    const result = await validateAppDefinition(app, () => [
+      { name: '@appsemble/test', version: '1.2.3', files: [], languages: [] },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should accept the same block name and grid area in different steps', async () => {
+    const app = createTestApp();
+    for (const step of (app.pages[3] as FlowPageDefinition).steps) {
+      step.blocks.push({ type: 'test', version: '1.2.3', name: 'screen-title', gridArea: 'a' });
+    }
+    const result = await validateAppDefinition(app, () => [
+      { name: '@appsemble/test', version: '1.2.3', files: [], languages: [] },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
   it('should validate block parameters', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
@@ -171,6 +244,60 @@ describe('validateAppDefinition', () => {
       new ValidationError('requires property "foo"', {}, undefined, [
         'pages',
         0,
+        'blocks',
+        0,
+        'parameters',
+      ]),
+    ]);
+  });
+
+  it('should validate block parameters in match case actions', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      parameters: { foo: 'bar' },
+      actions: {
+        onClick: {
+          type: 'match',
+          match: [
+            {
+              case: true,
+              action: {
+                type: 'dialog',
+                blocks: [{ type: 'test', version: '1.2.3', parameters: {} }],
+              },
+            },
+          ],
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        parameters: {
+          type: 'object',
+          required: ['foo'],
+          properties: { foo: { type: 'string' } },
+        },
+        actions: { onClick: {} },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('requires property "foo"', {}, undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onClick',
+        'match',
+        0,
+        'action',
         'blocks',
         0,
         'parameters',
@@ -940,6 +1067,48 @@ describe('validateAppDefinition', () => {
         'notifications',
       ]),
     ]);
+  });
+
+  it('should report if notifications is a role map without a security definition', async () => {
+    const app = createTestApp();
+    delete app.security;
+    app.notifications = { roles: { User: 'login' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('only works if security is defined', app.notifications, undefined, [
+        'notifications',
+      ]),
+    ]);
+  });
+
+  it('should validate the roles in notifications exist', async () => {
+    const app = createTestApp();
+    app.notifications = { roles: { User: 'login', Unknown: 'opt-in' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not exist in this app’s roles', 'Unknown', undefined, [
+        'notifications',
+        'roles',
+        'Unknown',
+      ]),
+    ]);
+  });
+
+  it('should not report an empty notifications value as an unexpected error', async () => {
+    const app = createTestApp();
+    // @ts-expect-error 2322 an empty YAML value is null
+    app.notifications = null;
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should accept notifications per role', async () => {
+    const app = createTestApp();
+    app.notifications = { default: 'opt-in', roles: { User: 'login' } };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(true);
   });
 
   it('should validate the default role exists', async () => {
@@ -1806,6 +1975,67 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should accept the built-in not found page', async () => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), notFoundPage: true },
+      () => [],
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it('should validate the not found page isn’t inside a container page', async () => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), notFoundPage: 'Contained Page' },
+      () => [],
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('may not be inside a container page', 'Contained Page', undefined, [
+        'notFoundPage',
+      ]),
+    ]);
+  });
+
+  it('should validate the not found page exists', async () => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), notFoundPage: 'Does not exist' },
+      () => [],
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not refer to an existing page', 'Does not exist', undefined, [
+        'notFoundPage',
+      ]),
+    ]);
+  });
+
+  it('should validate the not found page doesn’t specify parameters', async () => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), notFoundPage: 'Page with parameters' },
+      () => [],
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('may not specify parameters', 'Page with parameters', undefined, [
+        'notFoundPage',
+      ]),
+    ]);
+  });
+
+  it.each([
+    ['Container Page 1', 'container'],
+    ['Page with tabs', 'tabs'],
+  ])('should validate the not found page %s isn’t a %s page', async (name, type) => {
+    const result = await validateAppDefinition(
+      { ...createTestApp(), notFoundPage: name },
+      () => [],
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(`may not be a ${type} page`, name, undefined, ['notFoundPage']),
+    ]);
+  });
+
   it('should report invalid cronjob schedule syntax', async () => {
     const result = await validateAppDefinition(
       {
@@ -2546,6 +2776,41 @@ describe('validateAppDefinition', () => {
         undefined,
         ['webhooks', 'patchPerson', 'action', 'optimistic'],
       ),
+    ]);
+  });
+
+  it('should not require resource permissions for webhook actions', async () => {
+    const app = createTestApp();
+    delete app.security;
+    app.webhooks = {
+      createPerson: {
+        schema: { type: 'object' },
+        action: { type: 'resource.create', resource: 'person' },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should reject client-side actions in webhook actions', async () => {
+    const app = createTestApp();
+    app.webhooks = {
+      createPerson: {
+        schema: { type: 'object' },
+        action: { type: 'flow.next' },
+      },
+    };
+
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('action type is not supported for webhooks', 'flow.next', undefined, [
+        'webhooks',
+        'createPerson',
+        'action',
+        'type',
+      ]),
     ]);
   });
 
@@ -4577,6 +4842,43 @@ describe('validateAppDefinition', () => {
     const result = await validateAppDefinition(app, () => []);
 
     expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should not report an unexpected error for a flow page without steps', async () => {
+    const app = createTestApp();
+    app.pages.push({ name: 'Flow', type: 'flow' } as unknown as AppDefinition['pages'][number]);
+    const schemaResult = new AppValidator().validateApp(app);
+
+    const result = await validateAppDefinition(app, () => [], undefined, schemaResult);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ message: 'requires property "steps"' }),
+    );
+    expect(result.errors).not.toContainEqual(
+      expect.objectContaining({ message: expect.stringContaining('Unexpected error') }),
+    );
+  });
+
+  it('should keep checking the app when a container page has no pages', async () => {
+    const app = createTestApp();
+    app.pages.push({
+      name: 'Container',
+      type: 'container',
+    } as unknown as AppDefinition['pages'][number]);
+    app.security = { ...app.security!, default: { role: 'Missing' } };
+    const schemaResult = new AppValidator().validateApp(app);
+
+    const result = await validateAppDefinition(app, () => [], undefined, schemaResult);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: 'does not exist in this app’s roles',
+        path: ['security', 'default', 'role'],
+      }),
+    );
+    expect(result.errors).not.toContainEqual(
+      expect.objectContaining({ message: expect.stringContaining('Unexpected error') }),
+    );
   });
 
   it('should reject navbar breakpoints without a layout without aborting validation', async () => {

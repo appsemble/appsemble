@@ -2,5 +2,7 @@
   "empty": "Il n'y a aucune donnée à afficher.",
   "error": "Un problème est survenu lors du chargement des données.",
   "loading": "Chargement en cours…",
-  "unsupported": "Votre navigateur ne prend pas en charge le bloc « wordcloud » !"
+  "unsupported": "Votre navigateur ne prend pas en charge le bloc « wordcloud » !",
+  "wordFrequency": "",
+  "wordcloud": ""
 }

@@ -16,10 +16,25 @@ import { Organization, User } from '../index.js';
 
 @Table({ tableName: 'OrganizationMember' })
 export class OrganizationMember extends Model {
-  @AllowNull(false)
+  @AllowNull(true)
   @Default('Member')
   @Column(DataType.ENUM(...predefinedOrganizationRoles))
-  declare role: PredefinedOrganizationRole;
+  declare role: PredefinedOrganizationRole | null;
+
+  @AllowNull(false)
+  @Default([])
+  @Column(DataType.JSONB)
+  declare ssoRoles: PredefinedOrganizationRole[];
+
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  declare guest: boolean;
+
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  declare serviceAccount: boolean;
 
   @CreatedAt
   declare created: Date;

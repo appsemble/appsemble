@@ -1,3 +1,4 @@
 {
-  "locationError": "Nismo uspjeli pronaći vašu lokaciju. Jesu li usluge lokacije omogućene?"
+  "locationError": "Nije bilo moguće pronaći tvoju lokaciju. Jesu li lokacijske usluge aktivirane?",
+  "marker": "Marker"
 }

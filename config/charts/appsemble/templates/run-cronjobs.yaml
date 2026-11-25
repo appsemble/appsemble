@@ -13,12 +13,19 @@ spec:
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
+      # A run that is still active at the next five-minute tick makes that tick skip, so a hung
+      # run ends early enough for its pod to terminate before the tick.
+      activeDeadlineSeconds: 240
       template:
         metadata:
           annotations:
             {{ include "appsemble.gitlab" . | indent 12 }}
         spec:
           restartPolicy: Never
+          {{- with .Values.hostAliases }}
+          hostAliases:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           containers:
             - name: {{ include "appsemble.fullname" . }}-cronjob
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
@@ -29,7 +36,9 @@ spec:
                 {{- toYaml .Values.resources.cronjobs | nindent 16 }}
               args:
                 - run-cronjobs
-                - -vv
+              {{- with .Values.verbosity }}
+                - -{{ repeat (int .) "v" }}
+              {{- end }}
               env:
 {{ include "appsemble.postgres" . | indent 16 }}
 {{ include "appsemble.s3" . | indent 16 }}
@@ -124,4 +133,11 @@ spec:
                 - name: ENABLE_APP_EMAIL_QUOTA_ALERTS
                   value: {{ .Values.quotas.appEmail.alertOrganizationOwner | quote }}
                 {{- end }}
+                {{- with .Values.ssrfAllowIpAddressList }}
+                - name: SSRF_ALLOW_IP_ADDRESS_LIST
+                  value: {{ join "," . | quote }}
+                {{- end }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 16 }}
+{{ include "appsemble.trustedCaBundle.volumeMounts" . | indent 14 }}
+{{ include "appsemble.trustedCaBundle.volumes" . | indent 10 }}
 {{ end }}

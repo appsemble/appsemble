@@ -1,12 +1,13 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { render, screen, waitFor } from '@testing-library/preact';
+import { Route } from 'wouter-preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { OpenIDCallback } from './index.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
+import { AppIconProvider } from '../AppIconProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 const { clearOAuth2State, loadOAuth2State } = vi.hoisted(() => ({
   clearOAuth2State: vi.fn(),
@@ -41,15 +42,21 @@ function mockAppMember(overrides: Record<string, unknown> = {}): void {
   } as never);
 }
 
-function renderCallback(): void {
+function renderCallback(query = 'code=abc&state=state-1'): void {
+  window.history.replaceState(null, '', `/en/Callback?${query}`);
   render(
     <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter initialEntries={['/Callback?code=abc&state=state-1']}>
-        <Routes>
-          <Route element={<OpenIDCallback />} path="/Callback" />
-          <Route element={<p>Login page</p>} path="/Login" />
-        </Routes>
-      </MemoryRouter>
+      <AppIconProvider>
+        <Route path="/en/Login">
+          <p>Login page</p>
+        </Route>
+        <Route path="/:lang/Callback">
+          <OpenIDCallback />
+        </Route>
+        <Route path="/:lang/home">
+          <p>Home page</p>
+        </Route>
+      </AppIconProvider>
     </IntlProvider>,
   );
 }
@@ -93,6 +100,34 @@ describe('OpenIDCallback', () => {
     // The login continues on the login page, which is where the second factor is verified.
     expect(await screen.findByText('Login page')).not.toBeNull();
     expect(clearOAuth2State).toHaveBeenCalledWith();
+  });
+
+  it('should send a member who logged in without a deep link to the default page', async () => {
+    loadOAuth2State.mockReturnValue({ state: 'state-1' });
+    mockAppMember({ isLoggedIn: true });
+
+    renderCallback();
+
+    expect(await screen.findByText('Home page')).not.toBeNull();
+  });
+
+  it.each([
+    {
+      query: 'error=access_denied&error_description=noRoleMatch&state=state-1',
+      message:
+        'Your account is not in a group that gives access to this app. Ask your administrator for access.',
+    },
+    { query: 'error=access_denied&state=state-1', message: 'Access was denied' },
+    {
+      query: 'error=invalid_request&state=state-1',
+      message: 'An unexpected error occurred while logging in',
+    },
+  ])('should explain a failed login ($query)', async ({ message, query }) => {
+    mockAppMember();
+
+    renderCallback(query);
+
+    expect(await screen.findByText(message)).not.toBeNull();
   });
 
   it('should clear the OAuth2 state once logged in', async () => {

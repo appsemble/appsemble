@@ -1,21 +1,39 @@
 import {
   type OAuth2Provider,
   type PredefinedOrganizationRole,
+  type TrainingStatus,
   type UserInfo,
 } from '@appsemble/types';
 import { type OAuth2State } from '@appsemble/web-utils';
+import { type ComponentType } from 'react';
 
 export interface OrganizationMember {
   id: string;
   name?: string;
   primaryEmail?: string;
+  role: PredefinedOrganizationRole | null;
+  roles: PredefinedOrganizationRole[];
+  ssoRoles: PredefinedOrganizationRole[];
+  ssoUsernames?: string[];
+  guest: boolean;
+}
+
+export interface OrganizationServiceAccount {
+  id: string;
+  secret?: string;
+  description: string;
   role: PredefinedOrganizationRole;
+  scopes: string[];
+  expires?: string;
+  created: string;
 }
 
 export interface Organization {
   id: string;
   name: string;
-  role: PredefinedOrganizationRole;
+  roles: PredefinedOrganizationRole[];
+  ssoRoles: PredefinedOrganizationRole[];
+  guest: boolean;
   description: string;
   website: string;
   email: string;
@@ -48,6 +66,7 @@ export interface Page {
  */
 export interface ExtendedOAuth2State extends OAuth2State {
   id: string;
+  organizationId?: string;
   appRequest?: string;
   userinfo?: UserInfo & { profile: string };
 }
@@ -73,4 +92,65 @@ declare global {
       };
     };
   }
+}
+
+/**
+ * Training chapter after it's been processed. This gets used in the training tree itself.
+ */
+export interface TrainingChapter {
+  /**
+   * ID of the chapter.
+   */
+  id: string;
+
+  /**
+   * Title of the chapter
+   */
+  title: string;
+
+  /**
+   * List of trainings that make up this chapter.
+   */
+  trainings: Training[];
+
+  /**
+   * The ID of the chapter that has to be completed before this one can be accessed. Can also be an
+   * array if multiple chapters block this one.
+   */
+  blockedBy?: string[] | string;
+
+  /**
+   * The status of the chapter
+   */
+  status: TrainingStatus;
+}
+
+/**
+ * Properties of an individual training module.
+ */
+export interface Training {
+  /**
+   * Id of the training.
+   */
+  id: string;
+
+  /**
+   * Title of the training
+   */
+  title: string;
+
+  /**
+   * The path of the training page to route to.
+   */
+  path: string;
+
+  /**
+   * The content of the training to render.
+   */
+  content?: ComponentType;
+
+  /**
+   * The status of the training
+   */
+  status: TrainingStatus;
 }

@@ -1,26 +1,28 @@
-import { ModalCard } from '@appsemble/react-components';
 import { type ResourceSubscribableAction } from '@appsemble/types';
 import { urlB64ToUint8Array } from '@appsemble/web-utils';
 import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
 import axios from 'axios';
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { FormattedMessage } from 'react-intl';
+import { type ComponentChildren, createContext, type VNode } from 'preact';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useParams } from 'wouter-preact';
 
 import { messages } from './messages.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
+import { ModalCard } from '../ModalCard/index.js';
 import { type Permission, type ServiceWorkerRegistrationContextType } from '../../types.js';
-import { apiUrl, appId, e2e, vapidPublicKey } from '../../utils/settings.js';
+import { getAppAssets } from '../../utils/appAssets.js';
+import {
+  apiUrl,
+  appId,
+  appUpdated,
+  e2e,
+  staticAssets,
+  vapidPublicKey,
+} from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 interface ServiceWorkerRegistrationProviderProps {
-  readonly children: ReactNode;
+  readonly children: ComponentChildren;
   readonly serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration | null>;
 }
 
@@ -85,7 +87,9 @@ function isServiceWorkerScriptLoadError(
 export function ServiceWorkerRegistrationProvider({
   children,
   serviceWorkerRegistrationPromise,
-}: ServiceWorkerRegistrationProviderProps): ReactNode {
+}: ServiceWorkerRegistrationProviderProps): VNode {
+  const { definition, blockManifests } = useAppDefinition();
+  const { lang } = useParams<{ lang: string }>();
   const [permission, setPermission] = useState<Permission>(window.Notification?.permission);
   const [subscription, setSubscription] = useState<PushSubscription | null>();
   const [serviceWorkerError, setServiceWorkerError] = useState<Error | null>(null);
@@ -106,6 +110,44 @@ export function ServiceWorkerRegistrationProvider({
 
     setServiceWorkerError(error as Error);
   }, []);
+
+  useEffect(() => {
+    serviceWorkerRegistrationPromise
+      .then(async (registration) => {
+        if (!registration) {
+          return;
+        }
+        const { active } = await navigator.serviceWorker.ready;
+        const urls = [
+          ...getAppAssets(definition, blockManifests, appUpdated),
+          ...[
+            ...document.querySelectorAll<HTMLLinkElement>(
+              'link[rel="stylesheet"], link[rel="icon"], link[rel="apple-touch-icon"], link[rel="manifest"]',
+            ),
+          ].map(({ href }) => href),
+          ...(staticAssets ?? []).map(
+            (name) => `${apiUrl}/api/apps/${appId}/assets/${encodeURIComponent(name)}`,
+          ),
+          `${apiUrl}/api/apps/${appId}/variables`,
+          `${apiUrl}/api/apps/${appId}/messages/${lang}`,
+        ];
+
+        const message = {
+          type: 'appsemble.precache',
+          documentUrl: new URL(`/${lang}`, window.location.origin).href,
+          urls: urls.map((url) => new URL(url, window.location.origin).href),
+        };
+        // eslint-disable-next-line unicorn/require-post-message-target-origin
+        active!.postMessage(message);
+      })
+      .catch(handleServiceWorkerError);
+  }, [
+    blockManifests,
+    definition,
+    handleServiceWorkerError,
+    lang,
+    serviceWorkerRegistrationPromise,
+  ]);
 
   useEffect(() => {
     // Only reload when an updated worker takes over a page a previous worker
@@ -161,7 +203,10 @@ export function ServiceWorkerRegistrationProvider({
   const checkForUpdates = useCallback(async () => {
     try {
       const registration = await serviceWorkerRegistrationPromise;
-      if (!registration) {
+      if (
+        !registration ||
+        !(registration.installing || registration.waiting || registration.active)
+      ) {
         return;
       }
 
@@ -174,7 +219,10 @@ export function ServiceWorkerRegistrationProvider({
   const update = useCallback(async () => {
     try {
       const registration = await serviceWorkerRegistrationPromise;
-      if (!registration) {
+      if (
+        !registration ||
+        !(registration.installing || registration.waiting || registration.active)
+      ) {
         return;
       }
 

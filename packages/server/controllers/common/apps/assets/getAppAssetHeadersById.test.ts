@@ -99,6 +99,22 @@ describe('getAssetHeadersById', () => {
     });
   });
 
+  it('should not mark an asset fetched by name as immutable', async () => {
+    const { Asset } = await getAppDB(app.id);
+    await Asset.create({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      name: 'test-asset',
+    });
+
+    const response = await request.head(`/api/apps/${app.id}/assets/test-asset`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({ 'cache-control': 'max-age=3600' }),
+    });
+  });
+
   it('should serve the source mime and filename for image assets.', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({

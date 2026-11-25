@@ -1,11 +1,11 @@
 // CSpell:ignore cooldown
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/preact';
 import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
-import { type ReactNode } from 'react';
-import { IntlProvider } from 'react-intl';
+import { type VNode } from 'preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as ServiceWorkerRegistrationProviderModule from './index.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 
 const { ServiceWorkerRegistrationProvider, useServiceWorkerRegistration } =
   ServiceWorkerRegistrationProviderModule;
@@ -38,11 +38,19 @@ vi.mock('@sentry/browser', () => ({
   captureMessage: vi.fn(),
 }));
 
+vi.mock('../AppDefinitionProvider/index.js', () => {
+  const app = {
+    definition: { name: 'Offline app', defaultPage: 'Home', pages: [] },
+    blockManifests: [],
+  };
+  return { useAppDefinition: () => app };
+});
+
 let latestContext: ReturnType<typeof useServiceWorkerRegistration> | undefined;
 let requestInterceptor: ((config: { url: string }) => Promise<{ url: string }>) | undefined;
 let serviceWorkerListeners: Record<string, (event: any) => void> = {};
 
-function Consumer(): ReactNode {
+function Consumer(): VNode | null {
   latestContext = useServiceWorkerRegistration();
   return null;
 }
@@ -60,11 +68,18 @@ function renderProvider(serviceWorkerRegistration: ServiceWorkerRegistration | n
 }
 
 function createRegistration({
+  active = {} as ServiceWorker,
+  installing = null,
   waiting,
-}: { waiting?: ServiceWorker | null } = {}): ServiceWorkerRegistration {
+}: {
+  active?: ServiceWorker | null;
+  installing?: ServiceWorker | null;
+  waiting?: ServiceWorker | null;
+} = {}): ServiceWorkerRegistration {
   return {
+    active,
     waiting: waiting ?? null,
-    installing: null,
+    installing,
     onupdatefound: null,
     pushManager: {
       getSubscription: vi.fn().mockResolvedValue(null),
@@ -107,6 +122,7 @@ beforeEach(() => {
     configurable: true,
     value: {
       controller: {},
+      ready: Promise.resolve({ active: { postMessage: vi.fn() } }),
       addEventListener: vi.fn((type, listener) => {
         serviceWorkerListeners[type] = listener;
       }),
@@ -133,6 +149,52 @@ describe('ServiceWorkerRegistrationProvider', () => {
     expect(caches.keys).not.toHaveBeenCalled();
     expect(caches.delete).not.toHaveBeenCalled();
   });
+
+  it('should keep the app usable when its registration has no worker at startup', async () => {
+    const registration = createRegistration({ active: null });
+    vi.mocked(registration.update).mockRejectedValue(
+      new DOMException('newestWorker is null', 'InvalidStateError'),
+    );
+
+    await act(() => {
+      renderProvider(registration);
+    });
+
+    expect(screen.queryByText('ServiceWorkerError')).toBeNull();
+  });
+
+  it('should keep the app usable when an explicit update finds no remaining worker', async () => {
+    const registration = createRegistration();
+
+    await act(() => {
+      renderProvider(registration);
+    });
+
+    Object.defineProperty(registration, 'active', { value: null });
+    vi.mocked(registration.update).mockRejectedValue(
+      new DOMException('newestWorker is null', 'InvalidStateError'),
+    );
+
+    await act(async () => {
+      await latestContext?.update();
+    });
+
+    expect(screen.queryByText('ServiceWorkerError')).toBeNull();
+  });
+
+  it.each(['installing', 'waiting'] as const)(
+    'should report startup update failures when an %s worker exists',
+    async (state) => {
+      const registration = createRegistration({ active: null, [state]: {} as ServiceWorker });
+      vi.mocked(registration.update).mockRejectedValue(new Error('Unexpected update failure'));
+
+      await act(() => {
+        renderProvider(registration);
+      });
+
+      expect(await screen.findByText('ServiceWorkerError')).toBeDefined();
+    },
+  );
 
   it('should throttle repeated version checks during the cooldown window', async () => {
     const registration = createRegistration();

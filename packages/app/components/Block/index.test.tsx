@@ -3,23 +3,29 @@ import { EventEmitter } from 'node:events';
 import { type AppDefinition, type BlockDefinition } from '@appsemble/lang-sdk';
 import { type BootstrapParams } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
-import { MessagesProvider, ModalCard } from '@appsemble/react-components';
 import { noop } from '@appsemble/utils';
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
-import { MemoryRouter } from 'react-router-dom';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/preact';
+import { type VNode } from 'preact';
+import { useEffect, useState } from 'preact/hooks';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MessagesProvider } from '../MessagesProvider/index.js';
+import { ModalCard } from '../ModalCard/index.js';
 
 import { Block } from './index.js';
+import { type ShowDialogParams } from '../../types.js';
+import { dialog as dialogAction } from '../../utils/actions/dialog.js';
+import { IntlProvider } from '../IntlProvider/index.js';
 import { type AppStorage } from '../../utils/storage.js';
 import * as appDefinitionProvider from '../AppDefinitionProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import * as appVariablesProvider from '../AppVariablesProvider/index.js';
 import * as demoAppMembersProvider from '../DemoAppMembersProvider/index.js';
+import { PageDialog } from '../PageDialog/index.js';
 import * as serviceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider/index.js';
+import { IconTestWrapper } from '../../utils/test-utils.js';
 
-let blockRoot: HTMLElement;
+let blockRoot: HTMLElement | undefined;
 let blockVersion = 0;
 
 function loadControls({ shadowRoot, utils }: BootstrapParams): void {
@@ -109,6 +115,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  blockRoot = undefined;
   loadBlock = loadControls;
   vi.unstubAllGlobals();
   document.head.innerHTML = '';
@@ -140,27 +147,26 @@ describe('block viewport mode', () => {
     });
     render(
       <IntlProvider locale="en">
-        <MemoryRouter>
-          <Block
-            appStorage={{} as AppStorage}
-            block={block}
-            // eslint-disable-next-line unicorn/prefer-event-target
-            ee={new EventEmitter()}
-            flowActions={{}}
-            pageDefinition={pageDefinition}
-            pageReady={Promise.resolve()}
-            prefix="pages.home.blocks.0"
-            prefixIndex="pages.0.blocks.0"
-            ready={noop}
-            remap={noop}
-            showDialog={() => noop}
-            showShareDialog={() => Promise.resolve()}
-          />
-        </MemoryRouter>
+        <Block
+          appStorage={{} as AppStorage}
+          block={block}
+          // eslint-disable-next-line unicorn/prefer-event-target
+          ee={new EventEmitter()}
+          flowActions={{}}
+          pageDefinition={pageDefinition}
+          pageReady={Promise.resolve()}
+          prefix="pages.home.blocks.0"
+          prefixIndex="pages.0.blocks.0"
+          ready={noop}
+          remap={noop}
+          showDialog={() => noop}
+          showShareDialog={() => Promise.resolve()}
+        />
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
     await waitFor(() =>
-      expect(within(blockRoot).getByRole('button', { name: label })).toBeDefined(),
+      expect(within(blockRoot!).getByRole('button', { name: label })).toBeDefined(),
     );
   });
 });
@@ -188,29 +194,28 @@ describe('float layout', () => {
     });
     render(
       <IntlProvider locale="en">
-        <MemoryRouter>
-          <ModalCard isActive>
-            <Block
-              appStorage={{} as AppStorage}
-              block={block}
-              // eslint-disable-next-line unicorn/prefer-event-target
-              ee={new EventEmitter()}
-              flowActions={{}}
-              pageDefinition={pageDefinition}
-              pageReady={Promise.resolve()}
-              prefix="pages.home.blocks.0.actions.onClick.blocks.0"
-              prefixIndex="pages.0.blocks.0.actions.onClick.blocks.0"
-              ready={noop}
-              remap={noop}
-              showDialog={() => noop}
-              showShareDialog={() => Promise.resolve()}
-            />
-          </ModalCard>
-        </MemoryRouter>
+        <ModalCard isActive>
+          <Block
+            appStorage={{} as AppStorage}
+            block={block}
+            // eslint-disable-next-line unicorn/prefer-event-target
+            ee={new EventEmitter()}
+            flowActions={{}}
+            pageDefinition={pageDefinition}
+            pageReady={Promise.resolve()}
+            prefix="pages.home.blocks.0.actions.onClick.blocks.0"
+            prefixIndex="pages.0.blocks.0.actions.onClick.blocks.0"
+            ready={noop}
+            remap={noop}
+            showDialog={() => noop}
+            showShareDialog={() => Promise.resolve()}
+          />
+        </ModalCard>
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
 
-    await waitFor(() => within(blockRoot).getByRole('button'));
+    await waitFor(() => within(blockRoot!).getByRole('button'));
     expect(screen.getByRole('dialog').contains((blockRoot as unknown as ShadowRoot).host)).toBe(
       true,
     );
@@ -253,28 +258,147 @@ describe('modal dialogs', () => {
     render(
       <IntlProvider locale="en">
         <MessagesProvider>
-          <MemoryRouter>
-            <Block
-              appStorage={{} as AppStorage}
-              block={block}
-              // eslint-disable-next-line unicorn/prefer-event-target
-              ee={new EventEmitter()}
-              flowActions={{}}
-              pageDefinition={pageDefinition}
-              pageReady={Promise.resolve()}
-              prefix="pages.home.blocks.0"
-              prefixIndex="pages.0.blocks.0"
-              ready={noop}
-              remap={noop}
-              showDialog={() => noop}
-              showShareDialog={() => Promise.resolve()}
-            />
-          </MemoryRouter>
+          <Block
+            appStorage={{} as AppStorage}
+            block={block}
+            // eslint-disable-next-line unicorn/prefer-event-target
+            ee={new EventEmitter()}
+            flowActions={{}}
+            pageDefinition={pageDefinition}
+            pageReady={Promise.resolve()}
+            prefix="pages.home.blocks.0"
+            prefixIndex="pages.0.blocks.0"
+            ready={noop}
+            remap={noop}
+            showDialog={() => noop}
+            showShareDialog={() => Promise.resolve()}
+          />
         </MessagesProvider>
       </IntlProvider>,
+      { wrapper: IconTestWrapper },
     );
 
     const message = await screen.findByRole('alert');
     expect(isRenderedInside(dialog!, message)).toBe(true);
+  });
+});
+
+describe('dialog blocks', () => {
+  it('should finish the action chain that closes the dialog', async () => {
+    loadBlock = ({ actions }) => {
+      actions.onClick({ id: 1 });
+    };
+    blockVersion += 1;
+    const block: BlockDefinition = {
+      type: '@test/dialog-ok',
+      version: `1.0.${blockVersion}`,
+      actions: { onClick: { type: 'dialog.ok', onSuccess: { type: 'event', event: 'refresh' } } },
+    };
+    const pageDefinition = { name: 'Home', blocks: [] };
+    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Home',
+        pages: [pageDefinition],
+      } as AppDefinition,
+      demoMode: false,
+      revision: 1,
+      blockManifests: [
+        {
+          name: block.type,
+          version: block.version,
+          files: ['dialog-ok.js'],
+          languages: null,
+          actions: { onClick: {} },
+        },
+      ] as BlockManifest[],
+    });
+    // eslint-disable-next-line unicorn/prefer-event-target
+    const ee = new EventEmitter();
+    const refresh = vi.fn();
+    ee.on('refresh', refresh);
+
+    function DialogHost(): VNode {
+      const [dialog, setDialog] = useState<ShowDialogParams>();
+      useEffect(() => {
+        const [open] = dialogAction({
+          definition: { type: 'dialog', blocks: [block] },
+          prefix: 'pages.home.blocks.0.actions.onClick',
+          prefixIndex: 'pages.0.blocks.0.actions.onClick',
+          showDialog(params: ShowDialogParams) {
+            setDialog(params);
+            return () => setDialog(undefined);
+          },
+          signal: new AbortController().signal,
+        } as never);
+        open({}, {});
+      }, []);
+      return (
+        <PageDialog
+          appStorage={{} as AppStorage}
+          dialog={dialog}
+          ee={ee}
+          pageDefinition={pageDefinition}
+          remap={noop}
+          showDialog={() => noop}
+          showShareDialog={() => Promise.resolve()}
+        />
+      );
+    }
+    render(
+      <IntlProvider locale="en">
+        <DialogHost />
+      </IntlProvider>,
+    );
+
+    await waitFor(() => expect(refresh).toHaveBeenCalledExactlyOnceWith({ id: 1 }));
+  });
+});
+
+describe('block loading state', () => {
+  it('should mark the block busy until it is bootstrapped', async () => {
+    blockVersion += 1;
+    const block: BlockDefinition = {
+      type: '@test/busy-controls',
+      version: `1.0.${blockVersion}`,
+    };
+    const pageDefinition = { name: 'Home', blocks: [block] };
+    vi.spyOn(appDefinitionProvider, 'useAppDefinition').mockReturnValue({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Home',
+        pages: [pageDefinition],
+      } as AppDefinition,
+      demoMode: false,
+      revision: 1,
+      blockManifests: [
+        { name: block.type, version: block.version, files: ['busy-controls.js'] },
+      ] as BlockManifest[],
+    });
+    render(
+      <IntlProvider locale="en">
+        <Block
+          appStorage={{} as AppStorage}
+          block={block}
+          // eslint-disable-next-line unicorn/prefer-event-target
+          ee={new EventEmitter()}
+          flowActions={{}}
+          pageDefinition={pageDefinition}
+          pageReady={Promise.resolve()}
+          prefix="pages.home.blocks.0"
+          prefixIndex="pages.0.blocks.0"
+          ready={noop}
+          remap={noop}
+          showDialog={() => noop}
+          showShareDialog={() => Promise.resolve()}
+        />
+      </IntlProvider>,
+      { wrapper: IconTestWrapper },
+    );
+
+    const busy = (): string | null | undefined =>
+      document.querySelector('[aria-busy]')?.getAttribute('aria-busy');
+    expect(busy()).toBe('true');
+    await waitFor(() => expect(busy()).toBe('false'));
   });
 });

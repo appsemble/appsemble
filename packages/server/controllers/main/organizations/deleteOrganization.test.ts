@@ -2,11 +2,13 @@ import { readFixture } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import {
+  App,
   AppCollection,
   BlockVersion,
+  getDB,
   Organization,
   OrganizationMember,
   type User,
@@ -22,6 +24,15 @@ import {
 let organization: Organization;
 let server: Koa;
 let user: User;
+
+function createApp(OrganizationId: string): Promise<App> {
+  return App.create({
+    definition: { name: 'Test App', defaultPage: 'Test Page' },
+    OrganizationId,
+    vapidPublicKey: 'a',
+    vapidPrivateKey: 'b',
+  });
+}
 
 describe('deleteOrganization', () => {
   beforeAll(async () => {
@@ -59,13 +70,41 @@ describe('deleteOrganization', () => {
       UserId: user.id,
       role: PredefinedOrganizationRole.Owner,
     });
+    await createApp(organization2.id);
     await request.delete(`/api/organizations/${organization2.id}`);
     const response = await request.get(`/api/organizations/${organization2.id}`);
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', statusCode: 404, message: 'Organization not found.' },
     });
+    expect(await App.count({ where: { OrganizationId: organization2.id } })).toBe(0);
   });
+
+  it.each(['App', 'Organization'])(
+    'should keep the organization and its apps when deleting a row in %s fails',
+    async (table) => {
+      await createApp(organization.id);
+      await createApp(organization.id);
+      await getDB().query(`
+        CREATE FUNCTION "failDeletion"() RETURNS trigger LANGUAGE plpgsql AS $$
+          BEGIN RAISE EXCEPTION 'Deletion failed'; END
+        $$;
+        CREATE TRIGGER "failDeletion" BEFORE UPDATE ON "${table}" FOR EACH ROW
+          WHEN (NEW.deleted IS NOT NULL)
+          EXECUTE FUNCTION "failDeletion"();
+      `);
+      onTestFinished(async () => {
+        await getDB().query('DROP FUNCTION "failDeletion" CASCADE');
+      });
+      authorizeStudio();
+
+      const response = await request.delete(`/api/organizations/${organization.id}`);
+
+      expect(response.status).toBe(500);
+      expect(await Organization.findByPk(organization.id)).not.toBeNull();
+      expect(await App.count({ where: { OrganizationId: organization.id } })).toBe(2);
+    },
+  );
 
   it('should delete the organization with client credentials', async () => {
     const organization2 = await Organization.create({

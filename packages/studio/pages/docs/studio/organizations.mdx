@@ -41,8 +41,8 @@ to. These roles are the following:
 - `AppTranslator`: App translators can view and modify app messages.
 - `AppContentsExplorer`: App contents explorers can view app resources and assets.
 - `AppContentsManager`: App contents managers can view and modify app resources and assets.
-- `AppMemberManager`: App member managers can invite new members to an app and modify existing app
-  members’ roles and properties.
+- `AppMemberManager`: App member managers can invite new members to an app, modify existing app
+  members’ roles and properties, and reset their TOTP.
 - `AppGroupMembersManager`: App group members managers can invite exising app members to groups and
   modify existing group members’ roles.
 - `AppGroupManager`: App group managers have all permissions of `AppGroupMembersManager`. They can
@@ -94,3 +94,83 @@ to. These roles are the following:
     </tbody>
   </table>
 </div>
+
+## Service accounts
+
+Owners create [service accounts](service-accounts.md) on the **Members** page for CI pipelines and
+other automation that uses the API on behalf of the organization.
+
+## Single sign-on
+
+Owners configure OpenID Connect on the organization's **Single sign-on** page. Register a
+confidential client with the identity provider and use `https://<studio-host>/callback` as its
+redirect URI and `https://<studio-host>/` as its post-logout redirect URI. Enter the issuer URL,
+client ID and client secret. The issuer must use HTTPS and be one the installation operator allows.
+The scope includes `openid`; the default scope is `openid email profile` and the default group claim
+is `groups`. The provider sends the email address, `email_verified` and the group claim, with
+Keycloak groups as full paths.
+
+Map provider groups to the organization roles listed above. Group values match exactly, including
+paths such as `/appsemble/maintainers`. A staff member receives the combined permissions of all
+matching roles across the organization. Group-managed roles are controlled by the provider;
+unmatched staff receive no organization access. Signing in through the organization's provider turns
+a member whose groups match into group-managed staff, except that the organization's last Owner
+keeps a manual Owner role.
+
+The organization selects a sign-in policy:
+
+- **Allow single sign-on and other permitted methods** lets manually managed members use the
+  selected other sign-in methods.
+- **Require organization single sign-on for everyone** requires the organization's provider.
+- **Require single sign-on for staff; allow invited external guests** lets explicitly invited guests
+  use the selected other sign-in methods. Only Owners invite guests, and losing a staff group does
+  not create a guest exception.
+
+The policy does not apply to [service accounts](service-accounts.md), which only use the API with
+client credentials.
+
+Select **Verify connection and save** and sign in with a provider account whose groups grant Owner
+access. The connection is saved after successful verification, and unsuccessful verification keeps
+the active connection intact. Changing single sign-on settings or email domains requires a sign-in
+from the last ten minutes. When a change is refused, select **Sign in again with** the provider's
+name: the provider asks for credentials even during an active provider session and returns to the
+page.
+
+Staff sign in at `https://<studio-host>/login?organization=<organization id>` or by entering their
+email address on the Studio sign-in page. An email address that belongs to an existing Appsemble
+account, whether entered on the sign-in page or sent by the provider, must be linked first: sign in
+to that account, then link organization single sign-on. A matching email address alone does not link
+accounts. Password recovery and other linked sign-in methods cannot bypass an organization's
+required single sign-on, and a sign-in through another organization's provider does not count for
+this organization. Signing out of the Studio also signs out at a provider which offers an
+`end_session_endpoint` and then returns to the Studio, so the next sign-in asks for credentials
+again.
+
+Manage linked organization identities under **Settings > Social login**, which shows each identity's
+organizations, their provider names and the provider account: the email address from the last
+sign-in through the provider, or its preferred username without one. Owners see the provider
+accounts of linked members on the **Members** page. **Unlink single sign-on** requires recent
+authentication and a verified recovery email or personal social login. Unlinking ends that
+identity's sessions and revokes its personal CLI credentials while keeping other linked identities,
+manual memberships and guest grants. An organization must retain an Owner. To link the identity
+again, sign in to the existing Appsemble account and use the organization's sign-in page.
+
+Provider groups are refreshed when the provider access token expires, at most one hour after the
+previous refresh, and a Studio session ends after eight hours. Removing a group therefore takes
+effect at the next refresh, including for personal CLI credentials.
+
+Registering personal client credentials in a session from the organization's provider asks the
+provider for offline access, so the client must allow the `offline_access` scope. The credentials
+use that grant of their own: they keep working after signing out, and stop when the provider ends
+the grant, disables the account or removes its groups. The client credentials settings show
+credentials whose grant has ended; register new ones to replace them.
+
+Removing the single sign-on configuration deletes group-managed memberships and keeps manual and
+guest memberships; the removing Owner keeps the Owner role. It ends all sessions through the
+provider. Accounts that only sign in through the provider regain access through password recovery
+for their verified email address. Keep a personal password or social login for account recovery
+because the organization controls access through its single sign-on provider.
+
+Operators can declare organization single sign-on through the [Helm chart](../deployment/helm.md).
+Deployment-managed settings are read-only in Studio. Operators recover access by correcting the
+declared configuration; account recovery does not disable the organization's sign-in policy.

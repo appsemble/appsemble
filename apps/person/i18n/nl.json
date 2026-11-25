@@ -7,6 +7,7 @@
     "pages.person-registration-form": "Registratieformulier voor personen"
   },
   "messageIds": {
+    "addPerson": "Persoon toevoegen",
     "description": "Beschrijving",
     "email": "E-mail",
     "firstName": "Voornaam",

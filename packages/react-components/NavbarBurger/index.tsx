@@ -21,9 +21,9 @@ interface NavbarBurgerProps extends Omit<ComponentPropsWithoutRef<'button'>, 'ch
  * animated burger lines.
  */
 export function NavbarBurger({ active, className, ...props }: NavbarBurgerProps): ReactNode {
-  const { getAssetUrl, registry } = useIconContext();
+  const { getAsset, registry } = useIconContext();
   const icon = active ? 'xmark' : 'bars';
-  const overridden = resolveIcon(icon, registry, getAssetUrl).type !== 'fontawesome';
+  const overridden = resolveIcon(icon, registry, getAsset).type !== 'fontawesome';
 
   return (
     <button

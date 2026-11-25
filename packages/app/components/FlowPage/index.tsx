@@ -7,23 +7,21 @@ import {
   type Remapper,
   type RemapperContext,
 } from '@appsemble/lang-sdk';
-import { applyRefs, Loader, useMessages, useMeta } from '@appsemble/react-components';
+import { applyRefs } from '@appsemble/preact-components';
 import { type BootstrapParams } from '@appsemble/sdk';
-import {
-  type MutableRefObject,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { type VNode } from 'preact';
+import { type MutableRefObject } from 'preact/compat';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useLocation } from 'wouter-preact';
+import { Loader } from '../Loader/index.js';
+import { useMessages } from '../MessagesProvider/index.js';
+import { useMeta } from '../Meta/index.js';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { isActionOwnerAbortError, makeActions } from '../../utils/makeActions.js';
 import { appId } from '../../utils/settings.js';
 import { type AppStorage } from '../../utils/storage.js';
+import { useRouteParams } from '../../utils/useRouteParams.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useAppVariables } from '../AppVariablesProvider/index.js';
@@ -35,6 +33,7 @@ import { appendLoopResult, createLoopSteps, getLoopStepPrefix } from './createLo
 
 interface FlowPageProps {
   readonly data: unknown;
+  readonly dataReady: boolean;
   readonly appDefinition: AppDefinition;
   readonly ee: EventEmitter;
   readonly pageDefinition: FlowPageDefinition | LoopPageDefinition;
@@ -52,6 +51,7 @@ export function FlowPage({
   appDefinition,
   appStorage,
   data,
+  dataReady,
   ee,
   pageDefinition,
   prefix,
@@ -61,9 +61,9 @@ export function FlowPage({
   showDialog,
   showShareDialog,
   stepRef,
-}: FlowPageProps): ReactNode {
-  const navigate = useNavigate();
-  const params = useParams();
+}: FlowPageProps): VNode {
+  const [, navigate] = useLocation();
+  const params = useRouteParams();
   const [currentStep, setCurrentStep] = useState(0);
   const abortController = useRef<AbortController>();
   if (!abortController.current) {
@@ -148,6 +148,19 @@ export function FlowPage({
 
   // Abort in-flight action chains when the flow page is unmounted.
   useEffect(() => () => abortController.current?.abort(), []);
+
+  // A new step replaces the blocks, and with them the control that had focus. Move focus to the
+  // page, so keyboard and screen reader users continue from its start. Focus outside the replaced
+  // blocks, such as in a dialog, stays where it is.
+  const focusedStep = useRef(currentStep);
+  useEffect(() => {
+    if (currentStep !== focusedStep.current) {
+      if (document.activeElement === document.body) {
+        document.querySelector('main')?.focus({ preventScroll: true });
+      }
+      focusedStep.current = currentStep;
+    }
+  }, [currentStep]);
 
   useEffect(() => {
     if (pageDefinition.retainFlowData === false) {
@@ -320,7 +333,6 @@ export function FlowPage({
             `appsemble-group-${appId}-appMemberSelectedGroup`,
             JSON.stringify(selectedGroup),
           );
-          navigate(0);
           return selectedGroup;
         },
         getAppMemberSelectedGroup: () => appMemberSelectedGroup,
@@ -394,6 +406,7 @@ export function FlowPage({
         appStorage={appStorage}
         blocks={steps[currentStep].blocks}
         data={data}
+        dataReady={dataReady}
         ee={ee}
         flowActions={flowActions}
         key={currentStep}

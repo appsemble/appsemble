@@ -1,7 +1,13 @@
 import { assertKoaCondition, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, EmailAuthorization, getAppDB, User } from '../../../../../../../models/index.js';
+import {
+  App,
+  EmailAuthorization,
+  getAppDB,
+  User,
+  UserAppAccount,
+} from '../../../../../../../models/index.js';
 import {
   checkAppSecurityPolicy,
   handleUniqueAppMemberEmailIndex,
@@ -31,7 +37,7 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
   });
 
   assertKoaCondition(
-    await checkAppSecurityPolicy(app, authSubject!.id),
+    await checkAppSecurityPolicy(app, authSubject!.id, ctx),
     ctx,
     401,
     'User is not allowed to login due to the app’s security policy',
@@ -75,6 +81,7 @@ export async function agreeCurrentUserOAuth2AppConsent(ctx: Context): Promise<vo
       );
     }
   }
+  await UserAppAccount.upsert({ UserId: user.id, AppId: app.id });
 
   // @ts-expect-error 2345 argument of type is not assignable to parameter of type
   // (strictNullChecks)

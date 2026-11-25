@@ -17,6 +17,7 @@ import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { createTestUser } from '../../../../utils/test/authorization.js';
 import { createDefaultAppWithSecurity } from '../../../../utils/test/defaultAppSecurity.js';
+import { mockPwnedPasswords } from '../../../../utils/test/pwnedPasswords.js';
 
 let organization: Organization;
 let user: User;
@@ -47,7 +48,7 @@ function expectAppAuthCookies(response: { headers: Record<string, unknown> }, ap
 describe('registerAppMemberWithEmail', () => {
   beforeAll(async () => {
     vi.useFakeTimers();
-    setArgv({ host: 'http://localhost', secret: 'test' });
+    setArgv({ host: 'http://localhost', rejectBreachedPasswords: true, secret: 'test' });
     const server = await createServer();
     await setTestApp(server);
   });
@@ -325,6 +326,36 @@ describe('registerAppMemberWithEmail', () => {
         "statusCode": 409,
       }
     `);
+  });
+
+  it('should not register with a breached password', async () => {
+    mockPwnedPasswords(['12345678']);
+    const app = await createDefaultAppWithSecurity(organization);
+
+    const response = await request.post(
+      `/api/apps/${app.id}/auth/email/register`,
+      createFormData({
+        email: 'test@example.com',
+        password: '12345678',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "breachedPassword": true,
+        },
+        "error": "Bad Request",
+        "message": "This password has appeared in a known data breach. Choose a different password.",
+        "statusCode": 400,
+      }
+    `);
+    const { AppMember } = await getAppDB(app.id);
+    expect(await AppMember.count({ where: { email: 'test@example.com' } })).toBe(0);
   });
 
   it('should throw if the app definition does not have phoneNumber enabled', async () => {

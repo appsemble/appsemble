@@ -57,11 +57,10 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
             node.setAttribute('aria-pressed', String(Boolean(utils.remap(pressed, newData))));
           }
         };
-        updatePressed(data);
         let currentText = createNode(data);
         let currentData = data;
         node.append(currentText);
-        events.on.data((newData) => {
+        const updateData = (newData: unknown): void => {
           updatePressed(newData);
           const newText = createNode(newData);
           const hidden = utils.remap(hide, newData);
@@ -79,7 +78,9 @@ bootstrap(({ actions, data, events, parameters: { alignment, buttons }, utils })
           currentText.replaceWith(newText);
           currentText = newText;
           currentData = newData;
-        });
+        };
+        updateData(data);
+        events.on.data(updateData);
 
         node.addEventListener('click', (event) => {
           // Delegate anchor behavior to the link action.

@@ -152,7 +152,8 @@ export function createIndexHandler(options: Options): Middleware {
     const nonce = randomBytes(16).toString('base64');
 
     const [{ settingsHash, settings }, settingsCacheStatus] = await getCachedValue<CachedSettings>(
-      appServingCache,
+      // The settings of a password protected app hold the password token of the visitor.
+      app.passwordProtected ? undefined : appServingCache,
       getSettingsCacheKey({ app, host, hostname, identifiableBlocks, languages }),
       async () => {
         const [digest, script] = await createSettings({
@@ -200,7 +201,10 @@ export function createIndexHandler(options: Options): Middleware {
       bulmaURL: createThemeURL(mergedTheme),
       fontURL,
       faURL,
-      messagesURL: `${host}/api/apps/${app.id}/messages/${messagesLanguage}`,
+      // A preload cannot send the password token, and the browser would hand its refusal to the app.
+      messagesURL: app.passwordProtected
+        ? undefined
+        : `${host}/api/apps/${app.id}/messages/${messagesLanguage}`,
       nonce,
       settings,
       themeColor: app.definition.theme?.themeColor || '#ffffff',

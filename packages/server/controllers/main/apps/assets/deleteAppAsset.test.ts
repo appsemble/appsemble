@@ -64,7 +64,7 @@ describe('deleteAppAsset', () => {
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     authorizeStudio();
@@ -79,7 +79,7 @@ describe('deleteAppAsset', () => {
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     authorizeStudio();

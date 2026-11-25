@@ -1,5 +1,12 @@
 ci_access:
-  groups:
-    - id: appsemble
+  projects:
+    - id: appsemble/appsemble
       environments:
         - production
+      access_as:
+        ci_job: {}
+    - id: appsemble/infra
+      environments:
+        - production
+      access_as:
+        ci_job: {}

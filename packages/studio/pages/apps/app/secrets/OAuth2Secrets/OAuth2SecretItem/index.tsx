@@ -57,7 +57,12 @@ export function OAuth2SecretItem({
 
   return (
     <>
-      <IconProvider apiUrl={window.location.origin} appId={app.id} registry={app.definition.icons}>
+      <IconProvider
+        apiUrl={window.location.origin}
+        appId={app.id}
+        passwordToken={app.passwordToken}
+        registry={app.definition.icons}
+      >
         <ListButton
           description={secret.scope}
           icon={secret.icon}

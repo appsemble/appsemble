@@ -9,5 +9,8 @@
     "pages.inventory": "Inventar",
     "pages.sale-history": "Povijest prodaje",
     "pages.sell-bicycle": "Prodaj bicikl"
+  },
+  "messageIds": {
+    "addBicycle": "Dodaj bicikl"
   }
 }

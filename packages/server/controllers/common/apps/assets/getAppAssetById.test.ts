@@ -1,6 +1,9 @@
+import { createHash } from 'node:crypto';
+
 import { getAppAssetLocation, getS3FileBuffer, uploadS3File } from '@appsemble/node-utils';
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import { Op } from 'sequelize';
 import sharp from 'sharp';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -66,7 +69,7 @@ describe('getAppAssetById', () => {
       filename: 'test.bin',
     });
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
@@ -83,6 +86,24 @@ describe('getAppAssetById', () => {
     });
   });
 
+  // The single-bucket test job only grants access to that one bucket.
+  it.skipIf(process.env.S3_BUCKET)(
+    'should serve an asset from the bucket the app names',
+    async () => {
+      await app.update({ s3Bucket: 'tst-served-bucket' });
+      const { Asset } = await getAppDB(app.id);
+      const asset = await Asset.create({ mime: 'application/octet-stream' });
+      await uploadS3File('tst-served-bucket', asset.id, Buffer.from('own bucket'));
+
+      const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+        responseType: 'arraybuffer',
+      });
+
+      expect(response.status).toBe(200);
+      expect(Buffer.from(response.data)).toStrictEqual(Buffer.from('own bucket'));
+    },
+  );
+
   it('should be able to fetch an asset by name', async () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create({
@@ -91,7 +112,7 @@ describe('getAppAssetById', () => {
       name: 'test-asset',
     });
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     const response = await request.get(`/api/apps/${app.id}/assets/test-asset`);
@@ -101,9 +122,169 @@ describe('getAppAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.mp3"',
-        'cache-control': 'max-age=31536000,immutable',
+        'cache-control': 'max-age=3600',
       }),
     });
+  });
+
+  it('should send the ETag of the stored object as a quoted string', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+    });
+
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
+    await uploadS3File(bucket, key, Buffer.from('buffer'));
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers.etag).toMatch(/^"[^"]+"$/);
+  });
+
+  it('should not mark a derived image fetched by name as immutable', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+      name: 'logo',
+    });
+    const image = await sharp({
+      create: {
+        width: 300,
+        height: 300,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
+    await uploadS3File(bucket, key, image);
+
+    // The first request encodes the derivative, the second serves the stored copy. Both address a
+    // name that can be aimed elsewhere, so neither may be cached as immutable.
+    const freshResponse = await request.get(
+      `/api/apps/${app.id}/assets/logo?width=150&height=150`,
+      {
+        responseType: 'arraybuffer',
+      },
+    );
+    const cachedResponse = await request.get(
+      `/api/apps/${app.id}/assets/logo?width=150&height=150`,
+      { responseType: 'arraybuffer' },
+    );
+
+    expect(freshResponse).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({ 'cache-control': 'max-age=3600' }),
+    });
+    expect(cachedResponse).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({ 'cache-control': 'max-age=3600' }),
+    });
+  });
+
+  it('should store the hash of a derived image', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({ mime: 'image/png', name: 'logo' });
+    const image = await sharp({
+      create: { width: 300, height: 300, channels: 3, background: { r: 255, g: 0, b: 0 } },
+    })
+      .png()
+      .toBuffer();
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
+    await uploadS3File(bucket, key, image);
+
+    const { data } = await request.get<Buffer>(
+      `/api/apps/${app.id}/assets/logo?width=150&height=150`,
+      { responseType: 'arraybuffer' },
+    );
+
+    const derived = await Asset.findOne({ where: { id: { [Op.ne]: asset.id } } });
+    expect(derived!.sha256).toBe(createHash('sha256').update(data).digest('hex'));
+  });
+
+  it('should answer 304 without a body when a named asset is unchanged', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      name: 'test-asset',
+    });
+
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
+    await uploadS3File(bucket, key, Buffer.from('buffer'));
+
+    const { headers } = await request.get(`/api/apps/${app.id}/assets/test-asset`);
+    const response = await request.get(`/api/apps/${app.id}/assets/test-asset`, {
+      headers: { 'If-None-Match': headers.etag },
+    });
+
+    expect(response.status).toBe(304);
+    expect(response.data).toBe('');
+  });
+
+  it('should send a replaced named asset in full', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const oldAsset = await Asset.create({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      name: 'test-asset',
+    });
+    const oldLocation = getAppAssetLocation({ id: app.id }, oldAsset.id);
+    await uploadS3File(oldLocation.bucket, oldLocation.key, Buffer.from('old'));
+    const { headers } = await request.get(`/api/apps/${app.id}/assets/test-asset`);
+
+    await oldAsset.destroy();
+    const newAsset = await Asset.create({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      name: 'test-asset',
+    });
+    const newLocation = getAppAssetLocation({ id: app.id }, newAsset.id);
+    await uploadS3File(newLocation.bucket, newLocation.key, Buffer.from('new'));
+
+    const response = await request.get(`/api/apps/${app.id}/assets/test-asset`, {
+      headers: { 'If-None-Match': headers.etag },
+      responseType: 'arraybuffer',
+    });
+
+    expect(response.status).toBe(200);
+    expect(Buffer.from(response.data).toString()).toBe('new');
+  });
+
+  it('should answer 304 without a body when a stored derived image is unchanged', async () => {
+    const { Asset } = await getAppDB(app.id);
+    const asset = await Asset.create({
+      mime: 'image/png',
+      name: 'logo',
+    });
+    const image = await sharp({
+      create: {
+        width: 300,
+        height: 300,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
+    await uploadS3File(bucket, key, image);
+
+    // The first request encodes and stores the derivative, the second serves the stored copy.
+    const url = `/api/apps/${app.id}/assets/logo?width=150&height=150`;
+    await request.get(url, { responseType: 'arraybuffer' });
+    const { headers } = await request.get(url, { responseType: 'arraybuffer' });
+    const response = await request.get(url, { headers: { 'If-None-Match': headers.etag } });
+
+    expect(response.status).toBe(304);
+    expect(response.data).toBe('');
   });
 
   it('should return a full-size jpeg derivative when larger size is specified.', async () => {
@@ -122,7 +303,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const response = await request.get(
@@ -163,7 +344,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
@@ -201,7 +382,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
@@ -238,7 +419,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
@@ -275,7 +456,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
@@ -333,7 +514,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const firstResponse = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
@@ -354,7 +535,7 @@ describe('getAppAssetById', () => {
     });
     expect(cachedAssets).toHaveLength(1);
 
-    const cachedLocation = getAppAssetLocation(app.id, cachedAssets[0].id);
+    const cachedLocation = getAppAssetLocation({ id: app.id }, cachedAssets[0].id);
     const cachedBuffer = await getS3FileBuffer(cachedLocation.bucket, cachedLocation.key);
 
     const secondResponse = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
@@ -394,7 +575,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     // Fire several requests together so they all miss the cache and race to create the derivative
@@ -437,7 +618,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const response = await request.get(
@@ -469,7 +650,7 @@ describe('getAppAssetById', () => {
       filename: 'test.bin',
     });
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     const response = await request.get(
@@ -499,7 +680,7 @@ describe('getAppAssetById', () => {
     const svg = Buffer.from(
       '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>',
     );
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, svg);
 
     const response = await request.get(
@@ -531,7 +712,7 @@ describe('getAppAssetById', () => {
     });
 
     const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"></svg>');
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, svg);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
@@ -566,7 +747,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const response = await request.get(
@@ -609,7 +790,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const response = await request.get(
@@ -644,7 +825,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const firstResponse = await request.get(
@@ -668,7 +849,7 @@ describe('getAppAssetById', () => {
     });
     expect(cachedAssets).toHaveLength(1);
 
-    const cachedLocation = getAppAssetLocation(app.id, cachedAssets[0].id);
+    const cachedLocation = getAppAssetLocation({ id: app.id }, cachedAssets[0].id);
     const cachedBuffer = await getS3FileBuffer(cachedLocation.bucket, cachedLocation.key);
 
     const secondResponse = await request.get(
@@ -715,7 +896,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const response = await request.get(
@@ -774,7 +955,7 @@ describe('getAppAssetById', () => {
       .png()
       .toBuffer();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, image);
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
@@ -814,7 +995,7 @@ describe('getAppAssetById', () => {
     const { Asset } = await getAppDB(app.id);
     const asset = await Asset.create();
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
@@ -836,7 +1017,7 @@ describe('getAppAssetById', () => {
       mime: 'text/plain',
     });
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
@@ -877,7 +1058,7 @@ describe('getAppAssetById', () => {
       mime: 'application/octet-stream',
       filename: 'test.bin',
     });
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`);
@@ -901,7 +1082,7 @@ describe('getAppAssetById', () => {
       filename: 'test.bin',
     });
 
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, Buffer.from('buffer'));
 
     const assetId = asset.id;

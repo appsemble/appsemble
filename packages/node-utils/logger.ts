@@ -33,12 +33,11 @@ function httpErrorToString(error: AxiosError): string {
     chalk.blue.bold('Request:'),
     highlight(
       [
-        `${config?.method?.toUpperCase()} ${axios.getUri(config)} HTTP/${
+        `${config?.method?.toUpperCase()} ${axios.getUri(config).split('?')[0]} HTTP/${
           request?.res?.httpVersion ?? '1.1'
         }`,
-        ...Object.entries(config?.headers ?? {})
-          .map(([key, value]) => [headerCase(key), value])
-          .map(([key, value]) => `${key}: ${key === 'Authorization' ? 'xxxxxxxxxx' : value}`)
+        ...Object.keys(config?.headers ?? {})
+          .map((key) => `${headerCase(key)}: xxxxxxxxxx`)
           .sort(),
       ].join(EOL),
       { language: 'http', ignoreIllegals: true },

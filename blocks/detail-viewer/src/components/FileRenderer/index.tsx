@@ -15,10 +15,11 @@ export function FileRenderer({ data, field }: RendererProps<FileField>): VNode |
   const value = utils.remap(field.value, data);
   const label = utils.remap(field.label, data);
   const hide = utils.remap(field.hide, data);
+  const Heading = `h${field.labelLevel ?? 6}` as const;
 
   return hide ? null : (
     <div className="appsemble-file">
-      {isPreactChild(label) && <h6 className="title is-6">{label}</h6>}
+      {isPreactChild(label) && <Heading className="title is-6">{label}</Heading>}
       {field.repeated ? (
         <div className={classNames('container', styles.repeated)}>
           {((value || []) as string[]).map((v, index) => (

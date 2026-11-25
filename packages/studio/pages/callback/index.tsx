@@ -3,12 +3,17 @@ import { type ReactNode, useMemo } from 'react';
 
 import { OAuth2AppCallback } from '../../components/OAuth2AppCallback/index.js';
 import { OAuth2StudioCallback } from '../../components/OAuth2StudioCallback/index.js';
+import { OrganizationSsoCallback } from '../../components/OrganizationSsoCallback/index.js';
 import { type ExtendedOAuth2State } from '../../types.js';
 
 export function CallbackPage(): ReactNode {
   const session = useMemo(() => loadOAuth2State<ExtendedOAuth2State>(), []);
 
-  if ('appRequest' in session) {
+  if (session?.organizationId) {
+    return <OrganizationSsoCallback session={session} />;
+  }
+
+  if (session && 'appRequest' in session) {
     return <OAuth2AppCallback session={session} />;
   }
 

@@ -216,6 +216,10 @@
             "type": "string",
             "description": "The user of the external app database."
           },
+          "s3Bucket": {
+            "type": "string",
+            "description": "The pre-provisioned S3 bucket that holds the app’s assets."
+          },
           "supportedLanguages": {
             "type": "array",
             "description": "Languages officially supported by the app",

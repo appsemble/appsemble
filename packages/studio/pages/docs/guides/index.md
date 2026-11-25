@@ -30,6 +30,7 @@ continue on this basic app to add more advanced features.
 - [Notifications](notifications.md)
 - [OAuth2](oauth2.md)
 - [Page types](page-types.md)
+- [Password protection](password-protection.md)
 - [Generating PDF documents](pdf-generation.md)
 - [Resource referencing](resource-referencing.md)
 - [Resource views](resource-views.md)

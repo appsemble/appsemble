@@ -2,5 +2,7 @@
   "empty": "",
   "error": "",
   "loading": "",
-  "unsupported": ""
+  "unsupported": "",
+  "wordFrequency": "",
+  "wordcloud": ""
 }

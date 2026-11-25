@@ -1,11 +1,12 @@
 import { type ResourceDefinition } from '@appsemble/lang-sdk';
-import { createFixtureStream, createFormData } from '@appsemble/node-utils';
+import { createFixtureStream, createFormData, getS3FileBuffer } from '@appsemble/node-utils';
 import {
   type App as AppType,
   PredefinedOrganizationRole,
   SubscriptionPlanType,
 } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import { compare, hash } from 'bcrypt';
 import stripIndent from 'strip-indent';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -270,6 +271,63 @@ describe('patchApp', () => {
     expect(data.supportedLanguages).toStrictEqual(['en', 'nl']);
   });
 
+  it('should password protect an app without returning the password hash', async () => {
+    const app = await App.create({
+      definition: { name: 'Test app', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+
+    const { data } = await request.patch<AppType>(
+      `/api/apps/${app.id}`,
+      createFormData({ password: 'open sesame' }),
+    );
+
+    await app.reload();
+    expect(data.passwordProtected).toBe(true);
+    expect(JSON.stringify(data)).not.toContain(app.password);
+    expect(await compare('open sesame', app.password!)).toBe(true);
+  });
+
+  it.each([
+    ['ascii', 'a'.repeat(73)],
+    ['Unicode', 'é'.repeat(37)],
+  ])('should reject %s passwords that bcrypt would truncate', async (encoding, password) => {
+    const app = await App.create({
+      definition: { name: 'Test app', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+
+    const response = await request.patch(`/api/apps/${app.id}`, createFormData({ password }));
+
+    await app.reload();
+    expect([response.status, app.password]).toStrictEqual([400, null]);
+  });
+
+  it('should turn password protection off with an empty password', async () => {
+    const app = await App.create({
+      definition: { name: 'Test app', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      password: await hash('open sesame', 10),
+    });
+    authorizeStudio();
+
+    await request.patch(`/api/apps/${app.id}`, createFormData({ password: '' }));
+
+    await app.reload();
+    expect(app.password).toBeNull();
+  });
+
   it('should keep only the latest build snapshot after repeated app definition updates', async () => {
     const app = await App.create({
       definition: {
@@ -375,8 +433,10 @@ describe('patchApp', () => {
       }),
     );
     expect(status).toBe(200);
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
     const resources = (
-      await Resource.findAll({
+      await appDB.Resource.findAll({
         attributes: ['id', 'Position', 'type'],
         where: {
           type: 'testResource',
@@ -392,7 +452,7 @@ describe('patchApp', () => {
     );
 
     await expect(
-      Resource.create({
+      appDB.Resource.create({
         type: 'testResource',
         data: { foo: 'duplicate position' },
         Position: 10,
@@ -456,9 +516,11 @@ describe('patchApp', () => {
       }),
     );
     expect(status).toBe(200);
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
 
     const resources = (
-      await Resource.findAll({
+      await appDB.Resource.findAll({
         attributes: ['data', 'Position'],
         where: {
           type: 'testResource',
@@ -867,9 +929,11 @@ describe('patchApp', () => {
     );
 
     expect(response.status).toBe(409);
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
 
     // The removed type's data must survive the rejected update.
-    const remaining = await Resource.count({ where: { type: 'dropResource' } });
+    const remaining = await appDB.Resource.count({ where: { type: 'dropResource' } });
     expect(remaining).toBe(1);
   });
 
@@ -1017,8 +1081,10 @@ describe('patchApp', () => {
     );
 
     expect(status).toBe(200);
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
 
-    const indexes = (await sequelize
+    const indexes = (await appDB.sequelize
       .getQueryInterface()
       .showIndex(resourcePartitionName('testResource'))) as {
       name: string;
@@ -1085,6 +1151,8 @@ describe('patchApp', () => {
     );
 
     expect(response.status).toBe(200);
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
 
     const nextResourceDefinition: ResourceDefinition = {
       schema: {
@@ -1100,11 +1168,11 @@ describe('patchApp', () => {
       nextResourceDefinition,
     );
 
-    const [afterPatch] = (await sequelize.query(
-      `SELECT indexdef AS "indexDefinition" FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ${sequelize.escape(nextIndexName)};`,
+    const [afterPatch] = (await appDB.sequelize.query(
+      `SELECT indexdef AS "indexDefinition" FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ${appDB.sequelize.escape(nextIndexName)};`,
     )) as [{ indexDefinition: string }[], unknown];
-    const [removedIndex] = (await sequelize.query(
-      `SELECT indexdef AS "indexDefinition" FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ${sequelize.escape(previousIndexName)};`,
+    const [removedIndex] = (await appDB.sequelize.query(
+      `SELECT indexdef AS "indexDefinition" FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ${appDB.sequelize.escape(previousIndexName)};`,
     )) as [{ indexDefinition: string }[], unknown];
 
     expect(beforePatch[0].indexDefinition).not.toContain('::bigint');
@@ -1168,8 +1236,10 @@ describe('patchApp', () => {
 
     expect(response.status).toBe(400);
     expect(response.data.data.code).toBe('RESOURCE_UNIQUE_CONSTRAINT_VALUE_ERROR');
+    // Patching an app replaces its app database instance and closes the old one once idle.
+    const appDB = await getAppDB(app.id);
 
-    const indexes = (await sequelize
+    const indexes = (await appDB.sequelize
       .getQueryInterface()
       .showIndex(resourcePartitionName('testResource'))) as {
       name: string;
@@ -1871,6 +1941,10 @@ describe('patchApp', () => {
                   "format": "binary",
                   "type": "string",
                 },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
+                  "type": "string",
+                },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
                 },
@@ -1881,6 +1955,11 @@ describe('patchApp', () => {
                     "type": "string",
                   },
                   "type": "array",
+                },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -1966,6 +2045,10 @@ describe('patchApp', () => {
                   "format": "binary",
                   "type": "string",
                 },
+                "password": {
+                  "description": "The password visitors must enter to open the app.",
+                  "type": "string",
+                },
                 "path": {
                   "$ref": "#/components/schemas/App/properties/path",
                 },
@@ -1976,6 +2059,11 @@ describe('patchApp', () => {
                     "type": "string",
                   },
                   "type": "array",
+                },
+                "s3Bucket": {
+                  "description": "The pre-provisioned S3 bucket that holds the app’s assets.",
+                  "pattern": "^[\\da-z][\\d.a-z-]{1,61}[\\da-z]$",
+                  "type": "string",
                 },
                 "screenshots": {
                   "description": "Screenshots to showcase in the store",
@@ -2150,6 +2238,29 @@ describe('patchApp', () => {
                     "minLength": 1,
                     "type": "string",
                   },
+                  "notFoundPage": {
+                    "description": "What is displayed when the URL does not match a page.
+
+      Set this to \`true\` to display a built-in “Page not found” page, or to the name of a page to display
+      that page. The page **must** be a top-level page of the app, may not specify parameters, and may not
+      be a container or tabs page. It is displayed at the URL that was not found, without checking the
+      roles of the app member.
+
+      The not found page is also displayed for path segments that don’t match the parameters of a page,
+      except on tabs pages. If this is not specified, a URL that matches no page redirects to the default
+      page.
+      ",
+                    "oneOf": [
+                      {
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          true,
+                        ],
+                      },
+                    ],
+                  },
                   "notifications": {
                     "description": "The strategy to use for apps to subscribe to push notifications.
 
@@ -2160,12 +2271,51 @@ describe('patchApp', () => {
       If this is set to \`login\`, the app will request permissions for push notification once the user
       logs in.
 
+      To use a different strategy per role, set \`roles\` to a map of role names to \`login\`, \`opt-in\`, or
+      \`none\`. Roles that aren’t listed use \`default\`. A member with several roles gets the most eager
+      strategy of those roles. Only roles assigned to the member count, not roles they inherit.
+
       > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
       ",
-                    "enum": [
-                      "login",
-                      "opt-in",
-                      "startup",
+                    "oneOf": [
+                      {
+                        "enum": [
+                          "login",
+                          "opt-in",
+                          "startup",
+                        ],
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "default": {
+                            "description": "The strategy for roles that aren’t listed in \`roles\`, and for users without
+      a role. Defaults to \`none\`.",
+                            "enum": [
+                              "login",
+                              "none",
+                              "opt-in",
+                              "startup",
+                            ],
+                          },
+                          "roles": {
+                            "additionalProperties": {
+                              "enum": [
+                                "login",
+                                "none",
+                                "opt-in",
+                              ],
+                            },
+                            "description": "The strategy per role.",
+                            "minProperties": 1,
+                            "type": "object",
+                          },
+                        },
+                        "required": [
+                          "roles",
+                        ],
+                        "type": "object",
+                      },
                     ],
                   },
                   "pages": {
@@ -2188,6 +2338,15 @@ describe('patchApp', () => {
                           "$ref": "#/components/schemas/ContainerPageDefinition",
                         },
                       ],
+                      "x-appsemble-discriminator": {
+                        "default": "basic",
+                        "mapping": {
+                          "basic": "#/components/schemas/PageDefinition",
+                        },
+                        "propertyNames": [
+                          "type",
+                        ],
+                      },
                     },
                     "minItems": 1,
                     "type": "array",
@@ -2336,6 +2495,29 @@ describe('patchApp', () => {
                     "minLength": 1,
                     "type": "string",
                   },
+                  "notFoundPage": {
+                    "description": "What is displayed when the URL does not match a page.
+
+      Set this to \`true\` to display a built-in “Page not found” page, or to the name of a page to display
+      that page. The page **must** be a top-level page of the app, may not specify parameters, and may not
+      be a container or tabs page. It is displayed at the URL that was not found, without checking the
+      roles of the app member.
+
+      The not found page is also displayed for path segments that don’t match the parameters of a page,
+      except on tabs pages. If this is not specified, a URL that matches no page redirects to the default
+      page.
+      ",
+                    "oneOf": [
+                      {
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          true,
+                        ],
+                      },
+                    ],
+                  },
                   "notifications": {
                     "description": "The strategy to use for apps to subscribe to push notifications.
 
@@ -2346,12 +2528,51 @@ describe('patchApp', () => {
       If this is set to \`login\`, the app will request permissions for push notification once the user
       logs in.
 
+      To use a different strategy per role, set \`roles\` to a map of role names to \`login\`, \`opt-in\`, or
+      \`none\`. Roles that aren’t listed use \`default\`. A member with several roles gets the most eager
+      strategy of those roles. Only roles assigned to the member count, not roles they inherit.
+
       > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
       ",
-                    "enum": [
-                      "login",
-                      "opt-in",
-                      "startup",
+                    "oneOf": [
+                      {
+                        "enum": [
+                          "login",
+                          "opt-in",
+                          "startup",
+                        ],
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "default": {
+                            "description": "The strategy for roles that aren’t listed in \`roles\`, and for users without
+      a role. Defaults to \`none\`.",
+                            "enum": [
+                              "login",
+                              "none",
+                              "opt-in",
+                              "startup",
+                            ],
+                          },
+                          "roles": {
+                            "additionalProperties": {
+                              "enum": [
+                                "login",
+                                "none",
+                                "opt-in",
+                              ],
+                            },
+                            "description": "The strategy per role.",
+                            "minProperties": 1,
+                            "type": "object",
+                          },
+                        },
+                        "required": [
+                          "roles",
+                        ],
+                        "type": "object",
+                      },
                     ],
                   },
                   "pages": {
@@ -2374,6 +2595,15 @@ describe('patchApp', () => {
                           "$ref": "#/components/schemas/ContainerPageDefinition",
                         },
                       ],
+                      "x-appsemble-discriminator": {
+                        "default": "basic",
+                        "mapping": {
+                          "basic": "#/components/schemas/PageDefinition",
+                        },
+                        "propertyNames": [
+                          "type",
+                        ],
+                      },
                     },
                     "minItems": 1,
                     "type": "array",
@@ -3178,6 +3408,7 @@ describe('patchApp', () => {
         "messages": undefined,
         "metaPixelID": null,
         "msClarityID": null,
+        "passwordProtected": undefined,
         "path": "bar",
         "rating": undefined,
         "readmeUrl": undefined,
@@ -3306,6 +3537,60 @@ describe('patchApp', () => {
       }
     `);
   });
+
+  it('should require permission to update app settings to name a bucket', async () => {
+    setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await OrganizationMember.update(
+      { role: PredefinedOrganizationRole.Member },
+      { where: { OrganizationId: organization.id, UserId: user.id } },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ s3Bucket: 'tst-patched-bucket' }),
+    );
+
+    expect(response.status).toBe(403);
+    await app.reload();
+    expect(app.s3Bucket).toBeNull();
+  });
+
+  // The single-bucket test job only grants access to that one bucket.
+  it.skipIf(process.env.S3_BUCKET)(
+    'should keep later assets in the bucket the app is patched to name',
+    async () => {
+      vi.useRealTimers();
+      setArgv({ ...argv, s3AppBucketPrefix: 'tst-' });
+      const app = await App.create({
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      });
+
+      authorizeStudio();
+      await request.patch(
+        `/api/apps/${app.id}`,
+        createFormData({ s3Bucket: 'tst-patched-bucket' }),
+      );
+      const file = Buffer.from('patched bucket');
+      const { data: asset } = await request.post<{ id: string }>(
+        `/api/apps/${app.id}/assets`,
+        createFormData({ file, name: 'patched' }),
+      );
+
+      expect(await getS3FileBuffer('tst-patched-bucket', asset.id)).toStrictEqual(file);
+    },
+  );
 
   it('should use passed database parameters if present', async () => {
     vi.useRealTimers();

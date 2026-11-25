@@ -49,6 +49,7 @@ import { pathItems as appsAppIdMaskableIcon } from './apps/appId/maskableIcon.js
 import { pathItems as appsAppIdAppMembersAppMemberIdPicture } from './apps/appId/members/appMemberId/picture.js';
 import { pathItems as appsAppIdAppMembersAppMemberIdProperties } from './apps/appId/members/appMemberId/properties.js';
 import { pathItems as appsAppIdAppMembersAppMemberIdRole } from './apps/appId/members/appMemberId/role.js';
+import { pathItems as appsAppIdAppMembersAppMemberIdTotp } from './apps/appId/members/appMemberId/totp.js';
 import { pathItems as appsAppIdAppMembersAppMemberId } from './apps/appId/members/appMemberId.js';
 import { pathItems as appsAppIdMembersCurrentGroups } from './apps/appId/members/current/groups.js';
 import { pathItems as appsAppIdMembersCurrentLink } from './apps/appId/members/current/link.js';
@@ -103,11 +104,13 @@ import { pathItems as appsAppIdStyleShared } from './apps/appId/style/shared.js'
 import { pathItems as appsAppIdSubscriptions } from './apps/appId/subscriptions.js';
 import { pathItems as appsAppIdVariablesAppVariableId } from './apps/appId/variables/variableId.js';
 import { pathItems as appsAppIdVariables } from './apps/appId/variables.js';
+import { pathItems as appsAppIdWarnings } from './apps/appId/warnings.js';
 import { pathItems as appsAppIdWebhooksWebhookName } from './apps/appId/webhooks/webhookName.js';
 import { pathItems as appsAppId } from './apps/appId.js';
 import { pathItems as apps } from './apps.js';
 import { pathItems as appTemplates } from './appTemplates.js';
 import { pathItems as authEmailLogin } from './auth/email/login.js';
+import { pathItems as authEmailDiscover } from './auth/email/discover.js';
 import { pathItems as authEmailPatchPassword } from './auth/email/patchPassword.js';
 import { pathItems as authEmailRegister } from './auth/email/register.js';
 import { pathItems as authEmailRequestPasswordReset } from './auth/email/requestResetPassword.js';
@@ -141,6 +144,14 @@ import { pathItems as organizationsOrganizationIdInvites } from './organizations
 import { pathItems as organizationsOrganizationIdMembersMemberIdRole } from './organizations/organizationId/members/memberId/role.js';
 import { pathItems as organizationsOrganizationIdMembersMemberId } from './organizations/organizationId/members/memberId.js';
 import { pathItems as organizationsOrganizationIdMembers } from './organizations/organizationId/members.js';
+import { pathItems as organizationsOrganizationIdServiceAccountsClientId } from './organizations/organizationId/serviceAccounts/clientId.js';
+import { pathItems as organizationsOrganizationIdServiceAccounts } from './organizations/organizationId/serviceAccounts.js';
+import { pathItems as organizationsOrganizationIdSso } from './organizations/organizationId/sso.js';
+import { pathItems as organizationsOrganizationIdSsoDomains } from './organizations/organizationId/sso/domains.js';
+import { pathItems as organizationsOrganizationIdSsoDomainsDomain } from './organizations/organizationId/sso/domains/domain.js';
+import { pathItems as organizationsOrganizationIdSsoLogin } from './organizations/organizationId/sso/login.js';
+import { pathItems as organizationsOrganizationIdSsoCallback } from './organizations/organizationId/sso/callback.js';
+import { pathItems as authLogout } from './auth/logout.js';
 import { pathItems as organizationsOrganizationIdOrganizationSubscriptionPrice } from './organizations/organizationId/organizationSubscriptionPrice.js';
 import { pathItems as organizationsOrganizationIdOrganizationSubscription } from './organizations/organizationId/subscription.js';
 import { pathItems as organizationsOrganizationId } from './organizations/organizationId.js';
@@ -149,6 +160,7 @@ import { pathItems as organizationSubscriptionsOrganizationSubscriptionId } from
 import { pathItems as acceptPayment } from './payments/acceptPayment.js';
 import { pathItems as sendInvoice } from './payments/payment.js';
 import { pathItems as ssl } from './ssl.js';
+import { pathItems as subscriptionPlans } from './subscriptionPlans.js';
 import { pathItems as timezones } from './timezones.js';
 import { pathItems as completedTrainings } from './trainings/completedTrainings.js';
 import { pathItems as completeTraining } from './trainings/completeTraining.js';
@@ -160,6 +172,8 @@ import { pathItems as usersCurrentApps } from './users/current/apps.js';
 import { pathItems as usersCurrentAuthOAuth2AppsAppIdConsentAgree } from './users/current/auth/oauth2/apps/appId/consent/agree.js';
 import { pathItems as usersCurrentAuthOAuth2AppsAppIdConsentVerify } from './users/current/auth/oauth2/apps/appId/consent/verify.js';
 import { pathItems as usersCurrentAuthOauth2Authorizations } from './users/current/auth/oauth2/authorizations.js';
+import { pathItems as usersCurrentAuthOidcIdentities } from './users/current/auth/oidc/identities.js';
+import { pathItems as usersCurrentAuthOidcIdentity } from './users/current/auth/oidc/identities/identityId.js';
 import { pathItems as usersCurrentAuthOAuth2ClientCredentialsClientId } from './users/current/auth/oauth2/clientCredentials/clientId.js';
 import { pathItems as usersCurrentAuthOAuth2ClientCredentials } from './users/current/auth/oauth2/clientCredentials.js';
 import { pathItems as usersCurrentEmails } from './users/current/emails.js';
@@ -184,6 +198,7 @@ export const paths = {
   '/api/apps/{appId}/app-members/{appMemberId}/properties':
     appsAppIdAppMembersAppMemberIdProperties,
   '/api/apps/{appId}/app-members/{appMemberId}/role': appsAppIdAppMembersAppMemberIdRole,
+  '/api/apps/{appId}/app-members/{appMemberId}/totp': appsAppIdAppMembersAppMemberIdTotp,
   '/api/apps/{appId}/app-members/{appMemberId}': appsAppIdAppMembersAppMemberId,
   '/api/apps/{appId}/actions/{path}': appsAppIdActionsPath,
   '/api/apps/{appId}/clonable-assets': appsAppIdClonableAssets,
@@ -270,6 +285,7 @@ export const paths = {
   '/api/apps/{appId}/subscriptions': appsAppIdSubscriptions,
   '/api/apps/{appId}/variables/{appVariableId}': appsAppIdVariablesAppVariableId,
   '/api/apps/{appId}/variables': appsAppIdVariables,
+  '/api/apps/{appId}/warnings': appsAppIdWarnings,
   '/api/apps/{appId}/webhooks/{webhookName}': appsAppIdWebhooksWebhookName,
   '/api/apps/{appId}': appsAppId,
   '/api/apps/{appId}/auth/email/login': appsAppIdAuthEmailLogin,
@@ -288,6 +304,7 @@ export const paths = {
   '/api/apps': apps,
   '/api/app-templates': appTemplates,
   '/api/auth/email/login': authEmailLogin,
+  '/api/auth/email/discover': authEmailDiscover,
   '/api/auth/email/register': authEmailRegister,
   '/api/auth/email/reset-password': authEmailResetPassword,
   '/api/auth/email/patch-password': authEmailPatchPassword,
@@ -297,6 +314,7 @@ export const paths = {
   '/api/auth/oauth2/authorizations/connect': authOAuth2AuthorizationsConnect,
   '/api/auth/oauth2/authorizations/register': authOAuth2AuthorizationsRegister,
   '/api/auth/refresh-token': authRefreshToken,
+  '/api/auth/logout': authLogout,
   '/api/blocks/@{organizationId}/{blockId}': blocksOrganizationIdBlockId,
   '/api/blocks/@{organizationId}/{blockId}/versions': blocksOrganizationIdBlockIdVersions,
   '/api/blocks/@{organizationId}/{blockId}/versions/list': blocksOrganizationIdBlockIdVersionsList,
@@ -329,6 +347,16 @@ export const paths = {
   '/api/organizations/{organizationId}/members/{organizationMemberId}':
     organizationsOrganizationIdMembersMemberId,
   '/api/organizations/{organizationId}/members': organizationsOrganizationIdMembers,
+  '/api/organizations/{organizationId}/service-accounts/{clientId}':
+    organizationsOrganizationIdServiceAccountsClientId,
+  '/api/organizations/{organizationId}/service-accounts':
+    organizationsOrganizationIdServiceAccounts,
+  '/api/organizations/{organizationId}/sso/login': organizationsOrganizationIdSsoLogin,
+  '/api/organizations/{organizationId}/sso/callback': organizationsOrganizationIdSsoCallback,
+  '/api/organizations/{organizationId}/sso': organizationsOrganizationIdSso,
+  '/api/organizations/{organizationId}/sso/domains': organizationsOrganizationIdSsoDomains,
+  '/api/organizations/{organizationId}/sso/domains/{domain}':
+    organizationsOrganizationIdSsoDomainsDomain,
   '/api/organizations/{organizationId}/subscription':
     organizationsOrganizationIdOrganizationSubscription,
   '/api/organizations/{organizationId}/subscription/price':
@@ -338,6 +366,7 @@ export const paths = {
   '/api/organization-subscriptions/{organizationSubscriptionId}':
     organizationSubscriptionsOrganizationSubscriptionId,
   '/api/ssl': ssl,
+  '/api/subscription-plans': subscriptionPlans,
   '/api/apps/{appId}/group-invites/{token}/respond': groupInvitesTokenRespond,
   '/api/apps/{appId}/group-invites/{token}': groupInvitesToken,
   '/api/apps/{appId}/group-members/{groupMemberId}/role': groupsMembersGroupMemberIdRole,
@@ -358,6 +387,8 @@ export const paths = {
   '/api/users/current/auth/oauth2/apps/{appId}/consent/verify':
     usersCurrentAuthOAuth2AppsAppIdConsentVerify,
   '/api/users/current/auth/oauth2/authorizations': usersCurrentAuthOauth2Authorizations,
+  '/api/users/current/auth/oidc/identities': usersCurrentAuthOidcIdentities,
+  '/api/users/current/auth/oidc/identities/{identityId}': usersCurrentAuthOidcIdentity,
   '/api/users/current/auth/oauth2/client-credentials/{clientId}':
     usersCurrentAuthOAuth2ClientCredentialsClientId,
   '/api/users/current/auth/oauth2/client-credentials': usersCurrentAuthOAuth2ClientCredentials,

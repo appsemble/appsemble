@@ -1,5 +1,4 @@
 import { Button, Icon, useMessages, useMeta } from '@appsemble/react-components';
-import { type Training } from '@appsemble/types';
 import axios from 'axios';
 import { type ComponentType, type ReactNode, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -7,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useUser } from '../../../components/UserProvider/index.js';
+import { type Training } from '../../../types.js';
 
 interface TrainingPageProps {
   readonly content: ComponentType;

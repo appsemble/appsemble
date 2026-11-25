@@ -15,9 +15,9 @@ declare module '@appsemble/sdk' {
 
   interface EventListeners {
     /**
-     * Data that can be used in the placeholder remappers.
+     * Data that can be used in the placeholder and style remappers.
      *
-     * All elements specifying `data-content` will be updated each time this event is received.
+     * Elements specifying `data-content` or `data-style` update each time this event is received.
      */
     data: never;
   }
@@ -32,5 +32,13 @@ declare module '@appsemble/sdk' {
      * The placeholders that are injected on elements with the `data-content` property.
      */
     placeholders?: Record<string, Remapper>;
+
+    /**
+     * CSS properties mapped onto elements with a matching `data-style` attribute.
+     *
+     * Property names use CSS syntax, including custom properties such as `--progress`.
+     * Values include any required units. A null value clears the inline property.
+     */
+    styles?: Record<string, Record<string, Remapper>>;
   }
 }

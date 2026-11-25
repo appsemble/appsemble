@@ -7,6 +7,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { createTestAction } from '../makeActions.js';
 import { apiUrl } from '../settings.js';
+// The app member provider decides which requests carry the session cookies, as it does in the app.
+import '../../components/AppMemberProvider/index.js';
 
 let mock: MockAdapter;
 let request: AxiosRequestConfig;
@@ -253,6 +255,32 @@ describe('request', () => {
     expect(request.params).toBeNull();
     expect(request.data).toBeUndefined();
     expect(result).toBe('Example content');
+  });
+
+  it('should send session cookies only to the Appsemble API', async () => {
+    const credentials = new Map<string, boolean>();
+    mock.onAny(/.*/).reply((req) => {
+      credentials.set(new URL(axios.getUri(req)).origin, Boolean(req.withCredentials));
+      return [200, {}, {}];
+    });
+    const proxied = createTestAction({
+      definition: { type: 'request' },
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
+    });
+    const direct = createTestAction({
+      definition: { type: 'request', proxy: false, url: 'https://example.com' },
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
+    });
+    await proxied({});
+    await direct({});
+    expect(credentials).toStrictEqual(
+      new Map([
+        [apiUrl, true],
+        ['https://example.com', false],
+      ]),
+    );
   });
 
   it('should allow for using context in url remappers', async () => {

@@ -60,6 +60,7 @@ class LocationComponent extends Component<BlockProps & LocationProps> {
         new TileLayer(tileLayer),
         new Marker([latitude, longitude], {
           icon: marker,
+          keyboard: false,
         }),
       ],
       ...mapOptions,

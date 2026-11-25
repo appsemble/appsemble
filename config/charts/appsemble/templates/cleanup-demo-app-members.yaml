@@ -28,7 +28,17 @@ spec:
                 {{- toYaml .Values.resources.cronjobs | nindent 16 }}
               args:
                 - cleanup-demo-app-members
-                - -vv
+              {{- with .Values.verbosity }}
+                - -{{ repeat (int .) "v" }}
+              {{- end }}
               env:
+                - name: AES_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.secretSecret | quote }}
+                      key: aes-secret
 {{ include "appsemble.postgres" . | indent 16 }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 16 }}
+{{ include "appsemble.trustedCaBundle.volumeMounts" . | indent 14 }}
+{{ include "appsemble.trustedCaBundle.volumes" . | indent 10 }}
 {{ end }}

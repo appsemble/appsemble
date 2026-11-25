@@ -1,3 +1,4 @@
 {
-  "locationError": "Couldn’t find your location. Are location services enabled?"
+  "locationError": "Couldn’t find your location. Are location services enabled?",
+  "marker": "Marker"
 }

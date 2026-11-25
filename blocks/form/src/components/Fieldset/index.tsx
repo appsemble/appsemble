@@ -164,7 +164,12 @@ export function Fieldset({
           {!readOnly && (!maxLength || (localValues || []).length < maxLength) ? (
             <FormButtons>
               <Button disabled={disabled} icon="plus" onClick={addEntry}>
-                {utils.remap(field.addLabel ?? 'Add', localValues) as string}
+                {
+                  utils.remap(
+                    field.addLabel ?? utils.formatMessage('addLabel'),
+                    localValues,
+                  ) as string
+                }
               </Button>
             </FormButtons>
           ) : null}

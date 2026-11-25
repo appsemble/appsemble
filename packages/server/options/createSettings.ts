@@ -5,9 +5,11 @@ import {
   logger,
 } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
+import { Op } from 'sequelize';
 import { parse } from 'yaml';
 
 import { App, AppBuildSnapshot, AppSnapshot, getAppDB, transactional } from '../models/index.js';
+import { getAppPasswordToken } from '../utils/app.js';
 import {
   createAppBuildManifest,
   getMissingBlockManifestIdentifiers,
@@ -16,6 +18,7 @@ import {
 } from '../utils/appBuildManifest.js';
 import { getSettingsBlockFileUrls } from '../utils/blockAssets.js';
 import { createGtagCode, createMetaPixelCode, createMSClarityCode } from '../utils/render.js';
+import { isSecretIncomplete } from '../utils/secrets.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
 function sanitizeAppDefinitionForPublicSettings(
@@ -90,6 +93,7 @@ function sanitizeAppDefinitionForPublicSettings(
         }
       : undefined,
     name: definition.name,
+    notFoundPage: definition.notFoundPage,
     notifications: definition.notifications,
     pages: definition.pages,
     resources: definition.resources,
@@ -100,13 +104,14 @@ function sanitizeAppDefinitionForPublicSettings(
 
 export async function createSettings({
   app,
+  context,
   host,
   hostname,
   identifiableBlocks,
   languages,
   nonce,
 }: CreateSettingsParams): Promise<[digest: string, script: string]> {
-  const { AppOAuth2Secret, AppSamlSecret } = await getAppDB(app.id!);
+  const { AppOAuth2Secret, AppSamlSecret, Asset } = await getAppDB(app.id!);
 
   const persistedApp = (await App.findOne({
     attributes: [
@@ -131,6 +136,7 @@ export async function createSettings({
       'displayInstallationPrompt',
       'supportedLanguages',
       'totp',
+      'password',
     ],
     where: { id: app.id },
     include: [
@@ -202,8 +208,28 @@ export async function createSettings({
   // Public URLs embed deployment configuration, so derive them from stable storage keys per request.
   const blockFileUrls = await getSettingsBlockFileUrls(blockManifests ?? []);
 
-  const appOAuth2Secrets = await AppOAuth2Secret.findAll({ attributes: ['icon', 'id', 'name'] });
+  const appOAuth2Secrets = (
+    await AppOAuth2Secret.findAll({ attributes: ['clientSecret', 'icon', 'id', 'name'] })
+  ).filter(({ clientSecret }) => !isSecretIncomplete(clientSecret));
   const appSamlSecrets = await AppSamlSecret.findAll({ attributes: ['icon', 'id', 'name'] });
+
+  // The assets the app shell addresses by name are also offered by id, which addresses fixed bytes
+  // the browser may cache for good. Names resolve to the asset the asset endpoint serves for them,
+  // limited to app-level assets because the icon registry and the logo apply to the whole app.
+  const namedAssets = Object.values(persistedApp.definition.icons ?? {}).map(({ asset }) => asset);
+  if (persistedApp.definition.layout?.logo?.position === 'navbar') {
+    namedAssets.push(persistedApp.definition.layout.logo.asset || 'logo');
+  }
+  const assets = namedAssets.length
+    ? await Asset.findAll({
+        attributes: ['id', 'name'],
+        where: {
+          name: namedAssets,
+          GroupId: null,
+          ...(persistedApp.demoMode ? { seed: false, ephemeral: true } : {}),
+        },
+      })
+    : [];
 
   const { sentryDsn, sentryEnvironment } = getSentryClientSettings(
     hostname,
@@ -211,11 +237,24 @@ export async function createSettings({
     persistedApp.sentryEnvironment,
   );
 
+  const staticAssets = await Asset.findAll({
+    attributes: ['name'],
+    where: {
+      name: { [Op.not]: null },
+      seed: true,
+      ResourceId: null,
+      AppMemberId: null,
+      GroupId: null,
+    },
+  });
+
   return createUtilsSettings(
     {
       apiUrl: host,
+      staticAssets: staticAssets.map(({ name }) => name),
       appControllerCode: persistedApp.controllerCode,
       appControllerImplementations: persistedApp.controllerImplementations,
+      assetIds: Object.fromEntries(assets.map(({ id, name }) => [name, id])),
       blockManifests: (blockManifests ?? []).map((blockManifest) => {
         const fileUrls = blockFileUrls[`${blockManifest.name}@${blockManifest.version}`];
         return fileUrls ? { ...blockManifest, fileUrls } : blockManifest;
@@ -250,6 +289,7 @@ export async function createSettings({
       enableSelfRegistration: persistedApp.enableSelfRegistration ?? true,
       showDemoLogin: persistedApp.demoMode ?? false,
       totp: persistedApp.totp ?? 'disabled',
+      passwordToken: getAppPasswordToken(context, persistedApp),
       sentryDsn,
       sentryEnvironment,
       appUpdated: persistedApp.updated.toISOString(),

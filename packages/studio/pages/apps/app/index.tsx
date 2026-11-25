@@ -19,12 +19,15 @@ import {
   type ReactNode,
   type SetStateAction,
   Suspense,
+  useCallback,
   useContext,
   useMemo,
+  useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
 
+import { AppWarnings } from './AppWarnings/index.js';
 import { AssetsPage } from './assets/index.js';
 import { ContainerLogs } from './containerLogs/index.js';
 import { DefinitionPage } from './definition/index.js';
@@ -56,6 +59,11 @@ interface AppValueContext {
    * Update the app in the current context.
    */
   setApp: Dispatch<SetStateAction<App>>;
+
+  /**
+   * Reload the app warnings after a secret changes.
+   */
+  refreshWarnings: () => void;
 }
 
 const Context = createContext<AppValueContext>(null);
@@ -70,7 +78,9 @@ export function AppRoutes(): ReactNode {
     lang,
     path,
   } = useParams<{ id: string; lang: string; path?: string; '*': string }>();
-  const { organizations } = useUser();
+  const { organizations, userInfo } = useUser();
+  const [warningsKey, setWarningsKey] = useState(0);
+  const refreshWarnings = useCallback(() => setWarningsKey((key) => key + 1), []);
 
   const {
     data: app,
@@ -91,7 +101,7 @@ export function AppRoutes(): ReactNode {
   );
 
   const userOrganizationRole = useMemo(
-    () => organization?.role || PredefinedOrganizationRole.Member,
+    () => organization?.roles ?? [PredefinedOrganizationRole.Member],
     [organization],
   );
 
@@ -200,7 +210,7 @@ export function AppRoutes(): ReactNode {
     [userOrganizationRole],
   );
 
-  const value = useMemo(() => ({ app, setApp }), [app, setApp]);
+  const value = useMemo(() => ({ app, setApp, refreshWarnings }), [app, setApp, refreshWarnings]);
 
   useSideMenu(
     app && (
@@ -321,6 +331,9 @@ export function AppRoutes(): ReactNode {
   );
 
   if (error) {
+    if (!userInfo && (error.response?.status === 401 || error.response?.status === 404)) {
+      return <ProtectedRoute />;
+    }
     return (
       <Message color="danger">
         {error.response?.status === 404 ? (
@@ -349,6 +362,7 @@ export function AppRoutes(): ReactNode {
 
   return (
     <Context.Provider value={value}>
+      {organization && mayVisitSecrets ? <AppWarnings key={warningsKey} /> : null}
       <MetaSwitch
         description={app.messages?.app?.description || app.definition.description}
         title={app.messages?.app?.name || app.definition.name}
@@ -361,6 +375,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.UpdateApps]}
             />
           }
@@ -387,6 +402,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.QueryAppAssets]}
             />
           }
@@ -398,6 +414,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.QueryAppResources]}
             />
           }
@@ -409,6 +426,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.QueryAppMessages]}
             />
           }
@@ -420,6 +438,7 @@ export function AppRoutes(): ReactNode {
             element={
               <ProtectedRoute
                 organization={organization}
+                organizationId={app.OrganizationId}
                 permissions={[OrganizationPermission.QueryAppResources]}
               />
             }
@@ -434,6 +453,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.PushAppNotifications]}
             />
           }
@@ -447,6 +467,7 @@ export function AppRoutes(): ReactNode {
               element={
                 <ProtectedRoute
                   organization={organization}
+                  organizationId={app.OrganizationId}
                   permissions={[OrganizationPermission.QueryAppMembers]}
                 />
               }
@@ -458,6 +479,7 @@ export function AppRoutes(): ReactNode {
               element={
                 <ProtectedRoute
                   organization={organization}
+                  organizationId={app.OrganizationId}
                   permissions={[OrganizationPermission.QueryGroups]}
                 />
               }
@@ -471,6 +493,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.ReadAppSettings]}
             />
           }
@@ -483,6 +506,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.UpdateAppSettings]}
             />
           }
@@ -494,6 +518,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.QueryAppVariables]}
             />
           }
@@ -505,6 +530,7 @@ export function AppRoutes(): ReactNode {
           element={
             <ProtectedRoute
               organization={organization}
+              organizationId={app.OrganizationId}
               permissions={[OrganizationPermission.QueryAppSecrets]}
             />
           }

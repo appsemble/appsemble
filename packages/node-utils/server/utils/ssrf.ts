@@ -1,8 +1,15 @@
 import dns from 'node:dns';
+import { type AgentOptions, Agent as HttpAgent } from 'node:http';
+import { Agent as HttpsAgent, type AgentOptions as HttpsAgentOptions } from 'node:https';
 import { isIP } from 'node:net';
+import { type Duplex } from 'node:stream';
 
 import ipaddr from 'ipaddr.js';
-import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-filtering-agent';
+import {
+  RequestFilteringHttpAgent,
+  type RequestFilteringAgentOptions,
+  RequestFilteringHttpsAgent,
+} from 'request-filtering-agent';
 
 export interface SSRFOptions {
   allowPrivateIPAddress?: boolean;
@@ -51,6 +58,53 @@ function getAllowableEmbeddedAddress(address: string): string | undefined {
   return ipv4 && ipv4.range() === 'unicast' ? address : undefined;
 }
 
+/**
+ * An HTTP agent that connects to the allowed host names whatever address they resolve to, and to
+ * any other host only when `request-filtering-agent` accepts its address.
+ *
+ * The agent creates a connection for each host, so every redirect hop is checked against its own
+ * host and a listed host cannot redirect a request to an unlisted private address.
+ */
+class SSRFProtectedHttpAgent extends RequestFilteringHttpAgent {
+  allowHostnames: Set<string>;
+
+  constructor(allowHostnames: Set<string>, options: AgentOptions & RequestFilteringAgentOptions) {
+    super(options);
+    this.allowHostnames = allowHostnames;
+  }
+
+  override createConnection(
+    ...args: Parameters<RequestFilteringHttpAgent['createConnection']>
+  ): Duplex {
+    return this.allowHostnames.has(args[0].host?.toLowerCase() ?? '')
+      ? (HttpAgent.prototype.createConnection.apply(this, args) as Duplex)
+      : super.createConnection(...args);
+  }
+}
+
+/**
+ * The HTTPS counterpart of {@link SSRFProtectedHttpAgent}.
+ */
+class SSRFProtectedHttpsAgent extends RequestFilteringHttpsAgent {
+  allowHostnames: Set<string>;
+
+  constructor(
+    allowHostnames: Set<string>,
+    options: HttpsAgentOptions & RequestFilteringAgentOptions,
+  ) {
+    super(options);
+    this.allowHostnames = allowHostnames;
+  }
+
+  override createConnection(
+    ...args: Parameters<RequestFilteringHttpsAgent['createConnection']>
+  ): Duplex {
+    return this.allowHostnames.has(args[0].host?.toLowerCase() ?? '')
+      ? (HttpsAgent.prototype.createConnection.apply(this, args) as Duplex)
+      : super.createConnection(...args);
+  }
+}
+
 export async function getSSRFProtectedAgents(options: SSRFOptions = {}): Promise<{
   httpAgent: RequestFilteringHttpAgent;
   httpsAgent: RequestFilteringHttpsAgent;
@@ -60,7 +114,15 @@ export async function getSSRFProtectedAgents(options: SSRFOptions = {}): Promise
     hostname,
   } = options;
 
-  const allowIPAddressList = process.env.SSRF_ALLOW_IP_ADDRESS_LIST?.split(',') ?? [];
+  const allowIPAddressList: string[] = [];
+  const allowHostnames = new Set<string>();
+  for (const entry of process.env.SSRF_ALLOW_IP_ADDRESS_LIST?.split(',') ?? []) {
+    if (isIP(entry) || ipaddr.isValidCIDR(entry)) {
+      allowIPAddressList.push(entry);
+    } else {
+      allowHostnames.add(entry.toLowerCase());
+    }
+  }
 
   // `URL.hostname` wraps IPv6 literals in brackets (e.g. `[64:ff9b::1]`); strip them so the value
   // can be parsed as an IP and resolved by DNS.
@@ -94,12 +156,12 @@ export async function getSSRFProtectedAgents(options: SSRFOptions = {}): Promise
   const existingHttpsOptions = options.httpsAgent?.options ?? {};
 
   return {
-    httpAgent: new RequestFilteringHttpAgent({
+    httpAgent: new SSRFProtectedHttpAgent(allowHostnames, {
       ...existingHttpOptions,
       allowPrivateIPAddress,
       allowIPAddressList,
     }),
-    httpsAgent: new RequestFilteringHttpsAgent({
+    httpsAgent: new SSRFProtectedHttpsAgent(allowHostnames, {
       ...existingHttpsOptions,
       allowPrivateIPAddress,
       allowIPAddressList,

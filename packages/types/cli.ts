@@ -206,6 +206,11 @@ export interface AppsembleContext {
   dbUser?: string;
 
   /**
+   * The pre-provisioned S3 bucket that holds the app’s assets.
+   */
+  s3Bucket?: string;
+
+  /**
    * Languages officially supported by the app
    */
   supportedLanguages?: string[];

@@ -80,6 +80,7 @@ describe('getAppById', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "OrganizationId": "testorganization",
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -120,9 +121,10 @@ describe('getAppById', () => {
       data: {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: 'test-org',
       },
     });
-    expect(response.data).not.toHaveProperty('OrganizationId');
+    expect(response.data).not.toHaveProperty('OrganizationName');
     expect(response.data).not.toHaveProperty('controllerCode');
     expect(response.data).not.toHaveProperty('showAppDefinition');
   });
@@ -172,6 +174,7 @@ describe('getAppById', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "OrganizationId": "testorganization",
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -206,6 +209,7 @@ describe('getAppById', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "OrganizationId": "testorganization",
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -243,6 +247,7 @@ describe('getAppById', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "OrganizationId": "testorganization",
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -276,6 +281,7 @@ describe('getAppById', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "OrganizationId": "testorganization",
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -310,9 +316,9 @@ describe('getAppById', () => {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         yaml: 'name: Test App\ndefaultPage: Test Page\n',
+        OrganizationId: organization.id,
       },
     });
-    expect(response.data).not.toHaveProperty('OrganizationId');
     expect(response.data).not.toHaveProperty('OrganizationName');
     expect(response.data).not.toHaveProperty('showAppDefinition');
     expect(response.data).not.toHaveProperty('showAppsembleLogin');

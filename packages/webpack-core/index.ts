@@ -114,6 +114,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
         exclude: [
           '**/*.test.{ts,tsx}.snap',
           '**/*.test.{ts,tsx}',
+          '**/test-utils.{ts,tsx}',
           '**/*.d.ts',
           '**/*.md',
           '**/types.ts',
@@ -267,6 +268,12 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
     new HtmlWebpackPlugin({
       template: fileURLToPath(new URL('app/error.html', packagesDir)),
       filename: 'error.html',
+      minify,
+      chunks: [],
+    }),
+    new HtmlWebpackPlugin({
+      template: fileURLToPath(new URL('app/password.html', packagesDir)),
+      filename: 'password.html',
       minify,
       chunks: [],
     }),

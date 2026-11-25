@@ -73,7 +73,7 @@ metadata:
 spec:
   instances: 2
   # The standard image ships every locale; the minimal one only knows C.
-  imageName: ghcr.io/cloudnative-pg/postgresql:18.6-standard-trixie
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.7-standard-trixie
   # Voluntary disruptions such as a node drain never take the last instance down.
   enablePDB: true
   # A restart of the primary, for a new image or a changed setting, promotes the replica first.

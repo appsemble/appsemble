@@ -25,7 +25,7 @@ import {
   resendBannerGridArea,
 } from './gridUtils.js';
 import { isValidIconName, parseIconReference } from './icons.js';
-import { iterAction, iterApp, type Prefix } from './iterApp.js';
+import { iterApp, iterBlockList, type Prefix } from './iterApp.js';
 import { has } from './miscellaneous.js';
 import { normalize } from './normalize.js';
 import { type ServerActionName, serverActions } from './serverActions.js';
@@ -173,7 +173,7 @@ function validateUniquePageNames(definition: AppDefinition, report: Report): voi
       }
 
       if (page.type === 'container') {
-        checkPages(page.pages, pagePath);
+        checkPages(page.pages ?? [], pagePath);
       }
     }
   }
@@ -209,7 +209,7 @@ function iterPageParents(
     }
 
     if (page.type === 'container') {
-      iterPageParents(page.pages, onParent, [...pagePath, 'pages']);
+      iterPageParents(page.pages ?? [], onParent, [...pagePath, 'pages']);
     }
   }
 }
@@ -268,6 +268,82 @@ function validatePageParents(definition: AppDefinition, report: Report): void {
         path,
       );
     }
+  });
+}
+
+/**
+ * Validates the blocks in the app definition to ensure there are no duplicate block names.
+ *
+ * A block name identifies a single block within the screen it is rendered in. A page renders one
+ * of its tabs or steps at a time, so uniqueness is scoped to the block list the block belongs to.
+ * The same name may be used on other pages, tabs and steps, which lets an app style the same role
+ * everywhere with one rule.
+ *
+ * @param definition The definition of the app
+ * @param report A function used to report a value.
+ */
+function validateUniqueBlockNames(definition: AppDefinition, report: Report): void {
+  function checkBlockList(blocks: BlockDefinition[], path: Prefix): void {
+    const names = new Set<string>();
+
+    iterBlockList(
+      blocks,
+      {
+        onBlock(block, blockPath) {
+          if (block.name) {
+            if (names.has(block.name)) {
+              report(block.name, 'is a duplicate block name', [...blockPath, 'name']);
+            } else {
+              names.add(block.name);
+            }
+          }
+        },
+      },
+      path,
+    );
+  }
+
+  iterApp(definition, {
+    onPage(page, path) {
+      // Basic page
+      if (page.type === 'page' || page.type === undefined) {
+        checkBlockList((page as BasicPageDefinition).blocks, [...path, 'blocks']);
+        return;
+      }
+
+      // Tabs page
+      if (page.type === 'tabs') {
+        const tabsPage = page as TabsPageDefinition;
+        if (tabsPage.tabs) {
+          for (const [tabId, tab] of tabsPage.tabs.entries()) {
+            checkBlockList(tab.blocks, [...path, 'tabs', tabId, 'blocks']);
+          }
+        } else if (tabsPage.definition?.foreach) {
+          checkBlockList(tabsPage.definition.foreach.blocks, [
+            ...path,
+            'definition',
+            'foreach',
+            'blocks',
+          ]);
+        }
+        return;
+      }
+
+      // Flow page
+      if (page.type === 'flow' && page.steps) {
+        const flowPage = page as FlowPageDefinition;
+        for (const [stepId, step] of flowPage.steps.entries()) {
+          checkBlockList(step.blocks, [...path, 'steps', stepId, 'blocks']);
+        }
+        return;
+      }
+
+      // Loop page
+      if (page.type === 'loop') {
+        const loopPage = page as LoopPageDefinition;
+        checkBlockList(loopPage.foreach.blocks, [...path, 'foreach', 'blocks']);
+      }
+    },
   });
 }
 
@@ -999,7 +1075,7 @@ function validateGridLayout(definition: AppDefinition, report: Report): void {
       // Flow page
       if (page.type === 'flow') {
         const flowPage = page as FlowPageDefinition;
-        const steps: [SubPageDefinition, Prefix][] = flowPage.steps.map((step, stepId) => [
+        const steps: [SubPageDefinition, Prefix][] = (flowPage.steps ?? []).map((step, stepId) => [
           step,
           [...path, 'steps', stepId],
         ]);
@@ -1626,8 +1702,11 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
     }
   };
 
+  const notificationRoles =
+    notifications && typeof notifications === 'object' ? notifications.roles : undefined;
+
   if (!security) {
-    if (notifications === 'login') {
+    if (notifications === 'login' || notificationRoles) {
       report(notifications, 'only works if security is defined', ['notifications']);
     }
     return;
@@ -1779,6 +1858,12 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
         checkRoles(entry, path);
       }
     });
+  }
+
+  if (notificationRoles) {
+    for (const role of Object.keys(notificationRoles)) {
+      checkRoleExists(role, ['notifications', 'roles', role]);
+    }
   }
 
   const { hideGroupDropdown } = definition.layout ?? {};
@@ -2021,6 +2106,30 @@ function validateDefaultPage({ defaultPage, pages }: AppDefinition, report: Repo
   }
 }
 
+function validateNotFoundPage({ notFoundPage, pages }: AppDefinition, report: Report): void {
+  if (typeof notFoundPage !== 'string') {
+    return;
+  }
+
+  const page = findPageByName(pages, notFoundPage);
+  if (!page) {
+    report(notFoundPage, 'does not refer to an existing page', ['notFoundPage']);
+    return;
+  }
+
+  if (!pages.includes(page)) {
+    report(notFoundPage, 'may not be inside a container page', ['notFoundPage']);
+  }
+
+  if (page.parameters) {
+    report(notFoundPage, 'may not specify parameters', ['notFoundPage']);
+  }
+
+  if (page.type === 'container' || page.type === 'tabs') {
+    report(notFoundPage, `may not be a ${page.type} page`, ['notFoundPage']);
+  }
+}
+
 function validateCronJobs({ cron }: AppDefinition, report: Report): void {
   if (!cron) {
     return;
@@ -2065,6 +2174,11 @@ function validateActions(definition: AppDefinition, report: Report): void {
       // XXX: could we validate server-side actions differently
       if (path[0] === 'cron' && !serverActions.has(action.type as ServerActionName)) {
         report(action.type, 'action type is not supported for cron jobs', [...path, 'type']);
+        return;
+      }
+
+      if (path[0] === 'webhooks' && !serverActions.has(action.type as ServerActionName)) {
+        report(action.type, 'action type is not supported for webhooks', [...path, 'type']);
         return;
       }
 
@@ -2137,7 +2251,8 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
-        if (!action.type.startsWith('resource.subscription.')) {
+        // Webhook actions run on the server without checking resource permissions.
+        if (!action.type.startsWith('resource.subscription.') && path[0] !== 'webhooks') {
           if (!definition.security) {
             report(action.type, 'missing security definition', [...path, 'resource']);
             return;
@@ -2340,23 +2455,6 @@ function validateActions(definition: AppDefinition, report: Report): void {
       }
     },
   });
-
-  for (const [name, webhook] of Object.entries(definition.webhooks ?? {})) {
-    if (
-      webhook.action &&
-      iterAction(
-        webhook.action,
-        {
-          onAction(action, path) {
-            return validateUnsupportedServerOptimisticResourceWrite(action, path);
-          },
-        },
-        ['webhooks', name, 'action'],
-      )
-    ) {
-      return;
-    }
-  }
 }
 
 function validateEvents(
@@ -2593,6 +2691,9 @@ export async function validateAppDefinition(
   const report: Report = (instance, message, path) => {
     result.errors.push(new ValidationError(message, instance, undefined, path));
   };
+  const reportUnexpectedError = (error: unknown): void => {
+    report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
+  };
 
   try {
     // IMPORTANT: Create a deep copy to prevent validation logic from mutating the original definition.
@@ -2612,26 +2713,36 @@ export async function validateAppDefinition(
       blockVersionMap.get(version.name)!.set(version.version, version);
     }
 
-    validateController(clonedDefinition, controllerImplementations, report);
-    validateCronJobs(clonedDefinition, report);
-    validateDefaultPage(clonedDefinition, report);
-    validateHooks(clonedDefinition, report);
-    validateIcons(clonedDefinition, report);
-    validateIconReferences(clonedDefinition, blockVersionMap, report);
-    validateLanguage(clonedDefinition, report);
-    validateResourceReferences(clonedDefinition, report);
-    validateMembersSchema(clonedDefinition, report);
-    validatePageParents(clonedDefinition, report);
-    validatePhoneNumberDefinition(clonedDefinition, report);
-    validateResourceSchemas(clonedDefinition, report);
-    validateSecurity(clonedDefinition, report);
-    validateBlocks(clonedDefinition, blockVersionMap, report);
-    validateActions(clonedDefinition, report);
-    validateEvents(clonedDefinition, blockVersionMap, report);
-    validateUniquePageNames(clonedDefinition, report);
-    validateGridLayout(clonedDefinition, report);
+    // Run each check on its own, so a check that fails does not keep the others from reporting.
+    const check = (validate: () => void): void => {
+      try {
+        validate();
+      } catch (error) {
+        reportUnexpectedError(error);
+      }
+    };
+    check(() => validateController(clonedDefinition, controllerImplementations, report));
+    check(() => validateCronJobs(clonedDefinition, report));
+    check(() => validateDefaultPage(clonedDefinition, report));
+    check(() => validateHooks(clonedDefinition, report));
+    check(() => validateIcons(clonedDefinition, report));
+    check(() => validateIconReferences(clonedDefinition, blockVersionMap, report));
+    check(() => validateLanguage(clonedDefinition, report));
+    check(() => validateResourceReferences(clonedDefinition, report));
+    check(() => validateMembersSchema(clonedDefinition, report));
+    check(() => validateNotFoundPage(clonedDefinition, report));
+    check(() => validatePageParents(clonedDefinition, report));
+    check(() => validatePhoneNumberDefinition(clonedDefinition, report));
+    check(() => validateResourceSchemas(clonedDefinition, report));
+    check(() => validateSecurity(clonedDefinition, report));
+    check(() => validateBlocks(clonedDefinition, blockVersionMap, report));
+    check(() => validateActions(clonedDefinition, report));
+    check(() => validateEvents(clonedDefinition, blockVersionMap, report));
+    check(() => validateUniquePageNames(clonedDefinition, report));
+    check(() => validateUniqueBlockNames(clonedDefinition, report));
+    check(() => validateGridLayout(clonedDefinition, report));
   } catch (error) {
-    report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
+    reportUnexpectedError(error);
   }
 
   return result;

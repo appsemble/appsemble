@@ -32,6 +32,11 @@ export class OrganizationInvite extends Model {
   @Column(DataType.ENUM(...predefinedOrganizationRoles))
   declare role: PredefinedOrganizationRole;
 
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  declare guest: boolean;
+
   @ForeignKey(() => User)
   @Index({ name: 'OrganizationInvite_UserId_OrganizationId_key', unique: true })
   @Column(DataType.UUID)

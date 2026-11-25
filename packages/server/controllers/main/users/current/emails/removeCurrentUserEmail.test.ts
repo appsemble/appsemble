@@ -4,8 +4,11 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   EmailAuthorization,
+  OAuthAuthorization,
   Organization,
   OrganizationMember,
+  OrganizationSso,
+  OrganizationSsoIdentity,
   type User,
 } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
@@ -88,4 +91,62 @@ describe('removeCurrentUserEmail', () => {
       },
     });
   });
+
+  it('should allow removal of the last email when a social login remains registered', async () => {
+    await user.update({ password: null });
+    await OAuthAuthorization.create({
+      UserId: user.id,
+      email: '',
+      accessToken: '',
+      authorizationUrl: 'https://a.example',
+      sub: 'legacy-staff',
+    });
+    authorizeStudio();
+
+    const response = await request.delete('/api/users/current/emails', {
+      data: { email: 'test@example.com' },
+    });
+    const { data: emails } = await request.get('/api/users/current/emails');
+
+    expect({ status: response.status, emails }).toStrictEqual({ status: 204, emails: [] });
+  });
+
+  it.each(['configured', 'removed'])(
+    'should keep the last email when an organization SSO provider is %s',
+    async (provider) => {
+      await user.update({ password: null });
+      const sso = await OrganizationSso.create({
+        OrganizationId: 'testorganization',
+        issuer: 'https://sso.example/realms/staff',
+        clientId: 'studio',
+        clientSecret: Buffer.from('secret'),
+        name: 'Staff',
+        scope: 'openid',
+        groupClaim: 'groups',
+        policy: 'optional',
+        managedBy: 'deployment',
+        allowedLoginMethods: ['password'],
+        configurationUpdated: new Date(),
+      });
+      await OrganizationSsoIdentity.create({
+        UserId: user.id,
+        issuer: sso.issuer,
+        subject: 'staff',
+      });
+      if (provider === 'removed') {
+        await sso.destroy();
+      }
+      authorizeStudio();
+
+      const response = await request.delete('/api/users/current/emails', {
+        data: { email: 'test@example.com' },
+      });
+      const { data: emails } = await request.get('/api/users/current/emails');
+
+      expect({ status: response.status, emails }).toStrictEqual({
+        status: 406,
+        emails: [{ email: 'test@example.com', verified: true }],
+      });
+    },
+  );
 });

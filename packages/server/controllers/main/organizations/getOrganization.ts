@@ -1,13 +1,18 @@
 import { assertKoaCondition } from '@appsemble/node-utils';
+import { OrganizationPermission } from '@appsemble/types';
+import { checkOrganizationRoleOrganizationPermissions } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { literal } from 'sequelize';
 
 import { App, BlockVersion, Organization } from '../../../models/index.js';
+import {
+  getOrganizationMemberAccess,
+  getOrganizationMemberRoles,
+} from '../../../utils/organizationSso.js';
 
 export async function getOrganization(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId },
-    user: authSubject,
   } = ctx;
 
   const organization = await Organization.findByPk(organizationId, {
@@ -21,16 +26,23 @@ export async function getOrganization(ctx: Context): Promise<void> {
     },
   });
 
+  const member = await getOrganizationMemberAccess(ctx, organizationId);
   assertKoaCondition(
     organization != null &&
-      (Boolean(authSubject) ||
-        organization.Apps.length > 0 ||
-        organization.BlockVersions.length > 0),
+      (member != null || organization.Apps.length > 0 || organization.BlockVersions.length > 0),
     ctx,
     404,
     'Organization not found.',
   );
 
+  const includeBilling =
+    member != null &&
+    checkOrganizationRoleOrganizationPermissions(getOrganizationMemberRoles(member), [
+      OrganizationPermission.ManageOrganizationSubscriptions,
+    ]);
+  if (member != null) {
+    ctx.set('Cache-Control', 'private, no-store');
+  }
   ctx.body = {
     id: organization.id,
     name: organization.name,
@@ -41,12 +53,16 @@ export async function getOrganization(ctx: Context): Promise<void> {
     iconUrl: organization.get('hasIcon')
       ? `/api/organizations/${organization.id}/icon?updated=${organization.updated.toISOString()}`
       : null,
-    vatIdNumber: organization.vatIdNumber,
-    streetName: organization.streetName,
-    houseNumber: organization.houseNumber,
-    city: organization.city,
-    zipCode: organization.zipCode,
-    countryCode: organization.countryCode,
-    invoiceReference: organization.invoiceReference,
+    ...(includeBilling
+      ? {
+          vatIdNumber: organization.vatIdNumber,
+          streetName: organization.streetName,
+          houseNumber: organization.houseNumber,
+          city: organization.city,
+          zipCode: organization.zipCode,
+          countryCode: organization.countryCode,
+          invoiceReference: organization.invoiceReference,
+        }
+      : {}),
   };
 }

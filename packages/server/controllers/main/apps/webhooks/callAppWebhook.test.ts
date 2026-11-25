@@ -17,8 +17,11 @@ import {
 import { setArgv } from '../../../../utils/argv.js';
 import { createServer } from '../../../../utils/createServer.js';
 import { encrypt } from '../../../../utils/crypto.js';
+import { applyOrganizationSsoConfiguration } from '../../../../utils/organizationSso.js';
 import {
   authorizeAppMember,
+  authorizeClientCredentials,
+  authorizeStudio,
   createTestAppMember,
   createTestUser,
   unauthorize,
@@ -757,6 +760,78 @@ describe('callAppWebhook permissions', () => {
         "statusCode": 403,
       }
     `);
+  });
+
+  it('allows AppManagers to invoke a named webhook through Studio', async () => {
+    await OrganizationMember.update({ role: 'AppManager' }, { where: { UserId: user.id } });
+    authorizeStudio(user);
+    const response = await request.post(`/api/apps/${appWithSecurity.id}/webhooks/createRecord`, {
+      foo: 'staff',
+    });
+    expect(response).toMatchObject({ status: 200, data: { foo: 'staff' } });
+  });
+
+  it('allows personal CLI credentials with app write scope to invoke a named webhook', async () => {
+    await authorizeClientCredentials('apps:write', user);
+    const response = await request.post(`/api/apps/${appWithSecurity.id}/webhooks/createRecord`, {
+      foo: 'cli',
+    });
+    expect(response).toMatchObject({ status: 200, data: { foo: 'cli' } });
+  });
+
+  it.each(['Member', 'AppContentsExplorer', 'AppMemberManager'])(
+    'does not let a %s invoke a protected webhook',
+    async (role) => {
+      await OrganizationMember.update({ role }, { where: { UserId: user.id } });
+      authorizeStudio(user);
+      const response = await request.post(`/api/apps/${appWithSecurity.id}/webhooks/createRecord`, {
+        foo: 'denied',
+      });
+      expect(response.status).toBe(403);
+    },
+  );
+
+  it('does not reuse another organization AppManager grant for webhook invocation', async () => {
+    await OrganizationMember.destroy({ where: { UserId: user.id } });
+    await Organization.create({ id: 'other' });
+    await OrganizationMember.create({
+      OrganizationId: 'other',
+      UserId: user.id,
+      role: 'AppManager',
+    });
+    authorizeStudio(user);
+    const response = await request.post(`/api/apps/${appWithSecurity.id}/webhooks/createRecord`, {
+      foo: 'denied',
+    });
+    expect(response.status).toBe(403);
+  });
+
+  it('does not let an ordinary Studio login bypass organization SSO for webhooks', async () => {
+    await applyOrganizationSsoConfiguration(
+      organization.id,
+      {
+        issuer: 'https://identity.example.com/realms/staff',
+        clientId: 'appsemble',
+        clientSecret: 'secret',
+        name: 'Staff',
+        scope: 'openid email profile',
+        groupClaim: 'groups',
+        roleMappings: [],
+        policy: 'required',
+        allowedLoginMethods: ['password', 'oidc'],
+      },
+      'deployment',
+    );
+    const login = await request.post(
+      '/api/auth/email/login',
+      {},
+      { auth: { username: user.primaryEmail!, password: 'testpassword' } },
+    );
+    request.defaults.headers.common.authorization = `Bearer ${login.data.access_token}`;
+    const response = await request.post(`/api/apps/${appWithSecurity.id}/webhooks/createRecord`, {
+      foo: 'denied',
+    });
+    expect(response.status).toBe(403);
   });
 
   it('should allow unauthenticated requests when guest has webhook permission', async () => {

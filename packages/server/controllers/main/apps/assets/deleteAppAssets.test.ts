@@ -75,7 +75,7 @@ describe('deleteAppAssets', () => {
       filename: 'test.bin',
     });
     for (const asset of [assetA, assetB, assetC]) {
-      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
       await uploadS3File(bucket, key, Buffer.from('buffer'));
     }
 
@@ -150,7 +150,7 @@ describe('deleteAppAssets', () => {
       filename: 'test.bin',
     });
     for (const asset of [assetA, assetB, assetC]) {
-      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
       await uploadS3File(bucket, key, Buffer.from('buffer'));
     }
 
@@ -195,7 +195,7 @@ describe('deleteAppAssets', () => {
       filename: 'test.bin',
     });
     for (const asset of [assetA, assetB, assetC]) {
-      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
       await uploadS3File(bucket, key, Buffer.from('buffer'));
     }
     const assetAId = assetA.id;
@@ -281,7 +281,7 @@ describe('deleteAppAssets', () => {
       filename: 'test.bin',
     });
     for (const asset of [assetA, assetB, assetC]) {
-      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
       await uploadS3File(bucket, key, Buffer.from('buffer'));
     }
 

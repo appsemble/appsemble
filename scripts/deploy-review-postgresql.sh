@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 # Creates the CloudNativePG cluster of a review environment and waits until it accepts connections.
-# The operator generates the "<cluster>-app" secret with the owner's credentials, which the chart and
-# the PgBouncer userlist read. The instance label lets cleanup-review-resources.sh delete the cluster
-# with the rest of the release.
+# The operator generates the "<cluster>-app" secret with the owner's credentials, which the chart
+# reads. The instance label lets cleanup-review-resources.sh delete the cluster with the rest of the
+# release.
 
 set -eu
 
@@ -19,7 +19,7 @@ metadata:
 spec:
   instances: 1
   enablePDB: false
-  imageName: ghcr.io/cloudnative-pg/postgresql:18.6-standard-trixie
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.7-standard-trixie
   bootstrap:
     initdb:
       database: appsemble

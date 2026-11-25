@@ -261,7 +261,7 @@ seed database:
     DATABASE_USER: admin
     DATABASE_PASSWORD: password
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: database
       variables:
         POSTGRES_DB: appsemble
@@ -299,7 +299,6 @@ seed database:
         SECRET: secret
         AES_SECRET: secret
         HOST: 'http://appsemble:9999'
-        REMOTE: 'https://appsemble.app'
         DATABASE_HOST: database
         DATABASE_PORT: 5432
         DATABASE_NAME: appsemble
@@ -332,7 +331,9 @@ seed database:
       --s3-access-key admin
       --s3-secret-key password
   after_script:
-    - apt-get update && apt-get install -y postgresql-client
+    - apt-get update && apt-get install -y postgresql-common
+    - /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+    - apt-get install -y postgresql-client-18
     - PGPASSWORD="password" pg_dump -h database -U admin --no-owner --no-acl appsemble > seededDb.sql
   artifacts:
     name: Default database dump
@@ -355,7 +356,7 @@ build seeded db image:
     - cp seededDb.sql db-image/
     - |
       cat > db-image/Dockerfile <<'EOF'
-      FROM postgres:17
+      FROM postgres:18.7
 
       COPY seededDb.sql /docker-entrypoint-initdb.d/seededDb.sql
 
@@ -381,6 +382,7 @@ pack:
     - npm --pack-destination build --workspace @appsemble/types pack
     - npm --pack-destination build --workspace @appsemble/sdk pack
     - npm --pack-destination build --workspace @appsemble/lang-sdk pack
+    - npm --pack-destination build --workspace @appsemble/appsemble-language-server pack
     - npm --pack-destination build --workspace @appsemble/preact pack
     - npm --pack-destination build --workspace @appsemble/utils pack
     - npm --pack-destination build --workspace @appsemble/node-utils pack
@@ -498,9 +500,9 @@ stylelint:
 test node:
   extends: .npm
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: postgres
-    - name: valkey/valkey:9.1.2
+    - name: valkey/valkey:9.1.3
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: chrislusf/seaweedfs:4.47
@@ -554,9 +556,9 @@ test node:
 test node single bucket:
   extends: .npm
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: postgres
-    - name: valkey/valkey:9.1.2
+    - name: valkey/valkey:9.1.3
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     # The single-bucket layout: the bucket and a user that can only touch its objects are
@@ -637,7 +639,7 @@ check migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -653,7 +655,7 @@ check down migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: postgres
   variables:
     FORCE_COLOR: '1' # Required for Chalk.js
@@ -669,7 +671,7 @@ fuzz migrations:
   stage: test
   interruptible: true
   services:
-    - name: postgres:17
+    - name: postgres:18.7
       alias: postgres
   variables:
     POSTGRES_DB: testAppsemble
@@ -751,7 +753,6 @@ validate snippets:
         SECRET: secret
         AES_SECRET: secret
         HOST: 'http://appsemble:9999'
-        REMOTE: 'https://appsemble.app'
         DATABASE_HOST: database
         DATABASE_PORT: 5432
         DATABASE_NAME: appsemble
@@ -777,9 +778,8 @@ validate snippets:
 #  End 2 End Stage                                                                               #
 ###################################################################################################
 
-e2e node:
-  stage: end 2 end
-  image: mcr.microsoft.com/playwright:v1.64.1-noble
+# The Appsemble server built in this pipeline, with its seeded dependencies, as GitLab services.
+.appsemble service:
   interruptible: true
   needs:
     - build docker image
@@ -806,7 +806,7 @@ e2e node:
     APPSEMBLE_SSL_CRT_E2E_SERVICE: $APPSEMBLE_SSL_CRT_E2E
     MAILPIT_URL: 'http://mailpit:8025'
   services:
-    - name: axllent/mailpit:v1.31.6
+    - name: axllent/mailpit:v1.34.0
       alias: mailpit
       variables:
         MP_SMTP_AUTH_ACCEPT_ANY: '1'
@@ -821,7 +821,7 @@ e2e node:
     # the Helm chart deploy. `test node` covers the bucket-per-app layout and
     # `test node single bucket` covers this layout at the unit level.
     - *seaweedfs-single-bucket
-    - name: valkey/valkey:9.1.2
+    - name: valkey/valkey:9.1.3
       alias: valkey
       command: ['valkey-server', '--requirepass', 'password']
     - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
@@ -844,7 +844,6 @@ e2e node:
         SECRET: secret
         AES_SECRET: secret
         HOST: 'https://appsemble:9999'
-        REMOTE: 'https://appsemble.app'
         DATABASE_HOST: database
         DATABASE_PORT: 5432
         DATABASE_NAME: appsemble
@@ -863,6 +862,11 @@ e2e node:
         SMTP_USER: Appsemble
         SMTP_PASS: password
         SMTP_FROM: localdev@appsemble.com
+
+e2e node:
+  extends: .appsemble service
+  stage: end 2 end
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   script:
     - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d > /tmp/appsemble.crt
     - export NODE_EXTRA_CA_CERTS=/tmp/appsemble.crt
@@ -879,16 +883,62 @@ e2e node:
       --s3-bucket appsemble
       --s3-access-key appsemble-server
       --s3-secret-key appsemble-server-secret
-    - npm --workspace @appsemble/e2e run e2e -- --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+    - npm --workspace @appsemble/e2e run e2e -- $E2E_ARGS
+  variables:
+    E2E_ARGS: --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+  after_script:
+    # GitLab accepts a single file per accessibility report, so the reports of the apps are merged
+    - >
+      node --eval "
+      const { globSync, readFileSync, writeFileSync } = require('node:fs');
+      const results = {};
+      for (const file of globSync('packages/e2e/test-results/gl-accessibility-*.json')) {
+        Object.assign(results, JSON.parse(readFileSync(file, 'utf8')).results);
+      }
+      writeFileSync('packages/e2e/test-results/gl-accessibility.json', JSON.stringify({ results }));
+      "
   parallel: 6
   artifacts:
     expose_as: Playwright videos
     when: always
     paths:
       - packages/e2e/test-results/
+      - packages/e2e/blob-report/
     reports:
+      accessibility: packages/e2e/test-results/gl-accessibility.json
       junit: junit.xml
       metrics: packages/e2e/test-results/accessibility-metrics.txt
+
+# The accessibility widget of a merge request compares its report with the one of the target branch
+e2e accessibility:
+  extends: e2e node
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  parallel: null
+  variables:
+    E2E_ARGS: --project=chromium tests/demo-apps/accessibility.spec.ts
+
+e2e report:
+  stage: end 2 end
+  interruptible: true
+  needs:
+    - npm_ci
+    - e2e node
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+      when: always
+    - if: $CI_COMMIT_TAG
+      when: always
+  script:
+    - cd packages/e2e
+    # No shard ran when a job it needs failed, so there is nothing to merge
+    - test -d blob-report || { echo 'No e2e shard results to merge'; exit 0; }
+    - npx playwright merge-reports --reporter html blob-report
+  artifacts:
+    expose_as: Playwright report
+    when: always
+    paths:
+      - packages/e2e/playwright-report/
 
 e2e keycloak:
   stage: end 2 end
@@ -921,13 +971,15 @@ e2e keycloak:
     KEYCLOAK_BASE_URL: 'http://keycloak:8080'
     KEYCLOAK_REALM: appsemble-e2e
   services:
-    - name: '$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG'
+    - &keycloak-database
+      name: '$CI_REGISTRY_IMAGE/seeded-db:$CI_COMMIT_REF_SLUG'
       alias: database
       variables:
         POSTGRES_DB: appsemble
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: password
-    - name: chrislusf/seaweedfs:4.47
+    - &keycloak-object-storage
+      name: chrislusf/seaweedfs:4.47
       alias: s3
       entrypoint: ['sh', '-c']
       command:
@@ -952,7 +1004,8 @@ e2e keycloak:
         KC_BOOTSTRAP_ADMIN_PASSWORD: password
         KC_BOOTSTRAP_ADMIN_USERNAME: admin
         KC_HEALTH_ENABLED: 'true'
-    - name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
+    - &keycloak-appsemble
+      name: '$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'
       alias: appsemble
       entrypoint: ['sh', '-c']
       command:
@@ -961,11 +1014,10 @@ e2e keycloak:
             sleep 1
           done
           exec appsemble-server start
-      variables:
+      variables: &keycloak-appsemble-variables
         SECRET: secret
         AES_SECRET: secret
         HOST: 'http://appsemble:9999'
-        REMOTE: 'https://appsemble.app'
         DATABASE_HOST: database
         DATABASE_PORT: 5432
         DATABASE_NAME: appsemble
@@ -977,9 +1029,11 @@ e2e keycloak:
         S3_ACCESS_KEY: admin
         S3_SECRET_KEY: password
         E2E: true
+        # The Keycloak service runs on the build's private network.
+        SSRF_ALLOW_IP_ADDRESS_LIST: keycloak
   script:
     - npm run appsemble -- config set context e2e
-    - npm run appsemble -- config set remote 'http://appsemble:9999'
+    - npm run appsemble -- config set remote "$E2E_HOST"
     - npm --workspace @appsemble/types run prepack
     - npm --workspace @appsemble/lang-sdk run prepack
     - npm --workspace @appsemble/utils run prepack
@@ -999,6 +1053,71 @@ e2e keycloak:
       - packages/e2e/test-results/
     reports:
       junit: junit.xml
+
+e2e studio oidc:
+  extends: e2e keycloak
+  parallel: null
+  variables:
+    KEYCLOAK_PROTOCOL: studio-oidc
+    KEYCLOAK_BASE_URL: 'https://keycloak:8443'
+    E2E_HOST: 'https://appsemble:9999'
+    APPSEMBLE_SSL_KEY_E2E_SERVICE: $APPSEMBLE_SSL_KEY_E2E
+    APPSEMBLE_SSL_CRT_E2E_SERVICE: $APPSEMBLE_SSL_CRT_E2E
+  services:
+    - *keycloak-database
+    - *keycloak-object-storage
+    - name: valkey/valkey:9.1.3
+      alias: valkey
+      command: ['valkey-server', '--requirepass', 'password']
+    - name: quay.io/keycloak/keycloak:26.6.1
+      alias: keycloak
+      entrypoint: ['/bin/bash', '-c']
+      command:
+        - |
+          set -eu
+          keytool -genkeypair -noprompt -storepass password -storetype PKCS12 \
+            -keyalg RSA -keysize 2048 -dname 'CN=keycloak' -alias server \
+            -ext 'SAN=DNS:keycloak' -keystore /tmp/server.p12
+          exec /opt/keycloak/bin/kc.sh start-dev --http-enabled=false \
+            --hostname-strict=false --https-key-store-file=/tmp/server.p12 \
+            --https-key-store-password=password
+      variables:
+        KC_BOOTSTRAP_ADMIN_PASSWORD: password
+        KC_BOOTSTRAP_ADMIN_USERNAME: admin
+        KC_HEALTH_ENABLED: 'true'
+    - <<: *keycloak-appsemble
+      command:
+        - |
+          set -eu
+          until pg_isready -h database -p 5432 -U admin; do
+            sleep 1
+          done
+          until openssl s_client -connect keycloak:8443 -servername keycloak </dev/null 2>/dev/null \
+            | openssl x509 -out /tmp/keycloak.crt 2>/dev/null; do
+            sleep 1
+          done
+          : "${APPSEMBLE_SSL_KEY_E2E_SERVICE:?Missing APPSEMBLE_SSL_KEY_E2E}"
+          : "${APPSEMBLE_SSL_CRT_E2E_SERVICE:?Missing APPSEMBLE_SSL_CRT_E2E}"
+          printf '%s' "$APPSEMBLE_SSL_KEY_E2E_SERVICE" | base64 -d > /tmp/appsemble.key
+          printf '%s' "$APPSEMBLE_SSL_CRT_E2E_SERVICE" | base64 -d > /tmp/appsemble.crt
+          export NODE_EXTRA_CA_CERTS=/tmp/keycloak.crt
+          exec appsemble-server start --ssl --ssl-key /tmp/appsemble.key --ssl-cert /tmp/appsemble.crt
+      variables:
+        <<: *keycloak-appsemble-variables
+        HOST: 'https://appsemble:9999'
+        ORGANIZATION_SSO_ISSUERS: https://keycloak:8443/realms/appsemble-e2e
+        VALKEY_HOST: valkey
+        VALKEY_PORT: 6379
+        VALKEY_USERNAME: default
+        VALKEY_PASSWORD: password
+  before_script:
+    - |
+      until openssl s_client -connect keycloak:8443 -servername keycloak </dev/null 2>/dev/null \
+        | openssl x509 -out /tmp/keycloak.crt 2>/dev/null; do
+        sleep 1
+      done
+    - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d >> /tmp/keycloak.crt
+    - export NODE_EXTRA_CA_CERTS=/tmp/keycloak.crt
 
 # Apps under SLA are supported through Appsemble core changes
 e2e SLA apps:
@@ -1050,13 +1169,17 @@ e2e SLA apps(private):
         SOUNDING_BODIES) TRIGGER_TOKEN="$DC_GITLAB_TRIGGER_SOUNDING_BODIES" ;;
         *) echo "Unknown project: $PROJECT_NAME"; exit 1 ;;
       esac
-      RESPONSE=$(curl -s --request POST \
+      # The remote GitLab answers 5xx without creating a pipeline when its object storage is
+      # briefly unavailable. curl empties its output file before each retry, so only the last
+      # response is read.
+      curl -s --retry 3 --retry-delay 30 --output trigger.json --request POST \
         --form "token=$TRIGGER_TOKEN" \
         --form "ref=main" \
         --form "variables[APPSEMBLE_IMAGE]=$APPSEMBLE_IMAGE" \
         --form "variables[APPSEMBLE_SSL_KEY_E2E]=$APPSEMBLE_SSL_KEY_E2E" \
         --form "variables[APPSEMBLE_SSL_CRT_E2E]=$APPSEMBLE_SSL_CRT_E2E" \
-        "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/trigger/pipeline")
+        "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/trigger/pipeline"
+      RESPONSE=$(cat trigger.json)
       echo "Trigger response: $(echo "$RESPONSE" | jq '{id, status, web_url, message}')"
       PIPELINE_ID=$(echo "$RESPONSE" | jq -r '.id')
       if [ "$PIPELINE_ID" = "null" ] || [ -z "$PIPELINE_ID" ]; then
@@ -1066,9 +1189,10 @@ e2e SLA apps(private):
       echo "Triggered pipeline $PIPELINE_ID"
 
       while true; do
-        RESPONSE=$(curl -s --header "PRIVATE-TOKEN: $DC_GITLAB_TOKEN" \
-          "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/pipelines/$PIPELINE_ID")
-        STATUS=$(echo "$RESPONSE" | jq -r '.status')
+        curl -s --retry 3 --retry-delay 10 --output pipeline.json \
+          --header "PRIVATE-TOKEN: $DC_GITLAB_TOKEN" \
+          "https://gitlab.d-centralize.nl/api/v4/projects/$PROJECT_ID/pipelines/$PIPELINE_ID"
+        STATUS=$(jq -r '.status' pipeline.json)
         echo "Pipeline $PIPELINE_ID status: $STATUS"
         case "$STATUS" in
           success) exit 0 ;;
@@ -1340,8 +1464,6 @@ update dependencies:
     auto_stop_in: 1 week
   variables:
     GIT_STRATEGY: fetch
-    # Matches the chart default postgresql.auth.username.
-    POSTGRES_APP_USER: appsemble
   retry:
     max: 1
     when:
@@ -1353,20 +1475,16 @@ update dependencies:
     - apk add --no-cache curl jq tar openssl
     - ./scripts/cleanup-review-resources.sh
     - ./scripts/pre-review-capacity-check.sh
-    - PURGE_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
+    - REDEPLOY_REVIEW_IID="$CI_MERGE_REQUEST_IID" ./scripts/cleanup-review-resources.sh
     - ./scripts/review-dns-records.sh "$CI_MERGE_REQUEST_IID"
     - ./scripts/deploy-review-postgresql.sh
     - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mailpit.key -out mailpit.crt -subj "/CN=review-${CI_MERGE_REQUEST_IID}-mailpit-smtp" -addext "subjectAltName=DNS:review-${CI_MERGE_REQUEST_IID}-mailpit-smtp"
     - kubectl create secret tls review-$CI_MERGE_REQUEST_IID-mailpit-tls --cert=mailpit.crt --key=mailpit.key --dry-run=client -o yaml | kubectl apply -f -
     - rm mailpit.key mailpit.crt
     - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-valkey --from-literal "password=$(openssl rand -base64 30)"
-    # PgBouncer setup, auth file generation
-    - |
-      POSTGRES_PASSWORD="$(kubectl get secret review-$CI_MERGE_REQUEST_IID-postgresql-app -o jsonpath='{.data.password}' | base64 -d)"
-
-      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
-    - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt
-    - rm pgbouncer-userlist.txt
+    - kubectl create secret generic review-$CI_MERGE_REQUEST_IID-provision
+      --from-literal "client-credentials=$APPSEMBLE_CLIENT_CREDENTIALS"
+      --from-literal "user-password=$BOT_ACCOUNT_PASSWORD"
     # Stripe webhook setup
     - |
       STRIPE_RELEASE_URL=$(curl -fsSL -H 'User-Agent: appsemble-ci' \
@@ -1425,18 +1543,17 @@ update dependencies:
       --set "postgresql.auth.existingSecret=review-$CI_MERGE_REQUEST_IID-postgresql-app"
       --set "resources.deployment.requests.cpu=250m"
       --set "resources.deployment.requests.memory=1Gi"
+      --set "provision.existingSecret=review-$CI_MERGE_REQUEST_IID-provision"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
-      --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.user.name=$BOT_ACCOUNT_NAME"
-      --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.user.timezone=Europe/Amsterdam"
       --set "proxy=true"
-      --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.review}"
       --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
+      --set "rejectBreachedPasswords=true"
       --set "sentry.secret=sentry"
       --set "mailpit.mailpit.smtp.tls.secretName=review-$CI_MERGE_REQUEST_IID-mailpit-tls"
       --set "seaweedfs.fullnameOverride=review-$CI_MERGE_REQUEST_IID-seaweedfs"
@@ -1452,7 +1569,6 @@ update dependencies:
       --set "valkey.resources.limits.memory=128Mi"
       --set "stripeWebhookSecret=stripe-webhook-secret-$CI_MERGE_REQUEST_IID"
       --set "pgbouncer.enabled=true"
-      --set "pgbouncer.auth.existingSecret=review-$CI_MERGE_REQUEST_IID-pgbouncer-userlist"
       --set "backups.enabled=false"
 
 review:
@@ -1505,10 +1621,17 @@ staging:
     url: https://appsemble.eu
   variables:
     GIT_STRATEGY: none
-    # Matches the chart default postgresql.auth.username.
-    POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:staging"
+    - |
+      case "${STAGING_APPSEMBLE_CLIENT_CREDENTIALS:-}" in
+        ?*:?*) ;;
+        *) echo 'Set STAGING_APPSEMBLE_CLIENT_CREDENTIALS to <id>:<secret>' >&2; exit 1 ;;
+      esac
+    - kubectl create secret generic staging-provision
+      --from-literal "client-credentials=$STAGING_APPSEMBLE_CLIENT_CREDENTIALS"
+      --from-literal "user-password=${BOT_ACCOUNT_PASSWORD:?Set BOT_ACCOUNT_PASSWORD}"
+      --dry-run=client -o yaml | kubectl apply -f -
     # This is the only way to make sure staging can be overwritten
     - helm delete staging --no-hooks || true
     # Replaces the skipped pre-delete cleanup hook: remove server-created app ingresses and TLS secrets
@@ -1526,13 +1649,6 @@ staging:
     - kubectl get secret valkey >/dev/null
     # The CloudNativePG cluster lives outside the release (appsemble/infra), so the data survives a redeploy.
     - kubectl wait --for=condition=Ready cluster.postgresql.cnpg.io/staging-postgresql --timeout=1m
-    # PgBouncer auth file, generated from the PostgreSQL user password
-    - |
-      POSTGRES_PASSWORD="$(kubectl get secret staging-postgresql-app -o jsonpath='{.data.password}' | base64 -d)"
-
-      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
-    - kubectl create secret generic staging-pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
-    - rm pgbouncer-userlist.txt
     # Reserve memory for workload peaks rather than average use, leaving capacity for monitoring.
     # Asset storage needs headroom for production-sized restores, storage overhead, and growth.
     - helm install staging ./public/appsemble-*.tgz
@@ -1552,6 +1668,7 @@ staging:
       --set "ingress.clusterIssuer=acme-issuer-staging"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.eu"
+      --set "organizationSsoIssuers[0]=https://keycloak.d-centralize.nl/realms/d-centralize"
       --set "ingress.tls=true"
       --set "ingress.tlsSecretName=staging-tls"
       --set "ingress.tlsWildcardSecretName=staging-tls-wildcard"
@@ -1567,19 +1684,18 @@ staging:
       --set 'resources.deployment.requests.memory=1536Mi'
       --set 'seaweedfs.allInOne.data.size=40Gi'
       --set "seaweedfs.allInOne.data.annotations.helm\\.sh/resource-policy=keep"
+      --set "provision.existingSecret=staging-provision"
       --set "provision.organization.id=appsemble"
       --set "provision.organization.subscription=enterprise"
       --set "provision.user.organizationRole=Maintainer"
-      --set "provision.user.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.user.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.user.name=$BOT_ACCOUNT_NAME"
-      --set "provision.user.password=$BOT_ACCOUNT_PASSWORD"
       --set "provision.user.timezone=Europe/Amsterdam"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
-      --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.en}"
       --set "sentry.environment=staging"
+      --set "rejectBreachedPasswords=true"
       --set "sentry.secret=sentry"
       --set "quotas.appEmail.enabled=true"
       --set "quotas.appEmail.dailyLimit=10"
@@ -1591,7 +1707,6 @@ staging:
       --set "valkey.auth.usersExistingSecret=valkey"
       --set "pgbouncer.enabled=true"
       --set "pgbouncer.replicaCount=2"
-      --set "pgbouncer.auth.existingSecret=staging-pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=50m"
       --set "valkey.resources.requests.memory=64Mi"
       --set "valkey.resources.limits.cpu=500m"
@@ -1625,8 +1740,6 @@ production:
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
-    # Matches the chart default postgresql.auth.username.
-    POSTGRES_APP_USER: appsemble
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:production"
     - kubectl config set-context --current --namespace default
@@ -1662,13 +1775,6 @@ production:
     - kubectl get secret valkey >/dev/null
     # The CloudNativePG cluster lives outside the release (appsemble/infra).
     - kubectl wait --for=condition=Ready "cluster.postgresql.cnpg.io/$POSTGRESQL_CLUSTER" --timeout=1m
-    # PgBouncer auth file, generated from the PostgreSQL user password
-    - |
-      POSTGRES_PASSWORD="$(kubectl get secret "$POSTGRESQL_SECRET" -o jsonpath='{.data.password}' | base64 -d)"
-
-      printf '"%s" "%s"\n' "$POSTGRES_APP_USER" "$POSTGRES_PASSWORD" > pgbouncer-userlist.txt
-    - kubectl create secret generic pgbouncer-userlist --from-file=userlist.txt=pgbouncer-userlist.txt --dry-run=client -o yaml | kubectl apply -f -
-    - rm pgbouncer-userlist.txt
     - kubectl rollout restart deployment appsemble-mailpit || true
     - helm upgrade appsemble appsemble/appsemble
       --debug
@@ -1691,6 +1797,7 @@ production:
       --set "ingress.clusterIssuer=acme-issuer-prod"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
+      --set "organizationSsoIssuers[0]=https://keycloak.d-centralize.nl/realms/d-centralize"
       --set "ingress.tls=true"
       --set "ingress.tlsSecretName=appsemble-tls"
       --set "ingress.tlsWildcardSecretName=appsemble-tls-wildcard"
@@ -1705,10 +1812,12 @@ production:
       --set "seaweedfs.allInOne.data.annotations.helm\\.sh/resource-policy=keep"
       --set "migrateDefinitions.save=true"
       --set "proxy=true"
+      --set "remote=null"
       --set "replicaCount=2"
       --set "prometheusRule.enabled=true"
       --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
       --set "sentry.environment=production"
+      --set "rejectBreachedPasswords=true"
       --set "sentry.secret=sentry"
       --set "quotas.appEmail.enabled=true"
       --set "quotas.appEmail.dailyLimit=10"
@@ -1727,7 +1836,6 @@ production:
       --set "valkey.auth.usersExistingSecret=valkey"
       --set "pgbouncer.enabled=true"
       --set "pgbouncer.replicaCount=2"
-      --set "pgbouncer.auth.existingSecret=pgbouncer-userlist"
       --set "valkey.resources.requests.cpu=100m"
       --set "valkey.resources.requests.memory=128Mi"
       --set "valkey.resources.limits.cpu=1"
@@ -1790,6 +1898,7 @@ provision staging:
     - staging
     - npm_ci
   script:
+    - export APPSEMBLE_CLIENT_CREDENTIALS="${STAGING_APPSEMBLE_CLIENT_CREDENTIALS:?Set STAGING_APPSEMBLE_CLIENT_CREDENTIALS}"
     - npm run scripts -- release "$INCREMENT" ${IDENTIFIER:+--identifier "$IDENTIFIER"}
     - npm run appsemble -- config set context staging
     - npm run appsemble -- config set remote https://appsemble.eu
@@ -1814,7 +1923,7 @@ provision production:
     - npm run appsemble -- config set context production
     - npm run appsemble -- config set remote https://appsemble.app
     - npm run appsemble -- config set ignore-conflict true
-    - npm run appsemble -- -vv block publish blocks/*
+    - npm run appsemble -- block publish blocks/*
     - apt-get update
     - apt-get install --yes git gnupg yq
     - ./scripts/publish-or-update-apps.sh --push-to-main production
@@ -1823,37 +1932,47 @@ provision production:
 #  Performance Stage                                                                               #
 ###################################################################################################
 
-#
-# --- Disabled for now ---
-#
-# lighthouse:
-#   interruptible: true
-#   stage: performance
-#   extends: .npm
-#   image: $CI_REGISTRY/appsemble/docker-node-chrome
-#   needs:
-#     - npm_ci
-#     - job: provision review
-#       optional: true
-#     - job: provision staging
-#       optional: true
-#     - job: provision production
-#       optional: true
-#   rules:
-#     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
-#     - if: $CI_COMMIT_TAG
-#   variables:
-#     APPSEMBLE_REVIEW_DOMAIN: 'appsemble.review'
-#     APPSEMBLE_STAGING_DOMAIN: 'appsemble.eu'
-#   script:
-#     - npm run scripts -- wait-for-ssl
-#     - npx -- lhci collect
-#     - npx -- lhci assert
-#   artifacts:
-#     expose_as: Lighthouse reports
-#     when: always
-#     paths:
-#       - .lighthouseci
+lighthouse:
+  extends: .appsemble service
+  stage: performance
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'staging'
+  # Performance scores depend on the machine, so run on the group's own runners rather than the
+  # shared ones. These runners may run other jobs at the same time, so only compare scores within
+  # one pipeline.
+  tags:
+    - dcentralize
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
+  allow_failure: true
+  script:
+    - printf '%s' "$APPSEMBLE_SSL_CRT_E2E" | base64 -d > /tmp/appsemble.crt
+    - export NODE_EXTRA_CA_CERTS=/tmp/appsemble.crt
+    - npm run appsemble -- config set context e2e
+    - npm run appsemble -- config set remote 'https://appsemble:9999'
+    - npm run scripts -- sync-object-storage-bucket import seeded-object-storage
+      --s3-host s3
+      --s3-port 8333
+      --s3-secure=false
+      --s3-bucket appsemble
+      --s3-access-key appsemble-server
+      --s3-secret-key appsemble-server-secret
+    - npm run scripts -- update-subscription --organizationId appsemble --subscriptionPlan enterprise
+    - npm ci --prefix config/lighthouse
+    - npm run appsemble -- app publish --resources apps/*
+    - |
+      APPSEMBLE_IP=$(getent ahostsv4 appsemble | awk 'NR == 1 { print $1 }')
+      for host in $(node -e 'fetch("https://appsemble:9999/api/apps").then((r) => r.json()).then((apps) => console.log(apps.map((app) => `${app.path}.${app.OrganizationId}.appsemble`).join("\n")))'); do
+        echo "$APPSEMBLE_IP $host" >> /etc/hosts
+        URL_ARGS="$URL_ARGS --url https://$host:9999"
+      done
+      config/lighthouse/node_modules/.bin/lhci collect $URL_ARGS
+    - config/lighthouse/node_modules/.bin/lhci assert
+  artifacts:
+    expose_as: Lighthouse reports
+    when: always
+    paths:
+      - .lighthouseci
 
 ###################################################################################################
 #  Cleanup Stage                                                                                  #
@@ -1869,6 +1988,10 @@ cleanup review environments:
     - if: $CI_COMMIT_BRANCH == 'main'
       when: manual
   allow_failure: true
+  # The review agent only serves jobs in a review/* environment.
+  environment:
+    name: review/cleanup
+    action: access
   variables:
     GIT_STRATEGY: fetch
   script:

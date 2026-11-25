@@ -44,6 +44,17 @@ describe('getAppScimUsers', () => {
     authorizeScim(scimToken);
   });
 
+  it.each([
+    { description: 'unset', scimToken: null },
+    { description: 'empty', scimToken: Buffer.alloc(0) },
+  ])('should reject SCIM requests while the token is $description', async ({ scimToken }) => {
+    await app.update({ scimToken });
+
+    const response = await request.get(`/api/apps/${app.id}/scim/Users`);
+
+    expect(response.status).toBe(401);
+  });
+
   it.todo('should return a SCIM user', async () => {
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
     const { AppMember } = await getAppDB(app.id);

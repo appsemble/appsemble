@@ -5,10 +5,16 @@ import {
 } from '@appsemble/types';
 
 export function checkOrganizationRoleOrganizationPermissions(
-  organizationRole: PredefinedOrganizationRole,
+  organizationRole: null | PredefinedOrganizationRole | readonly PredefinedOrganizationRole[],
   requiredPermissions: OrganizationPermission[],
 ): boolean {
-  return requiredPermissions.every((p) =>
-    predefinedOrganizationRolePermissions[organizationRole].includes(p),
+  const roles =
+    typeof organizationRole === 'string' ? [organizationRole] : (organizationRole ?? []);
+  const grantedPermissions = new Set(
+    roles.flatMap((role) => predefinedOrganizationRolePermissions[role]),
+  );
+  return (
+    roles.length > 0 &&
+    requiredPermissions.every((permission) => grantedPermissions.has(permission))
   );
 }

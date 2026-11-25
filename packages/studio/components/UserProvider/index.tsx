@@ -32,10 +32,9 @@ interface UserProviderProps {
  * The representation of an organization that the user is a member of.
  */
 export interface UserOrganization extends Organization {
-  /**
-   * The user’s role within the organization.
-   */
-  role: PredefinedOrganizationRole;
+  roles: PredefinedOrganizationRole[];
+  ssoRoles: PredefinedOrganizationRole[];
+  guest: boolean;
 }
 
 /**
@@ -50,7 +49,19 @@ export interface UserApp extends App {
 
 interface UserContext {
   login: (tokenResponse: TokenResponse) => void;
+
+  /**
+   * End the Studio session in this browser.
+   */
   logout: () => void;
+
+  /**
+   * Sign out on the user's request.
+   *
+   * A session from organization single sign-on also ends at the identity provider, which then
+   * returns to the Studio.
+   */
+  signOut: () => Promise<void>;
   userInfo: UserInfo;
   refreshUserInfo: () => Promise<void>;
   organizations: UserOrganization[];
@@ -77,51 +88,124 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
   });
   const accessTokenRef = useRef<string | null>(localStorage.access_token);
 
-  const refreshUserInfo = useCallback(async () => {
-    const { data } = await axios.get<UserInfo>('/api/users/current');
-    setSentryUser({ id: data.sub });
-    setUserInfo(data);
-  }, []);
-
-  const login = useCallback((response: TokenResponse) => {
+  const storeTokens = useCallback((response: TokenResponse) => {
     localStorage.access_token = response.access_token;
     localStorage.refresh_token = response.refresh_token;
     accessTokenRef.current = response.access_token;
     setTokenResponse(response);
   }, []);
 
-  const fetchOrganizations = useCallback(async () => {
-    const { data } = await axios.get<UserOrganization[]>('/api/users/current/organizations');
-    setOrganizations(data);
+  const login = useCallback(
+    (response: TokenResponse) => {
+      setInitialized(false);
+      storeTokens(response);
+    },
+    [storeTokens],
+  );
+
+  // The user info and organizations are published together, because pages behind a
+  // `ProtectedRoute` render as soon as the user info is set and may depend on the organizations.
+  // Responses for an access token that is no longer current are dropped, whether they succeed or
+  // fail: the session ended or was replaced while they were in flight, and a new token fetches the
+  // user again.
+  const fetchUser = useCallback(async () => {
+    const accessToken = accessTokenRef.current;
+    if (!accessToken) {
+      return;
+    }
+    const responses = Promise.all([
+      axios.get<UserInfo>('/api/users/current'),
+      axios.get<UserOrganization[]>('/api/users/current/organizations'),
+    ]);
+    await responses.catch(() => false);
+    if (accessTokenRef.current !== accessToken) {
+      return;
+    }
+    const [{ data: user }, { data: userOrganizations }] = await responses;
+    setOrganizations(userOrganizations);
+    setSentryUser({ id: user.sub });
+    setUserInfo(user);
   }, []);
 
-  const logout = useCallback(() => {
+  const clearSession = useCallback(() => {
     setSentryUser(null);
     setUserInfo(null);
     setOrganizations([]);
     accessTokenRef.current = null;
+  }, []);
+
+  // Resolves with the identity provider URL which ends an organization single sign-on session.
+  const logout = useCallback(() => {
+    const accessToken = accessTokenRef.current;
+    const endSessionUrl = accessToken
+      ? axios
+          .post<{ endSessionUrl?: string }>('/api/auth/logout', undefined, {
+            headers: { authorization: `Bearer ${accessToken}` },
+          })
+          .then(({ data }) => data.endSessionUrl)
+          .catch((): null => null)
+      : Promise.resolve(null);
+    clearSession();
     delete localStorage.access_token;
     delete localStorage.refresh_token;
-  }, []);
+    setTokenResponse((current) => (current.access_token || current.refresh_token ? {} : current));
+    return endSessionUrl;
+  }, [clearSession]);
+
+  const signOut = useCallback(async () => {
+    const endSessionUrl = await logout();
+    if (endSessionUrl) {
+      window.location.assign(endSessionUrl);
+    }
+  }, [logout]);
 
   const value = useMemo(
     () => ({
       login,
       logout,
+      signOut,
       userInfo,
-      refreshUserInfo,
+      refreshUserInfo: fetchUser,
       organizations,
       hasNoLoginMethods,
       setHasNoLoginMethods,
       setOrganizations,
     }),
-    [login, logout, userInfo, refreshUserInfo, organizations, hasNoLoginMethods],
+    [login, logout, signOut, userInfo, fetchUser, organizations, hasNoLoginMethods],
   );
+
+  useEffect(() => {
+    const synchronize = (event: StorageEvent): void => {
+      if (
+        event.storageArea !== localStorage ||
+        (event.key !== 'access_token' && event.key !== 'refresh_token' && event.key != null)
+      ) {
+        return;
+      }
+      const response = {
+        access_token: localStorage.access_token,
+        refresh_token: localStorage.refresh_token,
+      };
+      accessTokenRef.current = response.access_token;
+      setTokenResponse((current) =>
+        current.access_token === response.access_token &&
+        current.refresh_token === response.refresh_token
+          ? current
+          : response,
+      );
+    };
+    window.addEventListener('storage', synchronize);
+    return () => window.removeEventListener('storage', synchronize);
+  }, []);
 
   useEffect(() => {
     const interceptor = axios.interceptors.request.use((config) => {
       // Only add the authorization headers for internal requests.
-      if (config.url.startsWith('/') && accessTokenRef.current) {
+      if (
+        config.url.startsWith('/') &&
+        accessTokenRef.current &&
+        !config.headers.has('authorization')
+      ) {
         (config.headers as AxiosHeaders).set('authorization', `Bearer ${accessTokenRef.current}`);
       }
       return config;
@@ -133,7 +217,9 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
 
   useEffect(() => {
     if (!tokenResponse.access_token || !tokenResponse.refresh_token) {
-      logout();
+      // The tokens mirror the shared storage, where another tab may be halfway through storing a
+      // new pair, so only this tab signs out.
+      clearSession();
       setInitialized(true);
       return;
     }
@@ -143,14 +229,36 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     const { exp } = jwtDecode<JwtPayload>(tokenResponse.access_token);
     const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
     const refresh = async (): Promise<void> => {
-      try {
-        const { data } = await axios.post<TokenResponse>('/api/auth/refresh-token', {
-          refresh_token: tokenResponse.refresh_token,
-        });
-        login(data);
-      } catch {
-        logout();
-      }
+      const refreshStoredTokens = async (): Promise<void> => {
+        const accessToken = localStorage.access_token;
+        const refreshToken = localStorage.refresh_token;
+        if (!accessToken || !refreshToken) {
+          logout();
+          return;
+        }
+        const payload = jwtDecode<JwtPayload>(accessToken);
+        if (payload.exp * 1e3 - REFRESH_BUFFER > Date.now()) {
+          accessTokenRef.current = accessToken;
+          setTokenResponse({ access_token: accessToken, refresh_token: refreshToken });
+          return;
+        }
+        try {
+          const { data } = await axios.post<TokenResponse>('/api/auth/refresh-token', {
+            refresh_token: refreshToken,
+          });
+          if (localStorage.refresh_token === refreshToken) {
+            storeTokens(data);
+          }
+        } catch {
+          if (localStorage.refresh_token === refreshToken) {
+            logout();
+          }
+        }
+      };
+      // The Web Locks API is only available in secure contexts.
+      await (navigator.locks
+        ? navigator.locks.request('appsemble-studio-refresh', refreshStoredTokens)
+        : refreshStoredTokens());
     };
     const timeoutId = setTimeout(refresh, timeout);
 
@@ -158,7 +266,8 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     // refresh it before loading children.
     const waitForAccessToken = exp * 1e3 < Date.now() ? refresh : Promise.resolve.bind(Promise);
     waitForAccessToken()
-      .then(() => Promise.all([refreshUserInfo(), fetchOrganizations()]))
+      .then(fetchUser)
+      .catch(logout)
       .finally(() => {
         setInitialized(true);
       });
@@ -166,7 +275,7 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [fetchOrganizations, login, logout, tokenResponse, refreshUserInfo]);
+  }, [clearSession, fetchUser, logout, storeTokens, tokenResponse]);
 
   if (!initialized) {
     return <Loader />;

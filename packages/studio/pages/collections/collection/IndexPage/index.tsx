@@ -111,7 +111,7 @@ export function IndexPage({ collection }: IndexPageProps): ReactNode {
   const userOrganization = organizations?.find((org) => org.id === collection.OrganizationId);
   const mayEdit =
     userOrganization &&
-    checkOrganizationRoleOrganizationPermissions(userOrganization.role, [
+    checkOrganizationRoleOrganizationPermissions(userOrganization.roles, [
       OrganizationPermission.UpdateAppCollections,
     ]);
 

@@ -3,6 +3,7 @@ import { defaultLocale, normalizeLocale } from '@appsemble/utils';
 import { Decimal } from 'decimal.js';
 import tags from 'language-tags';
 import { PDFDocument, type PDFFont, type PDFPage, rgb, StandardFonts } from 'pdf-lib';
+import sharp from 'sharp';
 
 import { type Invoice } from '../models/main/Invoice.js';
 
@@ -12,7 +13,10 @@ async function generateHeader(
   font: PDFFont,
   invoiceTranslations: Record<string, string>,
 ): Promise<void> {
-  const logo = await readAsset('appsemble.png');
+  // Downscale the logo to print size, because pdf-lib re-encodes images in JavaScript.
+  const logo = await sharp(await readAsset('appsemble.png'))
+    .resize(200)
+    .toBuffer();
   const image = await doc.embedPng(logo);
   page.drawImage(image, {
     x: 50,

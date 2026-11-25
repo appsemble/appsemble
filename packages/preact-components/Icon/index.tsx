@@ -1,6 +1,6 @@
 import { type IconReference } from '@appsemble/lang-sdk';
 import { useBlock } from '@appsemble/preact';
-import { type BulmaSize } from '@appsemble/types';
+import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import { getIconSizeModifier, type IconSizeModifier } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
@@ -8,12 +8,18 @@ import { type ComponentPropsWithoutRef } from 'preact/compat';
 import { useState } from 'preact/hooks';
 
 import styles from './index.module.css';
+import { useIconContext } from '../IconProvider/index.js';
 
 interface IconProps extends Omit<ComponentPropsWithoutRef<'button'>, 'icon' | 'size'> {
   /**
    * The CSS class to apply to the icon.
    */
   readonly className?: string;
+
+  /**
+   * The Bulma text color of a Font Awesome icon. Custom icons keep their own colors.
+   */
+  readonly color?: BulmaColor;
 
   /**
    * The element to render as the `.icon` wrapper.
@@ -38,39 +44,51 @@ interface IconProps extends Omit<ComponentPropsWithoutRef<'button'>, 'icon' | 's
 
 /**
  * Display a Font Awesome icon or a custom icon from the app’s icon registry.
+ *
+ * Inside a block, icons resolve against the app using the block utils. Elsewhere, they resolve
+ * against the registry of the surrounding `IconProvider`.
  */
 export function Icon({
   className,
+  color,
   component: Component = 'span',
   icon,
   size,
   iconSize = getIconSizeModifier(size),
   ...props
 }: IconProps): VNode {
-  const {
-    utils: { fa, resolveIcon },
-  } = useBlock();
-  const [failedUrl, setFailedUrl] = useState<string>();
-  const resolved = resolveIcon(icon);
+  const block = useBlock();
+  const iconContext = useIconContext();
+  const utils = block?.utils ?? iconContext;
+  const [failedUrls, setFailedUrls] = useState<string[]>([]);
+  if (!utils) {
+    throw new Error('Icon must be rendered inside a block or an IconProvider');
+  }
+  const resolved = utils.resolveIcon(icon);
+  const src =
+    resolved.type === 'asset'
+      ? [resolved.url, resolved.fallbackUrl].find((url) => url && !failedUrls.includes(url))
+      : undefined;
 
   return (
     <Component
       className={classNames('icon', size && `is-${size}`, className, {
         [styles.asset]: resolved.type === 'asset',
+        [`has-text-${color}`]: color && resolved.type !== 'asset',
       })}
       {...props}
     >
       {resolved.type === 'fontawesome' ? (
-        <i className={classNames(fa(resolved.name), iconSize && `fa-${iconSize}`)} />
+        <i className={classNames(utils.fa(resolved.name), iconSize && `fa-${iconSize}`)} />
       ) : null}
-      {resolved.type === 'asset' && resolved.url !== failedUrl ? (
+      {src ? (
         // The error handler only tracks loading failures, it doesn’t make the image interactive.
         // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
         <img
           alt=""
           className={styles.image}
-          onError={() => setFailedUrl(resolved.url)}
-          src={resolved.url}
+          onError={() => setFailedUrls((urls) => [...urls, src])}
+          src={src}
         />
       ) : null}
     </Component>

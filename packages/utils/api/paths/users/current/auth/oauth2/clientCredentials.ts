@@ -18,11 +18,22 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     },
     responses: {
       201: {
-        description: 'The newly created client credentials',
+        description:
+          'The newly created client credentials. For an organization SSO session, the identity provider URL which authorizes offline access for them instead; the sign-in callback then creates them.',
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/OAuth2ClientCredentials',
+              oneOf: [
+                { $ref: '#/components/schemas/OAuth2ClientCredentials' },
+                {
+                  type: 'object',
+                  required: ['authorizationUrl', 'organizationId'],
+                  properties: {
+                    authorizationUrl: { type: 'string', format: 'uri' },
+                    organizationId: { type: 'string' },
+                  },
+                },
+              ],
             },
           },
         },

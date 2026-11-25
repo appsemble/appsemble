@@ -53,4 +53,29 @@ export const messages = defineMessages({
     id: 'studio.RBzBwp',
     defaultMessage: '{member} was successfully removed from the app',
   },
+  totpEnabled: {
+    id: 'studio.V52jNn',
+    defaultMessage: 'Enabled',
+  },
+  totpDisabled: {
+    id: 'studio.xm/SXL',
+    defaultMessage: 'Not set up',
+  },
+  resetTotp: {
+    id: 'studio.nvviYo',
+    defaultMessage: 'Reset TOTP',
+  },
+  resetTotpConfirmationBody: {
+    id: 'studio.Vzcgwf',
+    defaultMessage:
+      'Are you sure you want to reset the TOTP of {member}? They will be signed out on all devices within an hour.',
+  },
+  resetTotpSuccess: {
+    id: 'studio.gpcKdF',
+    defaultMessage: 'The TOTP of {member} was reset',
+  },
+  resetTotpError: {
+    id: 'studio.gGdza6',
+    defaultMessage: 'Something went wrong when trying to reset the TOTP of {member}',
+  },
 });

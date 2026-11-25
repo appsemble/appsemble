@@ -7,6 +7,7 @@
     "pages.person-registration-form": "Person Registration Form"
   },
   "messageIds": {
+    "addPerson": "Add person",
     "description": "Description",
     "email": "Email",
     "firstName": "First name",

@@ -239,7 +239,8 @@ These tests are intended to test preact/react components in isolation and focus 
 They are mainly written for the `@appsemble/preact-components` and `@appsemble/react-components`
 packages.
 
-We use `@testing-library/preact` and `@testing-library/react` with `vitest`.
+We use `@testing-library/preact` for the app and Preact components, and `@testing-library/react` for
+the studio and React components, with `vitest`.
 
 To see an example of how to write these tests, check an existing test in the repo (e.g. in
 `packages/preact-components/Button/index.test.tsx`) and/or read the documentation of the testing
@@ -683,9 +684,9 @@ Examples:
 Only stable tags (`x.y.z`) and `test` prerelease tags deploy to production; other prerelease tags
 skip the production jobs.
 
-> **Note**: Migrations are still added manually. Make sure the release matches any new migrations.
-> For example, if you’re releasing version `1.2.3`, make sure existing migrations in
-> `./packages/server/migrations/` are no higher than `1.2.3`.
+> **Note**: Add migrations manually with unique keys higher than existing keys in the same
+> directory. Database upgrades apply all migrations bundled with the release. Pass an explicit
+> migration key to `appsemble migrate` to target an earlier schema.
 
 [dnsmasq]: http://www.thekelleys.org.uk/dnsmasq/doc.html
 [keep a changelog]: https://keepachangelog.com/en/1.0.0

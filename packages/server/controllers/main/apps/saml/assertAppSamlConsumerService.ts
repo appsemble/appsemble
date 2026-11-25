@@ -1,4 +1,4 @@
-import { assertKoaCondition, logger } from '@appsemble/node-utils';
+import { assertKoaCondition, getSSRFProtectedAgents, logger } from '@appsemble/node-utils';
 import { type SAMLStatus } from '@appsemble/types';
 import { wrapPem } from '@appsemble/utils';
 import { DOMParser, type Element as XmlElement, type Node as XmlNode } from '@xmldom/xmldom';
@@ -50,7 +50,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   assertKoaCondition(
-    await checkAppSecurityPolicy(app, authSubject?.id),
+    await checkAppSecurityPolicy(app, authSubject?.id, ctx),
     ctx,
     401,
     'User is not allowed to login due to the app’s security policy',
@@ -103,7 +103,10 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   let idpCertificate: string;
   if (appSamlSecret.entityId) {
     try {
-      const { data } = await axios.get<string>(appSamlSecret.entityId);
+      const { data } = await axios.get<string>(
+        appSamlSecret.entityId,
+        await getSSRFProtectedAgents({ hostname: new URL(appSamlSecret.entityId).hostname }),
+      );
       const metadata = parser.parseFromString(data, 'application/xml');
       const cert = x('X509Certificate', NS.ds, metadata)?.textContent;
       if (cert) {
@@ -218,6 +221,12 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
 
   let appMember: AppMember | null = null;
   const location = new URL(loginRequest.redirectUri);
+  const denyNoRoleMatch = (): void => {
+    location.searchParams.set('error', 'access_denied');
+    location.searchParams.set('error_description', 'noRoleMatch');
+    location.searchParams.set('state', loginRequest.state);
+    ctx.redirect(String(location));
+  };
 
   switch (true) {
     case app.scimEnabled:
@@ -239,11 +248,11 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
       appMember = authorization?.AppMember ?? null;
       if (shouldSyncRoleMappings && appMember && !resolvedRoleMappings.length) {
         await syncLoginRoleMappings(AppMemberAssignedRole, appMember, []);
-        return prompt('noRoleMatch');
+        return denyNoRoleMatch();
       }
 
       if (!appMember && shouldSyncRoleMappings && !resolvedRoleMappings.length) {
-        return prompt('noRoleMatch');
+        return denyNoRoleMatch();
       }
 
       if (appMember) {
@@ -286,7 +295,7 @@ export async function assertAppSamlConsumerService(ctx: Context): Promise<void> 
   if (appMember && shouldSyncRoleMappings) {
     if (!resolvedRoleMappings.length) {
       await syncLoginRoleMappings(AppMemberAssignedRole, appMember, []);
-      return prompt('noRoleMatch');
+      return denyNoRoleMatch();
     }
 
     await syncLoginRoleMappings(AppMemberAssignedRole, appMember, resolvedRoleMappings);

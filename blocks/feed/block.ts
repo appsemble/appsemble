@@ -136,6 +136,11 @@ declare module '@appsemble/sdk' {
     anonymousLabel: never;
 
     /**
+     * The text of the button when no `buttonLabel` is set.
+     */
+    buttonLabel: never;
+
+    /**
      * The error message shown when an error occurs while submitting a reply.
      */
     replyErrorMessage: never;
@@ -228,6 +233,15 @@ declare module '@appsemble/sdk' {
      * The title displayed on the card.
      */
     title?: Remapper;
+
+    /**
+     * The heading level of the title.
+     *
+     * The subtitle and the reply authors use the levels below it, down to 6.
+     *
+     * @default 4
+     */
+    titleLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 
     /**
      * The subtitle displayed on the card.

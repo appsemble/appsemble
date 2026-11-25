@@ -103,11 +103,16 @@ import { OAuthAuthorization } from './main/OAuthAuthorization.js';
 import { Organization } from './main/Organization.js';
 import { OrganizationInvite } from './main/OrganizationInvite.js';
 import { OrganizationMember } from './main/OrganizationMember.js';
+import { OrganizationSso } from './main/OrganizationSso.js';
+import { OrganizationSsoDomain } from './main/OrganizationSsoDomain.js';
+import { OrganizationSsoIdentity } from './main/OrganizationSsoIdentity.js';
+import { OrganizationSsoSession } from './main/OrganizationSsoSession.js';
 import { OrganizationSubscription } from './main/OrganizationSubscription.js';
 import { ResetPasswordToken } from './main/ResetPasswordToken.js';
 import { Theme } from './main/Theme.js';
 import { TrainingCompleted } from './main/TrainingCompleted.js';
 import { User } from './main/User.js';
+import { UserAppAccount } from './main/UserAppAccount.js';
 import { migrations } from '../migrations/apps/index.js';
 import { argv } from '../utils/argv.js';
 import { decrypt } from '../utils/crypto.js';
@@ -167,6 +172,10 @@ export {
   Organization,
   OrganizationInvite,
   OrganizationMember,
+  OrganizationSso,
+  OrganizationSsoDomain,
+  OrganizationSsoIdentity,
+  OrganizationSsoSession,
   ResetPasswordToken,
   type ResourceVersion,
   OrganizationSubscription,
@@ -179,6 +188,7 @@ export {
   Theme,
   type SamlLoginRequest,
   User,
+  UserAppAccount,
   TrainingCompleted,
   type Resource,
 };
@@ -230,9 +240,14 @@ export function initDB({
       Organization,
       OrganizationInvite,
       OrganizationMember,
+      OrganizationSso,
+      OrganizationSsoDomain,
+      OrganizationSsoIdentity,
+      OrganizationSsoSession,
       ResetPasswordToken,
       Theme,
       User,
+      UserAppAccount,
       TrainingCompleted,
     ],
     ...(schema

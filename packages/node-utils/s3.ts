@@ -104,7 +104,9 @@ export function initS3Client({
       // S3-compatible stores that do not implement flexible checksums.
       requestChecksumCalculation: 'WHEN_REQUIRED',
       responseChecksumValidation: 'WHEN_REQUIRED',
-      ...(socketTimeout && { requestHandler: { socketTimeout } }),
+      // Without a connection timeout, each attempt to reach an unreachable object store lasts
+      // until the operating system gives up on it, which takes minutes.
+      requestHandler: { connectionTimeout: 10_000, socketTimeout },
     });
     // S3 requires a checksum on DeleteObjects. The SDK sends CRC32, which object stores from
     // before the flexible checksums reject in favour of Content-MD5.
@@ -133,15 +135,36 @@ export function getS3Bucket(): string | undefined {
   return s3Bucket;
 }
 
-function getAppAssetsBucket(appId: number): string {
-  return s3Bucket ?? `app-${appId}`;
+/**
+ * The app that owns an asset.
+ */
+export interface AssetOwner {
+  id: number;
+
+  /**
+   * The pre-provisioned bucket that holds all assets of this app, overriding the layout.
+   */
+  s3Bucket?: string | null;
 }
 
-export function getAppAssetLocation(appId: number, assetId: string): S3Location {
+function getAppAssetsBucket(app: AssetOwner): string {
+  return app.s3Bucket ?? s3Bucket ?? `app-${app.id}`;
+}
+
+export function getAppAssetLocation(app: AssetOwner, assetId: string): S3Location {
   return {
-    bucket: getAppAssetsBucket(appId),
-    key: s3Bucket ? `apps/${appId}/${assetId}` : assetId,
+    bucket: getAppAssetsBucket(app),
+    key: s3Bucket && !app.s3Bucket ? `apps/${app.id}/${assetId}` : assetId,
   };
+}
+
+/**
+ * @param name The name of a bucket.
+ * @returns Whether the server names this bucket itself: the single bucket, the block assets bucket
+ *   or an app’s default bucket. No app may name it as its own bucket.
+ */
+export function isLayoutBucket(name: string): boolean {
+  return name === s3Bucket || name === blockAssetsBucketName || /^app-\d+$/.test(name);
 }
 
 export function getBlockAssetLocation(storageKey: string): S3Location {
@@ -155,7 +178,8 @@ export function isS3ErrorCode(error: unknown, code: string): boolean {
 }
 
 async function ensureBucket(name: string): Promise<void> {
-  if (s3Bucket) {
+  // An app's own bucket is provisioned by its owner and never created by the server.
+  if (s3Bucket || !isLayoutBucket(name)) {
     return;
   }
   try {
@@ -246,7 +270,12 @@ export async function uploadS3File(
     await ensureBucket(bucket);
     await putObject(bucket, key, content, size, metadata);
   } catch (error) {
-    if (isS3ErrorCode(error, 'NoSuchBucket') && !s3Bucket && !(content instanceof Readable)) {
+    if (
+      isS3ErrorCode(error, 'NoSuchBucket') &&
+      !s3Bucket &&
+      isLayoutBucket(bucket) &&
+      !(content instanceof Readable)
+    ) {
       logger.warn(error);
       await ensureBucket(bucket);
       await putObject(bucket, key, content, size, metadata);
@@ -268,26 +297,13 @@ export async function uploadS3FileFromPath(
 }
 
 export async function getS3File(bucket: string, key: string): Promise<Readable> {
-  try {
-    const { Body } = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
-    return Body as Readable;
-  } catch (error) {
-    logger.error(error);
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
-    return null;
-  }
+  const { Body } = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+  return Body as Readable;
 }
 
 export async function getS3FileBuffer(bucket: string, key: string): Promise<Buffer> {
-  try {
-    const stream = await getS3File(bucket, key);
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
-    return stream ? streamToBuffer(stream) : null;
-  } catch (error) {
-    logger.error(error);
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks) - Severe
-    return null;
-  }
+  const { Body } = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+  return streamToBuffer(Body as Readable);
 }
 
 export async function getS3FileStats(bucket: string, key: string): Promise<S3FileStats> {
@@ -387,10 +403,10 @@ export async function deleteS3File(bucket: string, key: string): Promise<void> {
   await deleteS3Files(bucket, [key]);
 }
 
-export async function deleteAppAssetObjects(appId: number, assetIds: string[]): Promise<void> {
+export async function deleteAppAssetObjects(app: AssetOwner, assetIds: string[]): Promise<void> {
   await deleteS3Files(
-    getAppAssetsBucket(appId),
-    assetIds.map((assetId) => getAppAssetLocation(appId, assetId).key),
+    getAppAssetsBucket(app),
+    assetIds.map((assetId) => getAppAssetLocation(app, assetId).key),
   );
 }
 

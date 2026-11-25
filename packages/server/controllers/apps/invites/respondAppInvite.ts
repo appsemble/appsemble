@@ -7,6 +7,7 @@ import { type Context } from 'koa';
 import { App, getAppDB } from '../../../models/index.js';
 import { getAppUrl } from '../../../utils/app.js';
 import { normalizeAppMemberRoles } from '../../../utils/appMember.js';
+import { assertPasswordNotBreached } from '../../../utils/breachedPassword.js';
 
 export async function respondAppInvite(ctx: Context): Promise<void> {
   const {
@@ -30,6 +31,7 @@ export async function respondAppInvite(ctx: Context): Promise<void> {
       where: { email: invite.email },
     });
 
+    await assertPasswordNotBreached(ctx, password);
     const hashedPassword = await hash(password, 10);
     const key = randomBytes(40).toString('hex');
     const roles = existingAppMember

@@ -41,9 +41,12 @@ spec:
 {{ include "appsemble.postgres" . | indent 12 }}
 {{ include "appsemble.s3" . | indent 12 }}
 {{ include "appsemble.sentry" . | indent 12 }}
+{{ include "appsemble.trustedCaBundle.env" . | indent 12 }}
           volumeMounts:
             - name: tmp-volume
               mountPath: /tmp
+{{ include "appsemble.trustedCaBundle.volumeMount" . | indent 12 }}
       volumes:
         - name: tmp-volume
           emptyDir: {}
+{{ include "appsemble.trustedCaBundle.volume" . | indent 8 }}

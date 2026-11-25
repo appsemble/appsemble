@@ -39,12 +39,14 @@ services:
       S3_SECURE: 'false'
       S3_ACCESS_KEY: *s3-access-key
       S3_SECRET_KEY: *s3-secret-key
+      # Copy the block versions that apps use and this server lacks from appsemble.app.
+      REMOTE: https://appsemble.app
     ports:
       # Expose Appsemble at port 8000.
       - '8000:9999'
 
   postgresql:
-    image: postgres:15
+    image: postgres:18
     networks:
       - appsemble
     restart: always
@@ -53,7 +55,7 @@ services:
       POSTGRES_USER: *database-user
       POSTGRES_PASSWORD: *database-password
     volumes:
-      - $HOME/.local/share/appsemble-postgresql:/var/lib/postgresql/data
+      - $HOME/.local/share/appsemble-postgresql:/var/lib/postgresql
     ports:
       - '5432:5432'
 

@@ -302,6 +302,7 @@ export async function revokeAppMemberRefreshSession(
 export async function revokeAppMemberRefreshSessionsForMember(
   appId: number,
   sub: string,
+  transaction?: Transaction,
 ): Promise<void> {
   const { AppMemberRefreshSession } = await getAppDB(appId);
   await AppMemberRefreshSession.destroy({
@@ -309,5 +310,6 @@ export async function revokeAppMemberRefreshSessionsForMember(
       aud: `app:${appId}`,
       sub,
     },
+    transaction,
   });
 }

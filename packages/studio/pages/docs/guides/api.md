@@ -15,6 +15,15 @@ Appsemble client credentials can be registered under
 [client credentials](/settings/client-credentials) in user settings. Registering client users will
 output the client id and client secret as `client_id:client_secret`.
 
+Personal client credentials act as the user who registered them. For CI pipelines and other
+automation on behalf of an organization, use the client credentials of a
+[service account](../studio/service-accounts.md).
+
+When you sign in through your organization's [single sign-on](../studio/organizations.mdx), the
+identity provider authorizes new personal client credentials for offline access. They keep working
+after you sign out, until the provider ends that authorization; the client credentials settings then
+show that you need to register new ones.
+
 The client credentials may be used to request an access token. They need to be joined using a colon
 (`:`) and encoded as base64.
 
@@ -67,7 +76,7 @@ Content-Disposition: form-data; name="app"
       "blocks": [
         {
           "type": "action-button",
-          "version": "0.40.5",
+          "version": "0.42.0",
           "parameters": {
             "icon": "plus"
           },

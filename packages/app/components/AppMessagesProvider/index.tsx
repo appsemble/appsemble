@@ -1,27 +1,22 @@
 import { defaultLocale, type IntlMessage, type MessageGetter } from '@appsemble/lang-sdk';
-import { Content, Loader, Message, useLocationString } from '@appsemble/react-components';
+import { Content, Message } from '@appsemble/preact-components';
 import { type AppMessages } from '@appsemble/types';
 import { detectLocale, has, objectCache } from '@appsemble/utils';
 import { memoize } from '@formatjs/fast-memoize';
 import axios from 'axios';
 import { type Formatters, IntlMessageFormat } from 'intl-messageformat';
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import { IntlProvider } from 'react-intl';
-import { useNavigate, useParams } from 'react-router-dom';
+import { type ComponentChildren, createContext, type VNode } from 'preact';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/hooks';
+import { useLocation, useParams } from 'wouter-preact';
 
+import { IntlProvider } from '../IntlProvider/index.js';
+import { Loader } from '../Loader/index.js';
 import { apiUrl, appId, languages } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useLocationString } from '../../utils/useLocationString.js';
 
 interface IntlMessagesProviderProps {
-  readonly children: ReactNode;
+  readonly children: ComponentChildren;
 }
 
 interface AppMessageContext {
@@ -55,9 +50,9 @@ const formatters = {
   ),
 } as Formatters;
 
-export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactNode {
+export function AppMessagesProvider({ children }: IntlMessagesProviderProps): VNode {
   const { definition } = useAppDefinition();
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   const redirect = useLocationString();
   const { lang } = useParams<{ lang: string }>();
 
@@ -72,8 +67,6 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
     if (lang === defaultLanguage || languages.includes(lang)) {
       return;
     }
@@ -86,8 +79,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
       defaultLanguage;
     if (lang) {
       // Someone got linked to a page without a language tag. Redirect them to the same page, but
-      // with language set, whichever language the page segment is in. This is especially important
-      // for the OAuth2 callback URL. An unknown page falls back to the default page.
+      // with language set. This is especially important for the OAuth2 callback URL.
       navigate(`/${detected}${redirect}`, { replace: true });
     } else {
       navigate(`/${detected}`, { replace: true });
@@ -96,14 +88,11 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;
-    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-    // (strictNullChecks)
     if (lang !== defaultLanguage && !languages.includes(lang)) {
       document.documentElement.lang = defaultLocale;
       return;
     }
 
-    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     document.documentElement.lang = lang;
     // A response for a language the user has already navigated away from is discarded, so the
     // routes never run against the messages of another language.
@@ -173,6 +162,8 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     [getMessage, getAppMessage, getBlockMessage, lang, messagesLanguage],
   );
 
+  const intlMessages = useMemo(() => ({ ...messages?.core, ...messages?.app }), [messages]);
+
   if (messagesLoading) {
     return <Loader />;
   }
@@ -188,13 +179,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   return (
     // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
     <Context.Provider value={value}>
-      <IntlProvider
-        defaultLocale={defaultLocale}
-        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-        locale={lang}
-        // @ts-expect-error 18048 variable is possibly undefined (strictNullChecks)
-        messages={{ ...messages.core, ...messages.app }}
-      >
+      <IntlProvider locale={lang} messages={intlMessages}>
         {children}
       </IntlProvider>
     </Context.Provider>

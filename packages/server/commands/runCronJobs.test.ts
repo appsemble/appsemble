@@ -5,7 +5,7 @@ import { type AddressInfo, createServer, type Server } from 'node:net';
 import { fileURLToPath } from 'node:url';
 
 import { getAppAssetLocation, uploadS3File } from '@appsemble/node-utils';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App, getAppDB, getDB, Organization } from '../models/index.js';
 
@@ -72,6 +72,79 @@ function startSmtpStub(): Promise<SmtpStub> {
       resolve({
         port: (server.address() as AddressInfo).port,
         messages,
+        close: () =>
+          new Promise((done) => {
+            server.close(() => done());
+          }),
+      });
+    });
+  });
+}
+
+interface ImapStub {
+  port: number;
+  connections: number;
+  appended: [mailbox: string, message: string][];
+  close: () => Promise<void>;
+}
+
+/**
+ * Listen for IMAP connections on a random local port.
+ *
+ * The stub accepts every command and records the mailbox and raw message of every APPEND.
+ *
+ * @returns The stub's port, its number of connections, the appended messages and a function to
+ *   stop listening.
+ */
+function startImapStub(): Promise<ImapStub> {
+  const appended: ImapStub['appended'] = [];
+  let connections = 0;
+  const server: Server = createServer((socket) => {
+    connections += 1;
+    let buffer = '';
+    let append: { tag: string; mailbox: string; size: number } | undefined;
+    socket.on('error', () => null);
+    socket.write('* OK IMAP4rev1 ready\r\n');
+    socket.on('data', (chunk: Buffer) => {
+      // Latin-1 decodes one character per byte, so string lengths match IMAP literal sizes.
+      buffer += chunk.toString('latin1');
+      for (;;) {
+        if (append) {
+          // The literal is followed by the CRLF that ends the APPEND command.
+          if (buffer.length < append.size + 2) {
+            return;
+          }
+          appended.push([append.mailbox, buffer.slice(0, append.size)]);
+          buffer = buffer.slice(append.size + 2);
+          socket.write(`${append.tag} OK APPEND completed\r\n`);
+          append = undefined;
+        } else {
+          const newline = buffer.indexOf('\r\n');
+          if (newline === -1) {
+            return;
+          }
+          const line = buffer.slice(0, newline);
+          buffer = buffer.slice(newline + 2);
+          const [tag, command, mailbox] = line.split(' ');
+          const literal = /{(\d+)}$/.exec(line);
+          if (literal) {
+            append = { tag, mailbox: mailbox.replaceAll('"', ''), size: Number(literal[1]) };
+            socket.write('+ Ready\r\n');
+          } else {
+            socket.write(`${tag} OK ${command} completed\r\n`);
+          }
+        }
+      }
+    });
+  });
+  return new Promise((resolve) => {
+    server.listen(0, '127.0.0.1', () => {
+      resolve({
+        port: (server.address() as AddressInfo).port,
+        get connections() {
+          return connections;
+        },
+        appended,
         close: () =>
           new Promise((done) => {
             server.close(() => done());
@@ -168,7 +241,7 @@ describe('run-cronjobs', () => {
       mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     });
     const content = Buffer.from('cron attachment');
-    const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+    const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
     await uploadS3File(bucket, key, content);
 
     await runCronJobs(smtp.port);
@@ -177,4 +250,93 @@ describe('run-cronjobs', () => {
     expect(smtp.messages[0]).toContain('filename=format-print.docx');
     expect(smtp.messages[0]).toContain(content.toString('base64'));
   }, 60_000);
+
+  it('should run the remaining cron jobs of an app after one of them fails', async () => {
+    const job = (subject: string): unknown => ({
+      schedule: '* * * * *',
+      action: {
+        type: 'email',
+        to: 'recipient@example.com',
+        subject,
+        body: 'This cron job fails after sending its email.',
+        onSuccess: { type: 'throw', remapBefore: { static: 'Cron job failure' } },
+      },
+    });
+    await App.create({
+      OrganizationId: 'testorg',
+      path: 'cron-app',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+      definition: {
+        name: 'Cron App',
+        defaultPage: '',
+        pages: [],
+        cron: { first: job('First'), second: job('Second') },
+      },
+    } as Partial<App>);
+
+    await runCronJobs(smtp.port);
+
+    expect(smtp.messages).toHaveLength(2);
+  }, 60_000);
+
+  describe('with an IMAP server', () => {
+    let imap: ImapStub;
+
+    beforeEach(async () => {
+      imap = await startImapStub();
+      await App.create({
+        OrganizationId: 'testorg',
+        path: 'cron-app',
+        vapidPrivateKey: '',
+        vapidPublicKey: '',
+        definition: {
+          name: 'Cron App',
+          defaultPage: '',
+          pages: [],
+          cron: {
+            nightly: {
+              schedule: '* * * * *',
+              action: {
+                type: 'email',
+                to: 'recipient@example.com',
+                subject: 'Nightly report',
+                body: 'The report is ready.',
+              },
+            },
+          },
+        },
+      } as Partial<App>);
+      // The Helm chart configures IMAP through environment variables.
+      vi.stubEnv('IMAP_HOST', '127.0.0.1');
+      vi.stubEnv('IMAP_PORT', String(imap.port));
+      vi.stubEnv('IMAP_SECURE', 'false');
+      vi.stubEnv('IMAP_USER', 'imap-user');
+      vi.stubEnv('IMAP_PASS', 'imap-pass');
+    });
+
+    afterEach(async () => {
+      vi.unstubAllEnvs();
+      await imap.close();
+    });
+
+    it('should not copy sent emails to the sent folder if IMAP_COPY_TO_SENT_FOLDER is false', async () => {
+      vi.stubEnv('IMAP_COPY_TO_SENT_FOLDER', 'false');
+
+      await runCronJobs(smtp.port);
+
+      expect(smtp.messages).toHaveLength(1);
+      expect(imap.connections).toBe(0);
+    }, 60_000);
+
+    it('should copy sent emails to the sent folder if IMAP_COPY_TO_SENT_FOLDER is true', async () => {
+      vi.stubEnv('IMAP_COPY_TO_SENT_FOLDER', 'true');
+
+      await runCronJobs(smtp.port);
+
+      expect(imap.appended).toStrictEqual([
+        ['Sent', expect.stringContaining('Subject: Nightly report')],
+      ]);
+    }, 60_000);
+  });
 });

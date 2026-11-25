@@ -38,6 +38,7 @@ s3:
   bucket: ''
   region: us-east-1
   pathStyle: true
+  appBucketPrefix: ''
 
 dns:
   provider: ''
@@ -96,6 +97,8 @@ tolerations: []
 
 affinity: {}
 
+hostAliases: []
+
 smtpSecret: smtp
 
 imapSecret: imap
@@ -105,6 +108,12 @@ adminApiSecret: admin-api-secret
 sentry: null
 
 oauthSecret: null
+
+organizationSso: {}
+
+organizationSsoIssuers: []
+
+provision: null
 
 secretSecret: appsemble
 
@@ -166,19 +175,16 @@ slowQueryThreshold: 100
 appServingCacheTtl: 300
 
 pgbouncer:
-  # Requires the pgbouncer.auth.existingSecret userlist secret to exist before enabling.
   enabled: false
   # Above 1, the replicas spread across nodes and a PodDisruptionBudget keeps one available.
   replicaCount: 1
   image:
-    repository: edoburu/pgbouncer
-    tag: v1.26.0-p0
+    repository: ghcr.io/cloudnative-pg/pgbouncer
+    tag: 1.26.1-202611121015-trixie
     pullPolicy: IfNotPresent
   service:
     port: 6432
   auth:
-    existingSecret: pgbouncer-userlist
-    userlistKey: userlist.txt
     type: scram-sha-256
   resources:
     requests:
@@ -209,9 +215,23 @@ pgbouncer:
   # The server connection budget across all replicas; each replica gets an equal share.
   maxUserConnections: 80
 
-remote: null
+remote: https://appsemble.app
+
+syncOrganizationBlocks: []
 
 securityEmail: security@appsemble.com
+
+verbosity: 0
+
+rejectBreachedPasswords: false
+
+ssrfAllowIpAddressList: []
+
+trustedCaBundle:
+  configMap: ''
+  key: ca-bundle.crt
+
+disableRegistration: false
 
 quotas:
   appEmail:
@@ -220,6 +240,7 @@ quotas:
     alertOrganizationOwner: false
 
 mailpit:
+  enabled: true
   mailpit:
     smtp:
       tls:

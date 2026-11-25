@@ -1,10 +1,19 @@
 import { type IconRegistry } from '@appsemble/lang-sdk';
 import { describe, expect, it } from 'vitest';
 
-import { createIconElement, getIconAssetUrl, getIconSizeModifier, resolveIcon } from './icon.js';
+import {
+  type AssetIcon,
+  createIconElement,
+  getIconAsset,
+  getIconSizeModifier,
+  resolveIcon,
+} from './icon.js';
 
 const registry: IconRegistry = { logo: { asset: 'company-logo' } };
-const getAssetUrl = (asset: string): string => `https://example.com/assets/${asset}`;
+const getAsset = (asset: string): AssetIcon => ({
+  type: 'asset',
+  url: `https://example.com/assets/${asset}`,
+});
 
 describe('getIconSizeModifier', () => {
   it('should prefer an explicit icon size', () => {
@@ -23,41 +32,65 @@ describe('getIconSizeModifier', () => {
   });
 });
 
-describe('getIconAssetUrl', () => {
-  it('should build the asset URL of the app', () => {
-    expect(getIconAssetUrl('https://example.com', 42, 'company-logo')).toBe(
-      'https://example.com/api/apps/42/assets/company-logo',
-    );
+describe('getIconAsset', () => {
+  it('should address the asset by name', () => {
+    expect(getIconAsset('https://example.com', 42, 'company-logo')).toStrictEqual({
+      type: 'asset',
+      url: 'https://example.com/api/apps/42/assets/company-logo',
+    });
   });
 
   it('should encode the asset name', () => {
-    expect(getIconAssetUrl('https://example.com', 42, 'a b/c')).toBe(
+    expect(getIconAsset('https://example.com', 42, 'a b/c').url).toBe(
       'https://example.com/api/apps/42/assets/a%20b%2Fc',
     );
+  });
+
+  it('should address the asset by id with the name as fallback when its id is known', () => {
+    expect(
+      getIconAsset('https://example.com', 42, 'company-logo', {
+        'company-logo': '0f2793d9-e819-4b5c-9d4e-2a1f0c3b7e61',
+      }),
+    ).toStrictEqual({
+      type: 'asset',
+      url: 'https://example.com/api/apps/42/assets/0f2793d9-e819-4b5c-9d4e-2a1f0c3b7e61',
+      fallbackUrl: 'https://example.com/api/apps/42/assets/company-logo',
+    });
+  });
+
+  it('should address the asset by name when its id is unknown', () => {
+    expect(getIconAsset('https://example.com', 42, 'company-logo', {})).toStrictEqual({
+      type: 'asset',
+      url: 'https://example.com/api/apps/42/assets/company-logo',
+    });
+    expect(getIconAsset('https://example.com', 42, 'constructor', {})).toStrictEqual({
+      type: 'asset',
+      url: 'https://example.com/api/apps/42/assets/constructor',
+    });
   });
 });
 
 describe('resolveIcon', () => {
   it('should pass through Font Awesome names', () => {
-    expect(resolveIcon('home', registry, getAssetUrl)).toStrictEqual({
+    expect(resolveIcon('home', registry, getAsset)).toStrictEqual({
       type: 'fontawesome',
       name: 'home',
     });
   });
 
   it('should resolve registry references to asset URLs', () => {
-    expect(resolveIcon('icon:logo', registry, getAssetUrl)).toStrictEqual({
+    expect(resolveIcon('icon:logo', registry, getAsset)).toStrictEqual({
       type: 'asset',
       url: 'https://example.com/assets/company-logo',
     });
   });
 
   it('should be invalid for unknown keys', () => {
-    expect(resolveIcon('icon:missing', registry, getAssetUrl)).toStrictEqual({ type: 'invalid' });
+    expect(resolveIcon('icon:missing', registry, getAsset)).toStrictEqual({ type: 'invalid' });
   });
 
   it('should be invalid without a registry', () => {
-    expect(resolveIcon('icon:logo', undefined, getAssetUrl)).toStrictEqual({ type: 'invalid' });
+    expect(resolveIcon('icon:logo', undefined, getAsset)).toStrictEqual({ type: 'invalid' });
   });
 
   it('should be invalid without a URL resolver', () => {
@@ -65,8 +98,8 @@ describe('resolveIcon', () => {
   });
 
   it('should be invalid for malformed references', () => {
-    expect(resolveIcon('icon:Bad Key', registry, getAssetUrl)).toStrictEqual({ type: 'invalid' });
-    expect(resolveIcon('', registry, getAssetUrl)).toStrictEqual({ type: 'invalid' });
+    expect(resolveIcon('icon:Bad Key', registry, getAsset)).toStrictEqual({ type: 'invalid' });
+    expect(resolveIcon('', registry, getAsset)).toStrictEqual({ type: 'invalid' });
   });
 });
 
@@ -120,6 +153,21 @@ describe('createIconElement', () => {
     img.dispatchEvent(new Event('error'));
     expect(img.hidden).toBe(true);
     expect(element.classList.contains('icon')).toBe(true);
+  });
+
+  it('should load the fallback URL of a failed image before hiding it', () => {
+    const element = createIconElement({
+      type: 'asset',
+      url: 'https://example.com/assets/0f2793d9',
+      fallbackUrl: 'https://example.com/assets/logo',
+    });
+    const img = element.querySelector('img')!;
+    img.dispatchEvent(new Event('error'));
+    expect(img.getAttribute('src')).toBe('https://example.com/assets/logo');
+    expect(img.hidden).toBe(false);
+
+    img.dispatchEvent(new Event('error'));
+    expect(img.hidden).toBe(true);
   });
 
   it('should render invalid icons as empty boxes', () => {

@@ -48,7 +48,7 @@ export async function up(transaction: Transaction, db: Sequelize): Promise<void>
         if (row.data) {
           const path = join(tmpdir(), `${Date.now()}-${randomUUID()}`);
           await writeFile(path, row.data);
-          const location = getAppAssetLocation(row.AppId, row.id);
+          const location = getAppAssetLocation({ id: row.AppId }, row.id);
           await uploadS3FileFromPath(location.bucket, location.key, path);
           await unlink(path);
         } else {

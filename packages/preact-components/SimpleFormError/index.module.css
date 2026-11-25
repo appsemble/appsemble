@@ -1,0 +1,9 @@
+.root {
+  max-height: 64px;
+  overflow: hidden;
+  transition: 150ms;
+
+  &.hidden {
+    max-height: 0;
+  }
+}

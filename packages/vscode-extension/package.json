@@ -1,0 +1,77 @@
+{
+  "name": "@appsemble/vscode-extension",
+  "version": "0.42.0",
+  "private": true,
+  "displayName": "Appsemble",
+  "description": "Visual Studio Code extension for the Appsemble language server.",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "language-server",
+    "low-code",
+    "lowcode",
+    "vscode"
+  ],
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/-/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/vscode-extension"
+  },
+  "publisher": "appsemble",
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
+  "type": "commonjs",
+  "files": [
+    "extension.d.ts",
+    "extension.js",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/app-definition.yaml",
+    "workspaceContains:**/app-definition.yml"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Appsemble",
+      "properties": {
+        "appsemble.languageServer.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "verbose",
+          "description": "Controls tracing of communication with the Appsemble language server."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc --noEmit false",
+    "prepack": "tsc --noEmit false",
+    "prepare-server": "npm --workspace @appsemble/appsemble-language-server run build",
+    "smoke": "npm run build && node --check extension.js",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "@types/vscode": "1.146.0"
+  }
+}

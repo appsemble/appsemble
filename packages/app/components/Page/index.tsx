@@ -4,6 +4,7 @@ import {
   bottomNavigationGridArea,
   breadcrumbsGridArea,
   findPageById,
+  findPageByName,
   getPageDisplayName,
   getPagePathSegment,
   getRouteSegment,
@@ -13,38 +14,23 @@ import {
   type PageDefinition,
   type Remapper,
 } from '@appsemble/lang-sdk';
-import {
-  Button,
-  Content,
-  Message,
-  MetaSwitch,
-  useLocationString,
-  useMessages,
-} from '@appsemble/react-components';
+import { Button, Content, Message } from '@appsemble/preact-components';
 import { createThemeURL, mergeThemes } from '@appsemble/utils';
 import classNames from 'classnames';
-import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { FormattedMessage } from 'react-intl';
-import {
-  Navigate,
-  type Params,
-  Route,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
+import { type VNode } from 'preact';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { parse } from 'regexparam';
+import { Link, Route, useLocation, useParams } from 'wouter-preact';
+import { useLocationProperty } from 'wouter-preact/use-browser-location';
+import { useMessages } from '../MessagesProvider/index.js';
+import { MetaSwitch } from '../Meta/index.js';
+import { useLocationString } from '../../utils/useLocationString.js';
+import { useRouteParams } from '../../utils/useRouteParams.js';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { ShareDialog, type ShareDialogState } from './ShareDialog/index.js';
+import { FormattedMessage } from '../IntlProvider/index.js';
 import { type ShowDialogParams, type ShowShareDialog } from '../../types.js';
 import { checkPagePermissions } from '../../utils/authorization.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
@@ -62,11 +48,12 @@ import { useDemoAppMembers } from '../DemoAppMembersProvider/index.js';
 import { FlowPage } from '../FlowPage/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { PageDialog } from '../PageDialog/index.js';
+import { Redirect } from '../Redirect/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import { TabsPage } from '../TabsPage/index.js';
 import { AppBar } from '../TitleBar/index.js';
 
-export function Page(): ReactNode {
+export function Page(): VNode {
   const redirect = useLocationString();
   const { definition: appDefinition } = useAppDefinition();
   const {
@@ -83,28 +70,25 @@ export function Page(): ReactNode {
   } = useAppMember();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
-  const { hash, pathname, search } = useLocation();
-  const routeParams = useParams();
+  const [, navigate] = useLocation();
+  const pathname = useLocationProperty(() => window.location.pathname);
+  const routeParams = useRouteParams();
   const { getAppMessage, getMessage } = useAppMessages();
   const { getVariable } = useAppVariables();
   const { hasBottomNavigation, setPage } = usePage();
   const pushNotifications = useServiceWorkerRegistration();
   const { refetchDemoAppMembers } = useDemoAppMembers();
   const showMessage = useMessages();
-  const navigate = useNavigate();
 
   const [data, setData] = useState<unknown>({});
-
-  useEffect(() => {
-    setData({});
-  }, [pageId]);
+  const [loadedPage, setLoadedPage] = useState<PageDefinition | null>();
 
   const [dialog, setDialog] = useState<ShowDialogParams | undefined>();
   const stepRef = useRef<unknown>();
   const url = `/${lang}`;
 
   const permissionError = useCallback(
-    (): ReactNode => (
+    (): VNode => (
       <Message color="danger">
         <p>
           <FormattedMessage
@@ -150,10 +134,29 @@ export function Page(): ReactNode {
     ee.current = new EventEmitter();
   }
 
-  // @ts-expect-error 2345 argument of type is not assignable to parameter of type
-  // (strictNullChecks)
   const normalizedPageId = normalize(pageId);
-  const pageDefinition = findPageById(appDefinition.pages, normalizedPageId, getAppMessage);
+  const foundPage = findPageById(appDefinition.pages, normalizedPageId, getAppMessage);
+  const { '*': wildcard = '', ...pageRouteParams } = routeParams;
+  const { notFoundPage } = appDefinition;
+  // An app that defines a not found page renders it at a URL that matches no page, including path
+  // segments that match none of the parameters of a page. Tabs pages resolve their own sub paths.
+  const isNotFound =
+    notFoundPage != null &&
+    (!foundPage ||
+      (foundPage.type !== 'tabs' &&
+        !parse(
+          `/${(foundPage.parameters ?? []).map((param) => `:${param}`).join('/')}`,
+        ).pattern.test(`/${wildcard}`)));
+  const pageDefinition = isNotFound
+    ? typeof notFoundPage === 'string'
+      ? findPageByName(appDefinition.pages, notFoundPage)
+      : undefined
+    : foundPage;
+
+  useEffect(() => {
+    setData({});
+    setLoadedPage(undefined);
+  }, [pageDefinition]);
 
   // The path is rebuilt from its segments (`/:lang/:pageId/...rest`), because replacing the text
   // of the page segment could also replace part of the language segment.
@@ -169,13 +172,15 @@ export function Page(): ReactNode {
   // Switching tabs only changes the tab segment of the wildcard. Page actions never read that
   // segment, so it is left out of the identity of `params`; a new object per tab would rebuild
   // the actions, re-run onLoad, and re-emit the tab list while a tab is still loading.
-  const { '*': wildcard = '', ...pageRouteParams } = routeParams;
   const paramsKey = JSON.stringify(
     pageDefinition?.type === 'tabs'
       ? { ...pageRouteParams, '*': wildcard.split('/').slice(1).join('/') }
       : routeParams,
   );
-  const params = useMemo(() => JSON.parse(paramsKey) as Readonly<Params>, [paramsKey]);
+  const params = useMemo(
+    () => JSON.parse(paramsKey) as Readonly<Record<string, string | undefined>>,
+    [paramsKey],
+  );
 
   // Aborted when the user navigates to another page, so in-flight action chains of the previous
   // page stop instead of causing side effects on the newly shown page.
@@ -205,7 +210,6 @@ export function Page(): ReactNode {
         history,
         group: appMemberSelectedGroup,
         root: input,
-        // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         locale: lang,
         // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
         stepRef,
@@ -273,7 +277,6 @@ export function Page(): ReactNode {
             `appsemble-group-${appId}-appMemberSelectedGroup`,
             JSON.stringify(selectedGroup),
           );
-          navigate(0);
           return selectedGroup;
         },
         getAppMemberSelectedGroup: () => appMemberSelectedGroup,
@@ -311,6 +314,10 @@ export function Page(): ReactNode {
     ],
   );
 
+  // Blocks read the page data once, when they are initialized, so they wait until the onLoad
+  // action of the page has settled. Later runs of the action leave them mounted.
+  const dataReady = actions.onLoad.type === 'noop' || loadedPage === pageDefinition;
+
   useEffect(() => {
     if (!pageDefinition) {
       return;
@@ -330,11 +337,19 @@ export function Page(): ReactNode {
   );
 
   useEffect(() => {
+    let active = true;
     if (actions.onLoad.type !== 'noop') {
       actions
         .onLoad()
         .then((results) => {
-          setData(results);
+          if (active) {
+            setData(results);
+          }
+        })
+        .finally(() => {
+          if (active) {
+            setLoadedPage(pageDefinition);
+          }
         })
         .catch((error: unknown) => {
           if (!isActionOwnerAbortError(error)) {
@@ -342,7 +357,10 @@ export function Page(): ReactNode {
           }
         });
     }
-  }, [setData, actions]);
+    return () => {
+      active = false;
+    };
+  }, [setData, actions, pageDefinition]);
 
   const checkPagePermissionsCallback = useCallback(
     (pd: PageDefinition): boolean =>
@@ -354,11 +372,11 @@ export function Page(): ReactNode {
   // The cleanup and the next set land in the same commit, so switching pages never renders a frame
   // without one.
   useLayoutEffect(() => {
-    if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
+    if (pageDefinition && (isNotFound || checkPagePermissionsCallback(pageDefinition))) {
       setPage(pageDefinition);
       return () => setPage(undefined);
     }
-  }, [checkPagePermissionsCallback, pageDefinition, setPage]);
+  }, [checkPagePermissionsCallback, isNotFound, pageDefinition, setPage]);
 
   useEffect(() => {
     if (navigator.credentials) {
@@ -388,21 +406,47 @@ export function Page(): ReactNode {
     }
   }, []);
 
-  // If the user is on an existing page and is allowed to view it, render it.
-  if (pageDefinition && checkPagePermissionsCallback(pageDefinition)) {
+  if (isNotFound && !pageDefinition) {
+    return (
+      <BuiltinPage
+        narrow
+        page="page-error"
+        showTitle
+        state="not-found"
+        title={messages.notFoundTitle}
+      >
+        <p>
+          <FormattedMessage {...messages.notFound} />
+        </p>
+        <Link to={url}>
+          <FormattedMessage {...messages.notFoundLink} />
+        </Link>
+      </BuiltinPage>
+    );
+  }
+
+  // The not found page is shown to everyone, other pages only to members allowed to view them.
+  if (pageDefinition && (isNotFound || checkPagePermissionsCallback(pageDefinition))) {
     const pageName = getPageDisplayName(pageDefinition, getAppMessage);
     const translatedPageId = getPagePathSegment(pageDefinition, getAppMessage);
 
-    if (pageId && pageId !== translatedPageId) {
+    if (pageId && pageId !== translatedPageId && !isNotFound) {
       // The canonical slug and other aliases redirect to the slug of the current language, while
-      // preserving query params and the fragment.
+      // preserving query params and the fragment. A redirect navigates only when it mounts, so the
+      // key mounts a new one when another redirect of this page, such as the login redirect to a
+      // custom login page, leads here.
       return (
-        <Navigate replace to={{ hash, pathname: replacePageSegment(translatedPageId), search }} />
+        <Redirect
+          key={translatedPageId}
+          replace
+          to={`${replacePageSegment(translatedPageId)}${window.location.search}${window.location.hash}`}
+        />
       );
     }
 
     return (
       <main
+        aria-label={pageName}
         className={classNames(styles.root, {
           // A grid that places the bottom navigation flows around it, so it needs no clearance.
           [styles.hasBottomNavigation]:
@@ -410,6 +454,7 @@ export function Page(): ReactNode {
         })}
         data-path={prefix}
         data-path-index={prefixIndex}
+        tabIndex={-1}
       >
         <AppBar hideName={pageDefinition.hideName}>{pageName}</AppBar>
         {/* A grid layout that names a breadcrumbs area renders the trail there, and a tabs page
@@ -422,6 +467,7 @@ export function Page(): ReactNode {
           <TabsPage
             appStorage={appStorage.current}
             data={data}
+            dataReady={dataReady}
             ee={ee.current}
             key={prefix}
             pageDefinition={pageDefinition}
@@ -437,60 +483,62 @@ export function Page(): ReactNode {
           // The switch is used to enforce an exact path.
           <MetaSwitch title={pageName}>
             <Route
-              element={
-                pageDefinition.type === 'flow' || pageDefinition.type === 'loop' ? (
-                  <FlowPage
-                    appDefinition={appDefinition}
-                    appStorage={appStorage.current}
-                    data={data}
-                    ee={ee.current}
-                    key={prefix}
-                    pageDefinition={pageDefinition}
-                    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-                    prefix={prefix}
-                    // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
-                    prefixIndex={prefixIndex}
-                    remap={remapWithContext}
-                    setData={setData}
-                    showDialog={showDialog}
-                    showShareDialog={showShareDialog}
-                    stepRef={stepRef}
-                  />
-                ) : pageDefinition.type === 'container' ? (
-                  pageDefinition.pages.some(checkPagePermissionsCallback) && pageId ? (
-                    <Navigate
-                      to={{
-                        pathname: replacePageSegment(
-                          getPagePathSegment(
-                            pageDefinition.pages.find(checkPagePermissionsCallback)!,
-                            getAppMessage,
-                          ),
-                        ),
-                        search,
-                      }}
-                    />
-                  ) : (
-                    <Content padding>{permissionError()}</Content>
-                  )
-                ) : (
-                  <BlockList
-                    appStorage={appStorage.current}
-                    blocks={pageDefinition.blocks}
-                    data={data}
-                    ee={ee.current}
-                    key={prefix}
-                    pageDefinition={pageDefinition}
-                    pageLayout={pageDefinition.layout}
-                    prefix={`${prefix}.blocks`}
-                    prefixIndex={`${prefixIndex}.blocks`}
-                    remap={remapWithContext}
-                    showDialog={showDialog}
-                    showShareDialog={showShareDialog}
-                  />
-                )
+              path={
+                isNotFound
+                  ? '/:lang/:pageId/*?'
+                  : `/:lang/:pageId${(pageDefinition.parameters || []).map((param) => `/:${param}`).join('')}`
               }
-              path={(pageDefinition.parameters || []).map((param) => `/:${param}`).join('')}
-            />
+            >
+              {pageDefinition.type === 'flow' || pageDefinition.type === 'loop' ? (
+                <FlowPage
+                  appDefinition={appDefinition}
+                  appStorage={appStorage.current}
+                  data={data}
+                  dataReady={dataReady}
+                  ee={ee.current}
+                  key={prefix}
+                  pageDefinition={pageDefinition}
+                  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+                  prefix={prefix}
+                  // @ts-expect-error 2322 null is not assignable to type (strictNullChecks)
+                  prefixIndex={prefixIndex}
+                  remap={remapWithContext}
+                  setData={setData}
+                  showDialog={showDialog}
+                  showShareDialog={showShareDialog}
+                  stepRef={stepRef}
+                />
+              ) : pageDefinition.type === 'container' ? (
+                pageDefinition.pages.some(checkPagePermissionsCallback) && pageId ? (
+                  <Redirect
+                    to={`${replacePageSegment(
+                      getPagePathSegment(
+                        pageDefinition.pages.find(checkPagePermissionsCallback)!,
+                        getAppMessage,
+                      ),
+                    )}${window.location.search}`}
+                  />
+                ) : (
+                  <Content padding>{permissionError()}</Content>
+                )
+              ) : (
+                <BlockList
+                  appStorage={appStorage.current}
+                  blocks={pageDefinition.blocks}
+                  data={data}
+                  dataReady={dataReady}
+                  ee={ee.current}
+                  key={prefix}
+                  pageDefinition={pageDefinition}
+                  pageLayout={pageDefinition.layout}
+                  prefix={`${prefix}.blocks`}
+                  prefixIndex={`${prefixIndex}.blocks`}
+                  remap={remapWithContext}
+                  showDialog={showDialog}
+                  showShareDialog={showShareDialog}
+                />
+              )}
+            </Route>
           </MetaSwitch>
         )}
         <PageDialog
@@ -516,7 +564,7 @@ export function Page(): ReactNode {
   // login page.
   if (pageDefinition && !isLoggedIn) {
     const loginSegment = getRouteSegment('Login', getAppMessage);
-    return <Navigate to={`${url}/${loginSegment}?${new URLSearchParams({ redirect })}`} />;
+    return <Redirect to={`${url}/${loginSegment}?${new URLSearchParams({ redirect })}`} />;
   }
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
@@ -525,15 +573,16 @@ export function Page(): ReactNode {
   const defaultPage = appDefinition.pages.find((p) => p.name === defaultPageName);
 
   if (defaultPage && checkPagePermissionsCallback(defaultPage)) {
-    return <Navigate replace to={`${url}/${getPagePathSegment(defaultPage, getAppMessage)}`} />;
+    return <Redirect replace to={`${url}/${getPagePathSegment(defaultPage, getAppMessage)}`} />;
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
   const redirectPage = appDefinition.pages.find(
-    (pd) => checkPagePermissionsCallback(pd) && !pd.parameters,
+    (pd) =>
+      pd.name !== appDefinition.notFoundPage && checkPagePermissionsCallback(pd) && !pd.parameters,
   );
   if (redirectPage) {
-    return <Navigate replace to={`${url}/${getPagePathSegment(redirectPage, getAppMessage)}`} />;
+    return <Redirect replace to={`${url}/${getPagePathSegment(redirectPage, getAppMessage)}`} />;
   }
 
   // If the user isn’t allowed to view any pages, show an error message.

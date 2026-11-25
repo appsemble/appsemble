@@ -61,7 +61,7 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
     (permission) =>
       organizationId != null &&
       checkOrganizationRoleOrganizationPermissions(
-        organizations?.find((org) => org.id === organizationId).role,
+        organizations?.find((org) => org.id === organizationId).roles,
         [permission],
       ),
   );

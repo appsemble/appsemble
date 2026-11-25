@@ -79,7 +79,7 @@ describe('asset', () => {
           mime: 'image/png',
         }),
       );
-      const { bucket, key } = getAppAssetLocation(app.id, asset.id);
+      const { bucket, key } = getAppAssetLocation({ id: app.id }, asset.id);
       expect(await getS3FileBuffer(bucket, key)).toStrictEqual(await readFixture('apps/tux.png'));
     });
 

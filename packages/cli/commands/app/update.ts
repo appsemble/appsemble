@@ -35,6 +35,8 @@ interface UpdateAppArguments extends BaseArguments {
   dbPort: number;
   dbUser: string;
   dbPassword: string;
+  s3Bucket?: string;
+  password?: string;
 }
 
 export const command = 'update <paths...>';
@@ -99,7 +101,7 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('assets', {
       describe:
-        'Whether the assets from the `assets` directory should replace the seed assets of the app being updated.',
+        'Whether the assets of the app being updated should be synced with the `assets` directory. Unchanged assets are kept.',
       type: 'boolean',
       default: false,
     })
@@ -145,6 +147,17 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('db-password', {
       describe: 'The password of the external app database.',
+    })
+    .option('s3-bucket', {
+      describe: 'The pre-provisioned S3 bucket that holds the app’s assets.',
+      requiresArg: true,
+      type: 'string',
+    })
+    .option('password', {
+      describe:
+        'The password visitors must enter to open the app. Pass an empty string to turn password protection off.',
+      type: 'string',
+      requiresArg: true,
     });
 }
 

@@ -1,11 +1,8 @@
-import {
-  type Training,
-  type TrainingChapter,
-  type TrainingChapterProperties,
-} from '@appsemble/types';
+import { type TrainingChapterProperties } from '@appsemble/types';
 import axios from 'axios';
 
 import { getChapterCompletionState } from './utils/index.js';
+import { type Training, type TrainingChapter } from '../../types.js';
 
 const order = [
   'introduction',

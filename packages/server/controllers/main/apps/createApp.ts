@@ -29,9 +29,11 @@ import {
   transactional,
 } from '../../../models/index.js';
 import {
+  assertAppS3Bucket,
   createAppReadmes,
   createAppScreenshots,
   handleAppValidationError,
+  hashAppPassword,
   setAppPath,
 } from '../../../utils/app.js';
 import { argv } from '../../../utils/argv.js';
@@ -64,7 +66,9 @@ export async function createApp(ctx: Context): Promise<void> {
         maskableIcon,
         metaPixelID,
         msClarityID,
+        password,
         readmes,
+        s3Bucket,
         screenshots,
         sentryDsn,
         sentryEnvironment,
@@ -96,6 +100,10 @@ export async function createApp(ctx: Context): Promise<void> {
     organizationId: OrganizationId,
     requiredPermissions: [OrganizationPermission.CreateApps],
   });
+
+  if (s3Bucket) {
+    await assertAppS3Bucket(ctx, s3Bucket);
+  }
 
   try {
     const definition = parse(yaml, { maxAliasCount: 10_000 }) as AppDefinition;
@@ -165,6 +173,7 @@ export async function createApp(ctx: Context): Promise<void> {
       dbHost,
       dbPort,
       dbUser,
+      s3Bucket,
       supportedLanguages: supportedLanguagesArray.length
         ? supportedLanguagesArray
         : [definition.defaultLanguage ?? defaultLocale],
@@ -180,6 +189,10 @@ export async function createApp(ctx: Context): Promise<void> {
         dbPassword,
         argv.aesSecret || 'Local Appsemble development AES secret',
       );
+    }
+
+    if (password) {
+      result.password = await hashAppPassword(ctx, password);
     }
 
     result.containers = definition.containers;

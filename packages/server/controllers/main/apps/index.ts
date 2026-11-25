@@ -25,6 +25,7 @@ export { exportApp } from './exportApp.js';
 export { getAppById } from './getAppById.js';
 export { getAppEmailSettings } from './getAppEmailSettings.js';
 export { getAppTemplates } from './getAppTemplates.js';
+export { getAppWarnings } from './getAppWarnings.js';
 export { patchApp } from './patchApp.js';
 export { queryApps } from './queryApps.js';
 export { reseedDemoApp } from './reseedDemoApp.js';

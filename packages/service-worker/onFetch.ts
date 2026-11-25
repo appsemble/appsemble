@@ -1,6 +1,13 @@
 import { partialNormalized } from '@appsemble/utils';
 
-import { cacheFirst, handleModifyAndInvalidateCache, requestFirst } from './utils.js';
+import {
+  appStylesheetFirst,
+  assetFirst,
+  cacheFirst,
+  handleModifyAndInvalidateCache,
+  requestFirst,
+  tryCached,
+} from './utils.js';
 
 /**
  * Map all requests to a caching behavior based on the HTTP method and URL.
@@ -28,9 +35,11 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
-  // App assets are immutable and can be cached.
+  // App assets addressed by id are immutable and can be served from the cache. Addressed by name
+  // they can be replaced, so they are served from the cache only when the network is unreachable
+  // or slow.
   if (/^\/api\/apps\/\d+\/assets\//.test(pathname) && request.method !== 'HEAD') {
-    event.respondWith(cacheFirst(request));
+    event.respondWith(assetFirst(request));
     return;
   }
 
@@ -40,9 +49,21 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
-  // This is an unhandled request to an external service or the Appsemble API. This should not be
-  // cached.
+  // App startup data may be served by a separate API origin.
+  if (/^\/api\/apps\/\d+\/(messages(?:\/|$)|variables$)/.test(pathname)) {
+    // Precache requests omit Origin, while browser preload requests include it.
+    const headers = new Headers(request.headers);
+    headers.delete('Origin');
+    event.respondWith(requestFirst(request, new Request(request, { headers })));
+    return;
+  }
+
+  // Cached scripts, stylesheets, fonts and images may come from another origin, such as a CDN.
+  // Other requests to an external service or the Appsemble API are left to the browser.
   if (origin !== globalThis.location.origin) {
+    if (['font', 'image', 'script', 'style'].includes(request.destination)) {
+      event.respondWith(tryCached(request, () => fetch(request)));
+    }
     return;
   }
 
@@ -63,12 +84,6 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
-  // Cache app messages
-  if (/^\/api\/apps\/\d+\/messages/.test(pathname)) {
-    event.respondWith(requestFirst(request));
-    return;
-  }
-
   // Cache bulma and fa styles
   if (/\/(bulma\.min|fa.*all\.min)\.css$/.test(pathname)) {
     event.respondWith(cacheFirst(request));
@@ -77,13 +92,13 @@ export function onFetch(event: FetchEvent): void {
 
   // Cache block styles
   if (/^\/@appsemble\/[^/?]+\.css/.test(pathname)) {
-    event.respondWith(cacheFirst(request));
+    event.respondWith(appStylesheetFirst(request));
     return;
   }
 
   // Cache shared styles
   if (/^\/shared.css/.test(pathname)) {
-    event.respondWith(cacheFirst(request));
+    event.respondWith(appStylesheetFirst(request));
     return;
   }
 

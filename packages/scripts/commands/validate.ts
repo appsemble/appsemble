@@ -3,9 +3,11 @@ import { readFile } from 'node:fs/promises';
 import { basename, dirname, join, relative } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 
+import { type AppDefinition, getAppBlocks } from '@appsemble/lang-sdk';
 import { getWorkspaces, logger, opendirSafe, readData } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
 import fsExtra from 'fs-extra';
+import { globby } from 'globby';
 import normalizePath from 'normalize-path';
 import semver from 'semver';
 import { type PackageJson } from 'type-fest';
@@ -428,6 +430,27 @@ async function validateServerCommands(assert: Assert): Promise<void> {
   }
 }
 
+async function validateAppBlockVersions(assert: Assert, latestVersion: string): Promise<void> {
+  const paths = await globby([
+    'apps/*/app-definition.yaml',
+    'packages/cli/templates/apps/*/app-definition.yaml',
+  ]);
+
+  for (const path of paths.sort()) {
+    const [definition] = await readData<AppDefinition>(path);
+    const outdated = getAppBlocks(definition)
+      .filter(({ version }) => version !== latestVersion)
+      .map(({ type, version }) => `${type}@${version}`);
+    assert(
+      !outdated.length,
+      path,
+      `Block versions should match latest version "${latestVersion}"${
+        outdated.length ? `, found ${outdated.join(', ')}` : ''
+      }`,
+    );
+  }
+}
+
 export async function handler(): Promise<void> {
   const results: Result[] = [];
   const paths = await getWorkspaces(process.cwd());
@@ -491,6 +514,19 @@ export async function handler(): Promise<void> {
       pass,
       workspace: { dir: workspace, pkg: '' as unknown as PackageJson },
     }),
+  );
+
+  await validateAppBlockVersions(
+    (pass, filename, message, workspace = '') =>
+      results.push({
+        filename,
+        message,
+        pass,
+        workspace: { dir: workspace, pkg: '' as unknown as PackageJson },
+      }),
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
+    latestVersion,
   );
 
   const valid = results.filter(({ pass }) => pass);

@@ -3,8 +3,10 @@
   "empty": "Il n'y a aucune donnée à afficher.",
   "error": "Un problème est survenu lors du chargement des données.",
   "loading": "Chargement en cours…",
+  "noImage": "",
   "patchSize": "",
   "removeImage": "",
+  "selectedImage": "",
   "selectImage": "",
   "stopScanning": ""
 }

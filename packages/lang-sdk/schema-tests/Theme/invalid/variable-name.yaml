@@ -1,0 +1,3 @@
+# yaml-language-server: $schema=https://appsemble.app/api.json#/components/schemas/Theme
+variables:
+  bad name: '#123456'

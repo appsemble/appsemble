@@ -1,12 +1,16 @@
 // @vitest-environment jsdom
 
 import { EventEmitter } from 'node:events';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 import { createEvents, getDefaultBootstrapParams } from '@appsemble/block-interaction-tests';
 import { type BootstrapParams } from '@appsemble/sdk';
+import { noop } from '@appsemble/utils';
 import { within } from '@testing-library/preact';
 import { userEvent } from '@testing-library/user-event';
-import { expect, it, onTestFinished, vi } from 'vitest';
+import { render } from 'preact';
+import { afterEach, expect, it, onTestFinished, vi } from 'vitest';
 
 import { type Field, type Values } from '../block.js';
 import messages from '../i18n/en.json' with { type: 'json' };
@@ -26,6 +30,7 @@ await import('./index.js');
 Element.prototype.scrollIntoView = () => null;
 
 const mount = sdk.bootstrap.mock.calls[0][0] as (params: BootstrapParams) => Promise<void>;
+const containers = new Set<HTMLElement>();
 
 function getInputByLabel(container: HTMLElement, label: string): HTMLInputElement {
   const labelElement = Array.from(container.querySelectorAll('label')).find((element) =>
@@ -59,6 +64,15 @@ async function waitFor(assertion: () => void): Promise<void> {
   }
 }
 
+afterEach(() => {
+  for (const container of containers) {
+    render(null, container);
+  }
+  containers.clear();
+  document.body.replaceChildren();
+  vi.unstubAllGlobals();
+});
+
 it('should wait for pending validation actions before submitting', async () => {
   let resolveValidation!: (value: unknown) => void;
   const validatePostcode = vi.fn(
@@ -81,8 +95,9 @@ it('should wait for pending validation actions before submitting', async () => {
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: {
@@ -145,8 +160,9 @@ it('should wait for pending validation actions before submitting', async () => {
 
 it('should load the markdown editor when a markdown field is rendered', async () => {
   const container = document.createElement('div');
+  const defaultParams = getDefaultBootstrapParams();
   const params = {
-    ...getDefaultBootstrapParams(),
+    ...defaultParams,
     actions: {
       onLoad: Object.assign(vi.fn(), { type: 'noop' }),
       onSubmit: vi.fn(),
@@ -156,13 +172,18 @@ it('should load the markdown editor when a markdown field is rendered', async ()
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: {
       fields: [{ label: 'Description', name: 'description', type: 'markdown' }],
       skipInitialLoad: true,
+    },
+    utils: {
+      ...defaultParams.utils,
+      formatMessage: (message: keyof typeof messages) => messages[message],
     },
   } as unknown as BootstrapParams;
 
@@ -206,7 +227,7 @@ it.each(['data', 'fields'] as const)(
       events: createEvents(
         emitter,
         Promise.resolve(),
-        { emit: { change: {} }, listen: { data: {}, fields: {} } },
+        { emit: { change: {} }, listen: { data: {}, fields: {}, submit: {} } },
         { emit: { change: 'changed' }, listen: { [eventName]: 'populate' } },
       ),
       shadowRoot: container,
@@ -267,8 +288,9 @@ it('should submit the markdown typed right before the submit', async () => {
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: {
@@ -324,8 +346,9 @@ it('should hide the error summary when hideErrorSummary is set', async () => {
         on: {
           data: vi.fn(() => false),
           fields: vi.fn(() => false),
+          submit: vi.fn(() => false),
         },
-        off: { fields: vi.fn() },
+        off: { fields: vi.fn(), submit: vi.fn() },
       },
       shadowRoot: container,
       parameters: {
@@ -390,8 +413,9 @@ it('should show the errors of untouched fields after submitting', async () => {
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: {
@@ -451,8 +475,9 @@ it('should name the invalid fields in the alert after a failed submit', async ()
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: {
@@ -506,8 +531,9 @@ it.each([
         on: {
           data: vi.fn(() => false),
           fields: vi.fn(() => false),
+          submit: vi.fn(() => false),
         },
-        off: { fields: vi.fn() },
+        off: { fields: vi.fn(), submit: vi.fn() },
       },
       shadowRoot: container,
       parameters: {
@@ -541,8 +567,9 @@ it('should keep the date picker open when another field changes', async () => {
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: {
@@ -620,8 +647,9 @@ async function mountForm(
       on: {
         data: vi.fn(() => false),
         fields: vi.fn(() => false),
+        submit: vi.fn(() => false),
       },
-      off: { fields: vi.fn() },
+      off: { fields: vi.fn(), submit: vi.fn() },
     },
     shadowRoot: container,
     parameters: { skipInitialLoad: true, ...parameters },
@@ -820,6 +848,77 @@ it('should scroll to and focus the error summary at the top after a failed submi
   expect(scrollIntoView.mock.contexts).toStrictEqual([summary]);
 });
 
+/**
+ * Tab through the document until focus wraps around.
+ *
+ * @returns The elements that received focus, in tab order.
+ */
+async function tabStops(): Promise<Element[]> {
+  const stops: Element[] = [];
+  await userEvent.tab();
+  while (!stops.includes(document.activeElement!)) {
+    stops.push(document.activeElement!);
+    await userEvent.tab();
+  }
+  return stops;
+}
+
+/**
+ * Apply the styles of the form block to the document.
+ */
+async function addFormStyles(): Promise<void> {
+  const style = document.createElement('style');
+  style.textContent = await readFile(join(import.meta.dirname, 'index.module.css'), 'utf8');
+  document.head.append(style);
+  onTestFinished(() => style.remove());
+  // Jsdom drops a stylesheet it can't parse, such as one with nested rules.
+  expect(style.sheet).not.toBeNull();
+}
+
+it('should let keyboard users reach the submit error to scroll it only while it is shown', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => null);
+  await addFormStyles();
+  const container = await mountForm(
+    { fields: [{ label: 'Name', name: 'name', type: 'string' }] },
+    { onSubmit: vi.fn().mockRejectedValue('The server is unavailable') },
+  );
+  const alert = within(container).getByRole('alert');
+
+  expect(alert.textContent).toBe('');
+  expect(getComputedStyle(alert).overflow).toBe('hidden');
+  expect(await tabStops()).not.toContain(alert);
+
+  await submitForm(container);
+
+  // The alert stays in place, so assistive technology announces the error appearing in it.
+  await waitFor(() => expect(alert.textContent).toBe('The server is unavailable'));
+  expect(await tabStops()).toContain(alert);
+});
+
+it('should let keyboard users reach a requirement error to scroll it only while it is shown', async () => {
+  const validateName = vi.fn().mockRejectedValueOnce(new Error('Taken')).mockResolvedValue({});
+  await addFormStyles();
+  const container = await mountForm(
+    {
+      fields: [{ label: 'Name', name: 'name', type: 'string' }],
+      requirements: [{ action: 'validateName', isValid: ['name'] }],
+    },
+    { validateName },
+  );
+  const name = getInputByLabel(container, 'Name');
+
+  await userEvent.type(name, 'A');
+  const status = await vi.waitFor(() =>
+    within(container).getByText(messages.formRequirementError).closest('[role="status"]')!,
+  );
+  expect(await tabStops()).toContain(status);
+
+  await userEvent.type(name, 'B');
+  await waitFor(() => expect(status.textContent).toBe(''));
+  expect(getComputedStyle(status).overflow).toBe('hidden');
+  expect(await tabStops()).not.toContain(status);
+});
+
 it('should set the autocomplete attribute of a password field, also while it is visible', async () => {
   const container = await mountForm({
     fields: [
@@ -905,6 +1004,176 @@ it('should not set an autocomplete attribute if the field does not define one', 
   expect(getInputByLabel(container, 'Age').hasAttribute('autocomplete')).toBe(false);
 });
 
+async function mountInlineSelection(disabled = false): Promise<HTMLElement> {
+  vi.stubGlobal(
+    'IntersectionObserver',
+    class {
+      observe = noop;
+
+      unobserve = noop;
+
+      disconnect = noop;
+    },
+  );
+  const container = document.createElement('div');
+  const output = document.createElement('output');
+  containers.add(container);
+  output.setAttribute('aria-label', 'Saved selection');
+  document.body.append(container);
+  const params = getDefaultBootstrapParams();
+  await mount({
+    ...params,
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          name: 'sounds',
+          type: 'selection',
+          display: 'inline',
+          label: 'Sounds',
+          disableSearch: true,
+          disabled,
+          selection: [
+            { id: 1, header: 'Rain' },
+            { id: 2, header: 'Waves' },
+            { id: 3, header: 'Wind' },
+          ],
+          requirements: [{ maxItems: 2 }],
+        },
+      ],
+    },
+    actions: {
+      onLoad: Object.assign(noop, { type: 'noop' }),
+      onSubmit({ sounds }: { sounds: { id: number }[] }) {
+        output.textContent = sounds.map(({ id }) => id).join(', ');
+      },
+    },
+    events: {
+      emit: { change: noop },
+      on: { data: () => false, fields: () => false, submit: () => false },
+      off: { data: noop, fields: noop, submit: noop },
+    },
+  } as unknown as BootstrapParams);
+  container.append(output);
+  return container;
+}
+
+it('selects inline choices in the chosen order and removes them without opening a dialog', async () => {
+  const container = await mountInlineSelection();
+  const screen = within(container);
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Waves' })).toBeDefined());
+  screen.getByRole('button', { name: 'Waves' }).click();
+  await waitFor(() =>
+    expect(screen.getByRole('button', { name: 'Waves', pressed: true })).toBeDefined(),
+  );
+  screen.getByRole('button', { name: 'Rain' }).click();
+  await waitFor(() =>
+    expect((screen.getByRole('button', { name: 'Wind' }) as HTMLButtonElement).disabled).toBe(true),
+  );
+  screen.getByRole('button', { name: 'submitLabel' }).click();
+  await waitFor(() =>
+    expect(screen.getByRole('status', { name: 'Saved selection' }).textContent).toBe('2, 1'),
+  );
+  expect(screen.queryByRole('dialog')).toBeNull();
+  await waitFor(() =>
+    expect((screen.getByRole('button', { name: 'Waves' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    ),
+  );
+  screen.getByRole('button', { name: 'Waves' }).click();
+  await waitFor(() =>
+    expect((screen.getByRole('button', { name: 'Wind' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    ),
+  );
+  screen.getByRole('button', { name: 'submitLabel' }).click();
+  await waitFor(() =>
+    expect(screen.getByRole('status', { name: 'Saved selection' }).textContent).toBe('1'),
+  );
+});
+
+it('keeps inline choices disabled when the field is disabled', async () => {
+  const screen = within(await mountInlineSelection(true));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Rain' })).toBeDefined());
+  for (const name of ['Rain', 'Waves', 'Wind']) {
+    expect((screen.getByRole('button', { name }) as HTMLButtonElement).disabled).toBe(true);
+  }
+});
+
+async function mountExternalSubmit(disabled = false): Promise<{
+  container: HTMLElement;
+  saved: HTMLOutputElement;
+  external: EventTarget;
+}> {
+  const container = document.createElement('div');
+  const saved = document.createElement('output');
+  const external = new EventTarget();
+  const params = {
+    ...getDefaultBootstrapParams(),
+    actions: {
+      onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+      onSubmit(data: { name: string }) {
+        saved.textContent = `Saved ${data.name}`;
+      },
+    },
+    events: {
+      emit: { change: noop },
+      on: {
+        data: () => false,
+        fields: () => false,
+        submit(listener: EventListener) {
+          external.addEventListener('submit', listener);
+        },
+      },
+      off: {
+        fields: noop,
+        submit(listener: EventListener) {
+          external.removeEventListener('submit', listener);
+        },
+      },
+    },
+    shadowRoot: container,
+    parameters: {
+      fields: [
+        {
+          name: 'name',
+          label: 'Name',
+          type: 'string',
+          defaultValue: disabled ? 'Nursery' : '',
+          requirements: [{ required: true }],
+        },
+      ],
+      skipInitialLoad: true,
+      hideSubmitButton: true,
+      disabled,
+    },
+  } as unknown as BootstrapParams;
+  await mount(params);
+  return { container, saved, external };
+}
+
+it('should validate external submission and submit the current field values', async () => {
+  const { container, saved, external } = await mountExternalSubmit();
+  const name = getInputByLabel(container, 'Name');
+  expect(container.querySelector('button[type=submit]')).toBeNull();
+  external.dispatchEvent(new Event('submit'));
+  await waitFor(() => expect(container.textContent).toContain('invalidLabel'));
+  expect(saved.textContent).toBe('');
+
+  name.value = 'Nursery';
+  name.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  await waitFor(() => expect(container.textContent).not.toContain('invalidLabel'));
+  external.dispatchEvent(new Event('submit'));
+  await waitFor(() => expect(saved.textContent).toBe('Saved Nursery'));
+});
+
+it('should reject external submission while the form is disabled', async () => {
+  const { container, saved, external } = await mountExternalSubmit(true);
+  expect(getInputByLabel(container, 'Name').value).toBe('Nursery');
+  external.dispatchEvent(new Event('submit'));
+  expect(saved.textContent).toBe('');
+});
+
 it('should name a fieldset after its label and its remove buttons after the entry', async () => {
   const container = await mountForm({
     fields: [
@@ -978,3 +1247,55 @@ it('should announce a submission that takes long in an existing live region', as
     expect(statuses.map((status) => status.textContent)).toContain(messages.longSubmissionWarning),
   );
 });
+
+it.each([
+  {
+    when: 'yields a message',
+    submitErrorMessage: 'Login failed. Check your email address and password.',
+    shown: 'Login failed. Check your email address and password.',
+  },
+  { when: 'is not set', submitErrorMessage: undefined, shown: messages.submitError },
+  { when: 'yields nothing', submitErrorMessage: { prop: 'unknown' }, shown: messages.submitError },
+])(
+  'should show $shown in the alert when the submit action fails and submitErrorMessage $when',
+  async ({ shown, submitErrorMessage }) => {
+    const container = document.createElement('div');
+    const defaultParams = getDefaultBootstrapParams();
+    await mount({
+      ...defaultParams,
+      actions: {
+        onLoad: Object.assign(vi.fn(), { type: 'noop' }),
+        onSubmit: vi.fn().mockRejectedValue(new Error('Invalid credentials')),
+      },
+      events: {
+        emit: { change: vi.fn() },
+        on: {
+          data: vi.fn(() => false),
+          fields: vi.fn(() => false),
+          submit: vi.fn(() => false),
+        },
+        off: { fields: vi.fn(), submit: vi.fn() },
+      },
+      shadowRoot: container,
+      parameters: {
+        fields: [{ label: 'Email', name: 'email', type: 'string' }],
+        skipInitialLoad: true,
+        submitErrorMessage,
+      },
+      utils: {
+        ...defaultParams.utils,
+        formatMessage: (message: keyof typeof messages) => messages[message],
+      },
+    } as unknown as BootstrapParams);
+
+    const submit = container.querySelector('button[type=submit]') as HTMLButtonElement;
+    await waitFor(() => expect(submit).toHaveProperty('disabled', false));
+    submit.form?.requestSubmit();
+
+    await waitFor(() =>
+      expect(
+        Array.from(container.querySelectorAll('[role="alert"]'), (alert) => alert.textContent),
+      ).toContain(shown),
+    );
+  },
+);

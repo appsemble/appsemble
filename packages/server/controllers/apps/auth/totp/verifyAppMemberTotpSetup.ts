@@ -36,7 +36,7 @@ export async function verifyAppMemberTotpSetup(ctx: Context): Promise<void> {
   const memberId = appMember?.id ?? pending?.sub;
   assertKoaCondition(memberId != null, ctx, 401, 'User is not authenticated');
 
-  const { AppMember } = await getAppDB(appId);
+  const { AppMember, sequelize } = await getAppDB(appId);
 
   const member = await AppMember.findByPk(memberId);
   assertKoaCondition(member != null, ctx, 404, 'App member not found');
@@ -50,7 +50,25 @@ export async function verifyAppMemberTotpSetup(ctx: Context): Promise<void> {
   // Accepting the code spends the pending token along with it, in the same statement.
   await assertTotpToken(ctx, member, token, 400, pending?.jti);
 
-  await member.update({ totpEnabled: true });
+  const aud = `app:${appId}`;
+  // A reset locks the app member too, so it either makes this setup fail or revokes its session.
+  const refreshToken = await sequelize.transaction(async (transaction) => {
+    const [enabled] = await AppMember.update(
+      { totpEnabled: true },
+      { transaction, where: { id: member.id, totpSecret: member.totpSecret } },
+    );
+    assertKoaCondition(enabled > 0, ctx, 400, 'TOTP setup not initiated');
+
+    return pending
+      ? createAppMemberRefreshSession(ctx, {
+          appId,
+          aud,
+          scope: pending.scope,
+          sub: member.id,
+          transaction,
+        })
+      : null;
+  });
 
   if (!pending) {
     ctx.status = 204;
@@ -60,16 +78,8 @@ export async function verifyAppMemberTotpSetup(ctx: Context): Promise<void> {
   // Enrolling was the second step of the login flow, so the login is complete. Issuing the tokens
   // here means the app member doesn’t have to enter a second code, which would be rejected as a
   // replay anyway.
-  const aud = `app:${appId}`;
   const { scope } = pending;
-  const refreshToken = await createAppMemberRefreshSession(ctx, {
-    appId,
-    aud,
-    scope,
-    sub: member.id,
-  });
-
   const tokenResponse = createJWTResponse(member.id, { aud, refreshToken: false, scope });
-  tokenResponse.refresh_token = refreshToken;
+  tokenResponse.refresh_token = refreshToken!;
   ctx.body = tokenResponse;
 }

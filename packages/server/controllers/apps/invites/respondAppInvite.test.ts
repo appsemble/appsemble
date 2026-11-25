@@ -13,6 +13,7 @@ import {
 import { setArgv } from '../../../utils/argv.js';
 import { createServer } from '../../../utils/createServer.js';
 import { createTestUser } from '../../../utils/test/authorization.js';
+import { mockPwnedPasswords } from '../../../utils/test/pwnedPasswords.js';
 
 let app: App;
 let organization: Organization;
@@ -21,7 +22,7 @@ let user: User;
 
 describe('respondAppInvite', () => {
   beforeAll(async () => {
-    setArgv({ host: 'http://localhost', secret: 'test' });
+    setArgv({ host: 'http://localhost', rejectBreachedPasswords: true, secret: 'test' });
     server = await createServer();
     await setTestApp(server);
   });
@@ -109,5 +110,34 @@ describe('respondAppInvite', () => {
     await existingAppMember.reload();
 
     expect(existingAppMember.roles.toSorted()).toStrictEqual(['Admin', 'Editor', 'User']);
+  });
+
+  it('should not accept an invite with a breached password', async () => {
+    mockPwnedPasswords(['12345678']);
+    const { AppInvite, AppMember } = await getAppDB(app.id);
+    await AppInvite.create({ email: 'test@example.com', key: 'test-key', roles: ['User'] });
+
+    const response = await request.post(`/api/apps/${app.id}/app-invites/test-key/respond`, {
+      locale: 'en',
+      password: '12345678',
+      response: true,
+      timezone: 'Europe/Amsterdam',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "breachedPassword": true,
+        },
+        "error": "Bad Request",
+        "message": "This password has appeared in a known data breach. Choose a different password.",
+        "statusCode": 400,
+      }
+    `);
+    expect(await AppMember.count({ where: { email: 'test@example.com' } })).toBe(0);
+    expect(await AppInvite.count({ where: { key: 'test-key' } })).toBe(1);
   });
 });

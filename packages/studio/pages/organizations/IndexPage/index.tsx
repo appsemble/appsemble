@@ -51,7 +51,7 @@ export function IndexPage(): ReactNode {
             {organizations.map((organization) => (
               <ListButton
                 alt={formatMessage(messages.logo)}
-                description={organization.role}
+                description={organization.roles.join(', ')}
                 icon="building"
                 image={organization.iconUrl}
                 key={organization.id}

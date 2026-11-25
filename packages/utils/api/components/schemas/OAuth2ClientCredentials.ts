@@ -28,6 +28,12 @@ export const OAuth2ClientCredentials: OpenAPIV3.NonArraySchemaObject = {
       description: 'When the client credentials expire automatically.',
       format: 'date-time',
     },
+    authorizationEnded: {
+      type: 'boolean',
+      description:
+        'Whether the organization identity provider no longer authorizes these client credentials.',
+      readOnly: true,
+    },
     scopes: {
       type: 'array',
       description: 'The scopes that have been granted to the client.',

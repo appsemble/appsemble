@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.40.5/config/assets/logo.svg) Appsemble CLI
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.42.0/config/assets/logo.svg) Appsemble CLI
 
 > Manage apps and blocks from the command line.
 
 [![npm](https://img.shields.io/npm/v/@appsemble/cli)](https://www.npmjs.com/package/@appsemble/cli)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.40.5/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.40.5)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.42.0/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.42.0)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -47,14 +47,21 @@ To login, run the following command and follow the instructions in the output:
 appsemble login
 ```
 
+If you sign in to Appsemble through your organization's single sign-on, the organization's identity
+provider authorizes the new client credentials for offline access. They keep working after you sign
+out of Appsemble Studio, until the provider ends that authorization; then run `appsemble login`
+again.
+
 To logout, run the following command and select the client credentials to remove:
 
 ```sh
 apsemble logout
 ```
 
-The Appsemble CLI also supports authentication using the `APPSEMBLE_CLIENT_CREDENTIALS` environment
-variable. This is mostly useful for automation.
+The Appsemble CLI also supports authentication using the `--client-credentials` option or the
+`APPSEMBLE_CLIENT_CREDENTIALS` environment variable. This is mostly useful for automation. For CI
+pipelines, use the client credentials of an organization
+[service account](https://appsemble.app/docs/studio/service-accounts).
 
 ### Organizations
 
@@ -277,5 +284,5 @@ appsemble run-cronjobs --interval 30
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.40.5/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.42.0/LICENSE.md) ©
 [Appsemble](https://appsemble.com)
