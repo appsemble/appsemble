@@ -92,9 +92,9 @@ export function OpenIDCallback(): VNode {
   }
 
   // The authorization code was valid, but a second factor still has to be verified, which happens
-  // on the login page.
+  // on any other route.
   if (totpPending) {
-    return <Redirect to={`/${loginSegment}`} />;
+    return <Redirect to={`/${lang}/${loginSegment}`} />;
   }
 
   if (isLoggedIn) {

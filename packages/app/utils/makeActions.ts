@@ -204,9 +204,10 @@ export function createAction<T extends ActionDefinition['type']>({
           data: { ...getActionBreadcrumbData(type, prefix, prefixIndex), success: type },
         });
       } catch (error: unknown) {
-        // A chain that fails because its owner was unmounted stops without running success or
-        // error handlers, because the work it was waiting for can no longer arrive.
-        if (isOwnerAbortReason(error, params.signal)) {
+        // A chain that fails because its owner was unmounted, or because its login ended without a
+        // session, stops without running success or error handlers, because the work it was waiting
+        // for can no longer arrive.
+        if (isOwnerAbortReason(error, params.signal) || isActionOwnerAbortError(error)) {
           throw new ActionOwnerAbortError();
         }
         addBreadcrumb({
