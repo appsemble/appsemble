@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
-import { Readable } from 'node:stream';
+import { addAbortSignal, Readable } from 'node:stream';
 import { buffer as streamToBuffer } from 'node:stream/consumers';
 
 import {
@@ -299,6 +299,82 @@ export async function uploadS3FileFromPath(
 export async function getS3File(bucket: string, key: string): Promise<Readable> {
   const { Body } = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
   return Body as Readable;
+}
+
+/**
+ * Read an object in bounded ranges so a dropped connection only costs the current range.
+ *
+ * @param bucket The bucket containing the object.
+ * @param key The object key.
+ * @param signal The signal that cancels an in-progress range.
+ * @returns Complete, contiguous byte ranges of the same object version.
+ */
+export async function* getS3FileInRanges(
+  bucket: string,
+  key: string,
+  signal?: AbortSignal,
+): AsyncIterable<Buffer> {
+  const rangeSize = 8 * 1024 * 1024;
+  let size: number | undefined;
+  let etag: string | undefined;
+  let start = 0;
+
+  while (size === undefined || start < size) {
+    const end = (size === undefined ? start + rangeSize : Math.min(start + rangeSize, size)) - 1;
+    const range = `bytes=${start}-${end}`;
+    let contents: Buffer;
+    for (let attempt = 1; ; attempt += 1) {
+      const { Body, ContentLength, ContentRange, ETag, $metadata } = await s3Client.send(
+        new GetObjectCommand({ Bucket: bucket, Key: key, Range: range, IfMatch: etag }),
+        { abortSignal: signal },
+      );
+      const body = Body as Readable | undefined;
+      const match = /^bytes (\d+)-(\d+)\/(\d+)$/.exec(ContentRange ?? '');
+      const total = Number(match?.[3]);
+      const last = Math.min(end, total - 1);
+      if (
+        $metadata.httpStatusCode !== 206 ||
+        !body ||
+        !ETag ||
+        (etag !== undefined && ETag !== etag) ||
+        (size !== undefined && total !== size) ||
+        !Number.isSafeInteger(total) ||
+        total <= start ||
+        Number(match?.[1]) !== start ||
+        Number(match?.[2]) !== last ||
+        ContentLength !== last - start + 1
+      ) {
+        body?.destroy();
+        throw new Error(`Invalid S3 response for ${key} range ${range}`);
+      }
+      etag = ETag;
+      size = total;
+      try {
+        contents = await streamToBuffer(signal ? addAbortSignal(signal, body) : body);
+      } catch (error) {
+        const { code } = error as NodeJS.ErrnoException;
+        if (
+          signal?.aborted ||
+          attempt === 3 ||
+          !['ECONNRESET', 'ETIMEDOUT', 'ERR_STREAM_PREMATURE_CLOSE'].includes(code ?? '')
+        ) {
+          throw new Error(
+            `Failed to read S3 object ${key} range ${range} (${code ?? 'stream error'})`,
+            {
+              cause: error,
+            },
+          );
+        }
+        continue;
+      }
+      if (contents.length !== ContentLength) {
+        throw new Error(`Incomplete S3 response for ${key} range ${range}`);
+      }
+      break;
+    }
+    yield contents;
+    start += contents.length;
+  }
 }
 
 export async function getS3FileBuffer(bucket: string, key: string): Promise<Buffer> {

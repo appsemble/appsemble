@@ -6,7 +6,7 @@ import { StringDecoder } from 'node:string_decoder';
 import { createGunzip } from 'node:zlib';
 
 import {
-  getS3File,
+  getS3FileInRanges,
   initS3Client,
   listS3Objects,
   logger,
@@ -265,10 +265,21 @@ async function restoreDatabaseFromS3(
     }
   });
 
-  const s3Stream = await getS3File(bucket, key);
-  await pipeline(s3Stream, gunzip, skipUnprivilegedStatements(), restore.stdin);
-
-  await restoreExited;
+  const controller = new AbortController();
+  const transfer = pipeline(
+    getS3FileInRanges(bucket, key, controller.signal),
+    gunzip,
+    skipUnprivilegedStatements(),
+    restore.stdin,
+    { signal: controller.signal },
+  );
+  try {
+    await Promise.all([transfer, restoreExited]);
+  } catch (error) {
+    controller.abort();
+    await Promise.allSettled([transfer, restoreExited]);
+    throw error;
+  }
   logger.info(`Database restored from ${key}`);
 }
 

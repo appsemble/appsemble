@@ -4,7 +4,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { spawn } from 'node:child_process';
 
-import { getS3File, initS3Client, listS3Objects, logger } from '@appsemble/node-utils';
+import { getS3FileInRanges, initS3Client, listS3Objects, logger } from '@appsemble/node-utils';
 
 import { App, initDB } from '../models/index.js';
 import { type App as MainApp } from '../models/main/App.js';
@@ -28,7 +28,7 @@ vi.mock('node:zlib', () => ({
 }));
 
 vi.mock('@appsemble/node-utils', () => ({
-  getS3File: vi.fn(() => Promise.resolve(Readable.from(['sql']))),
+  getS3FileInRanges: vi.fn(() => Readable.from([Buffer.from('sql')])),
   initS3Client: vi.fn(),
   listS3Objects: vi.fn(() => Promise.resolve([])),
   logger: {
@@ -178,7 +178,7 @@ describe('restoreDataFromBackup', () => {
       close: vi.fn(() => Promise.resolve()),
     } as unknown as InitDbReturn);
     vi.mocked(App.findAll).mockResolvedValue([]);
-    vi.mocked(getS3File).mockResolvedValue(Readable.from(['sql']));
+    vi.mocked(getS3FileInRanges).mockReturnValue(Readable.from([Buffer.from('sql')]));
     vi.mocked(initS3Client).mockReset();
     vi.mocked(listS3Objects).mockResolvedValue([]);
   });
@@ -264,13 +264,15 @@ describe('restoreDataFromBackup', () => {
     });
 
     expect(failed).toBe(false);
-    expect(getS3File).toHaveBeenCalledWith(
+    expect(getS3FileInRanges).toHaveBeenCalledWith(
       baseOptions.backupsBucket,
       `sql/main/${baseOptions.restoreBackupFilename}`,
+      expect.any(AbortSignal),
     );
-    expect(getS3File).toHaveBeenCalledWith(
+    expect(getS3FileInRanges).toHaveBeenCalledWith(
       baseOptions.backupsBucket,
       `sql/apps/1/${baseOptions.restoreBackupFilename}`,
+      expect.any(AbortSignal),
     );
   });
 
@@ -300,9 +302,10 @@ describe('restoreDataFromBackup', () => {
     expect(vi.mocked(listS3Objects).mock.invocationCallOrder[0]).toBeLessThan(
       vi.mocked(spawn).mock.invocationCallOrder[0],
     );
-    expect(getS3File).toHaveBeenCalledWith(
+    expect(getS3FileInRanges).toHaveBeenCalledWith(
       'backup-bucket',
       'sql/main/appsemble_prod_backup_20250102000000000.sql.gz',
+      expect.any(AbortSignal),
     );
     expect(spawn).toHaveBeenNthCalledWith(
       2,
@@ -417,11 +420,12 @@ describe('restoreDataFromBackup', () => {
     });
     vi.mocked(App.findAll).mockResolvedValue([app1, app2]);
 
-    vi.mocked(getS3File).mockImplementation((bucket, key) =>
-      String(key).startsWith('sql/apps/1/')
-        ? Promise.reject(new Error('missing app 1 backup'))
-        : Promise.resolve(Readable.from(['sql'])),
-    );
+    vi.mocked(getS3FileInRanges).mockImplementation((bucket, key) => {
+      if (key.startsWith('sql/apps/1/')) {
+        throw new Error('missing app 1 backup');
+      }
+      return Readable.from([Buffer.from('sql')]);
+    });
 
     const failed = await restoreDataFromBackup(baseOptions);
 
@@ -433,9 +437,10 @@ describe('restoreDataFromBackup', () => {
       dbPort: baseOptions.databasePort,
       dbUser: baseOptions.databaseUser,
     });
-    expect(getS3File).toHaveBeenCalledWith(
+    expect(getS3FileInRanges).toHaveBeenCalledWith(
       baseOptions.backupsBucket,
       'sql/apps/2/appsemble_prod_backup_20250101.sql.gz',
+      expect.any(AbortSignal),
     );
   });
 
