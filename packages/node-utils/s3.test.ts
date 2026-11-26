@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import dns from 'node:dns';
-import { createServer, type IncomingMessage, type Server } from 'node:http';
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { type AddressInfo } from 'node:net';
 import { Readable } from 'node:stream';
 import { buffer as streamToBuffer } from 'node:stream/consumers';
@@ -19,6 +19,7 @@ import {
   getBlockAssetLocation,
   getS3File,
   getS3FileBuffer,
+  getS3FileInRanges,
   getS3FileStats,
   initS3Client,
   listS3Files,
@@ -579,11 +580,13 @@ describe('requests', () => {
   let port: number;
   let requests: RecordedRequest[];
   let responds: boolean;
+  let respond: ((request: IncomingMessage, response: ServerResponse) => void) | undefined;
 
   beforeEach(async () => {
     send.mockRestore();
     requests = [];
     responds = true;
+    respond = undefined;
     server = createServer((request, response) => {
       const recorded: RecordedRequest = {
         body: '',
@@ -598,6 +601,10 @@ describe('requests', () => {
       });
       request.on('end', () => {
         if (!responds) {
+          return;
+        }
+        if (respond) {
+          respond(request, response);
           return;
         }
         response.writeHead(200, { ETag: '"etag"' });
@@ -655,6 +662,89 @@ describe('requests', () => {
         expect.stringMatching(/^x-amz-(checksum-|sdk-checksum-algorithm$|trailer$)/),
       );
     }
+  });
+
+  it('retries an interrupted backup range without duplicating bytes in the restored stream', async () => {
+    initS3Client({ ...credentials, port });
+    const payload = Buffer.concat([Buffer.alloc(8 * 1024 * 1024, 'a'), Buffer.from('last range')]);
+    let interrupted = false;
+    respond = (request, response) => {
+      const [, first, last] = /^bytes=(\d+)-(\d+)$/.exec(request.headers.range!)!;
+      const start = Number(first);
+      const end = Math.min(Number(last), payload.length - 1);
+      const part = payload.subarray(start, end + 1);
+      if (start > 0 && request.headers['if-match'] !== '"backup"') {
+        response.writeHead(412).end();
+        return;
+      }
+      response.writeHead(206, {
+        'Content-Length': part.length,
+        'Content-Range': `bytes ${start}-${end}/${payload.length}`,
+        ETag: '"backup"',
+      });
+      if (start > 0 && !interrupted) {
+        interrupted = true;
+        response.write(part.subarray(0, 3));
+        setTimeout(() => response.destroy(), 20);
+        return;
+      }
+      response.end(part);
+    };
+
+    const restored = await streamToBuffer(Readable.from(getS3FileInRanges('backups', 'backup')));
+    expect({ interrupted, identical: restored.equals(payload) }).toStrictEqual({
+      interrupted: true,
+      identical: true,
+    });
+  });
+
+  it('rejects a response that does not provide the requested range', async () => {
+    initS3Client({ ...credentials, port });
+    await expect(
+      streamToBuffer(Readable.from(getS3FileInRanges('backups', 'backup'))),
+    ).rejects.toThrow('Invalid S3 response');
+  });
+
+  it('fails the read when object storage repeatedly interrupts a range', async () => {
+    initS3Client({ ...credentials, port });
+    respond = (request, response) => {
+      response.writeHead(206, {
+        'Content-Length': 7,
+        'Content-Range': 'bytes 0-6/7',
+        ETag: '"backup"',
+      });
+      response.write('part');
+      setTimeout(() => response.destroy(), 20);
+    };
+    await expect(
+      streamToBuffer(Readable.from(getS3FileInRanges('backups', 'backup'))),
+    ).rejects.toThrow('ECONNRESET');
+    expect({
+      attempts: requests.length,
+      ranges: new Set(requests.map(({ headers }) => headers.range)).size,
+    }).toStrictEqual({ attempts: 3, ranges: 1 });
+  });
+
+  it('closes an in-flight backup response when the restore is aborted', async () => {
+    initS3Client({ ...credentials, port });
+    const controller = new AbortController();
+    const closed = new Promise<void>((resolve) => {
+      respond = (request, response) => {
+        response.once('close', resolve);
+        response.writeHead(206, {
+          'Content-Length': 7,
+          'Content-Range': 'bytes 0-6/7',
+          ETag: '"backup"',
+        });
+        response.write('part');
+        setTimeout(() => controller.abort(), 20);
+      };
+    });
+    await expect(
+      streamToBuffer(Readable.from(getS3FileInRanges('backups', 'backup', controller.signal))),
+    ).rejects.toMatchObject({ cause: { name: 'AbortError' } });
+    await closed;
+    expect(requests).toHaveLength(1);
   });
 
   it('addresses the bucket in the request path by default', async () => {
