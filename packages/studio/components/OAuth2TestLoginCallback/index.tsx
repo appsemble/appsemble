@@ -5,8 +5,8 @@ import { FormattedMessage } from 'react-intl';
 import { messages } from './messages.js';
 
 /**
- * The `localStorage` key of the state of a pending test login, and the name of the broadcast
- * channel which passes its result.
+ * The prefix of the `localStorage` key which marks the state of a pending test login, and the name
+ * of the broadcast channel which passes its result.
  */
 export const oauth2TestLoginKey = 'appsemble-oauth2-test-login';
 

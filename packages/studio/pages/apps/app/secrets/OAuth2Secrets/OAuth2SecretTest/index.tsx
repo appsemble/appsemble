@@ -187,10 +187,12 @@ export function OAuth2SecretTest({ secretId }: OAuth2SecretTestProps): ReactNode
     setError(undefined);
     setLoginResult(undefined);
     setProviderError(undefined);
-    localStorage.setItem(oauth2TestLoginKey, state);
     const popup = window.open(String(url), oauth2TestLoginKey, 'popup,width=600,height=700');
     setPopupBlocked(!popup);
-    setPendingLogin(popup ? { state, values: testValues } : undefined);
+    if (popup) {
+      localStorage.setItem(`${oauth2TestLoginKey}.${state}`, 'pending');
+      setPendingLogin({ state, values: testValues });
+    }
   }, [secretId, values]);
 
   useEffect(() => {
@@ -202,7 +204,6 @@ export function OAuth2SecretTest({ secretId }: OAuth2SecretTestProps): ReactNode
       if (data.state !== pendingLogin.state) {
         return;
       }
-      localStorage.removeItem(oauth2TestLoginKey);
       setPendingLogin(undefined);
       if (data.error) {
         setProviderError([data.error, data.errorDescription].filter(Boolean).join(': '));
@@ -218,7 +219,10 @@ export function OAuth2SecretTest({ secretId }: OAuth2SecretTestProps): ReactNode
         setError(err);
       }
     });
-    return () => channel.close();
+    return () => {
+      channel.close();
+      localStorage.removeItem(`${oauth2TestLoginKey}.${pendingLogin.state}`);
+    };
   }, [app.id, pendingLogin]);
 
   const canTest = Boolean(URL.canParse(values.authorizationUrl) && values.clientId);

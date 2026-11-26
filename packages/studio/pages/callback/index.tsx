@@ -14,8 +14,13 @@ import { type ExtendedOAuth2State } from '../../types.js';
 export function CallbackPage(): ReactNode {
   const qs = useQuery();
   const session = useMemo(() => loadOAuth2State<ExtendedOAuth2State>(), []);
+  // The window which started a test login forgets its state once the answer arrives.
+  const isTestLogin = useMemo(
+    () => localStorage.getItem(`${oauth2TestLoginKey}.${qs.get('state')}`) != null,
+    [qs],
+  );
 
-  if (qs.get('state') && qs.get('state') === localStorage.getItem(oauth2TestLoginKey)) {
+  if (isTestLogin) {
     return <OAuth2TestLoginCallback />;
   }
 
