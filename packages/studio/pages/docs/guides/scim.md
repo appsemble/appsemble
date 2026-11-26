@@ -51,7 +51,8 @@ have an Azure Active Directory already set up and filled with users.
 2. In your application, go to **Secrets** -> **SCIM**.
 
    Check the **Enable SCIM** box, and press the **Regenerate SCIM token** button. Your app’s
-   credentials should be ready to put in Azure.
+   credentials should be ready to put in Azure. Copy the token right away: Appsemble shows it only
+   once. If it gets lost, regenerate it and enter the new token in Azure.
 
 ### 3. Azure provisioning setup
 

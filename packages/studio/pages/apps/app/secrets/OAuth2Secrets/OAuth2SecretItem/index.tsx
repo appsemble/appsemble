@@ -39,12 +39,21 @@ export function OAuth2SecretItem({
   const { app } = useApp();
 
   const onSubmit = useCallback(
-    async ({ remapper, scope, userInfoUrl, ...values }: AppOAuth2Secret) => {
+    async ({
+      clientSecret,
+      remapper,
+      roleMappings,
+      scope,
+      userInfoUrl,
+      ...values
+    }: AppOAuth2Secret) => {
       const { data } = await axios.put<AppOAuth2Secret>(
         `/api/apps/${app.id}/secrets/oauth2/${secret.id}`,
         {
           ...values,
+          clientSecret: clientSecret || undefined,
           remapper: remapper || undefined,
+          roleMappings: roleMappings ?? undefined,
           userInfoUrl: userInfoUrl || undefined,
           scope: [].concat(scope).sort().join(' '),
         },

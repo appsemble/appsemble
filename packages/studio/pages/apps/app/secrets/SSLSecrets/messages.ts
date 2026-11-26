@@ -37,6 +37,11 @@ export const messages = defineMessages({
     id: 'studio.II58L6',
     defaultMessage: 'The private key used to sign the SSL certificate in PEM format',
   },
+  keyKeepHelp: {
+    id: 'studio.o4Dkjw',
+    defaultMessage:
+      'A private key is set. Leave empty to keep it, or enter a new one in PEM format to replace it.',
+  },
   submit: {
     id: 'studio.wSZR47',
     defaultMessage: 'Submit',

@@ -74,6 +74,11 @@ export const messages = defineMessages({
     id: 'studio.GMES1s',
     defaultMessage: 'A secret which identifies the app to the login provider',
   },
+  clientSecretKeepHelp: {
+    id: 'studio.aFX2rf',
+    defaultMessage:
+      'A client secret is set. Leave empty to keep it, or enter a new one to replace it.',
+  },
   scopeLabel: {
     id: 'studio.nso3Mj',
     defaultMessage: 'Scope',

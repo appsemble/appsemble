@@ -25,6 +25,11 @@ const keyPlaceholder = `-----BEGIN PRIVATE KEY-----
 
 interface SSLSecret {
   certificate: string;
+  incomplete: boolean;
+}
+
+interface SSLSecretValues {
+  certificate: string;
   key: string;
 }
 
@@ -37,8 +42,12 @@ export function SSLSecrets(): ReactNode {
 
   const result = useData<SSLSecret>(url);
 
-  const onSubmit = async (values: SSLSecret): Promise<void> => {
-    const { data } = await axios.put(url, values);
+  const onSubmit = async ({ certificate, key }: SSLSecretValues): Promise<void> => {
+    // A private key without a certificate has no use, so clearing the certificate clears both.
+    const { data } = await axios.put<SSLSecret>(url, {
+      certificate,
+      ...(key || !certificate ? { key } : {}),
+    });
     push({ body: formatMessage(messages.submitSuccess), color: 'success' });
     result.setData(data);
   };
@@ -50,7 +59,10 @@ export function SSLSecrets(): ReactNode {
       result={result}
     >
       {(secret) => (
-        <SimpleForm defaultValues={secret} onSubmit={onSubmit}>
+        <SimpleForm
+          defaultValues={{ certificate: secret.certificate, key: '' }}
+          onSubmit={onSubmit}
+        >
           {app.domain ? null : (
             <Message color="warning">
               <FormattedMessage {...messages.prequisiteWarning} />
@@ -66,7 +78,11 @@ export function SSLSecrets(): ReactNode {
           />
           <SimpleFormField
             component={TextAreaField}
-            help={<FormattedMessage {...messages.keyHelp} />}
+            help={
+              <FormattedMessage
+                {...(secret.incomplete ? messages.keyHelp : messages.keyKeepHelp)}
+              />
+            }
             label={<FormattedMessage {...messages.keyLabel} />}
             name="key"
             placeholder={keyPlaceholder}

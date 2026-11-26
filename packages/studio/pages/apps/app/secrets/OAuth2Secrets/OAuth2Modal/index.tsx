@@ -64,6 +64,7 @@ export function OAuth2Modal({
 
   const push = useMessages();
   const { app } = useApp();
+  const hasClientSecret = secret.incomplete === false;
 
   const onDelete = useConfirmation({
     title: <FormattedMessage {...messages.deleteWarningTitle} />,
@@ -87,6 +88,7 @@ export function OAuth2Modal({
       component={SimpleForm}
       defaultValues={{
         ...secret,
+        clientSecret: '',
         roleMappings: secret.roleMappings ?? [],
       }}
       footer={
@@ -176,10 +178,14 @@ export function OAuth2Modal({
         autoComplete="new-password"
         component={PasswordField}
         disabled={locked !== 'unlocked'}
-        help={<FormattedMessage {...messages.clientSecretHelp} />}
+        help={
+          <FormattedMessage
+            {...(hasClientSecret ? messages.clientSecretKeepHelp : messages.clientSecretHelp)}
+          />
+        }
         label={<FormattedMessage {...messages.clientSecretLabel} />}
         name="clientSecret"
-        required
+        required={!hasClientSecret}
       />
       <SimpleFormField
         component={TagsField}
