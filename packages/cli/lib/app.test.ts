@@ -2682,6 +2682,133 @@ describe('app', () => {
       });
     });
 
+    it('should update login secrets by name and keep the app member links', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+      const {
+        AppMember,
+        AppOAuth2Authorization,
+        AppOAuth2Secret,
+        AppSamlAuthorization,
+        AppSamlSecret,
+      } = await getAppDB(app.id);
+      const oauth2Secret = {
+        icon: 'redhat',
+        authorizationUrl: 'http://localhost',
+        tokenUrl: 'http://localhost',
+        userInfoUrl: 'http://localhost',
+        clientId: 'id',
+        clientSecret: 'secret',
+        scope: 'openid',
+      };
+      const samlSecret = {
+        icon: 'redhat',
+        entityId: 'http://localhost',
+        ssoUrl: 'http://localhost',
+        idpCertificate: 'certificate',
+      };
+      const spKeys = { spCertificate: 'certificate', spPrivateKey: 'key', spPublicKey: 'key' };
+      const keptOAuth2 = await AppOAuth2Secret.create({
+        ...oauth2Secret,
+        name: 'kept',
+        remapper: [{ prop: 'email' }],
+      });
+      await AppOAuth2Secret.create({ ...oauth2Secret, name: 'removed' });
+      const keptSaml = await AppSamlSecret.create({
+        ...samlSecret,
+        ...spKeys,
+        name: 'kept',
+        nameAttribute: 'name',
+      });
+      await AppSamlSecret.create({ ...samlSecret, ...spKeys, name: 'removed' });
+      const member = await AppMember.create({ email: 'member@example.com', role: 'Reader' });
+      await AppOAuth2Authorization.create({
+        AppOAuth2SecretId: keptOAuth2.id,
+        AppMemberId: member.id,
+        email: member.email,
+        accessToken: 'token',
+        sub: 'oauth2-subject',
+      });
+      await AppSamlAuthorization.create({
+        AppSamlSecretId: keptSaml.id,
+        AppMemberId: member.id,
+        email: member.email,
+        nameId: 'saml-subject',
+      });
+      process.env.TEST_KEPT_OAUTH2_CLIENT_ID = 'new-id';
+      const path = await mkdtemp(join(tmpdir(), 'app-config-'));
+      try {
+        await cp(resolveFixture('apps/test'), path, { recursive: true });
+        await rm(join(path, 'config'), { recursive: true });
+        await mkdir(join(path, 'config', 'secrets'), { recursive: true });
+        await writeFile(
+          join(path, 'config', 'secrets', 'oauth2.json'),
+          JSON.stringify([
+            { ...oauth2Secret, name: 'kept', clientId: '{{ TEST_KEPT_OAUTH2_CLIENT_ID }}' },
+            { ...oauth2Secret, name: 'added' },
+          ]),
+        );
+        await writeFile(
+          join(path, 'config', 'secrets', 'saml.json'),
+          JSON.stringify([
+            { ...samlSecret, name: 'kept', idpCertificate: 'new-certificate' },
+            { ...samlSecret, name: 'added' },
+          ]),
+        );
+
+        await updateApp({
+          id: app.id,
+          path,
+          remote: testApp.defaults.baseURL!,
+          clientCredentials,
+          // Required defaults
+          visibility: 'unlisted',
+          iconBackground: '#ffffff',
+          force: false,
+        });
+      } finally {
+        await rm(path, { recursive: true, force: true });
+        vi.useFakeTimers();
+      }
+
+      const appDB = await getAppDB(app.id);
+      expect({
+        oauth2: (await appDB.AppOAuth2Secret.findAll({ order: [['id', 'ASC']] })).map(
+          ({ clientId, id, name, remapper }) => ({ clientId, id, name, remapper }),
+        ),
+        oauth2Links: (await appDB.AppOAuth2Authorization.findAll()).map(
+          ({ AppMemberId, AppOAuth2SecretId }) => ({ AppMemberId, AppOAuth2SecretId }),
+        ),
+        saml: (await appDB.AppSamlSecret.findAll({ order: [['id', 'ASC']] })).map(
+          ({ id, idpCertificate, name, nameAttribute }) => ({
+            id,
+            idpCertificate,
+            name,
+            nameAttribute,
+          }),
+        ),
+        samlLinks: (await appDB.AppSamlAuthorization.findAll()).map(
+          ({ AppMemberId, AppSamlSecretId }) => ({ AppMemberId, AppSamlSecretId }),
+        ),
+      }).toStrictEqual({
+        oauth2: [
+          { clientId: 'new-id', id: keptOAuth2.id, name: 'kept', remapper: null },
+          { clientId: 'id', id: expect.any(Number), name: 'added', remapper: null },
+        ],
+        oauth2Links: [{ AppMemberId: member.id, AppOAuth2SecretId: keptOAuth2.id }],
+        saml: [
+          { id: keptSaml.id, idpCertificate: 'new-certificate', name: 'kept', nameAttribute: null },
+          {
+            id: expect.any(Number),
+            idpCertificate: 'certificate',
+            name: 'added',
+            nameAttribute: null,
+          },
+        ],
+        samlLinks: [{ AppMemberId: member.id, AppSamlSecretId: keptSaml.id }],
+      });
+    });
+
     it('should update an app with `app.locked` set to `fullLock` if force is specified', async () => {
       await app.update({ locked: 'fullLock' });
       const clientCredentials = await authorizeCLI('apps:write', testApp);

@@ -49,6 +49,7 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
 
   ctx.body = await appOAuth2Secret.update({
     ...body,
+    remapper: body.remapper ?? null,
     roleMappings: normalizeLoginRoleMappings(body.roleMappings) ?? null,
     userInfoUrl: body.userInfoUrl || null,
   });

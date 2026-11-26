@@ -27,7 +27,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   get: {
     tags: ['main', 'app', 'secret', 'oauth2'],
     operationId: 'getAppOAuth2Secrets',
-    security: [{ studio: [] }],
+    security: [{ studio: [] }, { cli: ['apps:write'] }],
     responses: {
       200: {
         description: 'A list of the OAuth2 secrets for the app.',

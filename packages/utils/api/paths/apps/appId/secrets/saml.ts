@@ -27,7 +27,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   get: {
     tags: ['main', 'app', 'secret', 'saml'],
     operationId: 'getAppSamlSecrets',
-    security: [{ studio: [] }],
+    security: [{ studio: [] }, { cli: ['apps:write'] }],
     responses: {
       200: {
         description: 'A list of the SAML secrets for the app.',
