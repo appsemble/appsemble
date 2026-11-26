@@ -513,7 +513,9 @@ export function getDereferencedAssetIds(
   return assets
     .filter(
       ({ id, name }) =>
-        !values.has(id.replace(/-thumbnail$/, '')) && !(name != null && values.has(name)),
+        !values.has(id) &&
+        !values.has(id.replace(/-thumbnail$/, '')) &&
+        !(name != null && values.has(name)),
     )
     .map(({ id }) => id);
 }
