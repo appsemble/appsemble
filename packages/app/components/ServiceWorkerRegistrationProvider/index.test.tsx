@@ -1,16 +1,19 @@
 // CSpell:ignore cooldown
-import { act, render, screen, waitFor } from '@testing-library/preact';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/preact';
 import { addBreadcrumb, captureException, captureMessage } from '@sentry/browser';
 import { type VNode } from 'preact';
+import { Link, Route, Switch } from 'wouter-preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as ServiceWorkerRegistrationProviderModule from './index.js';
+import { AppMessagesProvider } from '../AppMessagesProvider/index.js';
 import { IntlProvider } from '../IntlProvider/index.js';
 
 const { ServiceWorkerRegistrationProvider, useServiceWorkerRegistration } =
   ServiceWorkerRegistrationProviderModule;
 
-const { axiosHead, requestUse, requestEject, getUri } = vi.hoisted(() => ({
+const { axiosGet, axiosHead, requestUse, requestEject, getUri } = vi.hoisted(() => ({
+  axiosGet: vi.fn(),
   axiosHead: vi.fn(),
   requestUse: vi.fn(),
   requestEject: vi.fn(),
@@ -19,6 +22,7 @@ const { axiosHead, requestUse, requestEject, getUri } = vi.hoisted(() => ({
 
 vi.mock('axios', () => ({
   default: {
+    get: axiosGet,
     head: axiosHead,
     post: vi.fn(),
     patch: vi.fn(),
@@ -454,6 +458,49 @@ describe('ServiceWorkerRegistrationProvider', () => {
     });
 
     expect(reloadSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should precache only the messages of a language when the app opens its root', async () => {
+    axiosGet.mockResolvedValue({ data: { messages: { core: {}, app: {}, blocks: {} } } });
+    const { active } = await navigator.serviceWorker.ready;
+    const cachedMessages = (): string[] =>
+      vi
+        .mocked(active!.postMessage)
+        .mock.calls.flatMap(([{ urls }]) =>
+          (urls as string[]).filter((url) => url.includes('/messages/')),
+        );
+    const content = (
+      <AppMessagesProvider>
+        <ServiceWorkerRegistrationProvider
+          serviceWorkerRegistrationPromise={Promise.resolve(createRegistration())}
+        >
+          <Consumer />
+        </ServiceWorkerRegistrationProvider>
+      </AppMessagesProvider>
+    );
+
+    window.history.replaceState(null, '', '/nl/home');
+    render(
+      <>
+        <Link to="/">Home</Link>
+        <Switch>
+          <Route path="/:lang/*?">{content}</Route>
+          <Route>{content}</Route>
+        </Switch>
+      </>,
+    );
+    await waitFor(() =>
+      expect(cachedMessages()).toStrictEqual(['https://appsemble.app/api/apps/42/messages/nl']),
+    );
+
+    fireEvent.click(screen.getByText('Home'));
+
+    await waitFor(() =>
+      expect(cachedMessages()).toStrictEqual([
+        'https://appsemble.app/api/apps/42/messages/nl',
+        'https://appsemble.app/api/apps/42/messages/en',
+      ]),
+    );
   });
 
   it('should reload once when an updated worker takes over an already controlled page', async () => {
