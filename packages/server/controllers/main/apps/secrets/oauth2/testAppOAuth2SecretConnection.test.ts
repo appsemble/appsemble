@@ -196,7 +196,7 @@ describe('testAppOAuth2SecretConnection', () => {
   it('should report endpoints which differ from the discovery document', async () => {
     const provider = await serveOAuth2Provider({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      discovery: { token_endpoint: 'https://sso.example/token' },
+      discovery: { token_endpoint: 'https://sso.example/token', userinfo_endpoint: 'userinfo' },
     });
 
     const checks = await testConnection({
@@ -210,7 +210,7 @@ describe('testAppOAuth2SecretConnection', () => {
       check: 'discovery',
       status: 'warn',
       reason: 'mismatch',
-      detail: 'tokenUrl: https://sso.example/token',
+      detail: 'tokenUrl: https://sso.example/token\nuserInfoUrl: userinfo',
     });
   });
 

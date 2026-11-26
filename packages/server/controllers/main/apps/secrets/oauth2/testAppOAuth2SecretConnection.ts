@@ -33,6 +33,9 @@ function isHttpError(status: number): boolean {
 }
 
 function normalizeUrl(url: string): string {
+  if (!URL.canParse(url)) {
+    return url;
+  }
   const { origin, pathname } = new URL(url);
   return `${origin}${pathname.replace(/\/$/, '')}`;
 }
