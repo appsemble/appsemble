@@ -7,7 +7,7 @@ import { Link, useParams } from 'wouter-preact';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { FormattedMessage } from '../IntlProvider/index.js';
+import { FormattedMessage, useIntl } from '../IntlProvider/index.js';
 import { useMeta } from '../Meta/index.js';
 import { startAccountLinking } from '../../utils/accountLinking.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
@@ -16,6 +16,7 @@ import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMember } from '../AppMemberProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BuiltinPage, BuiltinPageLoader } from '../BuiltinPage/index.js';
+import { useMessages } from '../MessagesProvider/index.js';
 import { useQuery } from '../../utils/useQuery.js';
 import { Redirect } from '../Redirect/index.js';
 
@@ -51,9 +52,11 @@ export function OpenIDCallback(): VNode {
     logins,
   });
 
-  const session = useMemo(() => loadOAuth2State<OAuth2State>(), []);
+  const session = useMemo<OAuth2State | null>(() => loadOAuth2State(), []);
   const { appMemberRoles, authorizationCodeLogin, isLoggedIn, totpPending } = useAppMember();
   const { getAppMessage } = useAppMessages();
+  const { formatMessage } = useIntl();
+  const push = useMessages();
 
   const { definition } = useAppDefinition();
   const { lang } = useParams<{ lang: string }>();
@@ -61,8 +64,9 @@ export function OpenIDCallback(): VNode {
 
   const [error, setError] = useState(false);
 
-  const { redirect } = session;
-  const stateOk = state && session.state && state === session.state;
+  // The state protects against cross-site request forgery, so only the browser tab that started the
+  // login can complete it.
+  const stateOk = state && session?.state && state === session.state;
   const isOk = code && !errorMessage && !error && !isLoggedIn && stateOk;
 
   useEffect(() => {
@@ -72,12 +76,18 @@ export function OpenIDCallback(): VNode {
         redirect_uri: `${window.location.origin}/Callback`,
         // The OAuth2 state is cleared as soon as this component is done with it, so the deep link
         // has to be handed to the provider, which owns the navigation from here on.
-        ...(redirect ? { redirect } : {}),
+        ...(session.redirect ? { redirect: session.redirect } : {}),
       }).catch(() => {
         setError(true);
       });
     }
-  }, [authorizationCodeLogin, code, isOk, redirect, shouldLink]);
+  }, [authorizationCodeLogin, code, isOk, session, shouldLink]);
+
+  useEffect(() => {
+    if (!shouldLink && !stateOk) {
+      push({ body: formatMessage(messages.loginIncomplete), color: 'warning', dismissable: true });
+    }
+  }, [formatMessage, push, shouldLink, stateOk]);
 
   useEffect(() => {
     // A pending TOTP challenge navigates away from this component just like a completed login
@@ -89,6 +99,10 @@ export function OpenIDCallback(): VNode {
 
   if (shouldLink) {
     return <Redirect to={`/${loginSegment}`} />;
+  }
+
+  if (!stateOk) {
+    return <Redirect to={`/${lang}/${loginSegment}`} />;
   }
 
   // The authorization code was valid, but a second factor still has to be verified, which happens
@@ -104,7 +118,8 @@ export function OpenIDCallback(): VNode {
         to={
           showDemoLogin
             ? `/${loginSegment}`
-            : redirect || `/${lang}/${getPagePathSegment({ name: defaultPageName }, getAppMessage)}`
+            : session.redirect ||
+              `/${lang}/${getPagePathSegment({ name: defaultPageName }, getAppMessage)}`
         }
       />
     );
@@ -130,7 +145,10 @@ export function OpenIDCallback(): VNode {
             <FormattedMessage {...messages.error} />
           )}
         </Message>
-        <Button component={Link} to={`/${loginSegment}?${new URLSearchParams({ redirect })}`}>
+        <Button
+          component={Link}
+          to={`/${loginSegment}?${new URLSearchParams({ redirect: session.redirect })}`}
+        >
           <FormattedMessage {...messages.retry} />
         </Button>
       </BuiltinPage>

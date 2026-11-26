@@ -8,6 +8,7 @@ import { AppIconProvider } from '../AppIconProvider/index.js';
 import * as appMemberProvider from '../AppMemberProvider/index.js';
 import * as appMessagesProvider from '../AppMessagesProvider/index.js';
 import { IntlProvider } from '../IntlProvider/index.js';
+import { MessagesProvider } from '../MessagesProvider/index.js';
 
 const { clearOAuth2State, loadOAuth2State } = vi.hoisted(() => ({
   clearOAuth2State: vi.fn(),
@@ -47,15 +48,17 @@ function renderCallback(query = 'code=abc&state=state-1'): void {
   render(
     <IntlProvider locale="en" messages={{}}>
       <AppIconProvider>
-        <Route path="/en/Login">
-          <p>Login page</p>
-        </Route>
-        <Route path="/:lang/Callback">
-          <OpenIDCallback />
-        </Route>
-        <Route path="/:lang/home">
-          <p>Home page</p>
-        </Route>
+        <MessagesProvider>
+          <Route path="/en/Login">
+            <p>Login page</p>
+          </Route>
+          <Route path="/:lang/Callback">
+            <OpenIDCallback />
+          </Route>
+          <Route path="/:lang/home">
+            <p>Home page</p>
+          </Route>
+        </MessagesProvider>
       </AppIconProvider>
     </IntlProvider>,
   );
@@ -88,6 +91,22 @@ describe('OpenIDCallback', () => {
         redirect: '/en/deep/link',
       });
     });
+  });
+
+  it.each([
+    { case: 'no stored state', stored: null },
+    { case: 'another stored state', stored: { state: 'state-2', redirect: '/en/deep/link' } },
+  ])('should ask to log in again without logging in for $case', async ({ stored }) => {
+    loadOAuth2State.mockReturnValue(stored);
+    mockAppMember();
+
+    renderCallback();
+
+    expect(await screen.findByText('Login page')).not.toBeNull();
+    expect(
+      screen.getByText('Logging in could not be completed. Please log in again.'),
+    ).not.toBeNull();
+    expect(authorizationCodeLogin).not.toHaveBeenCalled();
   });
 
   it('should clear the OAuth2 state when handing off to the TOTP challenge', async () => {
