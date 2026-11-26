@@ -22,6 +22,7 @@ import { Link } from 'react-router-dom';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useApp } from '../../../index.js';
+import { OAuth2SecretTest } from '../OAuth2SecretTest/index.js';
 
 interface AppSecretCardProps {
   /**
@@ -240,6 +241,7 @@ export function OAuth2Modal({
         label={<FormattedMessage {...messages.roleMappingsLabel} />}
         name="roleMappings"
       />
+      <OAuth2SecretTest secretId={secret.id} />
       {onDeleted ? (
         <Button className={styles.deleteButton} color="danger" icon="trash" onClick={onDelete}>
           <FormattedMessage {...messages.deleteButton} />

@@ -45,6 +45,26 @@ export interface OAuth2LoginOptions extends Pick<
 }
 
 /**
+ * Create the URL at which a user approves a login using the authorization code grant type.
+ *
+ * @param options OAuth2 login options.
+ * @param state The state the provider returns to the redirect URL.
+ * @returns The authorization URL of the provider with the parameters of the login.
+ */
+export function createOAuth2AuthorizationUrl(
+  { authorizationUrl, clientId, redirectUrl, scope }: Omit<OAuth2LoginOptions, 'redirect'>,
+  state: string,
+): URL {
+  const url = new URL(authorizationUrl);
+  url.searchParams.set('client_id', clientId);
+  url.searchParams.set('redirect_uri', String(new URL(redirectUrl, window.location.origin)));
+  url.searchParams.set('response_type', 'code');
+  url.searchParams.set('scope', scope);
+  url.searchParams.set('state', state);
+  return url;
+}
+
+/**
  * Initiate the login process using OAuth2.
  *
  * @param options OAuth2 login options.
@@ -55,13 +75,11 @@ export function startOAuth2Login(
   { authorizationUrl, clientId, redirect, redirectUrl, scope }: OAuth2LoginOptions,
   data?: Record<string, unknown>,
 ): void {
-  const url = new URL(authorizationUrl);
   const state = randomString();
-  url.searchParams.set('client_id', clientId);
-  url.searchParams.set('redirect_uri', String(new URL(redirectUrl, window.location.origin)));
-  url.searchParams.set('response_type', 'code');
-  url.searchParams.set('scope', scope);
-  url.searchParams.set('state', state);
+  const url = createOAuth2AuthorizationUrl(
+    { authorizationUrl, clientId, redirectUrl, scope },
+    state,
+  );
   sessionStorage.setItem(
     storageKey,
     JSON.stringify({ ...data, state, redirect, authorizationUrl } as OAuth2State),

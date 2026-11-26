@@ -9,6 +9,7 @@ provider as well.
 
 - [OpenID](#openid)
 - [Configuration](#configuration)
+- [Testing the configuration](#testing-the-configuration)
 - [Login flow](#login-flow)
 
 ## OpenID
@@ -55,6 +56,33 @@ to `/callback` in Appsemble Studio. For example, if Appsemble Studio is running 
 
 If this has been configured the login button for your app will show a new login button for this
 provider.
+
+## Testing the configuration
+
+The OAuth2 secret settings in Appsemble Studio have two buttons to test the settings in the form.
+They test unsaved changes too. Saving never depends on a test, so a provider that is down does not
+stop you from saving.
+
+**Test connection** makes the requests a login makes from the Appsemble server, with the same
+network restrictions. It lists the outcome of each check:
+
+- **Authorization URL**, **Token URL** and **User info URL**: Whether the server can reach them. A
+  failure names the cause, such as a private address the server may not connect to, an untrusted
+  certificate, a timeout or an HTTP error status. Browsers open the authorization URL, so a failure
+  there is only a warning.
+- **Client ID and secret**: The server requests a token with a made-up authorization code. A
+  provider that rejects the client, typically with `invalid_client`, does not know the client ID or
+  secret. A provider that only rejects the code, with `invalid_grant`, accepted them. Other answers
+  are shown as the provider sent them.
+- **OpenID Connect discovery**: For authorization URLs of known providers, such as Keycloak and
+  Microsoft Entra ID, whether the URLs match the discovery document of the provider.
+- **Scope**: Whether the scope requests `groups` when role mappings are configured. Some providers
+  add the groups claim without this scope, so this is a hint.
+
+**Try login** opens a login with the provider in a new window. After you log in, Studio shows the
+claims of the ID token, the access token and the user info response, the groups found, and the app
+roles the role mappings give the user. If no role matches, the user can’t log in to the app. A test
+login does not log anyone in to the app and creates no app member.
 
 ## Login flow
 
