@@ -87,6 +87,8 @@ import { pathItems as appsAppIdScreenshotsScreenshotId } from './apps/appId/scre
 import { pathItems as appsAppIdScreenshots } from './apps/appId/screenshots.js';
 import { pathItems as appsAppIdSecretsOAuth2SecretIdVerify } from './apps/appId/secrets/oauth2/secretId/verify.js';
 import { pathItems as appsAppIdSecretsOAuth2SecretId } from './apps/appId/secrets/oauth2/secretId.js';
+import { pathItems as appsAppIdSecretsOAuth2TestConnection } from './apps/appId/secrets/oauth2/testConnection.js';
+import { pathItems as appsAppIdSecretsOAuth2TestLogin } from './apps/appId/secrets/oauth2/testLogin.js';
 import { pathItems as appsAppIdSecretsOAuth2 } from './apps/appId/secrets/oauth2.js';
 import { pathItems as appsAppIdSecretsSamlSecretId } from './apps/appId/secrets/saml/secretId.js';
 import { pathItems as appsAppIdSecretsSaml } from './apps/appId/secrets/saml.js';
@@ -266,6 +268,9 @@ export const paths = {
   '/api/apps/{appId}/screenshots': appsAppIdScreenshots,
   '/api/apps/{appId}/secrets/oauth2/{appOAuth2SecretId}/verify':
     appsAppIdSecretsOAuth2SecretIdVerify,
+  // These precede the secret ID template, which would match them as well.
+  '/api/apps/{appId}/secrets/oauth2/test-connection': appsAppIdSecretsOAuth2TestConnection,
+  '/api/apps/{appId}/secrets/oauth2/test-login': appsAppIdSecretsOAuth2TestLogin,
   '/api/apps/{appId}/secrets/oauth2/{appOAuth2SecretId}': appsAppIdSecretsOAuth2SecretId,
   '/api/apps/{appId}/secrets/oauth2': appsAppIdSecretsOAuth2,
   '/api/apps/{appId}/secrets/saml/{appSamlSecretId}': appsAppIdSecretsSamlSecretId,

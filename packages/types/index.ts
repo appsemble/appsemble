@@ -1049,6 +1049,98 @@ export interface AppOAuth2Secret extends OAuth2Provider {
   roleMappings?: AppLoginRoleMapping[];
 }
 
+/**
+ * Why a request to an OAuth2 provider failed.
+ *
+ * - `blocked`: The server may not connect to the address the host name resolves to.
+ * - `certificate`: The TLS certificate of the provider is not trusted.
+ * - `httpError`: The provider answered with an HTTP status that indicates a wrong URL or an error.
+ * - `timeout`: The provider did not answer in time.
+ * - `unreachable`: The host name could not be resolved, or the connection failed.
+ */
+export type AppOAuth2SecretRequestFailure =
+  'blocked' | 'certificate' | 'httpError' | 'timeout' | 'unreachable';
+
+/**
+ * The outcome of one check of an OAuth2 login configuration.
+ */
+export interface AppOAuth2SecretCheck {
+  /**
+   * What was checked.
+   */
+  check:
+    'authorizationUrl' | 'clientCredentials' | 'discovery' | 'scope' | 'tokenUrl' | 'userInfoUrl';
+
+  status: 'fail' | 'pass' | 'skip' | 'warn';
+
+  /**
+   * Why the check has its status.
+   */
+  reason:
+    | AppOAuth2SecretRequestFailure
+    | 'accepted'
+    | 'groupsScopeIncluded'
+    | 'groupsScopeMissing'
+    | 'match'
+    | 'mismatch'
+    | 'noRoleMappings'
+    | 'notConfigured'
+    | 'notDerivable'
+    | 'notFound'
+    | 'reachable'
+    | 'rejected'
+    | 'tokenUrlFailed'
+    | 'unexpected';
+
+  /**
+   * What the server observed, such as an HTTP status, a network error, or the provider’s error.
+   */
+  detail?: string;
+}
+
+/**
+ * The outcome of a test login with an OAuth2 login configuration.
+ *
+ * A test login creates no app member and no authorization.
+ */
+export interface AppOAuth2SecretLoginTest {
+  /**
+   * Why the test login failed.
+   */
+  error?: {
+    check: 'tokenUrl' | 'userInfoUrl';
+    reason: AppOAuth2SecretRequestFailure | 'noSubject';
+    detail?: string;
+  };
+
+  /**
+   * The claims of the ID token.
+   */
+  idToken?: Record<string, unknown>;
+
+  /**
+   * The claims of the access token, if it is a JSON web token.
+   */
+  accessToken?: Record<string, unknown>;
+
+  /**
+   * The response of the user info endpoint.
+   */
+  userInfo?: unknown;
+
+  /**
+   * The user information a login reads from the tokens and the user info endpoint.
+   */
+  user?: Partial<UserInfo>;
+
+  /**
+   * The app roles the role mappings resolve to. This is only set if role mappings are configured.
+   *
+   * An empty list means no role matched, so the login is rejected.
+   */
+  roles?: AppRole[];
+}
+
 export interface WritableAppSamlSecret {
   /**
    * The name that will be displayed on the login button.
