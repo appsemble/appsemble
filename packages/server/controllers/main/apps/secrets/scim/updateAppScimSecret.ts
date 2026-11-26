@@ -6,6 +6,7 @@ import { App } from '../../../../../models/index.js';
 import { argv } from '../../../../../utils/argv.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
 import { encrypt } from '../../../../../utils/crypto.js';
+import { isSecretIncomplete } from '../../../../../utils/secrets.js';
 
 export async function updateAppScimSecret(ctx: Context): Promise<void> {
   const {
@@ -38,6 +39,6 @@ export async function updateAppScimSecret(ctx: Context): Promise<void> {
 
   ctx.body = {
     enabled: app.scimEnabled,
-    token: body.token || null,
+    incomplete: isSecretIncomplete(app.scimToken),
   };
 }

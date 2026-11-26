@@ -3,7 +3,7 @@ import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, Organization, OrganizationMember } from '../../../../../models/index.js';
+import { App, getAppDB, Organization, OrganizationMember } from '../../../../../models/index.js';
 import { options } from '../../../../../options/options.js';
 import { setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
@@ -104,15 +104,31 @@ describe('createAppOAuth2Secret', () => {
       {
         "authorizationUrl": "https://example.com/oauth/authorize",
         "clientId": "example_client_id",
-        "clientSecret": "example_client_secret",
         "icon": "example",
         "id": 1,
+        "incomplete": false,
         "name": "Example",
         "scope": "email openid profile",
         "tokenUrl": "https://example.com/oauth/token",
         "userInfoUrl": "https://example.com/oauth/userinfo",
       }
     `);
+  });
+
+  it('should require a client secret', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/oauth2`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    expect(response.status).toBe(400);
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    expect(await AppOAuth2Secret.count()).toBe(0);
   });
 
   it('should refresh app-serving settings after creating an OAuth2 secret', async () => {

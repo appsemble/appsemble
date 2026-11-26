@@ -97,10 +97,10 @@ describe('updateAppOAuth2Secret', () => {
       {
         "authorizationUrl": "https://other.example/oauth/authorize",
         "clientId": "other_client_id",
-        "clientSecret": "example_client_secret",
         "created": "1970-01-01T00:00:00.000Z",
         "icon": "updated",
         "id": 1,
+        "incomplete": false,
         "name": "Updated Example",
         "remapper": null,
         "roleMappings": null,
@@ -154,10 +154,10 @@ describe('updateAppOAuth2Secret', () => {
       {
         "authorizationUrl": "https://other.example/oauth/authorize",
         "clientId": "other_client_id",
-        "clientSecret": "example_client_secret",
         "created": "1970-01-01T00:00:00.000Z",
         "icon": "updated",
         "id": 1,
+        "incomplete": false,
         "name": "Updated Example",
         "remapper": null,
         "roleMappings": null,
@@ -178,6 +178,90 @@ describe('updateAppOAuth2Secret', () => {
       tokenUrl: 'https://other.example/oauth/token',
       userInfoUrl: null,
     });
+  });
+
+  it('should keep the client secret when an update leaves it out', async () => {
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    const secret = await AppOAuth2Secret.create({
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      icon: 'example',
+      name: 'Renamed',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data).toMatchObject({ incomplete: false, name: 'Renamed' });
+    expect(response.data).not.toHaveProperty('clientSecret');
+    await secret.reload();
+    expect(secret.clientSecret).toBe('example_client_secret');
+  });
+
+  it('should replace the client secret when an update includes one', async () => {
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    const secret = await AppOAuth2Secret.create({
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: '',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'new_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data).toMatchObject({ incomplete: false });
+    expect(response.data).not.toHaveProperty('clientSecret');
+    await secret.reload();
+    expect(secret.clientSecret).toBe('new_client_secret');
+  });
+
+  it('should clear the remapper when an update leaves it out', async () => {
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    const secret = await AppOAuth2Secret.create({
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      remapper: [{ prop: 'email' }],
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+
+    expect(response.status).toBe(200);
+    await secret.reload();
+    expect(secret.remapper).toBeNull();
   });
 
   it('should clear OAuth2 role mappings when an empty list is submitted', async () => {
