@@ -317,6 +317,10 @@ permissions `$resource:all:patch`, `$resource:all:own:patch`, `$resource:<resour
 [security](../app/security.md#permissions). Here’s an example of how you can partially update a
 resource of type person using this action.
 
+Set a property to `null` to clear it. The value is stored as `null` if the property's schema allows
+it, otherwise the property is removed. A cleared file property deletes its asset, unless the
+resource keeps history. A required property can only be set to `null` if its schema allows it.
+
 As with `resource.update`, optimistic concurrency is automatic: the `$etag` present in the action's
 input data (typically from a prior `resource.get`) is sent as `If-Match`, and a conflicting
 concurrent write returns `412 Precondition Failed`. Input without `$etag` — including view results —
