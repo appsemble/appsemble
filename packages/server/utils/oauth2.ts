@@ -87,6 +87,7 @@ export function hasScope(grantedScopes: string, requiredScopes: string): boolean
  * @param redirectUri The redirect URI used to get the authorization code.
  * @param clientId The OAuth2 client id.
  * @param clientSecret The OAuth2 client secret.
+ * @param timeout How many milliseconds to wait for the response, if limited.
  * @returns The data from an access token response.
  */
 export async function getAccessToken(
@@ -95,6 +96,7 @@ export async function getAccessToken(
   redirectUri: string,
   clientId: string,
   clientSecret: string,
+  timeout?: number,
 ): Promise<TokenResponse> {
   // Exchange the authorization code for an access token and refresh token.
   const { data } = await axios.post<TokenResponse>(
@@ -114,6 +116,7 @@ export async function getAccessToken(
         // Some providers only support basic auth,
         authorization: basicAuth(clientId, clientSecret),
       },
+      timeout,
       ...(await getSSRFProtectedAgents({ hostname: new URL(tokenUrl).hostname })),
     },
   );

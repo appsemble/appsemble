@@ -75,6 +75,9 @@ async function configureRealm(): Promise<void> {
 test.describe('App Keycloak OIDC login', () => {
   test.skip(!KEYCLOAK_BASE_URL, 'Keycloak OIDC login requires KEYCLOAK_BASE_URL');
 
+  // The test login must not create the app member which the login test creates afterwards.
+  test.describe.configure({ mode: 'serial' });
+
   test.beforeAll(async ({ createApp, createOrganization, randomTestId, request }) => {
     await configureRealm();
 
@@ -150,6 +153,29 @@ test.describe('App Keycloak OIDC login', () => {
     if (organizationId) {
       await deleteOrganization(organizationId);
     }
+  });
+
+  test('should test the connection and a login from Studio', async ({ page, request }) => {
+    await page.goto(`/en/apps/${app.id}/${app.path}/secrets`);
+    await page.getByRole('button', { name: new RegExp(secret.name) }).click();
+
+    await page.getByRole('button', { name: 'Test connection' }).click();
+    await expect(
+      page.getByRole('listitem').filter({ hasText: 'Client ID and secret' }),
+    ).toContainText('The provider accepted them.');
+
+    const popup = page.waitForEvent('popup');
+    await page.getByRole('button', { name: 'Try login' }).click();
+    const loginWindow = await popup;
+    await loginWindow.getByRole('textbox', { name: /username or email/i }).fill(userEmail);
+    await loginWindow.getByRole('textbox', { exact: true, name: 'Password' }).fill(userPassword);
+    await loginWindow.getByRole('button', { name: /sign in/i }).click();
+
+    await expect(
+      page.getByText('The role mappings give the user the app roles Manager, Editor.'),
+    ).toBeVisible();
+    const members = await request.get(`/api/apps/${app.id}/members`);
+    expect(await members.json()).toStrictEqual([]);
   });
 
   test('should map Keycloak groups to cumulative app roles', async ({ page, visitApp }) => {
