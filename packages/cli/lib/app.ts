@@ -648,6 +648,54 @@ function parseValues(
   return [parsedValues, missingValues];
 }
 
+/**
+ * Update the OAuth2 or SAML login secrets of an app to match its config file.
+ *
+ * An existing secret with the same name is updated in place, because app members and identity
+ * providers refer to the secret by its ID. Secrets that share a name pair up in file order with the
+ * existing secrets in ID order. Existing secrets without a counterpart in the file are deleted.
+ *
+ * @param app The app to publish the secrets to.
+ * @param type The type of the login secrets.
+ * @param secrets The login secrets from the config file.
+ * @param remote The remote to publish to.
+ * @param getBody Get the request body for a secret, or `undefined` to leave the secret as it is.
+ */
+async function publishLoginSecrets<T extends { name: string }>(
+  app: App,
+  type: 'oauth2' | 'saml',
+  secrets: T[],
+  remote: string,
+  getBody: (secret: T) => Record<string, unknown> | undefined,
+): Promise<void> {
+  const url = `/api/apps/${app.id}/secrets/${type}`;
+  const { data } = await axios.get<{ id: number; name: string }[]>(url, { baseURL: remote });
+  const existing = Map.groupBy(
+    data.toSorted((a, b) => a.id - b.id),
+    ({ name }) => name,
+  );
+
+  logger.info(`Publishing ${secrets.length} app ${type} secret(s)`);
+  for (const secret of secrets) {
+    const match = existing.get(secret.name)?.shift();
+    const body = getBody(secret);
+    if (!body) {
+      continue;
+    }
+    await (match
+      ? axios.put(`${url}/${match.id}`, body, { baseURL: remote })
+      : axios.post(url, body, { baseURL: remote }));
+  }
+
+  const removed = [...existing.values()].flat();
+  if (removed.length) {
+    logger.info(`Deleting ${removed.length} app ${type} secret(s) without a config entry`);
+  }
+  for (const { id } of removed) {
+    await axios.delete(`${url}/${id}`, { baseURL: remote });
+  }
+}
+
 export async function publishAppConfig(path: string, app: App, remote: string): Promise<void> {
   const configPath = join(path, 'config');
   logger.info(`Publishing app config from ${configPath}`);
@@ -738,32 +786,17 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
           string,
         ];
 
-        logger.info(`Deleting existing saml secrets from app ${app.id}`);
-        await axios.delete(`/api/apps/${app.id}/secrets/saml`, { baseURL: remote });
+        await publishLoginSecrets(app, 'saml', samlSecrets, remote, (samlSecret) => {
+          const { entityId, idpCertificate, name, ssoUrl, ...rest } = samlSecret;
 
-        if (samlSecrets.length) {
-          logger.info(`Publishing ${samlSecrets.length} app saml secret(s)`);
+          const [parsedValues, missingValues] = parseValues('saml secret', name, [
+            { entityId },
+            { idpCertificate },
+            { ssoUrl },
+          ]);
 
-          for (const samlSecret of samlSecrets) {
-            const { entityId, idpCertificate, name, ssoUrl, ...rest } = samlSecret;
-
-            const [parsedValues, missingValues] = parseValues('saml secret', name, [
-              { entityId },
-              { idpCertificate },
-              { ssoUrl },
-            ]);
-
-            if (missingValues) {
-              continue;
-            }
-
-            await axios.post(
-              `/api/apps/${app.id}/secrets/saml`,
-              { name, ...parsedValues, ...rest },
-              { baseURL: remote },
-            );
-          }
-        }
+          return missingValues ? undefined : { name, ...parsedValues, ...rest };
+        });
       }
     } catch (error) {
       logger.error('Something went wrong when creating app saml secrets:');
@@ -775,42 +808,20 @@ export async function publishAppConfig(path: string, app: App, remote: string): 
       if (existsSync(oauth2SecretsPath)) {
         const [oauth2Secrets] = (await readData(oauth2SecretsPath)) as [AppOAuth2Secret[], string];
 
-        logger.info(`Deleting existing oauth2 secrets from app ${app.id}`);
-        await axios.delete(`/api/apps/${app.id}/secrets/oauth2`, { baseURL: remote });
+        await publishLoginSecrets(app, 'oauth2', oauth2Secrets, remote, (oauth2Secret) => {
+          const { authorizationUrl, clientId, clientSecret, name, tokenUrl, userInfoUrl, ...rest } =
+            oauth2Secret;
 
-        if (oauth2Secrets.length) {
-          logger.info(`Publishing ${oauth2Secrets.length} app oauth2 secrets`);
+          const [parsedValues, missingValues] = parseValues('oauth2 secret', name, [
+            { authorizationUrl },
+            { tokenUrl },
+            { userInfoUrl },
+            { clientId },
+            { clientSecret },
+          ]);
 
-          for (const oauth2Secret of oauth2Secrets) {
-            const {
-              authorizationUrl,
-              clientId,
-              clientSecret,
-              name,
-              tokenUrl,
-              userInfoUrl,
-              ...rest
-            } = oauth2Secret;
-
-            const [parsedValues, missingValues] = parseValues('oauth2 secret', name, [
-              { authorizationUrl },
-              { tokenUrl },
-              { userInfoUrl },
-              { clientId },
-              { clientSecret },
-            ]);
-
-            if (missingValues) {
-              continue;
-            }
-
-            await axios.post(
-              `/api/apps/${app.id}/secrets/oauth2`,
-              { name, ...parsedValues, ...rest },
-              { baseURL: remote },
-            );
-          }
-        }
+          return missingValues ? undefined : { name, ...parsedValues, ...rest };
+        });
       }
     } catch (error) {
       logger.error('Something went wrong when creating app oauth2 secrets:');

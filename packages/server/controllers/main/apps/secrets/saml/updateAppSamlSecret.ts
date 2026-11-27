@@ -61,7 +61,10 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
   ctx.body = await appSamlSecret.update({
     ...body,
     emailAttribute: body.emailAttribute || DEFAULT_SAML_EMAIL_ATTRIBUTE,
+    emailVerifiedAttribute: body.emailVerifiedAttribute ?? null,
     groupAttribute: groupAttribute ?? null,
+    nameAttribute: body.nameAttribute ?? null,
+    objectIdAttribute: body.objectIdAttribute ?? null,
     roleMappings: roleMappings ?? null,
   });
   await touchApp(appId);

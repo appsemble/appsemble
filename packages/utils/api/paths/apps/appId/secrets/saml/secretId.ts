@@ -15,7 +15,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
         },
       },
     },
-    security: [{ studio: [] }],
+    security: [{ studio: [] }, { cli: ['apps:write'] }],
     responses: {
       200: {
         description: 'The updated SAML secret.',
@@ -30,7 +30,7 @@ export const pathItems: OpenAPIV3.PathItemObject = {
   delete: {
     tags: ['main', 'app', 'secret', 'saml'],
     operationId: 'deleteAppSamlSecret',
-    security: [{ studio: [] }],
+    security: [{ studio: [] }, { cli: ['apps:write'] }],
     responses: {
       204: {
         description: 'The deleted SAML secret.',

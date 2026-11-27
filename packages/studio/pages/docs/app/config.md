@@ -66,6 +66,11 @@ sensitive values, the pattern `{{ SECRET_VALUE }}` can be used and the value wil
 Variables and secrets defined in the config directory will automatically be created or updated when
 publishing or updating an app with the `appsemble app publish` and `appsemble app update` commands.
 
+OAuth2 and SAML secrets are matched by name. A secret with the same name is updated in place, so app
+members keep their linked login and the SAML identity provider keeps the same ACS URL. Names that
+are new get a new secret, and secrets with a name that is no longer in the file are deleted. Secrets
+that share a name are matched in file order with the existing ones in order of creation.
+
 ### Examples
 
 Variables, service secrets, OAuth2 secrets and SAML secrets must be defined in an JSON array of
