@@ -48,12 +48,31 @@ afterEach(() => {
   axios.defaults.adapter = transport;
 });
 
-function renderTest(): void {
+/**
+ * Let the provider return the login window to the Studio callback.
+ *
+ * @param authorizationUrl The URL the login window opened.
+ */
+function returnToCallback(authorizationUrl: URL): void {
+  render(
+    <IntlProvider locale="en" messages={{}}>
+      <MemoryRouter
+        initialEntries={[
+          `/callback?code=provider-code&state=${authorizationUrl.searchParams.get('state')}`,
+        ]}
+      >
+        <CallbackPage />
+      </MemoryRouter>
+    </IntlProvider>,
+  );
+}
+
+function renderTest(secretId = 7): void {
   render(
     <IntlProvider locale="en" messages={{}}>
       <SimpleForm defaultValues={secret} onSubmit={vi.fn()}>
         <SimpleFormField label="Client ID" name="clientId" />
-        <OAuth2SecretTest secretId={7} />
+        <OAuth2SecretTest secretId={secretId} />
       </SimpleForm>
     </IntlProvider>,
   );
@@ -105,20 +124,28 @@ it('should show which roles a test login resolves to', async () => {
   expect(url.searchParams.get('client_id')).toBe('appsemble');
   expect(url.searchParams.get('redirect_uri')).toBe('http://localhost/callback');
 
-  // The provider returns the login window to the Studio callback.
-  render(
-    <IntlProvider locale="en" messages={{}}>
-      <MemoryRouter
-        initialEntries={[`/callback?code=provider-code&state=${url.searchParams.get('state')}`]}
-      >
-        <CallbackPage />
-      </MemoryRouter>
-    </IntlProvider>,
-  );
+  returnToCallback(url);
 
   expect(
     await screen.findByText('No role matched, so this user can’t log in to the app.'),
   ).toBeDefined();
   expect(screen.getByText('/Editors')).toBeDefined();
   expect(JSON.parse(requests[0].data)).toMatchObject({ id: 7, code: 'provider-code' });
+});
+
+it('should finish a test login while another window has started one', async () => {
+  responses['/api/apps/42/secrets/oauth2/test-login'] = { user: { sub: 'user-1' }, roles: [] };
+  const open = vi.spyOn(window, 'open').mockReturnValue({} as Window);
+  vi.spyOn(window, 'close').mockImplementation(() => null);
+  // Two Studio windows share local storage and broadcast channels.
+  renderTest(7);
+  renderTest(8);
+
+  const [firstWindow, secondWindow] = screen.getAllByRole('button', { name: 'Try login' });
+  fireEvent.click(firstWindow);
+  fireEvent.click(secondWindow);
+  returnToCallback(new URL(open.mock.calls[0][0] as string));
+
+  await screen.findByText('No role matched, so this user can’t log in to the app.');
+  expect(requests.map(({ data }) => JSON.parse(data).id)).toStrictEqual([7]);
 });
