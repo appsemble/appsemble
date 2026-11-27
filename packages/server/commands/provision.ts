@@ -154,12 +154,6 @@ export async function provision({
       if (organization.deleted) {
         await organization.restore({ transaction });
       }
-      await organization.update(
-        {
-          name: organizationId,
-        },
-        { transaction },
-      );
       logger.info(`Updated organization ${organizationId}`);
     } else {
       organization = await Organization.create(

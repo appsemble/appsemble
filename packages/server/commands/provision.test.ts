@@ -3,7 +3,12 @@ import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { provision, type ProvisionOptions } from './provision.js';
-import { OAuth2ClientCredentials, OrganizationMember, User } from '../models/index.js';
+import {
+  OAuth2ClientCredentials,
+  Organization,
+  OrganizationMember,
+  User,
+} from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { reconcileDNS } from '../utils/dns/index.js';
@@ -92,6 +97,13 @@ describe('provision', () => {
       rotated: 200,
       roles: [PredefinedOrganizationRole.Maintainer],
     });
+  });
+
+  it('keeps the name of an existing organization', async () => {
+    await Organization.create({ id: 'example', name: 'Example Organization' });
+    await provision(options);
+
+    expect((await Organization.findByPk('example'))!.name).toBe('Example Organization');
   });
 
   it('refuses client credentials of another account', async () => {
