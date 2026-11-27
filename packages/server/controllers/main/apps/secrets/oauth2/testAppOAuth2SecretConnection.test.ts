@@ -2,6 +2,8 @@
  * These tests use real sockets, because axios-mock-adapter intercepts requests before the HTTP
  * agents that enforce SSRF protection are invoked.
  */
+import { type AddressInfo, createServer as createNetServer } from 'node:net';
+
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -232,6 +234,52 @@ describe('testAppOAuth2SecretConnection', () => {
       expect.objectContaining({ check: 'tokenUrl', status: 'fail', reason: 'blocked' }),
     );
     expect(target.connections).toBe(0);
+  });
+
+  it('should name a blocked host without the address it resolves to', async () => {
+    vi.stubEnv('VITEST_CONF_ALLOW_PRIVATE_IP_PROXY', '');
+    const url = 'http://localhost:9/realms/test/protocol/openid-connect';
+
+    const checks = await testConnection({
+      authorizationUrl: `${url}/auth`,
+      tokenUrl: `${url}/token`,
+      clientId: providerClientId,
+      clientSecret: providerClientSecret,
+      scope: 'openid',
+    });
+
+    expect(checks).toContainEqual({
+      check: 'tokenUrl',
+      status: 'fail',
+      reason: 'blocked',
+      detail: 'localhost resolves to a private or reserved address',
+    });
+    expect(JSON.stringify(checks)).not.toMatch(/127\.0\.0\.1|::1/);
+  });
+
+  it('should report a refused connection without the address the host resolves to', async () => {
+    const server = createNetServer();
+    await new Promise<void>((resolve) => {
+      server.listen(0, '127.0.0.1', resolve);
+    });
+    const { port } = server.address() as AddressInfo;
+    await new Promise((resolve) => {
+      server.close(resolve);
+    });
+    const url = `http://localhost:${port}/realms/test/protocol/openid-connect`;
+
+    const checks = await testConnection({
+      authorizationUrl: `${url}/auth`,
+      tokenUrl: `${url}/token`,
+      clientId: providerClientId,
+      clientSecret: providerClientSecret,
+      scope: 'openid',
+    });
+
+    expect(checks).toContainEqual(
+      expect.objectContaining({ check: 'tokenUrl', status: 'fail', reason: 'unreachable' }),
+    );
+    expect(JSON.stringify(checks)).not.toMatch(/127\.0\.0\.1|::1/);
   });
 
   it('should report endpoints which differ from the discovery document', async () => {

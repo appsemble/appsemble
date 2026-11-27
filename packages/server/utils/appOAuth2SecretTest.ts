@@ -118,13 +118,18 @@ export function describeRequestFailure(error: unknown): {
     };
   }
   const { code, message } = error as NodeJS.ErrnoException;
-  const detail = code ? `${code}: ${message}` : message;
+  // This is how request-filtering-agent rejects a connection to a private or reserved address.
+  const blockedHost = /host:(.*)\) is not allowed\. Because/.exec(message)?.[1];
+  if (blockedHost != null) {
+    return {
+      reason: 'blocked',
+      detail: `${blockedHost} resolves to a private or reserved address`,
+    };
+  }
+  // Network error messages contain the address a host name resolves to, so only the code is shown.
+  const detail = code ?? message;
   if (code === 'ECONNABORTED' || code === 'ETIMEDOUT') {
     return { reason: 'timeout', detail };
-  }
-  // This is how request-filtering-agent rejects a connection to a private or reserved address.
-  if (/ is not allowed\. Because/.test(message)) {
-    return { reason: 'blocked', detail };
   }
   if (code && /CERT|SSL|TLS|UNABLE_TO_(GET|VERIFY)/.test(code)) {
     return { reason: 'certificate', detail };
