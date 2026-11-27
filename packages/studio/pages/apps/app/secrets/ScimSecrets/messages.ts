@@ -17,7 +17,15 @@ export const messages = defineMessages({
   tenantUrlCopySuccess: { id: 'studio.IsDF9d', defaultMessage: 'Copied tenant URL to clipboard' },
   tenantUrlCopyError: { id: 'studio.NBoEQT', defaultMessage: 'Failed to copy tenant URL' },
   tokenLabel: { id: 'studio.sEJCEI', defaultMessage: 'SCIM token' },
-  tokenHelp: { id: 'studio.EHWpHU', defaultMessage: 'The secret SCIM token' },
+  tokenHelp: {
+    id: 'studio.BqHuPU',
+    defaultMessage: 'Copy the token now. It is not shown again.',
+  },
+  tokenSet: {
+    id: 'studio.nQG+a8',
+    defaultMessage: 'A SCIM token is set. Regenerate it to get a new token.',
+  },
+  tokenMissing: { id: 'studio.SvrseK', defaultMessage: 'No SCIM token is set yet.' },
   tokenCopySuccess: { id: 'studio.gbP/8K', defaultMessage: 'Copied token to clipboard' },
   tokenCopyError: { id: 'studio.L8rCdY', defaultMessage: 'Failed to copy token' },
   regenerate: { id: 'studio.w9ZBOn', defaultMessage: 'Regenerate SCIM token' },

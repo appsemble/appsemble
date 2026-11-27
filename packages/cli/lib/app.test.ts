@@ -686,6 +686,42 @@ describe('app', () => {
       expect(await compare('open sesame', app.password!)).toBe(true);
     });
 
+    it('should publish an app on the domain of the context', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+      await publishApp({
+        path: resolveFixture('apps/test'),
+        context: 'production',
+        organization: organization.id,
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+      });
+      vi.useFakeTimers();
+      const app = (await App.findOne())!;
+      expect(app.domain).toBe('app.example.com');
+    });
+
+    it('should publish an app on the domain passed as a flag', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+      await publishApp({
+        path: resolveFixture('apps/test'),
+        organization: organization.id,
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        domain: 'app.example.com',
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+      });
+      vi.useFakeTimers();
+      const app = (await App.findOne())!;
+      expect(app.domain).toBe('app.example.com');
+    });
+
     it('should publish seed app members with an app', async () => {
       vi.useRealTimers();
       const clientCredentials = await authorizeCLI('apps:write', testApp);
@@ -1693,6 +1729,70 @@ describe('app', () => {
       expect(await compare('open sesame', app.password!)).toBe(true);
     });
 
+    it('should set the domain of the context', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+
+      await updateApp({
+        id: app.id,
+        path: resolveFixture('apps/test'),
+        context: 'production',
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+        force: false,
+      });
+      vi.useFakeTimers();
+
+      await app.reload();
+      expect(app.domain).toBe('app.example.com');
+    });
+
+    it('should set the domain passed as a flag', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+
+      await updateApp({
+        id: app.id,
+        path: resolveFixture('apps/test'),
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        domain: 'app.example.com',
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+        force: false,
+      });
+      vi.useFakeTimers();
+
+      await app.reload();
+      expect(app.domain).toBe('app.example.com');
+    });
+
+    it('should keep the domain of the app if the context has none', async () => {
+      vi.useRealTimers();
+      await app.update({ domain: 'app.example.com' });
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+
+      await updateApp({
+        id: app.id,
+        path: resolveFixture('apps/test'),
+        context: 'notFound',
+        remote: testApp.defaults.baseURL!,
+        clientCredentials,
+        // Required defaults
+        visibility: 'unlisted',
+        iconBackground: '#ffffff',
+        force: false,
+      });
+      vi.useFakeTimers();
+
+      await app.reload();
+      expect(app.domain).toBe('app.example.com');
+    });
+
     it('should upload the seed assets of a demo app again on every update', async () => {
       vi.useRealTimers();
       const clientCredentials = await authorizeCLI('apps:write assets:write', testApp);
@@ -2682,6 +2782,209 @@ describe('app', () => {
       });
     });
 
+    it('should update login secrets by name and keep the app member links', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+      const {
+        AppMember,
+        AppOAuth2Authorization,
+        AppOAuth2Secret,
+        AppSamlAuthorization,
+        AppSamlSecret,
+      } = await getAppDB(app.id);
+      const oauth2Secret = {
+        icon: 'redhat',
+        authorizationUrl: 'http://localhost',
+        tokenUrl: 'http://localhost',
+        userInfoUrl: 'http://localhost',
+        clientId: 'id',
+        clientSecret: 'secret',
+        scope: 'openid',
+      };
+      const samlSecret = {
+        icon: 'redhat',
+        entityId: 'http://localhost',
+        ssoUrl: 'http://localhost',
+        idpCertificate: 'certificate',
+      };
+      const spKeys = { spCertificate: 'certificate', spPrivateKey: 'key', spPublicKey: 'key' };
+      const keptOAuth2 = await AppOAuth2Secret.create({
+        ...oauth2Secret,
+        name: 'kept',
+        remapper: [{ prop: 'email' }],
+      });
+      await AppOAuth2Secret.create({ ...oauth2Secret, name: 'removed' });
+      const keptSaml = await AppSamlSecret.create({
+        ...samlSecret,
+        ...spKeys,
+        name: 'kept',
+        emailVerifiedAttribute: 'email_verified',
+        nameAttribute: 'name',
+        objectIdAttribute: 'oid',
+      });
+      await AppSamlSecret.create({ ...samlSecret, ...spKeys, name: 'removed' });
+      const member = await AppMember.create({ email: 'member@example.com', role: 'Reader' });
+      await AppOAuth2Authorization.create({
+        AppOAuth2SecretId: keptOAuth2.id,
+        AppMemberId: member.id,
+        email: member.email,
+        accessToken: 'token',
+        sub: 'oauth2-subject',
+      });
+      await AppSamlAuthorization.create({
+        AppSamlSecretId: keptSaml.id,
+        AppMemberId: member.id,
+        email: member.email,
+        nameId: 'saml-subject',
+      });
+      process.env.TEST_KEPT_OAUTH2_CLIENT_ID = 'new-id';
+      const path = await mkdtemp(join(tmpdir(), 'app-config-'));
+      try {
+        await cp(resolveFixture('apps/test'), path, { recursive: true });
+        await rm(join(path, 'config'), { recursive: true });
+        await mkdir(join(path, 'config', 'secrets'), { recursive: true });
+        await writeFile(
+          join(path, 'config', 'secrets', 'oauth2.json'),
+          JSON.stringify([
+            { ...oauth2Secret, name: 'kept', clientId: '{{ TEST_KEPT_OAUTH2_CLIENT_ID }}' },
+            { ...oauth2Secret, name: 'added' },
+          ]),
+        );
+        await writeFile(
+          join(path, 'config', 'secrets', 'saml.json'),
+          JSON.stringify([
+            { ...samlSecret, name: 'kept', idpCertificate: 'new-certificate' },
+            { ...samlSecret, name: 'added' },
+          ]),
+        );
+
+        await updateApp({
+          id: app.id,
+          path,
+          remote: testApp.defaults.baseURL!,
+          clientCredentials,
+          // Required defaults
+          visibility: 'unlisted',
+          iconBackground: '#ffffff',
+          force: false,
+        });
+      } finally {
+        await rm(path, { recursive: true, force: true });
+        vi.useFakeTimers();
+      }
+
+      const appDB = await getAppDB(app.id);
+      expect({
+        oauth2: (await appDB.AppOAuth2Secret.findAll({ order: [['id', 'ASC']] })).map(
+          ({ clientId, id, name, remapper }) => ({ clientId, id, name, remapper }),
+        ),
+        oauth2Links: (await appDB.AppOAuth2Authorization.findAll()).map(
+          ({ AppMemberId, AppOAuth2SecretId }) => ({ AppMemberId, AppOAuth2SecretId }),
+        ),
+        saml: (await appDB.AppSamlSecret.findAll({ order: [['id', 'ASC']] })).map(
+          ({
+            emailVerifiedAttribute,
+            id,
+            idpCertificate,
+            name,
+            nameAttribute,
+            objectIdAttribute,
+          }) => ({
+            emailVerifiedAttribute,
+            id,
+            idpCertificate,
+            name,
+            nameAttribute,
+            objectIdAttribute,
+          }),
+        ),
+        samlLinks: (await appDB.AppSamlAuthorization.findAll()).map(
+          ({ AppMemberId, AppSamlSecretId }) => ({ AppMemberId, AppSamlSecretId }),
+        ),
+      }).toStrictEqual({
+        oauth2: [
+          { clientId: 'new-id', id: keptOAuth2.id, name: 'kept', remapper: null },
+          { clientId: 'id', id: expect.any(Number), name: 'added', remapper: null },
+        ],
+        oauth2Links: [{ AppMemberId: member.id, AppOAuth2SecretId: keptOAuth2.id }],
+        saml: [
+          {
+            emailVerifiedAttribute: null,
+            id: keptSaml.id,
+            idpCertificate: 'new-certificate',
+            name: 'kept',
+            nameAttribute: null,
+            objectIdAttribute: null,
+          },
+          {
+            emailVerifiedAttribute: null,
+            id: expect.any(Number),
+            idpCertificate: 'certificate',
+            name: 'added',
+            nameAttribute: null,
+            objectIdAttribute: null,
+          },
+        ],
+        samlLinks: [{ AppMemberId: member.id, AppSamlSecretId: keptSaml.id }],
+      });
+    });
+
+    it('should pair login secrets that share a name in order of creation', async () => {
+      vi.useRealTimers();
+      const clientCredentials = await authorizeCLI('apps:write', testApp);
+      const { AppOAuth2Secret } = await getAppDB(app.id);
+      const oauth2Secret = {
+        name: 'shared',
+        icon: 'redhat',
+        authorizationUrl: 'http://localhost',
+        tokenUrl: 'http://localhost',
+        userInfoUrl: 'http://localhost',
+        clientSecret: 'secret',
+        scope: 'openid',
+      };
+      const first = await AppOAuth2Secret.create({ ...oauth2Secret, clientId: 'first' });
+      const second = await AppOAuth2Secret.create({ ...oauth2Secret, clientId: 'second' });
+      // Without an order, Postgres lists an updated row after the others, so the first comes last.
+      await first.update({ scope: 'email' });
+      const path = await mkdtemp(join(tmpdir(), 'app-config-'));
+      try {
+        await cp(resolveFixture('apps/test'), path, { recursive: true });
+        await rm(join(path, 'config'), { recursive: true });
+        await mkdir(join(path, 'config', 'secrets'), { recursive: true });
+        await writeFile(
+          join(path, 'config', 'secrets', 'oauth2.json'),
+          JSON.stringify([
+            { ...oauth2Secret, clientId: 'one' },
+            { ...oauth2Secret, clientId: 'two' },
+          ]),
+        );
+
+        await updateApp({
+          id: app.id,
+          path,
+          remote: testApp.defaults.baseURL!,
+          clientCredentials,
+          // Required defaults
+          visibility: 'unlisted',
+          iconBackground: '#ffffff',
+          force: false,
+        });
+      } finally {
+        await rm(path, { recursive: true, force: true });
+        vi.useFakeTimers();
+      }
+
+      const appDB = await getAppDB(app.id);
+      expect(
+        (await appDB.AppOAuth2Secret.findAll({ order: [['id', 'ASC']] })).map(
+          ({ clientId, id }) => ({ clientId, id }),
+        ),
+      ).toStrictEqual([
+        { clientId: 'one', id: first.id },
+        { clientId: 'two', id: second.id },
+      ]);
+    });
+
     it('should update an app with `app.locked` set to `fullLock` if force is specified', async () => {
       await app.update({ locked: 'fullLock' });
       const clientCredentials = await authorizeCLI('apps:write', testApp);
@@ -3201,6 +3504,9 @@ describe('app', () => {
         "context": {
           "notFound": {
             "organization": "testorganization",
+          },
+          "production": {
+            "domain": "app.example.com",
           },
           "resolve": {
             "id": 5,

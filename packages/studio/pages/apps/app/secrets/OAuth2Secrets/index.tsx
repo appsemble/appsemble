@@ -41,10 +41,11 @@ export function OAuth2Secrets(): ReactNode {
   );
 
   const create = useCallback(
-    async ({ remapper, scope, ...values }: AppOAuth2Secret) => {
+    async ({ remapper, roleMappings, scope, ...values }: AppOAuth2Secret) => {
       const { data } = await axios.post<AppOAuth2Secret>(`/api/apps/${app.id}/secrets/oauth2`, {
         ...values,
         remapper: remapper || undefined,
+        roleMappings: roleMappings ?? undefined,
         scope: [].concat(scope).sort().join(' '),
       });
       modal.disable();

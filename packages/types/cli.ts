@@ -211,6 +211,11 @@ export interface AppsembleContext {
   s3Bucket?: string;
 
   /**
+   * The domain name on which the app is served.
+   */
+  domain?: string;
+
+  /**
    * Languages officially supported by the app
    */
   supportedLanguages?: string[];

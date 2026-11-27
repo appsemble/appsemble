@@ -81,7 +81,7 @@ Here’s an example of how you can use this action to fetch the `person` resourc
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.42.0
+    version: 0.42.3
     actions:
       onLoad:
         type: resource.get
@@ -101,7 +101,7 @@ example of how you can use this action to fetch the `person` resource.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.42.0
+    version: 0.42.3
     actions:
       onLoad:
         type: resource.history.get
@@ -132,7 +132,7 @@ Here is an example of how you can use this action to update the positions of a r
 ```yaml
 blocks:
   - type: list
-    version: 0.42.0
+    version: 0.42.3
     actions:
       onDrop:
         type: resource.update.positions
@@ -168,7 +168,7 @@ Here is an example of how you can use this action to move a resource to a differ
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.42.0
+    version: 0.42.3
     parameters:
       icon: arrows-alt
     actions:
@@ -198,7 +198,7 @@ fetch all `person` resources.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.42.0
+    version: 0.42.3
     actions:
       onLoad:
         type: resource.query
@@ -218,7 +218,7 @@ fetch the number of resources.
 ```yaml validate blocks-snippet
 blocks:
   - type: data-loader
-    version: 0.42.0
+    version: 0.42.3
     actions:
       onLoad:
         type: resource.count
@@ -237,7 +237,7 @@ you can use this action to create a new resource of type person.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.42.0
+    version: 0.42.3
     actions:
       onSubmit:
         type: resource.create
@@ -270,7 +270,7 @@ retries if another write wins first.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.42.0
+    version: 0.42.3
     parameters:
       fields:
         - type: string
@@ -317,6 +317,10 @@ permissions `$resource:all:patch`, `$resource:all:own:patch`, `$resource:<resour
 [security](../app/security.md#permissions). Here’s an example of how you can partially update a
 resource of type person using this action.
 
+Set a property to `null` to clear it. The value is stored as `null` if the property's schema allows
+it, otherwise the property is removed. A cleared file property deletes its asset, unless the
+resource keeps history. A required property can only be set to `null` if its schema allows it.
+
 As with `resource.update`, optimistic concurrency is automatic: the `$etag` present in the action's
 input data (typically from a prior `resource.get`) is sent as `If-Match`, and a conflicting
 concurrent write returns `412 Precondition Failed`. Input without `$etag` — including view results —
@@ -329,7 +333,7 @@ retries if another write wins first.
 ```yaml validate blocks-snippet
 blocks:
   - type: form
-    version: 0.42.0
+    version: 0.42.3
     parameters:
       fields:
         - type: string
@@ -405,7 +409,7 @@ To delete a person resource, you can use the following block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.42.0
+    version: 0.42.3
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -438,7 +442,7 @@ To delete all person resources, you can use the following block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.42.0
+    version: 0.42.3
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -472,7 +476,7 @@ following block of code.
 ```yaml validate blocks-snippet
 blocks:
   - type: button-list
-    version: 0.42.0
+    version: 0.42.3
     parameters:
       buttons:
         - label: { translate: cancel }
@@ -503,7 +507,7 @@ use this action to subscribe to all the updates made to the resource person:
 ```yaml validate blocks-snippet
 blocks:
   - type: table
-    version: 0.42.0
+    version: 0.42.3
     parameters:
       fields:
         - value: { prop: firstName }
@@ -527,7 +531,7 @@ to unsubscribe to the delete notifications related to resource person.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.42.0
+    version: 0.42.3
     parameters:
       icon: bell-slash
     actions:
@@ -548,7 +552,7 @@ action.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.42.0
+    version: 0.42.3
     parameters:
       icon: toggle-on
     actions:
@@ -568,7 +572,7 @@ example of usage of this action.
 ```yaml validate blocks-snippet
 blocks:
   - type: action-button
-    version: 0.42.0
+    version: 0.42.3
     parameters:
       icon: envelope
     actions:

@@ -445,7 +445,16 @@ export async function initAppDB(
 
   // Soft-deleted apps keep their database, so it can be migrated and the app restored.
   const app = (await mainDB.models.App.findOne({
-    attributes: ['id', 'dbName', 'dbHost', 'dbPort', 'dbUser', 'dbPassword', 'definition'],
+    attributes: [
+      'id',
+      'dbName',
+      'dbHost',
+      'dbPort',
+      'dbUser',
+      'dbPassword',
+      'definition',
+      'demoMode',
+    ],
     where: { id: appId },
     paranoid: false,
     transaction,

@@ -103,6 +103,20 @@ describe('patchAppMemberPassword', () => {
     ).toBeNull();
   });
 
+  it('should keep the custom properties of the app member', async () => {
+    await member.update({ properties: { department: 'Support' } });
+    authorizeAppMember(app, member);
+
+    await request.patch(`/api/apps/${app.id}/auth/email/password`, {
+      newPassword: 'new password',
+      currentPassword: 'testpassword',
+    });
+
+    await member.reload();
+    expect(await compare('new password', member.password!)).toBe(true);
+    expect(member.properties).toStrictEqual({ department: 'Support' });
+  });
+
   it('should return a 401 Unauthorized if logged in but current password input is wrong', async () => {
     authorizeAppMember(app, member);
     const response = await request.patch(`/api/apps/${app.id}/auth/email/password`, {

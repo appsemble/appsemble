@@ -8,7 +8,7 @@ import {
 } from '@appsemble/react-components';
 import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactNode } from 'react';
+import { type ChangeEvent, type ReactNode, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -17,7 +17,7 @@ import { useApp } from '../../index.js';
 
 interface ScimSecret {
   enabled: boolean;
-  token: string;
+  incomplete: boolean;
 }
 
 export function ScimSecrets(): ReactNode {
@@ -28,6 +28,7 @@ export function ScimSecrets(): ReactNode {
   const url = `/api/apps/${app.id}/secrets/scim`;
 
   const result = useData<ScimSecret>(url);
+  const [token, setToken] = useState<string>();
 
   const toggle = async (event: ChangeEvent, enabled: boolean): Promise<void> => {
     try {
@@ -46,9 +47,10 @@ export function ScimSecrets(): ReactNode {
     confirmLabel: <FormattedMessage {...messages.confirmGenerate} />,
     async action() {
       try {
-        const token = randomString();
-        const { data } = await axios.patch(url, { token });
+        const newToken = randomString();
+        const { data } = await axios.patch(url, { token: newToken });
         result.setData(data);
+        setToken(newToken);
         refreshWarnings();
       } catch {
         push(formatMessage(messages.submitError));
@@ -81,15 +83,23 @@ export function ScimSecrets(): ReactNode {
             type="url"
             value={`${window.location.origin}/api/apps/${app.id}/scim`}
           />
-          <FormOutput
-            copyErrorMessage={formatMessage(messages.tokenCopyError)}
-            copySuccessMessage={formatMessage(messages.tokenCopySuccess)}
-            help={<FormattedMessage {...messages.tokenHelp} />}
-            icon="user"
-            label={<FormattedMessage {...messages.tokenLabel} />}
-            name="token"
-            value={secret.token}
-          />
+          {token ? (
+            <FormOutput
+              copyErrorMessage={formatMessage(messages.tokenCopyError)}
+              copySuccessMessage={formatMessage(messages.tokenCopySuccess)}
+              help={<FormattedMessage {...messages.tokenHelp} />}
+              icon="user"
+              label={<FormattedMessage {...messages.tokenLabel} />}
+              name="token"
+              value={token}
+            />
+          ) : (
+            <p className="mb-3">
+              <FormattedMessage
+                {...(secret.incomplete ? messages.tokenMissing : messages.tokenSet)}
+              />
+            </p>
+          )}
           <Button color="primary" onClick={regenerate}>
             <FormattedMessage {...messages.regenerate} />
           </Button>

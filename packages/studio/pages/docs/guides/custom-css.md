@@ -131,7 +131,7 @@ same name may be reused elsewhere to style the same role everywhere with one rul
 ```yaml copy
 blocks:
   - type: markdown
-    version: 0.42.0
+    version: 0.42.3
     name: screen-title
     parameters:
       content: '# Welcome'

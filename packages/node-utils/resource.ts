@@ -307,6 +307,10 @@ export async function processResourceBody(
   );
 
   validator.customFormats.binary = (input) => {
+    // Whether null is allowed is up to the type of the property.
+    if (input == null) {
+      return true;
+    }
     if (knownAssetIds.includes(input)) {
       reusedAssets.add(input);
       return true;
@@ -359,6 +363,23 @@ export async function processResourceBody(
       ),
     },
   };
+  if (isPatchRequest) {
+    // A patch with null clears an optional property. If its schema does not allow null, the value
+    // becomes undefined, which validation treats as absent and storing the merged data drops.
+    for (const item of [resource].flat()) {
+      for (const [name, propertySchema] of Object.entries(definition.schema.properties ?? {})) {
+        if (
+          Object.hasOwn(item, name) &&
+          item[name] == null &&
+          !definition.schema.required?.includes(name) &&
+          !validator.validate(null, propertySchema).valid
+        ) {
+          item[name] = undefined;
+        }
+      }
+    }
+  }
+
   const expiresDuration = definition.expires ? parseDuration(definition.expires) : undefined;
   const result = validator.validate(
     resource,
@@ -469,6 +490,34 @@ export async function processResourceBody(
   }
 
   return [resource, preparedAssets, knownAssetIds.filter((id) => !reusedAssets.has(id))];
+}
+
+/**
+ * Get the IDs of the assets which resource data no longer references by ID or name.
+ *
+ * A thumbnail asset counts as referenced as long as the ID of its source asset is.
+ *
+ * @param assets The assets to check.
+ * @param data The resource data which may reference the assets.
+ * @returns The IDs of the assets which the data does not reference.
+ */
+export function getDereferencedAssetIds(
+  assets: { id: string; name?: string }[],
+  data: unknown,
+): string[] {
+  const values = new Set<unknown>();
+  JSON.stringify(data, (key, value) => {
+    values.add(value);
+    return value;
+  });
+  return assets
+    .filter(
+      ({ id, name }) =>
+        !values.has(id) &&
+        !values.has(id.replace(/-thumbnail$/, '')) &&
+        !(name != null && values.has(name)),
+    )
+    .map(({ id }) => id);
 }
 
 /**

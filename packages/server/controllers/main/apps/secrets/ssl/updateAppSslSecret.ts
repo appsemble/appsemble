@@ -4,6 +4,7 @@ import { type Context } from 'koa';
 
 import { App } from '../../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
+import { isSecretIncomplete } from '../../../../../utils/secrets.js';
 
 export async function updateAppSslSecret(ctx: Context): Promise<void> {
   const {
@@ -13,7 +14,9 @@ export async function updateAppSslSecret(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: ['domain', 'id', 'OrganizationId'] });
+  const app = await App.findByPk(appId, {
+    attributes: ['domain', 'id', 'OrganizationId', 'sslCertificate', 'sslKey'],
+  });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 
   await checkUserOrganizationPermissions({
@@ -24,11 +27,11 @@ export async function updateAppSslSecret(ctx: Context): Promise<void> {
 
   await app.update({
     sslCertificate: certificate?.trim() || null,
-    sslKey: key?.trim() || null,
+    ...(key === undefined ? {} : { sslKey: key.trim() || null }),
   });
 
   ctx.body = {
     certificate: app.sslCertificate,
-    key: app.sslKey,
+    incomplete: isSecretIncomplete(app.sslKey),
   };
 }

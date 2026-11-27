@@ -97,6 +97,10 @@ spec:
               value: {{ include "appsemble.host" . }}
             - name: FORCE_PROTOCOL_HTTPS
               value: {{ .Values.forceProtocolHttps | quote }}
+            - name: SERVICE_NAME
+              value: {{ include "appsemble.fullname" . }}
+            - name: SERVICE_PORT
+              value: http
             {{ if .Values.ingress.enabled -}}
             - name: APP_DOMAIN_STRATEGY
               value: kubernetes-ingress
@@ -104,10 +108,6 @@ spec:
               value: {{ .Values.ingress.className | quote }}
             - name: INGRESS_ANNOTATIONS
               value: {{ .Values.ingress.annotations | toJson | quote }}
-            - name: SERVICE_NAME
-              value: {{ include "appsemble.fullname" . }}
-            - name: SERVICE_PORT
-              value: http
 {{ include "appsemble.dns" . | indent 12 }}
             {{- end }}
             - name: SECRET

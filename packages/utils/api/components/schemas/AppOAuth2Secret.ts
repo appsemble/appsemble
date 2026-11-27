@@ -3,7 +3,7 @@ import { type OpenAPIV3 } from 'openapi-types';
 export const AppOAuth2Secret: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'Settings for login in apps using third party OAuth2 providers',
-  required: ['authorizationUrl', 'clientId', 'clientSecret', 'icon', 'name', 'scope', 'tokenUrl'],
+  required: ['authorizationUrl', 'clientId', 'icon', 'name', 'scope', 'tokenUrl'],
   additionalProperties: false,
   properties: {
     id: {
@@ -32,7 +32,9 @@ export const AppOAuth2Secret: OpenAPIV3.NonArraySchemaObject = {
     },
     clientSecret: {
       type: 'string',
-      description: 'The OAuth2 client secret.',
+      description:
+        'The OAuth2 client secret. Responses never include it. An update without it keeps the stored value, unless the update changes the token URL.',
+      writeOnly: true,
     },
     icon: {
       type: 'string',

@@ -126,4 +126,24 @@ describe('resource cleanup', () => {
       });
     },
   );
+
+  it('should keep the asset of a file resource.patch leaves out', async () => {
+    const action: ActionDefinition = { type: 'resource.patch', resource: 'testAssets' };
+    const app = await exampleApp('testorg', action);
+    const { Asset, Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({ type: 'testAssets', data: { file: 'old-asset' } });
+    await Asset.create({ id: 'old-asset', ResourceId: resource.id });
+
+    const result = await handleAction(resourceActions.patch as any, {
+      app,
+      action,
+      mailer,
+      data: { id: resource.id },
+      options,
+      context: {} as any,
+    });
+
+    expect(result).toMatchObject({ id: resource.id, file: 'old-asset' });
+    expect(await Asset.findByPk('old-asset')).not.toBeNull();
+  });
 });

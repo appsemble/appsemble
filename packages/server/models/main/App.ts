@@ -200,7 +200,7 @@ export class App extends Model {
   declare scimEnabled: boolean;
 
   @Column(DataType.BLOB)
-  declare scimToken?: Buffer;
+  declare scimToken?: Buffer | null;
 
   @Column(DataType.TEXT)
   declare controllerCode?: string;

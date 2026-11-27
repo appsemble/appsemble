@@ -1025,8 +1025,10 @@ export interface AppOAuth2Secret extends OAuth2Provider {
 
   /**
    * The OAuth2 client secret used to identify Appsemble as a client to the authorization server.
+   *
+   * The API never returns it.
    */
-  clientSecret: string;
+  clientSecret?: string;
 
   /**
    * The URL where tokens may be requested using the authorization code flow.

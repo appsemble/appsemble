@@ -21,8 +21,8 @@ export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
     requiredPermissions: [OrganizationPermission.QueryAppSecrets],
   });
 
-  ctx.body = appOAuth2Secrets.map((secret) => ({
-    ...secret.toJSON(),
-    incomplete: isSecretIncomplete(secret.clientSecret),
-  }));
+  ctx.body = appOAuth2Secrets.map((secret) => {
+    const { clientSecret, ...configuration } = secret.toJSON();
+    return { ...configuration, incomplete: isSecretIncomplete(clientSecret) };
+  });
 }

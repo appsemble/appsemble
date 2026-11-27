@@ -575,8 +575,16 @@ export function createAppMemberModel(sequelize: Sequelize): typeof AppMemberGlob
       AppMember.addHook('beforeCreate', 'validateAppMemberProperties', (instance: AppMember) =>
         validateAppMemberProperties(instance, app, models.Resource),
       );
-      AppMember.addHook('beforeUpdate', 'validateAppMemberProperties', (instance: AppMember) =>
-        validateAppMemberProperties(instance, app, models.Resource),
+      AppMember.addHook(
+        'beforeUpdate',
+        'validateAppMemberProperties',
+        async (instance: AppMember) => {
+          // Validating properties that are not being set would overwrite properties that were not
+          // loaded, and let properties that are not valid block unrelated updates.
+          if (instance.changed('properties')) {
+            await validateAppMemberProperties(instance, app, models.Resource);
+          }
+        },
       );
     }
 

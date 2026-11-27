@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/vscode-extension",
-  "version": "0.42.0",
+  "version": "0.42.3",
   "private": true,
   "displayName": "Appsemble",
   "description": "Visual Studio Code extension for the Appsemble language server.",
@@ -71,7 +71,7 @@
     "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
-    "@types/node": "24.13.3",
+    "@types/node": "24.19.2",
     "@types/vscode": "1.146.0"
   }
 }

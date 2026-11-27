@@ -12,6 +12,7 @@ import {
   normalizeLoginRoleMappings,
   validateLoginRoleMappings,
 } from '../../../../../utils/loginRoleMappings.js';
+import { isSecretIncomplete } from '../../../../../utils/secrets.js';
 
 export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
   const {
@@ -54,5 +55,6 @@ export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
   const { AppOAuth2Secret } = await getAppDB(appId);
   const { id } = await AppOAuth2Secret.create(normalizedBody);
   await touchApp(appId);
-  ctx.body = { ...normalizedBody, id };
+  const { clientSecret, ...configuration } = normalizedBody;
+  ctx.body = { ...configuration, id, incomplete: isSecretIncomplete(clientSecret) };
 }

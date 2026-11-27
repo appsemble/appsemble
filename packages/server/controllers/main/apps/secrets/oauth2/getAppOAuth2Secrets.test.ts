@@ -55,7 +55,7 @@ describe('getAppOAuth2Secrets', () => {
     vi.useRealTimers();
   });
 
-  it('should return OAuth2 secrets for an app', async () => {
+  it('should return OAuth2 secrets for an app without their client secret', async () => {
     const { AppOAuth2Secret } = await getAppDB(app.id);
     const secret = await AppOAuth2Secret.create({
       authorizationUrl: 'https://example.com/oauth/authorize',
@@ -79,7 +79,6 @@ describe('getAppOAuth2Secrets', () => {
         {
           "authorizationUrl": "https://example.com/oauth/authorize",
           "clientId": "example_client_id",
-          "clientSecret": "example_client_secret",
           "created": "1970-01-01T00:00:00.000Z",
           "icon": "example",
           "id": 1,

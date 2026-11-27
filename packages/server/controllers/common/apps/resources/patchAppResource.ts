@@ -3,6 +3,7 @@ import {
   type AssetOwner,
   deleteAppAssetObjects,
   getCompressedFileMeta,
+  getDereferencedAssetIds,
   getResourceDefinition,
   getSingleGroupId,
   logger,
@@ -161,11 +162,18 @@ export async function patchAppResource(ctx: Context): Promise<void> {
             { transaction },
           ),
         );
-      } else if (deletedAssetIds.length) {
-        promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
-        transaction.afterCommit(async () => {
-          await deleteAppAssetsWithLogging(app, deletedAssetIds);
-        });
+      } else {
+        // Assets of properties the patch leaves out stay referenced.
+        const dereferencedAssetIds = getDereferencedAssetIds(
+          appAssets.filter((asset) => deletedAssetIds.includes(asset.id)),
+          data,
+        );
+        if (dereferencedAssetIds.length) {
+          promises.push(Asset.destroy({ where: { id: dereferencedAssetIds }, transaction }));
+          transaction.afterCommit(async () => {
+            await deleteAppAssetsWithLogging(app, dereferencedAssetIds);
+          });
+        }
       }
 
       await Promise.all(promises);
