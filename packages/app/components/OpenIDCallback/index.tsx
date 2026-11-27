@@ -84,10 +84,11 @@ export function OpenIDCallback(): VNode {
   }, [authorizationCodeLogin, code, isOk, session, shouldLink]);
 
   useEffect(() => {
-    if (!shouldLink && !stateOk) {
+    // A member who goes back to the callback after it handed off has nothing left to complete.
+    if (!shouldLink && !totpPending && !isLoggedIn && !stateOk) {
       push({ body: formatMessage(messages.loginIncomplete), color: 'warning', dismissable: true });
     }
-  }, [formatMessage, push, shouldLink, stateOk]);
+  }, [formatMessage, isLoggedIn, push, shouldLink, stateOk, totpPending]);
 
   useEffect(() => {
     // A pending TOTP challenge navigates away from this component just like a completed login
@@ -99,10 +100,6 @@ export function OpenIDCallback(): VNode {
 
   if (shouldLink) {
     return <Redirect to={`/${loginSegment}`} />;
-  }
-
-  if (!stateOk) {
-    return <Redirect to={`/${lang}/${loginSegment}`} />;
   }
 
   // The authorization code was valid, but a second factor still has to be verified, which happens
@@ -118,11 +115,16 @@ export function OpenIDCallback(): VNode {
         to={
           showDemoLogin
             ? `/${loginSegment}`
-            : session.redirect ||
+            : session?.redirect ||
               `/${lang}/${getPagePathSegment({ name: defaultPageName }, getAppMessage)}`
         }
       />
     );
+  }
+
+  // Without its state this callback can never complete, so going back skips it.
+  if (!stateOk) {
+    return <Redirect replace to={`/${lang}/${loginSegment}`} />;
   }
 
   if (!isOk) {

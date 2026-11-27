@@ -109,6 +109,39 @@ describe('OpenIDCallback', () => {
     expect(authorizationCodeLogin).not.toHaveBeenCalled();
   });
 
+  it('should go back to the page before a callback that cannot be completed', async () => {
+    loadOAuth2State.mockReturnValue(null);
+    mockAppMember();
+    window.history.replaceState(null, '', '/en/home');
+    window.history.pushState(null, '', '/en/Callback');
+
+    renderCallback();
+    await screen.findByText('Login page');
+    window.history.back();
+
+    expect(await screen.findByText('Home page')).not.toBeNull();
+  });
+
+  it.each([
+    { case: 'logged in', member: { isLoggedIn: true }, page: 'Home page' },
+    {
+      case: 'verifying TOTP',
+      member: { totpPending: { totpEnabled: true, totpToken: 'token' } },
+      page: 'Login page',
+    },
+  ])('should not ask a member who is $case to log in again', async ({ member, page }) => {
+    // Going back to the callback after it handed off finds its state cleared.
+    loadOAuth2State.mockReturnValue(null);
+    mockAppMember(member);
+
+    renderCallback();
+
+    expect(await screen.findByText(page)).not.toBeNull();
+    expect(
+      screen.queryByText('Logging in could not be completed. Please log in again.'),
+    ).toBeNull();
+  });
+
   it('should clear the OAuth2 state when handing off to the TOTP challenge', async () => {
     mockAppMember({
       totpPending: { totpEnabled: false, totpToken: 'token', redirect: '/en/deep/link' },
