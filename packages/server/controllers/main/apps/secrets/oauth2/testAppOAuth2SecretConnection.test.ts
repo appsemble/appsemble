@@ -111,6 +111,22 @@ describe('testAppOAuth2SecretConnection', () => {
     });
   });
 
+  it('should report a token URL the provider does not serve', async () => {
+    const provider = await serveOAuth2Provider();
+
+    const checks = await testConnection({
+      ...provider,
+      tokenUrl: `${provider.tokenUrl}x`,
+      clientId: providerClientId,
+      clientSecret: providerClientSecret,
+      scope: 'openid',
+    });
+
+    expect(checks).toContainEqual(
+      expect.objectContaining({ check: 'tokenUrl', status: 'fail', reason: 'httpError' }),
+    );
+  });
+
   it('should test with the stored client secret if the form omits it', async () => {
     const provider = await serveOAuth2Provider();
     const { AppOAuth2Secret } = await getAppDB(app.id);
