@@ -43,6 +43,11 @@ export interface OAuth2ProviderOptions {
    * Serve HTTPS with a self-signed certificate.
    */
   https?: boolean;
+
+  /**
+   * The loopback address to listen on, by default 127.0.0.1.
+   */
+  address?: string;
 }
 
 function createSelfSignedCertificate(): { cert: string; key: string } {
@@ -89,7 +94,7 @@ async function answerTokenRequest(
 }
 
 /**
- * Serve an OAuth2 provider like Keycloak on 127.0.0.1, which knows one client.
+ * Serve an OAuth2 provider like Keycloak on a loopback address, which knows one client.
  *
  * The provider is closed when the current test finishes.
  *
@@ -99,6 +104,7 @@ async function answerTokenRequest(
 export async function serveOAuth2Provider(
   options: OAuth2ProviderOptions = {},
 ): Promise<OAuth2Provider> {
+  const { address = '127.0.0.1' } = options;
   let base = '';
   const realm = '/realms/test';
   const endpoints = {
@@ -140,9 +146,9 @@ export async function serveOAuth2Provider(
     server.close();
   });
   await new Promise<void>((resolve) => {
-    server.listen(0, '127.0.0.1', resolve);
+    server.listen(0, address, resolve);
   });
-  base = `${options.https ? 'https' : 'http'}://127.0.0.1:${(server.address() as AddressInfo).port}`;
+  base = `${options.https ? 'https' : 'http'}://${address}:${(server.address() as AddressInfo).port}`;
   return {
     authorizationUrl: `${base}${endpoints.authorizationUrl}`,
     tokenUrl: `${base}${endpoints.tokenUrl}`,

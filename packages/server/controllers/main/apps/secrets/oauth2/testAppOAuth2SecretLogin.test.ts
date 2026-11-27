@@ -3,7 +3,7 @@
  */
 import { PredefinedOrganizationRole } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App, getAppDB, Organization, OrganizationMember } from '../../../../../models/index.js';
 import { setArgv } from '../../../../../utils/argv.js';
@@ -13,6 +13,7 @@ import {
   createTestUser,
   unauthorize,
 } from '../../../../../utils/test/authorization.js';
+import { countConnections } from '../../../../../utils/test/countConnections.js';
 import {
   type OAuth2Provider,
   providerClientId,
@@ -58,6 +59,10 @@ describe('testAppOAuth2SecretLogin', () => {
     authorizeStudio(user);
   });
 
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it('should show what a login reads without logging anyone in', async () => {
     const { data } = await testLogin({
       roleMappings: [
@@ -95,6 +100,21 @@ describe('testAppOAuth2SecretLogin', () => {
         detail: 'HTTP 400: invalid_grant: Code not valid',
       },
     });
+  });
+
+  it('should not connect to a user info URL at a private address', async () => {
+    vi.stubEnv('VITEST_CONF_ALLOW_PRIVATE_IP_PROXY', '');
+    vi.stubEnv('SSRF_ALLOW_IP_ADDRESS_LIST', '127.0.0.2');
+    const allowedProvider = await serveOAuth2Provider({ address: '127.0.0.2' });
+    const target = await countConnections();
+
+    const { data } = await testLogin({
+      ...allowedProvider,
+      userInfoUrl: `http://127.0.0.1:${target.port}/userinfo`,
+    });
+
+    expect(data).toMatchObject({ error: { check: 'userInfoUrl', reason: 'blocked' } });
+    expect(target.connections).toBe(0);
   });
 
   it('should require a Studio login', async () => {
