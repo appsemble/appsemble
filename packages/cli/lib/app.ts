@@ -1288,6 +1288,11 @@ interface PublishAppParams {
   s3Bucket?: string;
 
   /**
+   * The domain name on which the app is served.
+   */
+  domain?: string;
+
+  /**
    * The TOTP (two-factor authentication) setting for the app.
    */
   totp?: AppTotp;
@@ -1378,6 +1383,7 @@ export async function publishApp({
   const dbPort = appsembleContext.dbPort ?? options.dbPort;
   const dbUser = appsembleContext.dbUser ?? options.dbUser;
   const s3Bucket = appsembleContext.s3Bucket ?? options.s3Bucket;
+  const domain = appsembleContext.domain ?? options.domain;
   const skipGroupInvites = appsembleContext.skipGroupInvites ?? options.skipGroupInvites ?? false;
   const totp = appsembleContext.totp ?? options.totp;
   const { dbPassword } = options;
@@ -1424,6 +1430,10 @@ export async function publishApp({
 
   if (s3Bucket) {
     formData.append('s3Bucket', s3Bucket);
+  }
+
+  if (domain) {
+    formData.append('domain', domain);
   }
 
   if (supportedLanguages?.length) {
@@ -1740,6 +1750,11 @@ interface UpdateAppParams {
   s3Bucket?: string;
 
   /**
+   * The domain name on which the app is served.
+   */
+  domain?: string;
+
+  /**
    * The TOTP (two-factor authentication) setting for the app.
    */
   totp?: AppTotp;
@@ -1830,6 +1845,7 @@ export async function updateApp({
   const dbPort = appsembleContext.dbPort ?? options.dbPort;
   const dbUser = appsembleContext.dbUser ?? options.dbUser;
   const s3Bucket = appsembleContext.s3Bucket ?? options.s3Bucket;
+  const domain = appsembleContext.domain ?? options.domain;
   const totp = appsembleContext.totp ?? options.totp;
   const { dbPassword } = options;
 
@@ -1872,6 +1888,10 @@ export async function updateApp({
 
   if (s3Bucket) {
     formData.append('s3Bucket', s3Bucket);
+  }
+
+  if (domain) {
+    formData.append('domain', domain);
   }
 
   if (supportedLanguages?.length) {

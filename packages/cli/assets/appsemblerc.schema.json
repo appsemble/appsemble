@@ -220,6 +220,11 @@
             "type": "string",
             "description": "The pre-provisioned S3 bucket that holds the app’s assets."
           },
+          "domain": {
+            "type": "string",
+            "format": "hostname",
+            "description": "The domain name on which the app is served."
+          },
           "supportedLanguages": {
             "type": "array",
             "description": "Languages officially supported by the app",
