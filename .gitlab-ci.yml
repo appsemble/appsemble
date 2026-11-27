@@ -1727,6 +1727,7 @@ production:
   needs:
     - publish docker
     - publish helm
+    - helm package
   rules:
     # Deploy stable and test prerelease tags; hotfix prerelease tags skip production.
     - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+(-test\.\d+)?$/'
@@ -1738,26 +1739,6 @@ production:
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:production"
     - kubectl config set-context --current --namespace default
-    - helm repo add appsemble https://charts.appsemble.com
-    # Prevent a finished job without chart actually serving.
-    - |
-      retries=0
-      found=0
-      while [ $retries -lt 100 ] && [ $found -ne 1 ]; do
-        helm repo update
-        if helm search repo appsemble/appsemble --version "$CI_COMMIT_TAG" --fail-on-no-result; then
-          echo "Chart found!"
-          found=1
-        else
-          echo "Chart version $CI_COMMIT_TAG not found, retrying in 5 seconds..."
-          sleep 5
-          retries=$((retries + 1))
-        fi
-      done
-      if [ $found -ne 1 ]; then
-        echo "Maximum number of attempts reached. Chart not found."
-        exit 1
-      fi
     - '[ -n "$BACKUPS_HOST" ] || { echo "Please set BACKUPS_HOST for production backup destination" >&2; exit 1; }'
     # Keep Mailpit in production.
     # Only remove this after verifying the mail demo app works without the production Mailpit SMTP sink.
@@ -1771,10 +1752,9 @@ production:
     # The CloudNativePG cluster lives outside the release (appsemble/infra).
     - kubectl wait --for=condition=Ready "cluster.postgresql.cnpg.io/$POSTGRESQL_CLUSTER" --timeout=1m
     - kubectl rollout restart deployment appsemble-mailpit || true
-    - helm upgrade appsemble appsemble/appsemble
+    - helm upgrade appsemble ./public/appsemble-*.tgz
       --debug
       --timeout 30m
-      --version "$CI_COMMIT_TAG"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "postgresql.host=$POSTGRESQL_CLUSTER-rw"
