@@ -220,6 +220,7 @@ export const exampleApp = (
             properties: {
               file: { type: 'string', format: 'binary' },
               file2: { type: 'string', format: 'binary' },
+              nullableFile: { type: ['string', 'null'], format: 'binary' },
               string: { type: 'string' },
             },
           },

@@ -910,6 +910,113 @@ describe('patchAppResource', () => {
     );
   });
 
+  it('should keep the asset of a file the patch leaves out', async () => {
+    vi.useRealTimers();
+    const { Asset, Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({ type: 'testAssets', data: {} });
+    const asset = await Asset.create({ ResourceId: resource.id, data: Buffer.alloc(0) });
+    await resource.update({ data: { file: asset.id } });
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      { string: 'updated' },
+    );
+
+    expect(response).toMatchObject({ status: 200, data: { file: asset.id, string: 'updated' } });
+    expect(await Asset.findByPk(asset.id)).not.toBeNull();
+  });
+
+  it('should keep the thumbnail of a file the patch leaves out', async () => {
+    vi.useRealTimers();
+    const { Asset, Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({ type: 'testAssets', data: {} });
+    const asset = await Asset.create({ ResourceId: resource.id, data: Buffer.alloc(0) });
+    const thumbnail = await Asset.create({
+      id: `${asset.id}-thumbnail`,
+      ResourceId: resource.id,
+      data: Buffer.alloc(0),
+    });
+    await resource.update({ data: { file: asset.id } });
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      { string: 'updated' },
+    );
+
+    expect(response.status).toBe(200);
+    expect(await Asset.findByPk(thumbnail.id)).not.toBeNull();
+  });
+
+  it('should reject null for a required property', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({ type: 'testResource', data: { foo: 'I am Foo.' } });
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: null },
+    );
+
+    expect(response.status).toBe(400);
+    await resource.reload();
+    expect(resource.data).toStrictEqual({ foo: 'I am Foo.' });
+  });
+
+  it('should accept null for an empty file property that does not allow null', async () => {
+    const { Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({ type: 'testAssets', data: {} });
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      { file: null, string: 'updated' },
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data).toMatchObject({ string: 'updated' });
+    expect(response.data).not.toHaveProperty('file');
+  });
+
+  it('should remove a file set to null from a property that does not allow null', async () => {
+    vi.useRealTimers();
+    const { Asset, Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({ type: 'testAssets', data: {} });
+    const asset = await Asset.create({ ResourceId: resource.id, data: Buffer.alloc(0) });
+    const thumbnail = await Asset.create({
+      id: `${asset.id}-thumbnail`,
+      ResourceId: resource.id,
+      data: Buffer.alloc(0),
+    });
+    await resource.update({ data: { file: asset.id } });
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      { file: null },
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.data).not.toHaveProperty('file');
+    expect(await Asset.findByPk(asset.id)).toBeNull();
+    expect(await Asset.findByPk(thumbnail.id)).toBeNull();
+  });
+
+  it.each([
+    ['an unnamed', undefined],
+    ['a named', 'test-asset'],
+  ])('should clear %s asset set to null and delete it', async (description, name) => {
+    vi.useRealTimers();
+    const { Asset, Resource } = await getAppDB(app.id);
+    const resource = await Resource.create({ type: 'testAssets', data: {} });
+    const asset = await Asset.create({ name, ResourceId: resource.id, data: Buffer.alloc(0) });
+    await resource.update({ data: { nullableFile: asset.id } });
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      { nullableFile: null },
+    );
+
+    expect(response).toMatchObject({ status: 200, data: { nullableFile: null } });
+    expect(await Asset.findByPk(asset.id)).toBeNull();
+  });
+
   it('should log and ignore s3 deletion failures during cleanup', async () => {
     const error = new Error('s3 failed');
     vi.spyOn(nodeUtils, 'deleteAppAssetObjects').mockRejectedValue(error);

@@ -15,6 +15,7 @@ import {
   type AssetOwner,
   deleteAppAssetObjects,
   getCompressedFileMeta,
+  getDereferencedAssetIds,
   getRemapperContext,
   getResourceDefinition,
   logger,
@@ -439,7 +440,7 @@ export async function patch({
     ...data
   } = patchedResource as Record<string, unknown>;
 
-  const shouldDeleteDereferencedAssets = !definition.history && deletedAssetIds.length > 0;
+  let dereferencedAssetIds: string[] = [];
   let uploadedAssetIds: string[] = [];
 
   let patchedResourceModel: ResourceGlobal | undefined;
@@ -493,8 +494,15 @@ export async function patch({
             { transaction },
           ),
         );
-      } else if (shouldDeleteDereferencedAssets) {
-        promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
+      } else {
+        // Assets of properties the patch leaves out stay referenced.
+        dereferencedAssetIds = getDereferencedAssetIds(
+          appAssets.filter((asset) => deletedAssetIds.includes(asset.id)),
+          patchedData,
+        );
+        if (dereferencedAssetIds.length) {
+          promises.push(Asset.destroy({ where: { id: dereferencedAssetIds }, transaction }));
+        }
       }
 
       await Promise.all(promises);
@@ -508,8 +516,8 @@ export async function patch({
     throw error;
   }
 
-  if (shouldDeleteDereferencedAssets) {
-    await resourceCleanup.deleteDereferencedS3Assets(app, deletedAssetIds);
+  if (dereferencedAssetIds.length) {
+    await resourceCleanup.deleteDereferencedS3Assets(app, dereferencedAssetIds);
   }
 
   return addResourceEtag(patchedResourceModel!.toJSON());
