@@ -79,6 +79,10 @@ export const messages = defineMessages({
     defaultMessage:
       'A client secret is set. Leave empty to keep it, or enter a new one to replace it.',
   },
+  clientSecretTokenUrlHelp: {
+    id: 'studio.t3de/W',
+    defaultMessage: 'The token URL has changed, so enter the client secret again.',
+  },
   scopeLabel: {
     id: 'studio.nso3Mj',
     defaultMessage: 'Scope',

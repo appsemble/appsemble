@@ -214,6 +214,35 @@ describe('updateAppOAuth2Secret', () => {
     expect(secret.clientSecret).toBe('example_client_secret');
   });
 
+  it('should require a client secret when an update changes the token URL', async () => {
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    const secret = await AppOAuth2Secret.create({
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+    });
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://other.example/oauth/token',
+    });
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'A client secret is required when the token URL changes' },
+    });
+    await secret.reload();
+    expect(secret.tokenUrl).toBe('https://example.com/oauth/token');
+  });
+
   it('should replace the client secret when an update includes one', async () => {
     const { AppOAuth2Secret } = await getAppDB(app.id);
     const secret = await AppOAuth2Secret.create({

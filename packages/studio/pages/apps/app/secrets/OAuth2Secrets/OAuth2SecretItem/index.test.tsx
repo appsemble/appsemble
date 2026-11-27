@@ -90,6 +90,19 @@ it('should keep the stored client secret and mappings when renaming', async () =
   expect(body).not.toHaveProperty('clientSecret');
 });
 
+it('should require the client secret again when the token URL changes', () => {
+  renderItem();
+  fireEvent.click(screen.getByRole('button', { name: /Example SSO/ }));
+  fireEvent.change(screen.getByLabelText(/Token URL/), {
+    target: { value: 'https://other.example/token' },
+  });
+
+  expect(screen.getByLabelText(/Client secret/)).toHaveProperty('required', true);
+  expect(
+    screen.getByText('The token URL has changed, so enter the client secret again.'),
+  ).toBeDefined();
+});
+
 it('should replace the client secret with a new value', async () => {
   const body = await save(() =>
     fireEvent.change(screen.getByLabelText(/Client secret/), { target: { value: 'new-secret' } }),

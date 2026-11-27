@@ -12,6 +12,7 @@ import {
   type Toggle,
   useConfirmation,
   useMessages,
+  useSimpleForm,
 } from '@appsemble/react-components';
 import { type AppOAuth2Secret } from '@appsemble/types';
 import axios from 'axios';
@@ -49,6 +50,40 @@ interface AppSecretCardProps {
 }
 
 /**
+ * Render the client secret field of an OAuth2 app secret.
+ *
+ * The stored client secret is only kept with the token URL it is sent to.
+ */
+function ClientSecretField({
+  disabled,
+  secret,
+}: {
+  readonly disabled: boolean;
+  readonly secret: AppOAuth2Secret;
+}): ReactNode {
+  const { values } = useSimpleForm();
+  const hasClientSecret = secret.incomplete === false;
+  const keepsClientSecret = hasClientSecret && values.tokenUrl === secret.tokenUrl;
+  let help = messages.clientSecretHelp;
+  if (hasClientSecret) {
+    help = keepsClientSecret ? messages.clientSecretKeepHelp : messages.clientSecretTokenUrlHelp;
+  }
+
+  return (
+    <SimpleFormField
+      // https://stackoverflow.com/questions/15738259
+      autoComplete="new-password"
+      component={PasswordField}
+      disabled={disabled}
+      help={<FormattedMessage {...help} />}
+      label={<FormattedMessage {...messages.clientSecretLabel} />}
+      name="clientSecret"
+      required={!keepsClientSecret}
+    />
+  );
+}
+
+/**
  * Render a modal for editing an OAuth2 app secret.
  */
 export function OAuth2Modal({
@@ -64,7 +99,6 @@ export function OAuth2Modal({
 
   const push = useMessages();
   const { app } = useApp();
-  const hasClientSecret = secret.incomplete === false;
 
   const onDelete = useConfirmation({
     title: <FormattedMessage {...messages.deleteWarningTitle} />,
@@ -173,20 +207,7 @@ export function OAuth2Modal({
         name="clientId"
         required
       />
-      <SimpleFormField
-        // https://stackoverflow.com/questions/15738259
-        autoComplete="new-password"
-        component={PasswordField}
-        disabled={locked !== 'unlocked'}
-        help={
-          <FormattedMessage
-            {...(hasClientSecret ? messages.clientSecretKeepHelp : messages.clientSecretHelp)}
-          />
-        }
-        label={<FormattedMessage {...messages.clientSecretLabel} />}
-        name="clientSecret"
-        required={!hasClientSecret}
-      />
+      <ClientSecretField disabled={locked !== 'unlocked'} secret={secret} />
       <SimpleFormField
         component={TagsField}
         delimiter=" "

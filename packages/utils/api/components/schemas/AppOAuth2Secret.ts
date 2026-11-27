@@ -33,7 +33,7 @@ export const AppOAuth2Secret: OpenAPIV3.NonArraySchemaObject = {
     clientSecret: {
       type: 'string',
       description:
-        'The OAuth2 client secret. Responses never include it. An update without it keeps the stored value.',
+        'The OAuth2 client secret. Responses never include it. An update without it keeps the stored value, unless the update changes the token URL.',
       writeOnly: true,
     },
     icon: {
