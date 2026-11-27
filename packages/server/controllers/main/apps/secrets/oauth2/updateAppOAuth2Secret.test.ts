@@ -86,6 +86,7 @@ describe('updateAppOAuth2Secret', () => {
       clientSecret: 'example_client_secret',
       icon: 'updated',
       name: 'Updated Example',
+      remapper: [{ prop: 'email' }],
       scope: 'custom',
       tokenUrl: 'https://other.example/oauth/token',
       userInfoUrl: 'https://other.example/oauth/userinfo',
@@ -102,7 +103,11 @@ describe('updateAppOAuth2Secret', () => {
         "id": 1,
         "incomplete": false,
         "name": "Updated Example",
-        "remapper": null,
+        "remapper": [
+          {
+            "prop": "email",
+          },
+        ],
         "roleMappings": null,
         "scope": "custom",
         "tokenUrl": "https://other.example/oauth/token",
@@ -118,6 +123,7 @@ describe('updateAppOAuth2Secret', () => {
       clientSecret: 'example_client_secret',
       icon: 'updated',
       name: 'Updated Example',
+      remapper: [{ prop: 'email' }],
       scope: 'custom',
       tokenUrl: 'https://other.example/oauth/token',
       userInfoUrl: 'https://other.example/oauth/userinfo',

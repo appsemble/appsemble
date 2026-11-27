@@ -77,12 +77,16 @@ it('should show that a client secret is set without showing its value', () => {
   ).toBeDefined();
 });
 
-it('should keep the stored client secret when the field is left empty', async () => {
+it('should keep the stored client secret and mappings when renaming', async () => {
   const body = await save(() =>
     fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Renamed SSO' } }),
   );
 
-  expect(body).toMatchObject({ name: 'Renamed SSO' });
+  expect(body).toMatchObject({
+    name: 'Renamed SSO',
+    remapper: secret.remapper,
+    roleMappings: secret.roleMappings,
+  });
   expect(body).not.toHaveProperty('clientSecret');
 });
 

@@ -41,6 +41,10 @@ test.describe('App secrets', () => {
     });
   });
 
+  test.afterAll(async ({ deleteApp }) => {
+    await deleteApp(app.id!);
+  });
+
   test('should keep an OAuth2 client secret that is left empty', async ({ page, request }) => {
     await page.goto(`/en/apps/${app.id}/${app.path}/secrets`);
     await page.getByRole('button', { name: /Example SSO/ }).click();
