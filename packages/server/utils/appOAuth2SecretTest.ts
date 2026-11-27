@@ -28,7 +28,8 @@ export type AppOAuth2SecretTestValues = Pick<
  * Get the OAuth2 login settings a Studio user tests.
  *
  * A body with only an ID tests the stored secret. Otherwise the body holds the settings, as when
- * updating a secret, and an omitted client secret is taken from the stored secret with the ID.
+ * updating a secret, and an omitted client secret is taken from the stored secret with the ID if
+ * the token URL is the stored one.
  *
  * Only organization members who may update the app secrets may test them. Each test makes requests
  * to URLs the user chooses, so tests are rate limited per user.
@@ -64,8 +65,14 @@ export async function getAppOAuth2SecretTestValues(
     assertKoaCondition(stored != null, ctx, 404, 'OAuth2 secret not found');
   }
 
+  // A caller must not be able to send the stored client secret to a token URL of their choosing.
   const values: Partial<AppOAuth2SecretTestValues> | null = Object.keys(settings).length
-    ? { ...settings, clientSecret: settings.clientSecret || stored?.clientSecret }
+    ? {
+        ...settings,
+        clientSecret:
+          settings.clientSecret ||
+          (settings.tokenUrl === stored?.tokenUrl ? stored?.clientSecret : undefined),
+      }
     : stored;
   assertKoaCondition(
     Boolean(values?.authorizationUrl && values.tokenUrl && values.clientId && values.clientSecret),

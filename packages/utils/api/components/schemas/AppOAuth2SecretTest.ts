@@ -4,13 +4,15 @@ export const AppOAuth2SecretTest: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: `OAuth2 login settings to test.
 
-The settings may be unsaved. Omitted settings are taken from the stored secret with the given ID.
+The settings may be unsaved. A body with only an ID tests the stored secret with that ID. Otherwise
+an omitted client secret is taken from that stored secret, if the token URL is the stored one.
 `,
   additionalProperties: false,
   properties: {
     id: {
       type: 'number',
-      description: 'The ID of the stored OAuth2 secret which provides omitted settings.',
+      description:
+        'The ID of the stored OAuth2 secret to test, or which provides an omitted client secret.',
     },
     authorizationUrl: { $ref: '#/components/schemas/AppOAuth2Secret/properties/authorizationUrl' },
     tokenUrl: { $ref: '#/components/schemas/AppOAuth2Secret/properties/tokenUrl' },

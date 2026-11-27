@@ -61,7 +61,8 @@ provider.
 
 The OAuth2 secret settings in Appsemble Studio have two buttons to test the settings in the form.
 They test unsaved changes too. Saving never depends on a test, so a provider that is down does not
-stop you from saving.
+stop you from saving. If the client secret is left empty, the tests use the saved client secret, but
+only with the saved token URL.
 
 **Test connection** makes the requests a login makes from the Appsemble server, with the same
 network restrictions. It lists the outcome of each check:

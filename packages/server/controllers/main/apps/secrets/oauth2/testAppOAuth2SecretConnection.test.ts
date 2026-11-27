@@ -135,6 +135,31 @@ describe('testAppOAuth2SecretConnection', () => {
     );
   });
 
+  it('should not send the stored client secret to another token URL', async () => {
+    const provider = await serveOAuth2Provider();
+    const { AppOAuth2Secret } = await getAppDB(app.id);
+    const secret = await AppOAuth2Secret.create({
+      ...provider,
+      clientId: providerClientId,
+      clientSecret: providerClientSecret,
+      icon: 'key',
+      name: 'Keycloak',
+      scope: 'openid',
+    });
+    const otherTokenServer = await countConnections();
+
+    const { status } = await request.post(`/api/apps/${app.id}/secrets/oauth2/test-connection`, {
+      ...provider,
+      id: secret.id,
+      clientId: providerClientId,
+      scope: 'openid',
+      tokenUrl: `http://127.0.0.1:${otherTokenServer.port}/token`,
+    });
+
+    expect(status).toBe(400);
+    expect(otherTokenServer.connections).toBe(0);
+  });
+
   it('should report other provider errors without the rest of the response', async () => {
     const provider = await serveOAuth2Provider({
       token: [

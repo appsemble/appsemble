@@ -20,7 +20,8 @@ import { useApp } from '../../../index.js';
 
 interface OAuth2SecretTestProps {
   /**
-   * The ID of the stored secret, whose client secret is used if the form omits it.
+   * The ID of the stored secret, whose client secret is used if the form omits it and keeps the
+   * stored token URL.
    */
   readonly secretId?: number;
 }
