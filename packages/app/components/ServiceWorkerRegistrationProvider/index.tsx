@@ -16,6 +16,7 @@ import {
   appId,
   appUpdated,
   e2e,
+  languages,
   staticAssets,
   vapidPublicKey,
 } from '../../utils/settings.js';
@@ -112,6 +113,11 @@ export function ServiceWorkerRegistrationProvider({
   }, []);
 
   useEffect(() => {
+    // A URL without a language of the app, such as its root, is redirected to one, which then
+    // caches its own messages and page.
+    if (!languages.includes(lang)) {
+      return;
+    }
     serviceWorkerRegistrationPromise
       .then(async (registration) => {
         if (!registration) {
