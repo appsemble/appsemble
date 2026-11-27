@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.42.0
-appVersion: 0.42.0
+version: 0.42.1
+appVersion: 0.42.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -33,59 +33,46 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Server: Add organization service accounts for CI and other
-        non-interactive clients."
+      description: "Cli: Add --domain to app publish and app update."
     - kind: added
-      description: "Server: Record the provider account of organization single sign-on
-        identities at each sign-in."
+      description: "Cli: Set the app domain from the domain field of an
+        .appsemblerc.yaml context."
     - kind: added
-      description: "Server: Return the identity provider end session URL when logging
-        out of organization single sign-on."
+      description: "Server: Add an endpoint for organization members to reset the TOTP
+        of an app member."
     - kind: added
-      description: "Studio: Create and revoke organization service accounts on the
-        members page."
-    - kind: added
-      description: "Studio: Show the provider account of linked organization single
-        sign-on identities."
-    - kind: added
-      description: "Studio: Sign out at the identity provider when signing out of
-        organization single sign-on."
-    - kind: changed
-      description: "Server: Provision a service account with credentials from the
-        provision.existingSecret Secret."
+      description: "Studio: Show the TOTP status of app members and let organization
+        members reset it."
     - kind: fixed
-      description: "E2e: Wait for the OAuth2 callback in loginAppAppsembleOAuth
-        without a redirect."
+      description: "App: Fix completing TOTP on apps with a custom Login page."
     - kind: fixed
-      description: "Server: Do not create a second account when the email typed at
-        sign-in belongs to an existing account."
+      description: "React-components: Clear the timeout of a confirmation dialog on unmount."
     - kind: fixed
-      description: "Server: Generate invoice PDFs faster and 20 times smaller."
+      description: "Server: Accept null for nullable file properties and delete the
+        asset it replaces."
     - kind: fixed
-      description: "Server: Keep personal client credentials from organization SSO
-        working after signing out."
+      description: "Server: Allow updating app members who have properties that were
+        removed from the app."
     - kind: fixed
-      description: "Server: Keep the apps of an organization when deleting the
-        organization fails."
+      description: "Server: Answer an error if updating the profile of an app member fails."
     - kind: fixed
-      description: "Server: List the connected apps of a user without opening the
-        database of every app."
+      description: "Server: Clear optional resource properties, including files, set
+        to null in a patch."
     - kind: fixed
-      description: "Server: Serve app requests without serializing the app definition to YAML."
+      description: "Server: Fix companion containers in the Helm chart when ingress is
+        disabled."
     - kind: fixed
-      description: "Studio: Authorize personal client credentials of an organization
-        SSO account at the identity provider."
+      description: "Server: Fix updating app members using SCIM."
     - kind: fixed
-      description: "Studio: Let Owners sign in again at the provider to change single
-        sign-on settings."
+      description: "Server: Keep the custom properties of an app member on password
+        reset and change."
     - kind: fixed
-      description: "Studio: Show email verification success to signed-out users."
+      description: "Server: Keep the files of properties a resource patch leaves out."
     - kind: fixed
-      description: "Studio: Show the connected apps in the user settings again."
-    - kind: fixed
-      description: "Studio: Show the creation date of personal client credentials."
-    - kind: fixed
-      description: "Studio: Stay signed out when the session ends while Studio loads the user."
+      description: "Server: Only accept ephemeral resources in app member properties
+        of demo apps."
+    - kind: security
+      description: "Server: Reject used pending TOTP tokens when starting TOTP setup."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

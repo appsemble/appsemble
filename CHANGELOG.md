@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.42.1](https://gitlab.com/appsemble/appsemble/-/releases/0.42.1)] - 2026-11-27
+
+### Added
+
+- Cli: Add `--domain` to `app publish` and `app update`.
+- Cli: Set the app domain from the `domain` field of an `.appsemblerc.yaml` context.
+- Server: Add an endpoint for organization members to reset the TOTP of an app member.
+- Studio: Show the TOTP status of app members and let organization members reset it.
+
+### Fixed
+
+- App: Fix completing TOTP on apps with a custom `Login` page.
+- React-components: Clear the timeout of a confirmation dialog on unmount.
+- Server: Accept null for nullable file properties and delete the asset it replaces.
+- Server: Allow updating app members who have properties that were removed from the app.
+- Server: Answer an error if updating the profile of an app member fails.
+- Server: Clear optional resource properties, including files, set to null in a patch.
+- Server: Fix companion containers in the Helm chart when ingress is disabled.
+- Server: Fix updating app members using SCIM.
+- Server: Keep the custom properties of an app member on password reset and change.
+- Server: Keep the files of properties a resource patch leaves out.
+- Server: Only accept ephemeral resources in app member properties of demo apps.
+
+### Security
+
+- Server: Reject used pending TOTP tokens when starting TOTP setup.
+
 ## \[[0.42.0](https://gitlab.com/appsemble/appsemble/-/releases/0.42.0)] - 2026-11-24
 
 ### Added
