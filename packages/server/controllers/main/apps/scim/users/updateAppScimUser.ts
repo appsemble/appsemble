@@ -11,7 +11,8 @@ export async function updateAppScimUser(ctx: Context): Promise<void> {
     request: { body },
   } = ctx;
   const app = await App.findOne({
-    where: { id: appId, attributes: ['id'] },
+    attributes: ['id'],
+    where: { id: appId },
   });
   assertKoaCondition(app != null, ctx, 404, 'App not found');
 

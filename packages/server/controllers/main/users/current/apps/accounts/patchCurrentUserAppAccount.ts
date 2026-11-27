@@ -91,6 +91,7 @@ export async function patchCurrentUserAppAccount(ctx: Context): Promise<void> {
     if (error instanceof AppMemberPropertiesError) {
       throwKoaError(ctx, 400, error.message);
     }
+    throw error;
   }
 
   applyAppMessages(app, language, baseLanguage);

@@ -108,15 +108,17 @@ export async function reseedDemoApp(ctx: Context): Promise<void> {
   const demoMembersToReseed = await AppMember.findAll({ where: { seed: true } });
 
   logger.info('Reseeding ephemeral App members');
-  for (const member of demoMembersToReseed) {
-    const { id, properties, ...values } = member.dataValues;
-    await AppMember.create({
-      ...values,
-      properties: parseAppMemberProperties(properties ?? {}),
-      ephemeral: true,
-      seed: false,
-    });
-  }
+  await AppMember.bulkCreate(
+    demoMembersToReseed.map((member) => {
+      const { id, properties, ...values } = member.dataValues;
+      return {
+        ...values,
+        properties: parseAppMemberProperties(properties ?? {}),
+        ephemeral: true,
+        seed: false,
+      };
+    }),
+  );
   logger.info(`Reseeded ${demoMembersToReseed.length} demo members`);
 
   const date = new Date();

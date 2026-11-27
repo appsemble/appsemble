@@ -1,5 +1,13 @@
 import { type BulmaColor } from '@appsemble/types';
-import { createContext, type ReactNode, useCallback, useContext, useState } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { CardFooterButton, ModalCard } from '../index.js';
 
@@ -55,6 +63,9 @@ export function Confirmation({ children }: ConfirmationProps): ReactNode {
   // (strictNullChecks)
   const [options, setOptions] = useState<DeferredConfirmationOptions>(null);
   const [isActive, setIsActive] = useState(false);
+  const closeTimeout = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => () => clearTimeout(closeTimeout.current), []);
 
   const confirm = useCallback(async (opts: ConfirmationOptions<any, any[]>, args: unknown[]) => {
     try {
@@ -64,7 +75,7 @@ export function Confirmation({ children }: ConfirmationProps): ReactNode {
       });
     } finally {
       // The timeout must match the transition length of Modal.
-      setTimeout(() => setIsActive(false), 90);
+      closeTimeout.current = setTimeout(() => setIsActive(false), 90);
     }
     return opts.action(...args);
   }, []);

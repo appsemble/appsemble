@@ -110,6 +110,28 @@ describe('resetAppMemberPassword', () => {
     ).toBeNull();
   });
 
+  it('should keep the custom properties of the app member', async () => {
+    const app = await createDefaultAppWithSecurity(organization);
+    const { AppMember } = await getAppDB(app.id);
+    const appMember = await AppMember.create({
+      email: 'test@example.com',
+      password: await hash('testpassword', 10),
+      role: 'Reader',
+      resetKey: 'reset-token',
+      properties: { department: 'Support' },
+      timezone: 'Europe/Amsterdam',
+    });
+
+    await request.post(`/api/apps/${app.id}/auth/email/reset-password`, {
+      token: 'reset-token',
+      password: 'new password',
+    });
+
+    await appMember.reload();
+    expect(await compare('new password', appMember.password!)).toBe(true);
+    expect(appMember.properties).toStrictEqual({ department: 'Support' });
+  });
+
   it('should return not found when resetting using a non-existent token', async () => {
     const app = await createDefaultAppWithSecurity(organization);
 

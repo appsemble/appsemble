@@ -56,7 +56,6 @@ export async function resetAppMemberTotp(ctx: Context): Promise<void> {
       },
     });
 
-    // The member is loaded partially, and updating the instance would overwrite its properties.
     await AppMember.update(
       {
         totpSecret: null,

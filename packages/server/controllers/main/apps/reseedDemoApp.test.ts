@@ -234,6 +234,38 @@ describe('reseedDemoApp', () => {
     expect(await getS3FileBuffer(bucket, key)).toStrictEqual(await readFixture('standing.png'));
   });
 
+  it('should reseed members that reference a seed resource', async () => {
+    vi.useRealTimers();
+    authorizeStudio();
+    const { id: appId } = await App.create({
+      demoMode: true,
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        members: {
+          properties: { task: { schema: { type: 'integer' }, reference: { resource: 'tasks' } } },
+        },
+        resources: { tasks: { schema: { type: 'object' } } },
+      },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const { AppMember, Resource } = await getAppDB(appId);
+    const { id: task } = await Resource.create({ type: 'tasks', seed: true, data: {} });
+    await AppMember.bulkCreate([
+      { email: 'demo@example.com', demo: true, seed: true, properties: { task } },
+    ]);
+
+    const { status } = await request.post(`/api/apps/${appId}/reseed`);
+
+    const members = await AppMember.findAll({ where: { ephemeral: true } });
+    expect({ status, properties: members.map(({ properties }) => properties) }).toStrictEqual({
+      status: 200,
+      properties: [{ task }],
+    });
+  });
+
   it('should reseed resources and assets with defined user properties', async () => {
     vi.useRealTimers();
     authorizeStudio();
