@@ -58,11 +58,12 @@ describe('getAppScimSecret', () => {
 
       {
         "enabled": false,
+        "incomplete": true,
       }
     `);
   });
 
-  it('should get the SCIM token', async () => {
+  it('should report a SCIM token without returning it', async () => {
     authorizeStudio();
     await app.update({ scimEnabled: true, scimToken: encrypt('1234', argv.aesSecret) });
 
@@ -74,7 +75,7 @@ describe('getAppScimSecret', () => {
 
       {
         "enabled": true,
-        "token": "1234",
+        "incomplete": false,
       }
     `);
   });

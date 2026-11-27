@@ -42,14 +42,13 @@ const responses: Record<string, unknown> = {
       authorizationUrl: 'https://sso.example/authorize',
       tokenUrl: 'https://sso.example/token',
       clientId: 'client',
-      clientSecret: '',
       icon: 'key',
       scope: 'openid',
       incomplete: true,
     },
   ],
   'get /api/apps/1/secrets/saml': [],
-  'get /api/apps/1/secrets/scim': { enabled: true },
+  'get /api/apps/1/secrets/scim': { enabled: true, incomplete: true },
 };
 
 const changes: Record<string, string> = {

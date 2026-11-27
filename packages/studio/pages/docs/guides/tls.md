@@ -25,7 +25,8 @@ it’s related.
 
 In the Studio, select your App, then Secrets, then find the SSL segment. Here you can submit your
 private and public certificates. If you already have these certificates, upload them here and you’ll
-be done.
+be done. Appsemble never shows a saved private key. Leave the key field empty to keep the stored key
+when you replace the certificate, and clear the certificate to remove both.
 
 It’s not required, but some security checkers insist you make sure the public certificate is fully
 resolvable and contains the full chain (including the Root Certificate). You can use a website like

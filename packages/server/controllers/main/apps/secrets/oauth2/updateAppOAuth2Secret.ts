@@ -11,6 +11,7 @@ import {
   normalizeLoginRoleMappings,
   validateLoginRoleMappings,
 } from '../../../../../utils/loginRoleMappings.js';
+import { isSecretIncomplete } from '../../../../../utils/secrets.js';
 
 export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
   const {
@@ -32,6 +33,13 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
   });
 
   assertKoaCondition(appOAuth2Secret != null, ctx, 404, 'OAuth2 secret not found');
+  // The stored client secret is sent to the token URL, so it may not move to another one.
+  assertKoaCondition(
+    body.clientSecret !== undefined || body.tokenUrl === appOAuth2Secret.tokenUrl,
+    ctx,
+    400,
+    'A client secret is required when the token URL changes',
+  );
 
   const iconError = getSsoIconError(body.icon, app.definition);
   assertKoaCondition(iconError == null, ctx, 400, iconError ?? 'Invalid icon');
@@ -47,10 +55,14 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
     roleMappingsError || 'Invalid role mappings',
   );
 
-  ctx.body = await appOAuth2Secret.update({
+  await appOAuth2Secret.update({
     ...body,
+    remapper: body.remapper ?? null,
     roleMappings: normalizeLoginRoleMappings(body.roleMappings) ?? null,
     userInfoUrl: body.userInfoUrl || null,
   });
   await touchApp(appId);
+
+  const { clientSecret, ...configuration } = appOAuth2Secret.toJSON();
+  ctx.body = { ...configuration, incomplete: isSecretIncomplete(clientSecret) };
 }

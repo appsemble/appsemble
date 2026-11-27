@@ -8,7 +8,12 @@ export const pathItems: OpenAPIV3.PathItemObject = {
     requestBody: {
       content: {
         'application/json': {
-          schema: { $ref: '#/components/schemas/AppOAuth2Secret' },
+          schema: {
+            allOf: [
+              { $ref: '#/components/schemas/AppOAuth2Secret' },
+              { required: ['clientSecret'] },
+            ],
+          },
         },
       },
     },

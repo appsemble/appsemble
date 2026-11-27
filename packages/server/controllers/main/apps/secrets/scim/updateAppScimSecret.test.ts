@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App, Organization, OrganizationMember } from '../../../../../models/index.js';
 import { argv, setArgv } from '../../../../../utils/argv.js';
 import { createServer } from '../../../../../utils/createServer.js';
-import { decrypt } from '../../../../../utils/crypto.js';
+import { decrypt, encrypt } from '../../../../../utils/crypto.js';
 import { authorizeStudio, createTestUser } from '../../../../../utils/test/authorization.js';
 
 let app: App;
@@ -60,12 +60,26 @@ describe('updateAppScimSecret', () => {
 
       {
         "enabled": true,
-        "token": null,
+        "incomplete": true,
       }
     `);
 
     await app.reload();
     expect(app.scimEnabled).toBe(true);
+  });
+
+  it('should keep the SCIM token when an update leaves it out', async () => {
+    await app.update({ scimToken: encrypt('1234', argv.aesSecret) });
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}/secrets/scim`, {
+      enabled: true,
+    });
+
+    expect(response.data).toStrictEqual({ enabled: true, incomplete: false });
+    await app.reload();
+    // @ts-expect-error 2345 argument of type is not assignable to parameter of type
+    // (strictNullChecks)
+    expect(decrypt(app.scimToken, argv.aesSecret)).toBe('1234');
   });
 
   it('should update the SCIM token', async () => {
@@ -80,7 +94,7 @@ describe('updateAppScimSecret', () => {
 
       {
         "enabled": false,
-        "token": "6789",
+        "incomplete": false,
       }
     `);
 
@@ -88,5 +102,15 @@ describe('updateAppScimSecret', () => {
     // @ts-expect-error 2345 argument of type is not assignable to parameter of type
     // (strictNullChecks)
     expect(decrypt(app.scimToken, argv.aesSecret)).toBe('6789');
+  });
+
+  it('should clear the SCIM token when an update sends an empty one', async () => {
+    await app.update({ scimToken: encrypt('1234', argv.aesSecret) });
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}/secrets/scim`, { token: '' });
+
+    expect(response.data).toStrictEqual({ enabled: false, incomplete: true });
+    await app.reload();
+    expect(app.scimToken).toBeNull();
   });
 });

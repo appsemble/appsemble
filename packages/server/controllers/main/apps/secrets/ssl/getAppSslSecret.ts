@@ -4,6 +4,7 @@ import { type Context } from 'koa';
 
 import { App } from '../../../../../models/index.js';
 import { checkUserOrganizationPermissions } from '../../../../../utils/authorization.js';
+import { isSecretIncomplete } from '../../../../../utils/secrets.js';
 
 export async function getAppSslSecret(ctx: Context): Promise<void> {
   const {
@@ -23,7 +24,7 @@ export async function getAppSslSecret(ctx: Context): Promise<void> {
   });
 
   ctx.body = {
-    key: app.sslKey,
     certificate: app.sslCertificate,
+    incomplete: isSecretIncomplete(app.sslKey),
   };
 }
