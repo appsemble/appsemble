@@ -18,6 +18,10 @@ export const messages = defineMessages({
     id: 'app.7Lfwtm',
     defaultMessage: 'An unexpected error occurred while logging in',
   },
+  loginIncomplete: {
+    id: 'app.zDJ1pi',
+    defaultMessage: 'Logging in could not be completed. Please log in again.',
+  },
   retry: {
     id: 'app.7tSUe8',
     defaultMessage: 'Back to login',
