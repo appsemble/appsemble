@@ -32,7 +32,7 @@ export async function updateAppScimSecret(ctx: Context): Promise<void> {
     updates.scimEnabled = body.enabled;
   }
   if ('token' in body) {
-    updates.scimToken = encrypt(body.token, argv.aesSecret) || null;
+    updates.scimToken = body.token ? encrypt(body.token, argv.aesSecret) : null;
   }
 
   await app.update(updates);

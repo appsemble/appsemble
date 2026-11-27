@@ -103,4 +103,14 @@ describe('updateAppScimSecret', () => {
     // (strictNullChecks)
     expect(decrypt(app.scimToken, argv.aesSecret)).toBe('6789');
   });
+
+  it('should clear the SCIM token when an update sends an empty one', async () => {
+    await app.update({ scimToken: encrypt('1234', argv.aesSecret) });
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}/secrets/scim`, { token: '' });
+
+    expect(response.data).toStrictEqual({ enabled: false, incomplete: true });
+    await app.reload();
+    expect(app.scimToken).toBeNull();
+  });
 });
