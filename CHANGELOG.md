@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.42.2](https://gitlab.com/appsemble/appsemble/-/releases/0.42.2)] - 2026-11-27
+
+### Fixed
+
+- Server: Fix companion container logs in the Helm chart when ingress is disabled.
+- Server: Keep the name of an existing organization when provisioning it.
+
 ## \[[0.42.1](https://gitlab.com/appsemble/appsemble/-/releases/0.42.1)] - 2026-11-27
 
 ### Added

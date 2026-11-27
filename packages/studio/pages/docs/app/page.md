@@ -152,14 +152,14 @@ pages:
   - name: Home
     blocks:
       - type: markdown
-        version: 0.42.1
+        version: 0.42.2
         parameters:
           content: Welcome!
   - name: Page not found
     hideNavTitle: true
     blocks:
       - type: markdown
-        version: 0.42.1
+        version: 0.42.2
         parameters:
           content: The page you are looking for does not exist.
 ```
