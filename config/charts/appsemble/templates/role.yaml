@@ -1,4 +1,3 @@
-{{- if .Values.ingress.enabled -}}
 # CloudNativePG names its own Role after the Cluster, which is often named after the release, so
 # this one carries a suffix.
 apiVersion: rbac.authorization.k8s.io/v1
@@ -8,6 +7,7 @@ metadata:
   labels:
     {{ include "appsemble.labels" . }}
 rules:
+  {{- if .Values.ingress.enabled }}
   - apiGroups:
       - ''
     resources:
@@ -34,6 +34,7 @@ rules:
       - certificates
     verbs:
       - list
+  {{- end }}
   - apiGroups:
       - ''
     resources:
@@ -46,4 +47,3 @@ rules:
       - pods/log
     verbs:
       - get
-{{ end }}
