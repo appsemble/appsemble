@@ -1296,7 +1296,8 @@ publish docker:
     - docker push "appsemble/appsemble:latest"
     - docker push "appsemble/appsemble:$CI_COMMIT_TAG"
 
-# Publish the Helm chart to https://charts.appsemble.com
+# Publish the Helm chart to https://charts.appsemble.com, and as an OCI artifact to the GitLab
+# registry, from which Argo CD can pin it by digest.
 publish helm:
   image: dtzar/helm-kubectl:3
   needs:
@@ -1307,6 +1308,8 @@ publish helm:
   rules:
     - if: $CI_COMMIT_TAG
   script:
+    - helm registry login "$CI_REGISTRY" --username "$CI_REGISTRY_USER" --password "$CI_REGISTRY_PASSWORD"
+    - helm push "public/appsemble-$CI_COMMIT_TAG.tgz" "oci://$CI_REGISTRY_IMAGE/charts"
     - apk add git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
     - git init
