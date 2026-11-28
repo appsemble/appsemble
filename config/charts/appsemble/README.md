@@ -96,6 +96,23 @@ helm repo update
 helm install my-appsemble appsemble/appsemble --set 'ingress.host=my-appsemble.example.com'
 ```
 
+Each release is also an OCI artifact in the GitLab registry. A version republished on
+`charts.appsemble.com` would install unnoticed, while a digest pins the exact chart. `helm pull`
+prints the digest of a version:
+
+```sh
+helm pull oci://registry.gitlab.com/appsemble/appsemble/charts/appsemble --version 0.42.3
+```
+
+Argo CD (3.1 and later) installs the chart by digest from a native OCI source:
+
+```yaml
+source:
+  repoURL: oci://registry.gitlab.com/appsemble/appsemble/charts/appsemble
+  path: .
+  targetRevision: sha256:<digest> # 0.42.3
+```
+
 ### Provisioning
 
 `provision` creates or updates an organization with a Maintainer service account, for example to
